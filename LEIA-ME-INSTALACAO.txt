@@ -1,0 +1,15 @@
+ROTA 27 BODEGA — PWA v0.11
+
+Arquivos do pacote:
+- index.html — aplicativo
+- manifest.webmanifest — definição da PWA
+- sw.js — cache e funcionamento offline
+- icons/ — ícones Android/iPhone
+
+IMPORTANTE
+A PWA deve ser publicada por HTTPS. Não abra index.html diretamente pelo app Arquivos do iPhone.
+
+Após publicar, abra a URL no Safari do iPhone e use:
+Compartilhar > Adicionar à Tela de Início > Abrir como App da Web > Adicionar.
+
+Os dados permanecem locais no navegador/PWA deste aparelho. Não há sincronização entre aparelhos nesta versão.
