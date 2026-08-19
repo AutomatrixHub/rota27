@@ -52,11 +52,8 @@ function safeText(value: unknown, max = 300) {
 }
 
 /**
- * Parâmetros de template WhatsApp:
- * - sem CR/LF
- * - sem TAB
- * - sem espaços repetidos
- * - uma única linha
+ * Normaliza valores enviados como parâmetros
+ * para templates do WhatsApp.
  */
 function safeTemplateText(value: unknown, max = 900) {
   return String(value ?? "")
@@ -350,11 +347,11 @@ Deno.serve(async (req: Request) => {
   }
 
   // ------------------------------------------------------------
-  // TEXTO DOS PRODUTOS
+  // FORMATAÇÃO DOS ITENS PARA WHATSAPP
   //
-  // IMPORTANTE:
-  // usamos exatamente o padrão simples que funcionou
-  // no teste direto da Meta.
+  // Exemplo:
+  //
+  // + 1x IPA - R$ 24,00 • + 2x Água - R$ 10,00
   // ------------------------------------------------------------
 
   const itemLines =
@@ -377,9 +374,16 @@ Deno.serve(async (req: Request) => {
       );
     });
 
+  /**
+   * IMPORTANTE:
+   *
+   * A v2 usa " • " como separador.
+   * Continua sendo um único parâmetro de texto,
+   * sem quebra de linha interna.
+   */
   const itemsText =
     safeTemplateText(
-      itemLines.join("; "),
+      itemLines.join(" • "),
       900,
     );
 
@@ -427,7 +431,7 @@ Deno.serve(async (req: Request) => {
   }
 
   // ------------------------------------------------------------
-  // PAYLOAD ORIGINAL PARA LOG
+  // PAYLOAD PARA LOG
   // ------------------------------------------------------------
 
   const now =
@@ -467,12 +471,12 @@ Deno.serve(async (req: Request) => {
   // ------------------------------------------------------------
   // PAYLOAD PARA META
   //
-  // Template aprovado:
+  // TEMPLATE:
   //
-  // {{1}} cliente
-  // {{2}} comanda
-  // {{3}} lançamentos
-  // {{4}} total
+  // {{1}} = cliente
+  // {{2}} = comanda / mesa
+  // {{3}} = produtos agrupados
+  // {{4}} = total atual
   // ------------------------------------------------------------
 
   const metaPayload = {
@@ -563,7 +567,7 @@ Deno.serve(async (req: Request) => {
         .catch(() => ({}));
 
     // ----------------------------------------------------------
-    // ERRO META
+    // ERRO DA META
     // ----------------------------------------------------------
 
     if (!metaResponse.ok) {
@@ -626,7 +630,8 @@ Deno.serve(async (req: Request) => {
 
       return json(502, {
         ok: false,
-        error: errorText,
+        error:
+          errorText,
         details:
           errorDetails || null,
         metaCode,
