@@ -1,7 +1,10 @@
-const CACHE_NAME = 'rota27-comandas-v0.13';
+const CACHE_NAME = 'rota27-comandas-v0.14-dev.1';
 const APP_SHELL = [
   './',
   './index.html',
+  './v014-preview.html',
+  './assets/v014.css',
+  './assets/v014.js',
   './manifest.webmanifest',
   './icons/apple-touch-icon.png',
   './icons/icon-192.png',
