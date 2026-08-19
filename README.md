@@ -53,3 +53,21 @@ rota27-comandas/
 Comandas, cardápio, categorias e histórico são armazenados localmente no dispositivo nesta versão.
 
 **Ainda não há sincronização entre celulares.**
+
+
+## WhatsApp Cloud API
+
+A partir da v0.12, o projeto contém a integração preparada para:
+
+`Rota 27 → Supabase Edge Function → WhatsApp Cloud API`
+
+Os lançamentos são agrupados por aproximadamente 8 segundos antes do envio.
+
+Arquivos principais:
+
+- `supabase/functions/rota27-whatsapp/index.ts`
+- `supabase/migrations/20260817_create_whatsapp_message_log.sql`
+- `docs/WHATSAPP-SUPABASE.md`
+- `docs/TEMPLATE-WHATSAPP.md`
+
+Credenciais reais **nunca** devem ser commitadas no GitHub.

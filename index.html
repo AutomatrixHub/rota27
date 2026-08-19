@@ -12,8 +12,7 @@
 <link rel="manifest" href="./manifest.webmanifest" />
 <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png" />
 <link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png" />
-<link rel="icon" type="image/png" sizes="32x32" href="./icons/favicon-32.png" />
-<title>Rota 27 Bodega • Comandas v0.11</title>
+<title>Rota 27 Bodega • Comandas v0.12</title>
 <style>
   :root{
     --bg:#eee2cf;
@@ -199,6 +198,28 @@
   .field-row{display:grid;grid-template-columns:1fr 110px;gap:10px}
   .field input,.field select{width:100%;height:48px;border:1px solid var(--line);border-radius:13px;background:#fff;color:var(--ink);padding:0 12px;outline:none}
   .field input:focus,.field select:focus{border-color:var(--brand);box-shadow:0 0 0 3px rgba(31,74,53,.10)}
+
+  .field-help{display:block;color:var(--muted);font-size:11px;line-height:1.35;margin-top:6px}
+  .wa-consent{display:flex;align-items:flex-start;gap:10px;border:1px solid #d5bea0;background:#f7ecdb;border-radius:14px;padding:11px 12px;margin:3px 0 12px}
+  .wa-consent input{width:20px;height:20px;margin:1px 0 0;accent-color:#2e7d55;flex:0 0 auto}
+  .wa-consent strong{display:block;font-size:13px;color:var(--ink)}
+  .wa-consent small{display:block;color:var(--muted);font-size:11px;line-height:1.35;margin-top:3px}
+  .wa-admin-card{display:flex;align-items:center;justify-content:space-between;gap:12px;background:#f7ecdb;border:1px solid #e4cfaa;border-radius:16px;padding:12px 13px;margin:0 0 12px}
+  .wa-admin-card strong{display:block;font-size:14px}
+  .wa-admin-card small{display:block;color:var(--muted);font-size:11px;margin-top:3px;line-height:1.3}
+  .wa-admin-card button{border:0;background:#236b4c;color:#fff;border-radius:12px;padding:9px 12px;font-weight:900;white-space:nowrap}
+  .wa-config-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#a69b8c;margin-right:5px}
+  .wa-config-dot.ok{background:#2e8a5d}
+  .wa-sale-status{display:none;align-items:center;gap:8px;border-radius:13px;padding:9px 11px;margin:-2px 0 11px;font-size:12px;font-weight:800;border:1px solid #d9c9b4;background:#f6ede1;color:#725d4b}
+  .wa-sale-status.show{display:flex}
+  .wa-sale-status.waiting{background:#fff2cf;border-color:#ead28f;color:#7a5b14}
+  .wa-sale-status.sending{background:#e9f0f7;border-color:#c7d9e8;color:#395d79}
+  .wa-sale-status.sent{background:#e3f2e9;border-color:#bfddcb;color:#276746}
+  .wa-sale-status.failed{background:#f8e5e1;border-color:#e8c0b8;color:#99453b}
+  .wa-sale-status.off{background:#f0ece6;border-color:#ddd4ca;color:#786e65}
+  .wa-config-state{padding:9px 11px;border-radius:12px;background:#f1e7d8;border:1px solid var(--line);font-size:12px;color:var(--muted);margin:-2px 0 12px;line-height:1.4}
+  .wa-config-state.ok{background:#e4f1e9;border-color:#c4dccd;color:#2b6849}
+
   .switch-row{display:flex;align-items:center;justify-content:space-between;gap:12px;border:1px solid var(--line);border-radius:14px;padding:12px 13px;margin:4px 0 12px;background:var(--surface-2)}
   .switch-row strong{font-size:14px}.switch-row small{display:block;color:var(--muted);font-size:11px;margin-top:2px}
   .switch{position:relative;width:48px;height:28px;flex:0 0 auto}
@@ -325,6 +346,7 @@
         <button class="edit-command" onclick="openEditCommandSheet()" aria-label="Editar comanda" title="Editar comanda">✎</button>
         <div class="total-pill" id="saleTotal">R$ 0,00</div>
       </div>
+      <div id="saleWhatsappStatus" class="wa-sale-status"></div>
       <div class="search">🔎<input id="searchProduct" type="search" placeholder="Buscar produto..." autocomplete="off" /></div>
       <div class="chips" id="categoryChips"></div>
       <div class="product-grid" id="productGrid"></div>
@@ -334,6 +356,13 @@
       <div class="section-head menu-section-head">
         <div><h2>Cardápio</h2><p>Edite os produtos disponíveis para lançamento.</p></div>
         <div class="menu-head-actions"><span class="badge" id="menuCount">0</span><button class="menu-categories" onclick="openCategoryManager()">🏷 Categorias</button><button class="menu-add" onclick="openMenuItemSheet()">+ Produto</button></div>
+      </div>
+      <div class="wa-admin-card">
+        <div>
+          <strong>WhatsApp da comanda</strong>
+          <small id="waAdminStatus"><span class="wa-config-dot"></span>Integração ainda não configurada neste aparelho.</small>
+        </div>
+        <button type="button" onclick="openWhatsappConfigSheet()">Configurar</button>
       </div>
       <div class="menu-note">Alterações de preço valem para novos lançamentos. Produtos já lançados em comandas mantêm o nome e o valor registrados no momento do lançamento.</div>
       <div class="search">🔎<input id="searchMenu" type="search" placeholder="Buscar no cardápio..." autocomplete="off" /></div>
@@ -391,6 +420,29 @@
   </nav>
 </div>
 
+
+<div class="sheet-wrap" id="whatsappConfigWrap" onclick="outsideClose(event,'whatsappConfigWrap')">
+  <div class="sheet">
+    <div class="handle"></div>
+    <h3>Configurar WhatsApp</h3>
+    <p class="desc">Configuração técnica deste aparelho. O token do WhatsApp da Meta nunca fica salvo aqui; ele permanece somente no Supabase.</p>
+    <div class="field">
+      <label>URL DA EDGE FUNCTION</label>
+      <input id="waFunctionUrl" autocomplete="off" placeholder="https://SEU-PROJETO.supabase.co/functions/v1/rota27-whatsapp" />
+    </div>
+    <div class="field">
+      <label>TOKEN DESTE DISPOSITIVO</label>
+      <input id="waDeviceToken" type="password" autocomplete="off" placeholder="Cole o token de acesso do Rota 27" />
+      <small class="field-help">Este token é criado no backend e deve ser informado somente nos celulares da equipe. Ele não será publicado no GitHub.</small>
+    </div>
+    <div class="wa-config-state" id="waConfigSheetState"></div>
+    <div class="sheet-actions">
+      <button class="secondary" onclick="closeSheet('whatsappConfigWrap')">Cancelar</button>
+      <button class="primary" onclick="saveWhatsappConfig()">Salvar configuração</button>
+    </div>
+  </div>
+</div>
+
 <div class="sheet-wrap" id="newCommandWrap" onclick="outsideClose(event,'newCommandWrap')">
   <div class="sheet">
     <div class="handle"></div>
@@ -405,6 +457,17 @@
       <button onclick="setQuickTable('Parklet 2')">P2</button><button onclick="setQuickTable('Parklet 3')">P3</button>
     </div>
     <div class="field"><label>NOME DO CLIENTE</label><input id="newCustomer" placeholder="Ex.: Mariana" /></div>
+    <div class="field">
+      <label>WHATSAPP DO CLIENTE</label>
+      <input id="newWhatsapp" inputmode="tel" autocomplete="tel" placeholder="Ex.: (27) 99999-9999" />
+      <small class="field-help">Se informar somente DDD + número, o app adiciona automaticamente o código do Brasil (+55).</small>
+    </div>
+    <label class="wa-consent">
+      <input type="checkbox" id="newWhatsappOptIn" />
+      <span><strong>Enviar atualizações da comanda pelo WhatsApp</strong><small>Marque somente após o cliente autorizar o recebimento das atualizações desta comanda.</small></span>
+    </label>
+    <div id="newWaConfigState" class="wa-config-state"></div>
+
     <div class="sheet-actions">
       <button class="secondary" onclick="closeSheet('newCommandWrap')">Cancelar</button>
       <button class="primary" onclick="createCommand()">Abrir comanda</button>
@@ -426,6 +489,16 @@
       <button onclick="setEditQuickTable('Parklet 2')">P2</button><button onclick="setEditQuickTable('Parklet 3')">P3</button>
     </div>
     <div class="field"><label>NOME DO CLIENTE</label><input id="editCustomer" placeholder="Ex.: Mariana" /></div>
+    <div class="field">
+      <label>WHATSAPP DO CLIENTE</label>
+      <input id="editWhatsapp" inputmode="tel" autocomplete="tel" placeholder="Ex.: (27) 99999-9999" />
+      <small class="field-help">O envio agrupado ocorre aproximadamente 8 segundos após o último ajuste.</small>
+    </div>
+    <label class="wa-consent">
+      <input type="checkbox" id="editWhatsappOptIn" />
+      <span><strong>Enviar atualizações da comanda pelo WhatsApp</strong><small>O cliente deve ter autorizado receber as atualizações desta comanda.</small></span>
+    </label>
+
     <div class="sheet-actions">
       <button class="secondary" onclick="closeSheet('editCommandWrap')">Cancelar</button>
       <button class="primary" onclick="saveCommandEdits()">Salvar alterações</button>
@@ -539,6 +612,11 @@ const DEFAULT_PRODUCTS = [
 ];
 
 const STORAGE = 'rota27_comandas_v01';
+const WA_CONFIG_STORAGE = 'rota27_whatsapp_config_v1';
+const WA_BATCH_DELAY_MS = 8000;
+const WA_RETRY_BASE_MS = 15000;
+let waConfig = loadWhatsappConfig();
+const waTimers = new Map();
 let state = loadState();
 let activeCommandId = null;
 let activeCategory = 'Todos';
@@ -579,6 +657,14 @@ function migrateState(raw){
   if(!st.categories.length)st.categories=['Outros'];
   if(!st.categoryStatus||typeof st.categoryStatus!=='object')st.categoryStatus={};
   st.categories.forEach(c=>{if(typeof st.categoryStatus[c]!=='boolean')st.categoryStatus[c]=true;});
+  if(!Array.isArray(st.whatsappOutbox))st.whatsappOutbox=[];
+  st.whatsappOutbox=st.whatsappOutbox.filter(b=>b&&b.id&&b.commandId&&b.changes&&typeof b.changes==='object');
+  [...st.commands,...st.history].forEach(c=>{
+    c.whatsappPhone=String(c.whatsappPhone||'');
+    c.whatsappOptIn=c.whatsappOptIn===true;
+    c.whatsappLastStatus=String(c.whatsappLastStatus||'');
+    c.whatsappLastError=String(c.whatsappLastError||'');
+  });
   const catMap=new Map(st.catalog.map(p=>[p.id,p]));
   [...st.commands,...st.history].forEach(c=>{
     if(!c.items||typeof c.items!=='object')c.items={};
@@ -597,6 +683,206 @@ function loadState(){
   catch(e){ return initialState(); }
 }
 function save(){ localStorage.setItem(STORAGE,JSON.stringify(state)); }
+
+function loadWhatsappConfig(){
+  try{
+    const raw=JSON.parse(localStorage.getItem(WA_CONFIG_STORAGE)||'{}');
+    return {functionUrl:String(raw.functionUrl||'').trim(),deviceToken:String(raw.deviceToken||'').trim()};
+  }catch(e){return {functionUrl:'',deviceToken:''};}
+}
+function isWhatsappConfigured(){
+  return /^https:\/\/.+\/functions\/v1\/.+/i.test(waConfig.functionUrl||'') && String(waConfig.deviceToken||'').length>=16;
+}
+function normalizeWhatsappPhone(raw){
+  let d=String(raw||'').replace(/\D/g,'');
+  d=d.replace(/^0+/,'');
+  if(d.length===10||d.length===11)d='55'+d;
+  return d;
+}
+function isValidWhatsappPhone(raw){
+  const d=normalizeWhatsappPhone(raw);
+  return d.length>=12 && d.length<=15;
+}
+function formatWhatsappPhone(raw){
+  const d=normalizeWhatsappPhone(raw);
+  if(d.startsWith('55') && d.length>=12){
+    const area=d.slice(2,4),n=d.slice(4);
+    if(n.length===9)return `+55 (${area}) ${n.slice(0,5)}-${n.slice(5)}`;
+    if(n.length===8)return `+55 (${area}) ${n.slice(0,4)}-${n.slice(4)}`;
+  }
+  return d?`+${d}`:'';
+}
+function makeEventId(){
+  if(globalThis.crypto?.randomUUID)return crypto.randomUUID();
+  return 'wa-'+Date.now()+'-'+Math.random().toString(36).slice(2,12);
+}
+function whatsappCommand(c){
+  return state.commands.find(x=>x.id===c?.id)||state.history.find(x=>x.id===c?.id)||c;
+}
+function updateWhatsappConfigUI(){
+  const configured=isWhatsappConfigured();
+  const admin=document.getElementById('waAdminStatus');
+  if(admin){
+    admin.innerHTML=`<span class="wa-config-dot ${configured?'ok':''}"></span>${configured?'Supabase/WhatsApp configurado neste aparelho.':'Integração ainda não configurada neste aparelho.'}`;
+  }
+  const newState=document.getElementById('newWaConfigState');
+  if(newState){
+    newState.className='wa-config-state'+(configured?' ok':'');
+    newState.textContent=configured?'WhatsApp pronto para envio agrupado.':'Configure a integração em Cardápio → WhatsApp antes de ativar os envios.';
+  }
+}
+function openWhatsappConfigSheet(){
+  document.getElementById('waFunctionUrl').value=waConfig.functionUrl||'';
+  document.getElementById('waDeviceToken').value=waConfig.deviceToken||'';
+  const st=document.getElementById('waConfigSheetState');
+  st.className='wa-config-state'+(isWhatsappConfigured()?' ok':'');
+  st.textContent=isWhatsappConfigured()?'Configuração válida salva neste aparelho.':'Informe a URL da Edge Function e o token do dispositivo.';
+  document.getElementById('whatsappConfigWrap').classList.add('open');
+}
+function saveWhatsappConfig(){
+  const functionUrl=document.getElementById('waFunctionUrl').value.trim().replace(/\/+$/,'');
+  const deviceToken=document.getElementById('waDeviceToken').value.trim();
+  if(!/^https:\/\/.+\/functions\/v1\/.+/i.test(functionUrl)){showToast('Informe uma URL HTTPS válida da Edge Function.',false);return;}
+  if(deviceToken.length<16){showToast('O token do dispositivo parece inválido.',false);return;}
+  waConfig={functionUrl,deviceToken};
+  localStorage.setItem(WA_CONFIG_STORAGE,JSON.stringify(waConfig));
+  closeSheet('whatsappConfigWrap');
+  updateWhatsappConfigUI();
+  resumeWhatsappOutbox();
+  showToast('Integração WhatsApp configurada neste aparelho.',false);
+}
+function setWhatsappStatus(c,status,error=''){
+  if(!c)return;
+  c.whatsappLastStatus=status||'';
+  c.whatsappLastError=error||'';
+  c.whatsappLastStatusAt=Date.now();
+}
+function renderSaleWhatsappStatus(){
+  const c=currentCommand(),el=document.getElementById('saleWhatsappStatus');
+  if(!el)return;
+  if(!c?.whatsappOptIn||!c.whatsappPhone){
+    el.className='wa-sale-status';
+    el.textContent='';
+    return;
+  }
+  let status=c.whatsappLastStatus||'idle',text='';
+  if(!isWhatsappConfigured()){status='failed';text='WhatsApp ativo na comanda, mas a integração deste aparelho ainda não foi configurada.';}
+  else if(status==='waiting')text='WhatsApp • aguardando alguns segundos para agrupar os lançamentos…';
+  else if(status==='sending')text='WhatsApp • enviando atualização…';
+  else if(status==='sent')text='WhatsApp • última atualização enviada.';
+  else if(status==='failed')text=`WhatsApp • falha no envio; nova tentativa automática.${c.whatsappLastError?' '+c.whatsappLastError:''}`;
+  else text=`WhatsApp ativo • ${formatWhatsappPhone(c.whatsappPhone)}`;
+  const cls=status==='idle'?'off':status;
+  el.className=`wa-sale-status show ${cls}`;
+  el.textContent='💬 '+text;
+}
+function findOpenWhatsappBatch(commandId){
+  return state.whatsappOutbox.find(b=>b.commandId===commandId && (b.status==='pending'||b.status==='failed'));
+}
+function queueWhatsappDelta(c,p,delta){
+  if(!c?.whatsappOptIn||!c.whatsappPhone||!p||!delta)return;
+  let batch=findOpenWhatsappBatch(c.id);
+  const now=Date.now();
+  if(!batch){
+    batch={
+      id:makeEventId(),
+      commandId:c.id,
+      phone:c.whatsappPhone,
+      customerName:c.customer||'Cliente',
+      commandLabel:commandLabel(c),
+      changes:{},
+      createdAt:now,
+      dueAt:now+WA_BATCH_DELAY_MS,
+      attempts:0,
+      status:'pending',
+      lastError:''
+    };
+    state.whatsappOutbox.push(batch);
+  }
+  const key=String(p.id||p.name);
+  if(!batch.changes[key])batch.changes[key]={productId:p.id||key,name:p.name,unitPrice:Number(p.price)||0,delta:0};
+  batch.changes[key].delta+=Number(delta);
+  if(batch.changes[key].delta===0)delete batch.changes[key];
+  batch.phone=c.whatsappPhone;
+  batch.customerName=c.customer||'Cliente';
+  batch.commandLabel=commandLabel(c);
+  batch.dueAt=now+WA_BATCH_DELAY_MS;
+  batch.status='pending';
+  batch.lastError='';
+  if(!Object.keys(batch.changes).length){
+    state.whatsappOutbox=state.whatsappOutbox.filter(x=>x.id!==batch.id);
+    const t=waTimers.get(batch.id);if(t)clearTimeout(t);waTimers.delete(batch.id);
+    setWhatsappStatus(c,'idle');
+    save();renderSaleWhatsappStatus();return;
+  }
+  setWhatsappStatus(c,isWhatsappConfigured()?'waiting':'failed',isWhatsappConfigured()?'':'Integração não configurada.');
+  save();
+  scheduleWhatsappBatch(batch.id);
+  renderSaleWhatsappStatus();
+}
+function scheduleWhatsappBatch(batchId){
+  const batch=state.whatsappOutbox.find(b=>b.id===batchId);if(!batch)return;
+  const old=waTimers.get(batchId);if(old)clearTimeout(old);
+  const delay=Math.max(250,Number(batch.dueAt||Date.now())-Date.now());
+  const timer=setTimeout(()=>flushWhatsappBatch(batchId),Math.min(delay,2147483000));
+  waTimers.set(batchId,timer);
+}
+function resumeWhatsappOutbox(){
+  (state.whatsappOutbox||[]).forEach(b=>scheduleWhatsappBatch(b.id));
+}
+async function flushWhatsappBatch(batchId){
+  waTimers.delete(batchId);
+  const batch=state.whatsappOutbox.find(b=>b.id===batchId);if(!batch)return;
+  const c=state.commands.find(x=>x.id===batch.commandId)||state.history.find(x=>x.id===batch.commandId);
+  if(!c){state.whatsappOutbox=state.whatsappOutbox.filter(x=>x.id!==batchId);save();return;}
+  const changes=Object.values(batch.changes||{}).filter(x=>Number(x.delta)!==0);
+  if(!changes.length){state.whatsappOutbox=state.whatsappOutbox.filter(x=>x.id!==batchId);save();return;}
+  if(!isWhatsappConfigured()){
+    batch.status='failed';batch.lastError='Integração não configurada';batch.dueAt=Date.now()+60000;
+    setWhatsappStatus(c,'failed',batch.lastError);save();scheduleWhatsappBatch(batch.id);renderSaleWhatsappStatus();return;
+  }
+  batch.status='sending';setWhatsappStatus(c,'sending');save();renderSaleWhatsappStatus();
+  const payload={
+    eventId:batch.id,
+    commandId:c.id,
+    commandLabel:commandLabel(c),
+    customerName:c.customer||'Cliente',
+    phone:normalizeWhatsappPhone(c.whatsappPhone||batch.phone),
+    consent:c.whatsappOptIn===true,
+    items:changes.map(x=>({
+      productId:x.productId,
+      name:x.name,
+      delta:Number(x.delta),
+      quantity:Math.abs(Number(x.delta)),
+      unitPrice:Number(x.unitPrice)||0
+    })),
+    total:Number(commandTotal(c).toFixed(2)),
+    currency:'BRL',
+    sentFrom:'rota27-pwa',
+    clientTimestamp:new Date().toISOString()
+  };
+  const controller=new AbortController();
+  const timeout=setTimeout(()=>controller.abort(),12000);
+  try{
+    const response=await fetch(waConfig.functionUrl,{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-rota27-device-token':waConfig.deviceToken},
+      body:JSON.stringify(payload),
+      signal:controller.signal
+    });
+    const data=await response.json().catch(()=>({}));
+    if(!response.ok||data.ok!==true)throw new Error(data.error||`HTTP ${response.status}`);
+    state.whatsappOutbox=state.whatsappOutbox.filter(x=>x.id!==batchId);
+    setWhatsappStatus(c,'sent');c.whatsappLastSentAt=Date.now();save();renderSaleWhatsappStatus();
+  }catch(err){
+    batch.status='failed';batch.attempts=(batch.attempts||0)+1;
+    batch.lastError=String(err?.message||'Falha de conexão').slice(0,140);
+    batch.dueAt=Date.now()+Math.min(120000,WA_RETRY_BASE_MS*Math.pow(2,Math.min(batch.attempts-1,3)));
+    setWhatsappStatus(c,'failed',batch.lastError);save();scheduleWhatsappBatch(batch.id);renderSaleWhatsappStatus();
+  }finally{clearTimeout(timeout);}
+}
+window.addEventListener('online',()=>resumeWhatsappOutbox());
+
 function money(v){ return Number(v||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'}); }
 function productById(id){ return state.catalog.find(p=>p.id===id) || DEFAULT_PRODUCTS.find(p=>p.id===id); }
 function lineProduct(c,id){ return c?.itemMeta?.[id] || productById(id); }
@@ -622,7 +908,9 @@ function showScreen(which){
     document.getElementById('screenCommands').classList.add('active');
     document.getElementById('navCommands').classList.add('active');
     document.getElementById('fabNew').style.display='block';
-    renderCommands();
+    updateWhatsappConfigUI();
+resumeWhatsappOutbox();
+renderCommands();
   }else if(which==='sale'){
     document.getElementById('screenSale').classList.add('active');
     renderSale();
@@ -671,6 +959,7 @@ function renderSale(){
   document.getElementById('cartbarItems').textContent=`${commandItems(c)} ${commandItems(c)===1?'item':'itens'}`;
   document.getElementById('cartbarTotal').textContent=money(commandTotal(c));
   document.getElementById('cartbar').classList.add('show');
+  renderSaleWhatsappStatus();
   const chips=document.getElementById('categoryChips'); chips.innerHTML='';
   cats.forEach(cat=>{
     const b=document.createElement('button'); b.className='chip'+(cat===activeCategory?' active':''); b.textContent=cat;
@@ -699,29 +988,42 @@ function addProduct(id){
     c.itemMeta[id]={name:p.name,cat:p.cat,price:p.price,emoji:p.emoji||'🍽️'};
   }
   c.items[id]=(c.items[id]||0)+1; c.updatedAt=Date.now(); save();
+  queueWhatsappDelta(c,{...p,id},1);
   lastUndo={commandId:c.id,productId:id}; renderSale(); showToast(`${p.name} adicionado`,true);
 }
 function undoLast(){
   if(!lastUndo)return;
   const c=state.commands.find(x=>x.id===lastUndo.commandId);
   if(c && c.items[lastUndo.productId]){
+    const p=lineProduct(c,lastUndo.productId);
     c.items[lastUndo.productId]--;
     if(c.items[lastUndo.productId]<=0){delete c.items[lastUndo.productId]; if(c.itemMeta)delete c.itemMeta[lastUndo.productId];}
-    c.updatedAt=Date.now(); save(); if(activeCommandId===c.id)renderSale(); showToast('Último lançamento desfeito',false);
+    c.updatedAt=Date.now(); save();
+    if(p)queueWhatsappDelta(c,{...p,id:lastUndo.productId},-1);
+    if(activeCommandId===c.id)renderSale(); showToast('Último lançamento desfeito',false);
   }
   lastUndo=null;
 }
 function changeQty(id,delta){
   const c=currentCommand(); if(!c)return;
-  c.items[id]=(c.items[id]||0)+delta;
+  const p=lineProduct(c,id); if(!p)return;
+  const before=Number(c.items[id]||0);
+  const after=Math.max(0,before+Number(delta||0));
+  const actualDelta=after-before;
+  if(!actualDelta)return;
+  c.items[id]=after;
   if(c.items[id]<=0){delete c.items[id]; if(c.itemMeta)delete c.itemMeta[id];}
-  c.updatedAt=Date.now(); save(); renderSale(); renderCart();
+  c.updatedAt=Date.now(); save();
+  queueWhatsappDelta(c,{...p,id},actualDelta);
+  renderSale(); renderCart();
 }
 function removeItem(id){
   const c=currentCommand(); if(!c)return;
-  const p=lineProduct(c,id); if(!c.items[id])return;
+  const p=lineProduct(c,id),qty=Number(c.items[id]||0); if(!qty)return;
   delete c.items[id]; if(c.itemMeta)delete c.itemMeta[id];
-  c.updatedAt=Date.now(); save(); renderSale(); renderCart(); showToast(`${p?.name||'Produto'} removido da comanda.`,false);
+  c.updatedAt=Date.now(); save();
+  if(p)queueWhatsappDelta(c,{...p,id},-qty);
+  renderSale(); renderCart(); showToast(`${p?.name||'Produto'} removido da comanda.`,false);
 }
 function openCartSheet(){ const c=currentCommand(); if(!c)return; renderCart(); document.getElementById('cartWrap').classList.add('open'); }
 function renderCart(){
@@ -765,24 +1067,52 @@ function finalizeCommand(){
 }
 function openEditCommandSheet(){
   const c=currentCommand(); if(!c)return;
-  document.getElementById('editTable').value=c.table||''; document.getElementById('editCustomer').value=c.customer||''; document.getElementById('editCommandWrap').classList.add('open'); setTimeout(()=>document.getElementById('editTable').focus(),120);
+  document.getElementById('editTable').value=c.table||'';
+  document.getElementById('editCustomer').value=c.customer||'';
+  document.getElementById('editWhatsapp').value=c.whatsappPhone?formatWhatsappPhone(c.whatsappPhone):'';
+  document.getElementById('editWhatsappOptIn').checked=c.whatsappOptIn===true;
+  document.getElementById('editCommandWrap').classList.add('open'); setTimeout(()=>document.getElementById('editTable').focus(),120);
 }
 function setEditQuickTable(v){ document.getElementById('editTable').value=v; }
 function saveCommandEdits(){
   const c=currentCommand(); if(!c)return;
   const table=document.getElementById('editTable').value.trim(),customer=document.getElementById('editCustomer').value.trim();
+  const rawPhone=document.getElementById('editWhatsapp').value.trim();
+  const optIn=document.getElementById('editWhatsappOptIn').checked;
   if(!table && !customer){showToast('Informe uma mesa/local ou o nome do cliente.',false);return;}
-  c.table=table;c.customer=customer;c.updatedAt=Date.now();save();closeSheet('editCommandWrap');renderSale();showToast('Comanda atualizada.',false);
+  if(optIn && !isValidWhatsappPhone(rawPhone)){showToast('Informe um WhatsApp válido para ativar as atualizações.',false);return;}
+  c.table=table;c.customer=customer;c.whatsappPhone=rawPhone?normalizeWhatsappPhone(rawPhone):'';
+  c.whatsappOptIn=optIn&&!!c.whatsappPhone;c.updatedAt=Date.now();
+  if(c.whatsappOptIn&&!isWhatsappConfigured())setWhatsappStatus(c,'failed','Integração não configurada.');
+  save();closeSheet('editCommandWrap');renderSale();showToast('Comanda atualizada.',false);
 }
-function openNewCommandSheet(){ document.getElementById('newTable').value='';document.getElementById('newCustomer').value='';document.getElementById('newCommandWrap').classList.add('open');setTimeout(()=>document.getElementById('newTable').focus(),120); }
+function openNewCommandSheet(){
+  document.getElementById('newTable').value='';
+  document.getElementById('newCustomer').value='';
+  document.getElementById('newWhatsapp').value='';
+  document.getElementById('newWhatsappOptIn').checked=false;
+  updateWhatsappConfigUI();
+  document.getElementById('newCommandWrap').classList.add('open');
+  setTimeout(()=>document.getElementById('newTable').focus(),120);
+}
 function setQuickTable(v){ document.getElementById('newTable').value=v; }
 function createCommand(){
   const table=document.getElementById('newTable').value.trim(),customer=document.getElementById('newCustomer').value.trim();
+  const rawPhone=document.getElementById('newWhatsapp').value.trim();
+  const optIn=document.getElementById('newWhatsappOptIn').checked;
   if(!table && !customer){showToast('Informe uma mesa/local ou o nome do cliente.',false);return;}
-  const now=Date.now(),c={id:'c'+now,table,customer,createdAt:now,updatedAt:now,items:{},itemMeta:{}};
+  if(optIn && !isValidWhatsappPhone(rawPhone)){showToast('Informe um WhatsApp válido para ativar as atualizações.',false);return;}
+  const now=Date.now(),c={
+    id:'c'+now,table,customer,createdAt:now,updatedAt:now,items:{},itemMeta:{},
+    whatsappPhone:rawPhone?normalizeWhatsappPhone(rawPhone):'',
+    whatsappOptIn:optIn&&!!rawPhone,
+    whatsappLastStatus:''
+  };
+  if(c.whatsappOptIn&&!isWhatsappConfigured())setWhatsappStatus(c,'failed','Integração não configurada.');
   state.commands.unshift(c);save();closeSheet('newCommandWrap');openCommand(c.id);
 }
 function renderMenu(){
+  updateWhatsappConfigUI();
   const q=(document.getElementById('searchMenu')?.value||'').trim().toLowerCase();
   const all=[...state.catalog].sort((a,b)=>(Number(b.active)-Number(a.active))||a.cat.localeCompare(b.cat,'pt-BR')||a.name.localeCompare(b.name,'pt-BR'));
   const rows=all.filter(p=>!q||p.name.toLowerCase().includes(q)||p.cat.toLowerCase().includes(q));
