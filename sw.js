@@ -1,4 +1,4 @@
-const CACHE_NAME = 'rota27-comandas-v0.12';
+const CACHE_NAME = 'rota27-comandas-v0.13';
 const APP_SHELL = [
   './',
   './index.html',
