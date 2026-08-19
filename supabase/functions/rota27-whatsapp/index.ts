@@ -1,5 +1,7 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 
+const EDGE_VERSION = "rota27-whatsapp-v3-dynamic";
+
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "content-type, x-rota27-device-token",
@@ -51,12 +53,9 @@ function safeText(value: unknown, max = 300) {
     .slice(0, max);
 }
 
-/**
- * Normaliza valores enviados como parâmetros
- * para templates do WhatsApp.
- */
 function safeTemplateText(value: unknown, max = 900) {
   return String(value ?? "")
+    .replace(/\u0000/g, "")
     .replace(/[\r\n\t]+/g, " ")
     .replace(/\s{2,}/g, " ")
     .trim()
@@ -78,6 +77,47 @@ function safeEqual(a: string, b: string) {
   }
 
   return diff === 0;
+}
+
+/**
+ * Escolhe o template aprovado conforme
+ * a quantidade de itens do bloco.
+ */
+function templateForItemCount(count: number) {
+  switch (count) {
+    case 1:
+      return "atualizacao_comanda_rota27_v3_1";
+
+    case 2:
+      return "atualizacao_comanda_rota27_v3_2";
+
+    case 3:
+      return "atualizacao_comanda_rota27_v3_3";
+
+    case 4:
+      return "atualizacao_comanda_rota27_v3_4";
+
+    case 5:
+      return "atualizacao_comanda_rota27_v3";
+
+    default:
+      throw new Error(
+        `Quantidade de itens não suportada pelo template: ${count}`,
+      );
+  }
+}
+
+/**
+ * Divide um array em blocos de até "size".
+ */
+function chunkArray<T>(items: T[], size: number): T[][] {
+  const chunks: T[][] = [];
+
+  for (let i = 0; i < items.length; i += size) {
+    chunks.push(items.slice(i, i + size));
+  }
+
+  return chunks;
 }
 
 async function readExisting(eventId: string) {
@@ -125,12 +165,14 @@ async function upsertLog(row: Record<string, unknown>) {
     `${url}/rest/v1/whatsapp_message_log?on_conflict=event_id`,
     {
       method: "POST",
+
       headers: {
         apikey: key,
         Authorization: `Bearer ${key}`,
         "Content-Type": "application/json",
         Prefer: "resolution=merge-duplicates,return=minimal",
       },
+
       body: JSON.stringify(row),
     },
   );
@@ -138,9 +180,9 @@ async function upsertLog(row: Record<string, unknown>) {
 
 Deno.serve(async (req: Request) => {
 
-  // ------------------------------------------------------------
+  // ============================================================
   // CORS
-  // ------------------------------------------------------------
+  // ============================================================
 
   if (req.method === "OPTIONS") {
     return new Response("ok", {
@@ -155,9 +197,9 @@ Deno.serve(async (req: Request) => {
     });
   }
 
-  // ------------------------------------------------------------
+  // ============================================================
   // AUTENTICAÇÃO DO DISPOSITIVO
-  // ------------------------------------------------------------
+  // ============================================================
 
   const configuredDeviceToken =
     Deno.env.get("ROTA27_DEVICE_TOKEN") || "";
@@ -167,7 +209,10 @@ Deno.serve(async (req: Request) => {
 
   if (
     configuredDeviceToken.length < 16 ||
-    !safeEqual(receivedDeviceToken, configuredDeviceToken)
+    !safeEqual(
+      receivedDeviceToken,
+      configuredDeviceToken,
+    )
   ) {
     return json(401, {
       ok: false,
@@ -175,9 +220,9 @@ Deno.serve(async (req: Request) => {
     });
   }
 
-  // ------------------------------------------------------------
+  // ============================================================
   // LIMITE DO PAYLOAD
-  // ------------------------------------------------------------
+  // ============================================================
 
   const contentLength =
     Number(req.headers.get("content-length") || 0);
@@ -189,9 +234,9 @@ Deno.serve(async (req: Request) => {
     });
   }
 
-  // ------------------------------------------------------------
-  // BODY
-  // ------------------------------------------------------------
+  // ============================================================
+  // JSON
+  // ============================================================
 
   let body: any;
 
@@ -203,6 +248,10 @@ Deno.serve(async (req: Request) => {
       error: "JSON inválido.",
     });
   }
+
+  // ============================================================
+  // CAMPOS
+  // ============================================================
 
   const eventId =
     safeText(body?.eventId, 120);
@@ -236,107 +285,99 @@ Deno.serve(async (req: Request) => {
       ? body.items.slice(0, 30)
       : [];
 
-  // ------------------------------------------------------------
+  // ============================================================
   // VALIDAÇÕES
-  // ------------------------------------------------------------
+  // ============================================================
 
   if (!eventId || !commandId) {
     return json(400, {
       ok: false,
-      error: "eventId e commandId são obrigatórios.",
+      error:
+        "eventId e commandId são obrigatórios.",
     });
   }
 
   if (!consent) {
     return json(400, {
       ok: false,
-      error: "Consentimento não confirmado.",
+      error:
+        "Consentimento não confirmado.",
     });
   }
 
   if (!validPhone(phone)) {
     return json(400, {
       ok: false,
-      error: "Número de WhatsApp inválido.",
+      error:
+        "Número de WhatsApp inválido.",
     });
   }
 
   if (!items.length) {
     return json(400, {
       ok: false,
-      error: "Nenhum item para enviar.",
+      error:
+        "Nenhum item para enviar.",
     });
   }
 
   if (!Number.isFinite(total) || total < 0) {
     return json(400, {
       ok: false,
-      error: "Total inválido.",
+      error:
+        "Total inválido.",
     });
   }
 
-  // ------------------------------------------------------------
-  // IDEMPOTÊNCIA
-  // ------------------------------------------------------------
-
-  const existing =
-    await readExisting(eventId);
-
-  if (existing?.status === "sent") {
-    return json(200, {
-      ok: true,
-      duplicate: true,
-      messageId:
-        existing.wa_message_id || null,
-    });
-  }
-
-  // ------------------------------------------------------------
+  // ============================================================
   // NORMALIZAÇÃO DOS ITENS
-  // ------------------------------------------------------------
+  // ============================================================
 
-  const normalizedItems = items
-    .map((item: any) => {
+  const normalizedItems =
+    items
+      .map((item: any) => {
 
-      const delta =
-        Number(item?.delta || 0);
+        const delta =
+          Number(item?.delta || 0);
 
-      const quantity =
-        Math.max(
-          1,
-          Math.abs(
-            Number(
-              item?.quantity ||
-              delta ||
-              1,
+        const quantity =
+          Math.max(
+            1,
+            Math.abs(
+              Number(
+                item?.quantity ||
+                delta ||
+                1,
+              ),
             ),
-          ),
-        );
+          );
 
-      const name =
-        safeTemplateText(
-          item?.name || "Produto",
-          160,
-        );
+        const name =
+          safeTemplateText(
+            item?.name || "Produto",
+            160,
+          );
 
-      const unitPrice =
-        Math.max(
-          0,
-          Number(item?.unitPrice || 0),
-        );
+        const unitPrice =
+          Math.max(
+            0,
+            Number(
+              item?.unitPrice || 0,
+            ),
+          );
 
-      return {
-        delta,
-        quantity,
-        name,
-        unitPrice,
-      };
-    })
-    .filter(
-      (item: any) =>
-        Number.isFinite(item.delta) &&
-        item.delta !== 0,
-    );
+        return {
+          delta,
+          quantity,
+          name,
+          unitPrice,
+        };
+      })
+      .filter(
+        (item: any) =>
+          Number.isFinite(item.delta) &&
+          item.delta !== 0,
+      );
 
   if (!normalizedItems.length) {
     return json(400, {
@@ -346,13 +387,9 @@ Deno.serve(async (req: Request) => {
     });
   }
 
-  // ------------------------------------------------------------
-  // FORMATAÇÃO DOS ITENS PARA WHATSAPP
-  //
-  // Exemplo:
-  //
-  // + 1x IPA - R$ 24,00 • + 2x Água - R$ 10,00
-  // ------------------------------------------------------------
+  // ============================================================
+  // FORMATAÇÃO
+  // ============================================================
 
   const itemLines =
     normalizedItems.map((item: any) => {
@@ -366,30 +403,25 @@ Deno.serve(async (req: Request) => {
         item.quantity *
         item.unitPrice;
 
-      return (
-        `${sign} ` +
-        `${item.quantity}x ` +
-        `${item.name} - ` +
-        `${moneyBRL(subtotal)}`
+      return safeTemplateText(
+        `${sign} ${item.quantity}x ${item.name} - ${moneyBRL(subtotal)}`,
+        500,
       );
     });
 
   /**
-   * IMPORTANTE:
+   * Os templates suportam até 5 linhas.
    *
-   * A v2 usa " • " como separador.
-   * Continua sendo um único parâmetro de texto,
-   * sem quebra de linha interna.
+   * Na situação normal haverá apenas um bloco.
+   * Se houver 6 ou mais itens agrupados, serão
+   * geradas mensagens adicionais de até 5 itens.
    */
-  const itemsText =
-    safeTemplateText(
-      itemLines.join(" • "),
-      900,
-    );
+  const itemChunks =
+    chunkArray(itemLines, 5);
 
-  // ------------------------------------------------------------
-  // SECRETS
-  // ------------------------------------------------------------
+  // ============================================================
+  // SECRETS META
+  // ============================================================
 
   const accessToken =
     Deno.env.get(
@@ -405,12 +437,6 @@ Deno.serve(async (req: Request) => {
     Deno.env.get(
       "META_GRAPH_VERSION",
     );
-
-  const templateName =
-    Deno.env.get(
-      "WHATSAPP_TEMPLATE_NAME",
-    ) ||
-    "atualizacao_comanda_rota27";
 
   const templateLang =
     Deno.env.get(
@@ -430,315 +456,534 @@ Deno.serve(async (req: Request) => {
     });
   }
 
-  // ------------------------------------------------------------
-  // PAYLOAD PARA LOG
-  // ------------------------------------------------------------
-
-  const now =
-    new Date().toISOString();
-
-  const originalPayload = {
-    eventId,
-    commandId,
-    commandLabel,
-    customerName,
-    phone,
-    items: normalizedItems,
-    total,
-    clientTimestamp:
-      safeText(
-        body?.clientTimestamp,
-        80,
-      ),
-  };
-
-  await upsertLog({
-    event_id: eventId,
-    command_id: commandId,
-    phone,
-    customer_name: customerName,
-    command_label: commandLabel,
-    payload: originalPayload,
-    status: "processing",
-    attempts:
-      Number(
-        existing?.attempts || 0,
-      ) + 1,
-    last_error: null,
-    updated_at: now,
-  });
-
-  // ------------------------------------------------------------
-  // PAYLOAD PARA META
-  //
-  // TEMPLATE:
-  //
-  // {{1}} = cliente
-  // {{2}} = comanda / mesa
-  // {{3}} = produtos agrupados
-  // {{4}} = total atual
-  // ------------------------------------------------------------
-
-  const metaPayload = {
-    messaging_product:
-      "whatsapp",
-
-    recipient_type:
-      "individual",
-
-    to:
-      phone,
-
-    type:
-      "template",
-
-    template: {
-      name:
-        templateName,
-
-      language: {
-        code:
-          templateLang,
-      },
-
-      components: [
-        {
-          type:
-            "body",
-
-          parameters: [
-            {
-              type: "text",
-              text: customerName,
-            },
-            {
-              type: "text",
-              text: commandLabel,
-            },
-            {
-              type: "text",
-              text: itemsText,
-            },
-            {
-              type: "text",
-              text: moneyBRL(total),
-            },
-          ],
-        },
-      ],
-    },
-  };
-
-  // ------------------------------------------------------------
-  // ENDPOINT META
-  // ------------------------------------------------------------
-
-  const endpoint =
+  const metaEndpoint =
     `https://graph.facebook.com/` +
     `${encodeURIComponent(graphVersion)}/` +
     `${encodeURIComponent(phoneNumberId)}/messages`;
 
-  try {
+  // ============================================================
+  // PROCESSAMENTO DOS BLOCOS
+  // ============================================================
 
-    const metaResponse =
-      await fetch(
-        endpoint,
-        {
-          method: "POST",
+  const messageIds: string[] = [];
+  const usedTemplates: string[] = [];
 
-          headers: {
-            Authorization:
-              `Bearer ${accessToken}`,
+  let messagesSent = 0;
+  let duplicateChunks = 0;
 
-            "Content-Type":
-              "application/json",
-          },
+  for (
+    let chunkIndex = 0;
+    chunkIndex < itemChunks.length;
+    chunkIndex++
+  ) {
 
-          body:
-            JSON.stringify(
-              metaPayload,
-            ),
-        },
+    const chunk =
+      itemChunks[chunkIndex];
+
+    const templateName =
+      templateForItemCount(
+        chunk.length,
       );
 
-    const metaData =
-      await metaResponse
-        .json()
-        .catch(() => ({}));
+    usedTemplates.push(
+      templateName,
+    );
+
+    /**
+     * Um lote comum usa o eventId original.
+     *
+     * Em lotes com mais de 5 itens usamos um
+     * eventId próprio para cada mensagem.
+     *
+     * Isso impede duplicações caso apenas um dos
+     * blocos falhe e o aplicativo faça retry.
+     */
+    const chunkEventId =
+      itemChunks.length === 1
+        ? eventId
+        : `${eventId}::${chunkIndex + 1}`;
+
+    const existing =
+      await readExisting(
+        chunkEventId,
+      );
 
     // ----------------------------------------------------------
-    // ERRO DA META
+    // BLOCO JÁ ENVIADO
     // ----------------------------------------------------------
 
-    if (!metaResponse.ok) {
+    if (existing?.status === "sent") {
+
+      duplicateChunks++;
+
+      if (existing.wa_message_id) {
+        messageIds.push(
+          existing.wa_message_id,
+        );
+      }
+
+      continue;
+    }
+
+    // ----------------------------------------------------------
+    // PARÂMETROS DINÂMICOS
+    //
+    // {{1}} cliente
+    // {{2}} comanda
+    // {{3...}} produtos
+    // último parâmetro = total acumulado
+    // ----------------------------------------------------------
+
+    const parameters: Array<{
+      type: string;
+      text: string;
+    }> = [
+      {
+        type: "text",
+        text: customerName,
+      },
+
+      {
+        type: "text",
+        text: commandLabel,
+      },
+    ];
+
+    for (const itemLine of chunk) {
+      parameters.push({
+        type: "text",
+        text: itemLine,
+      });
+    }
+
+    parameters.push({
+      type: "text",
+      text: moneyBRL(total),
+    });
+
+    // ----------------------------------------------------------
+    // LOG PROCESSING
+    // ----------------------------------------------------------
+
+    const now =
+      new Date().toISOString();
+
+    const logPayload = {
+      parentEventId:
+        eventId,
+
+      eventId:
+        chunkEventId,
+
+      commandId,
+
+      commandLabel,
+
+      customerName,
+
+      phone,
+
+      total,
+
+      items:
+        normalizedItems,
+
+      chunkItems:
+        chunk,
+
+      chunkIndex:
+        chunkIndex + 1,
+
+      chunkCount:
+        itemChunks.length,
+
+      template:
+        templateName,
+
+      edgeVersion:
+        EDGE_VERSION,
+
+      clientTimestamp:
+        safeText(
+          body?.clientTimestamp,
+          80,
+        ),
+    };
+
+    await upsertLog({
+      event_id:
+        chunkEventId,
+
+      command_id:
+        commandId,
+
+      phone,
+
+      customer_name:
+        customerName,
+
+      command_label:
+        commandLabel,
+
+      payload:
+        logPayload,
+
+      status:
+        "processing",
+
+      attempts:
+        Number(
+          existing?.attempts || 0,
+        ) + 1,
+
+      last_error:
+        null,
+
+      updated_at:
+        now,
+    });
+
+    // ----------------------------------------------------------
+    // META PAYLOAD
+    // ----------------------------------------------------------
+
+    const metaPayload = {
+      messaging_product:
+        "whatsapp",
+
+      recipient_type:
+        "individual",
+
+      to:
+        phone,
+
+      type:
+        "template",
+
+      template: {
+        name:
+          templateName,
+
+        language: {
+          code:
+            templateLang,
+        },
+
+        components: [
+          {
+            type:
+              "body",
+
+            parameters,
+          },
+        ],
+      },
+    };
+
+    // ----------------------------------------------------------
+    // ENVIO META
+    // ----------------------------------------------------------
+
+    try {
+
+      const metaResponse =
+        await fetch(
+          metaEndpoint,
+          {
+            method: "POST",
+
+            headers: {
+              Authorization:
+                `Bearer ${accessToken}`,
+
+              "Content-Type":
+                "application/json",
+            },
+
+            body:
+              JSON.stringify(
+                metaPayload,
+              ),
+          },
+        );
+
+      const metaData =
+        await metaResponse
+          .json()
+          .catch(() => ({}));
+
+      // --------------------------------------------------------
+      // ERRO META
+      // --------------------------------------------------------
+
+      if (!metaResponse.ok) {
+
+        const errorText =
+          safeText(
+            metaData?.error?.message ||
+            `Meta HTTP ${metaResponse.status}`,
+            500,
+          );
+
+        const errorDetails =
+          safeText(
+            metaData?.error
+              ?.error_data
+              ?.details ||
+            "",
+            800,
+          );
+
+        const metaCode =
+          metaData?.error?.code ||
+          null;
+
+        const metaSubcode =
+          metaData?.error
+            ?.error_subcode ||
+          null;
+
+        const fbtraceId =
+          safeText(
+            metaData?.error
+              ?.fbtrace_id ||
+            "",
+            200,
+          );
+
+        const combinedError =
+          errorDetails
+            ? `${errorText} | ${errorDetails}`
+            : errorText;
+
+        await upsertLog({
+          event_id:
+            chunkEventId,
+
+          command_id:
+            commandId,
+
+          phone,
+
+          customer_name:
+            customerName,
+
+          command_label:
+            commandLabel,
+
+          payload:
+            logPayload,
+
+          status:
+            "failed",
+
+          last_error:
+            combinedError,
+
+          updated_at:
+            new Date().toISOString(),
+        });
+
+        return json(502, {
+          ok: false,
+
+          error:
+            errorText,
+
+          details:
+            errorDetails || null,
+
+          metaCode,
+
+          metaSubcode,
+
+          fbtraceId:
+            fbtraceId || null,
+
+          failedChunk:
+            chunkIndex + 1,
+
+          chunkCount:
+            itemChunks.length,
+
+          template:
+            templateName,
+
+          edgeVersion:
+            EDGE_VERSION,
+        });
+      }
+
+      // --------------------------------------------------------
+      // SUCESSO
+      // --------------------------------------------------------
+
+      const waMessageId =
+        Array.isArray(
+          metaData?.messages,
+        ) &&
+        metaData.messages.length
+          ? safeText(
+              metaData
+                .messages[0]
+                ?.id,
+              300,
+            )
+          : "";
+
+      const messageStatus =
+        Array.isArray(
+          metaData?.messages,
+        ) &&
+        metaData.messages.length
+          ? safeText(
+              metaData
+                .messages[0]
+                ?.message_status,
+              100,
+            )
+          : "";
+
+      if (waMessageId) {
+        messageIds.push(
+          waMessageId,
+        );
+      }
+
+      messagesSent++;
+
+      await upsertLog({
+        event_id:
+          chunkEventId,
+
+        command_id:
+          commandId,
+
+        phone,
+
+        customer_name:
+          customerName,
+
+        command_label:
+          commandLabel,
+
+        payload: {
+          ...logPayload,
+
+          messageStatus,
+        },
+
+        status:
+          "sent",
+
+        wa_message_id:
+          waMessageId || null,
+
+        last_error:
+          null,
+
+        sent_at:
+          new Date().toISOString(),
+
+        updated_at:
+          new Date().toISOString(),
+      });
+
+    } catch (error) {
+
+      // --------------------------------------------------------
+      // REDE / EXCEÇÃO
+      // --------------------------------------------------------
 
       const errorText =
         safeText(
-          metaData?.error?.message ||
-          `Meta HTTP ${metaResponse.status}`,
+          error instanceof Error
+            ? error.message
+            : "Falha ao chamar a Meta.",
           500,
         );
 
-      const errorDetails =
-        safeText(
-          metaData?.error
-            ?.error_data
-            ?.details ||
-          "",
-          800,
-        );
-
-      const metaCode =
-        metaData?.error?.code ||
-        null;
-
-      const metaSubcode =
-        metaData?.error
-          ?.error_subcode ||
-        null;
-
-      const fbtraceId =
-        safeText(
-          metaData?.error
-            ?.fbtrace_id ||
-          "",
-          200,
-        );
-
-      const combinedError =
-        errorDetails
-          ? `${errorText} | ${errorDetails}`
-          : errorText;
-
       await upsertLog({
-        event_id: eventId,
-        command_id: commandId,
+        event_id:
+          chunkEventId,
+
+        command_id:
+          commandId,
+
         phone,
+
         customer_name:
           customerName,
+
         command_label:
           commandLabel,
+
         payload:
-          originalPayload,
+          logPayload,
+
         status:
           "failed",
+
         last_error:
-          combinedError,
+          errorText,
+
         updated_at:
           new Date().toISOString(),
       });
 
       return json(502, {
         ok: false,
+
         error:
           errorText,
-        details:
-          errorDetails || null,
-        metaCode,
-        metaSubcode,
-        fbtraceId:
-          fbtraceId || null,
+
+        failedChunk:
+          chunkIndex + 1,
+
+        chunkCount:
+          itemChunks.length,
+
+        template:
+          templateName,
+
+        edgeVersion:
+          EDGE_VERSION,
       });
     }
-
-    // ----------------------------------------------------------
-    // SUCESSO
-    // ----------------------------------------------------------
-
-    const waMessageId =
-      Array.isArray(
-        metaData?.messages,
-      ) &&
-      metaData.messages.length
-        ? safeText(
-            metaData
-              .messages[0]
-              ?.id,
-            300,
-          )
-        : null;
-
-    const messageStatus =
-      Array.isArray(
-        metaData?.messages,
-      ) &&
-      metaData.messages.length
-        ? safeText(
-            metaData
-              .messages[0]
-              ?.message_status,
-            100,
-          )
-        : null;
-
-    await upsertLog({
-      event_id: eventId,
-      command_id: commandId,
-      phone,
-      customer_name:
-        customerName,
-      command_label:
-        commandLabel,
-      payload:
-        originalPayload,
-      status:
-        "sent",
-      wa_message_id:
-        waMessageId,
-      last_error:
-        null,
-      sent_at:
-        new Date().toISOString(),
-      updated_at:
-        new Date().toISOString(),
-    });
-
-    return json(200, {
-      ok: true,
-      messageId:
-        waMessageId,
-      messageStatus:
-        messageStatus,
-      groupedItems:
-        normalizedItems.length,
-    });
-
-  } catch (error) {
-
-    // ----------------------------------------------------------
-    // FALHA DE REDE / EXCEÇÃO
-    // ----------------------------------------------------------
-
-    const errorText =
-      safeText(
-        error instanceof Error
-          ? error.message
-          : "Falha ao chamar a Meta.",
-        500,
-      );
-
-    await upsertLog({
-      event_id: eventId,
-      command_id: commandId,
-      phone,
-      customer_name:
-        customerName,
-      command_label:
-        commandLabel,
-      payload:
-        originalPayload,
-      status:
-        "failed",
-      last_error:
-        errorText,
-      updated_at:
-        new Date().toISOString(),
-    });
-
-    return json(502, {
-      ok: false,
-      error:
-        errorText,
-    });
   }
+
+  // ============================================================
+  // SUCESSO FINAL
+  // ============================================================
+
+  return json(200, {
+    ok: true,
+
+    /**
+     * Mantido por compatibilidade com o frontend atual.
+     */
+    messageId:
+      messageIds.length
+        ? messageIds[0]
+        : null,
+
+    messageStatus:
+      "accepted",
+
+    groupedItems:
+      normalizedItems.length,
+
+    messagesSent,
+
+    duplicateChunks,
+
+    chunkCount:
+      itemChunks.length,
+
+    templates:
+      usedTemplates,
+
+    edgeVersion:
+      EDGE_VERSION,
+  });
 });
