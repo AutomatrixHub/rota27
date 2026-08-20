@@ -4,7 +4,7 @@ Aplicativo mobile-first para controle rápido de comandas da **Rota 27 Bodega**.
 
 ## Estado atual
 
-**PWA v0.14 — candidata final preparada, ainda não publicada na `main`**
+**PWA v0.14 — produção**
 
 A v0.14 mantém a operação local/offline da v0.13 e acrescenta gestão local, histórico analítico, importação/exportação do cardápio e backup/restauração reforçados. A integração com WhatsApp continua validada ponta a ponta.
 
@@ -66,7 +66,7 @@ rota27/
 4. Pasta: `/(root)`
 5. **Save**
 
-A v0.14 só entra em produção quando o pacote final for mesclado na `main`.
+A v0.14 está publicada na `main` e é a versão atual de produção.
 
 ## Instalar no iPhone
 
@@ -112,4 +112,4 @@ A Edge Function usa autenticação própria pelo header `x-rota27-device-token`.
 
 ## Versão
 
-Versão preparada: **0.14**
+Versão atual: **0.14**
