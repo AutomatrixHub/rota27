@@ -1,10 +1,10 @@
-/* Rota 27 v0.15 DEV.2.1 — guardas de bootstrap e status operacional
- * Hotfix Android: remove loop de MutationObserver provocado por alterações de class/disabled feitas pela própria guarda.
+/* Rota 27 v0.15 DEV.3 — guardas de bootstrap e status operacional
+ * Hotfix Android preservado: remove loop de MutationObserver provocado por alterações de class/disabled feitas pela própria guarda.
  */
 (function(){
   'use strict';
   const CONFIG_KEY='rota27_sync_config_v1';
-  const VERSION='0.15-dev.2.1';
+  const VERSION='0.15-dev.3';
   let applying=false;
   let pendingTimer=null;
 
@@ -87,8 +87,8 @@
       }
 
       const badge=byId('v14VersionBadge');
-      if(badge&&badge.textContent!=='v0.15 DEV.2.1')badge.textContent='v0.15 DEV.2.1';
-      document.title='Rota 27 Bodega • Comandas v0.15 DEV.2.1';
+      if(badge&&badge.textContent!=='v0.15 DEV.3')badge.textContent='v0.15 DEV.3';
+      document.title='Rota 27 Bodega • Comandas v0.15 DEV.3';
       window.ROTA27_SYNC_DEV_VERSION=VERSION;
     } finally { applying=false; }
   }
@@ -108,7 +108,7 @@
     window.addEventListener('offline',()=>scheduleApply(0));
     window.addEventListener('storage',event=>{if(event.key===CONFIG_KEY)scheduleApply(0);});
     setInterval(()=>{if(byId('v15SyncWrap')?.classList.contains('open'))applyGuard();},1200);
-    console.info('[Rota27] proteção de bootstrap carregada (v0.15 DEV.2.1).');
+    console.info('[Rota27] proteção de bootstrap carregada (v0.15 DEV.3).');
   }
 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
