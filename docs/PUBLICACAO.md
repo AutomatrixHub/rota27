@@ -8,9 +8,9 @@ Repositório atual:
 
 ## 2. Branch de produção
 
-A produção continua sendo publicada a partir da **branch `main`**, pasta `/(root)`.
+A produção é publicada a partir da **branch `main`**, pasta `/(root)`.
 
-A v0.14 deve ser validada na branch `release/v0.14-final` antes do merge.
+A **v0.14 está publicada na `main`** e é a versão atual de produção.
 
 ## 3. Estrutura da v0.14
 
@@ -41,13 +41,13 @@ Arquivos essenciais para a PWA final:
 
 ## 5. Atualização dos aparelhos existentes
 
-O Service Worker final usa:
+O Service Worker da produção usa:
 
 `rota27-comandas-v0.14`
 
 Quem já possui a PWA instalada não precisa reinstalar.
 
-Após o merge/publicação:
+Após a publicação:
 
 1. abrir o Rota 27 conectado à internet;
 2. aguardar o carregamento;
@@ -56,24 +56,18 @@ Após o merge/publicação:
 
 Não limpar dados do Safari nem remover a PWA, pois as comandas e configurações operacionais são locais.
 
-## 6. Teste obrigatório antes do merge
+## 6. Smoke test pós-publicação
 
-Na branch `release/v0.14-final`, servir a raiz por HTTP e testar **a entrada real de produção**, não `v014-rc.html`:
+Após qualquer promoção para a `main`, abrir a URL pública real do GitHub Pages e confirmar:
 
-`http://localhost:3000/`
-
-Confirmar:
-
-- badge `v0.14`;
+- badge da versão atual;
 - comandas existentes preservadas;
 - Histórico & resultados;
 - Cardápio e importação;
 - Backup / Restaurar;
-- configuração WhatsApp preservada no mesmo origin `localhost:3000`;
-- pelo menos um lançamento simples sem erro de console;
-- recarregamento da página funcionando.
-
-Depois desse smoke test final, o pacote pode ser aprovado para merge na `main`.
+- configuração WhatsApp preservada no aparelho;
+- pelo menos um lançamento simples sem erro;
+- recarregamento e segunda abertura funcionando.
 
 ## 7. Backend WhatsApp
 
