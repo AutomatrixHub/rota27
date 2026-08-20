@@ -16,6 +16,8 @@
   let restoring=false;
 
   function byId(id){return document.getElementById(id);}
+  function appState(){try{return typeof state!=='undefined'?state:null;}catch{return null;}}
+  function currentActiveCommandId(){try{return typeof activeCommandId!=='undefined'?activeCommandId:'';}catch{return '';}}
   function norm(value){
     return String(value??'')
       .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
@@ -30,9 +32,9 @@
   function clearUi(){try{localStorage.removeItem(UI_KEY);}catch{}}
 
   function findDuplicateOpenCommand(table,customer){
-    const t=norm(table), c=norm(customer);
-    if(!t||!Array.isArray(window.state?.commands))return null;
-    return window.state.commands.find(cmd=>norm(cmd?.table)===t && norm(cmd?.customer)===c)||null;
+    const t=norm(table), c=norm(customer), s=appState();
+    if(!t||!Array.isArray(s?.commands))return null;
+    return s.commands.find(cmd=>norm(cmd?.table)===t && norm(cmd?.customer)===c)||null;
   }
 
   function patchCreateCommand(){
@@ -69,7 +71,7 @@
       window.showScreen=function(name){
         const result=baseShowScreen.apply(this,arguments);
         if(!restoring){
-          if(name==='sale')saveUi('sale',window.activeCommandId||'');
+          if(name==='sale')saveUi('sale',currentActiveCommandId());
           else saveUi(name,'');
         }
         return result;
@@ -79,9 +81,9 @@
   }
 
   function restoreOperationalContext(){
-    const saved=readJson(UI_KEY);
+    const saved=readJson(UI_KEY), s=appState();
     if(saved.route!=='sale'||!saved.commandId)return;
-    const exists=Array.isArray(window.state?.commands)&&window.state.commands.some(c=>String(c?.id)===String(saved.commandId));
+    const exists=Array.isArray(s?.commands)&&s.commands.some(c=>String(c?.id)===String(saved.commandId));
     if(!exists){clearUi();return;}
     restoring=true;
     try{window.openCommand?.(saved.commandId);}finally{restoring=false;}
