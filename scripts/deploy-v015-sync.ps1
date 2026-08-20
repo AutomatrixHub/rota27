@@ -6,7 +6,7 @@ $FunctionName = 'rota27-sync'
 
 function Assert-NativeSuccess([string]$Step) {
     if ($LASTEXITCODE -ne 0) {
-        throw "$Step falhou (exit code $LASTEXITCODE). Deploy interrompido com segurança."
+        throw "$Step falhou (exit code $LASTEXITCODE). Deploy interrompido com seguranca."
     }
 }
 
@@ -21,28 +21,42 @@ if ($branch -ne $ExpectedBranch) {
     throw "Branch incorreta. Esperado: $ExpectedBranch | Atual: $branch"
 }
 
-Write-Host '1/6 - Verificando Supabase CLI...' -ForegroundColor Yellow
+Write-Host '1/7 - Verificando Supabase CLI...' -ForegroundColor Yellow
 npx --yes supabase@latest --version
 Assert-NativeSuccess 'Verificacao da Supabase CLI'
 
 Write-Host ''
-Write-Host '2/6 - Confirmando que a conta autenticada enxerga o projeto...' -ForegroundColor Yellow
+Write-Host '2/7 - Confirmando que a conta autenticada enxerga o projeto...' -ForegroundColor Yellow
 npx --yes supabase@latest projects list
 Assert-NativeSuccess 'Listagem de projetos Supabase'
 
 Write-Host ''
-Write-Host '3/6 - Vinculando ao projeto remoto...' -ForegroundColor Yellow
+Write-Host '3/7 - Limpando metadados temporarios locais da Supabase CLI...' -ForegroundColor Yellow
+$tempPath = Join-Path (Get-Location) 'supabase\.temp'
+if (Test-Path -LiteralPath $tempPath) {
+    Write-Host "Removendo pasta temporaria obsoleta: $tempPath" -ForegroundColor DarkYellow
+    Remove-Item -LiteralPath $tempPath -Recurse -Force
+    if (Test-Path -LiteralPath $tempPath) {
+        throw 'Nao foi possivel remover supabase\.temp. Feche processos que possam estar usando a pasta e tente novamente.'
+    }
+} else {
+    Write-Host 'Nenhuma pasta supabase\.temp anterior encontrada.' -ForegroundColor DarkGray
+}
+Write-Host 'Arquivos de migrations e Edge Functions nao sao alterados por esta limpeza.' -ForegroundColor DarkGray
+
+Write-Host ''
+Write-Host '4/7 - Vinculando ao projeto remoto...' -ForegroundColor Yellow
 Write-Host 'Se a CLI pedir autenticacao, conclua o login no fluxo oficial do Supabase.'
 npx --yes supabase@latest link --project-ref $ProjectRef
 Assert-NativeSuccess 'supabase link'
 
 Write-Host ''
-Write-Host '4/6 - Conferindo historico de migrations...' -ForegroundColor Yellow
+Write-Host '5/7 - Conferindo historico de migrations...' -ForegroundColor Yellow
 npx --yes supabase@latest migration list
 Assert-NativeSuccess 'supabase migration list'
 
 Write-Host ''
-Write-Host '5/6 - Dry-run: NENHUMA alteracao sera aplicada nesta etapa.' -ForegroundColor Yellow
+Write-Host '6/7 - Dry-run: NENHUMA alteracao sera aplicada nesta etapa.' -ForegroundColor Yellow
 npx --yes supabase@latest db push --dry-run
 Assert-NativeSuccess 'supabase db push --dry-run'
 
@@ -60,7 +74,7 @@ npx --yes supabase@latest db push
 Assert-NativeSuccess 'supabase db push'
 
 Write-Host ''
-Write-Host '6/6 - Publicando Edge Function com Verify JWT OFF...' -ForegroundColor Yellow
+Write-Host '7/7 - Publicando Edge Function com Verify JWT OFF...' -ForegroundColor Yellow
 npx --yes supabase@latest functions deploy $FunctionName --project-ref $ProjectRef --no-verify-jwt
 Assert-NativeSuccess 'supabase functions deploy'
 
