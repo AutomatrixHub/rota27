@@ -21,8 +21,8 @@
         if(!res.ok)throw new Error('Não foi possível carregar a base do aplicativo');
         let html=await res.text();
         html=html.replace(/<title>[\s\S]*?<\/title>/i,'<title>Rota 27 Bodega • Comandas v0.15 DEV.2.1</title>');
-        html=html.replace('</head>','<link rel="stylesheet" href="./assets/v014.css" /><link rel="stylesheet" href="./assets/v014-dev3.css" /><link rel="stylesheet" href="./assets/v015.css" /><link rel="stylesheet" href="./assets/v015-dev2.css" /></head>');
-        html=html.replace('</body>','<script src="./assets/v014.js"><\/script><script src="./assets/v014-dev3.js"><\/script><script src="./assets/v014-rc2-category-fix.js"><\/script><script src="./assets/v014-final.js"><\/script><script src="./assets/v015-sync.js"><\/script><script src="./assets/v015-dev2.js"><\/script></body>');
+        html=html.replace('</head>','<link rel="stylesheet" href="./assets/v014.css" /><link rel="stylesheet" href="./assets/v014-dev3.css" /><link rel="stylesheet" href="./assets/v015.css" /><link rel="stylesheet" href="./assets/v015-dev2.css?v=021" /></head>');
+        html=html.replace('</body>','<script src="./assets/v014.js"><\/script><script src="./assets/v014-dev3.js"><\/script><script src="./assets/v014-rc2-category-fix.js"><\/script><script src="./assets/v014-final.js"><\/script><script src="./assets/v015-sync.js"><\/script><script src="./assets/v015-dev2.js?v=021"><\/script></body>');
         document.open();document.write(html);document.close();
       }catch(err){
         status.className='error';status.textContent='Falha ao carregar a v0.15 DEV.2.1: '+(err&&err.message?err.message:'erro desconhecido')+'. Execute por um servidor HTTP local.';
