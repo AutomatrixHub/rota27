@@ -4,11 +4,12 @@ Aplicativo mobile-first para controle rápido de comandas da **Rota 27 Bodega**.
 
 ## Estado atual
 
-**PWA v0.14 — produção**
+**Produção: PWA v0.14**  
+**Desenvolvimento: v0.15-dev.1 — sincronização multidispositivo**
 
-A v0.14 mantém a operação local/offline da v0.13 e acrescenta gestão local, histórico analítico, importação/exportação do cardápio e backup/restauração reforçados. A integração com WhatsApp continua validada ponta a ponta.
+A `main` continua sendo a produção estável v0.14. A branch `feature/v0.15-multidispositivo` adiciona a primeira fundação para compartilhar comandas, histórico e cardápio entre aparelhos mantendo o funcionamento offline-first.
 
-## Principais recursos
+## Principais recursos da produção v0.14
 
 - abertura de comanda por mesa/local/cliente;
 - lançamento rápido de produtos;
@@ -35,14 +36,36 @@ A v0.14 mantém a operação local/offline da v0.13 e acrescenta gestão local, 
 - templates dinâmicos de WhatsApp para 1 a 5 itens por mensagem;
 - divisão automática em múltiplos blocos quando houver mais de 5 itens agrupados.
 
-## Estrutura da v0.14
+## v0.15-dev.1 — multidispositivo
 
-A entrada de produção é `index.html`. A base visual/operacional congelada da v0.13 foi preservada em `base-v013.html`, e a v0.14 é aplicada em camadas versionadas.
+A nova camada usa uma outbox local e um log remoto idempotente no Supabase. Cada aparelho continua gravando primeiro no `localStorage`; quando há conexão, publica os eventos pendentes e busca os eventos que ainda não recebeu.
+
+Recursos já preparados na DEV.1:
+
+- identificação persistente por aparelho;
+- configuração separada da Edge Function `rota27-sync`;
+- reaproveitamento opcional do token já configurado no WhatsApp;
+- publicação explícita do primeiro aparelho como base compartilhada;
+- adoção segura da base em aparelhos novos, com backup local prévio;
+- fila offline de alterações;
+- sincronização automática ao voltar online/primeiro plano e em intervalos curtos;
+- eventos aditivos de quantidade para reduzir perda de lançamentos simultâneos;
+- sincronização de comandas, histórico, cardápio e categorias;
+- registro dos aparelhos ativos;
+- preservação de conflitos quando chega alteração para comanda já fechada;
+- fila do WhatsApp mantida local para evitar duplicidade de mensagens.
+
+Documentação: `docs/V0.15-MULTIDEVICE.md`.
+
+## Estrutura
+
+A entrada de produção v0.14 continua em `index.html`. A v0.15 é testada apenas pelo preview dedicado.
 
 ```text
 rota27/
-├── index.html                  # entrada de produção v0.14
+├── index.html                  # produção v0.14
 ├── base-v013.html              # base estável preservada
+├── v015-preview.html           # preview v0.15-dev.1
 ├── manifest.webmanifest
 ├── sw.js
 ├── VERSION
@@ -52,21 +75,30 @@ rota27/
 │   ├── v014-dev3.css
 │   ├── v014-dev3.js
 │   ├── v014-rc2-category-fix.js
-│   └── v014-final.js
-├── icons/
+│   ├── v014-final.js
+│   ├── v015.css
+│   └── v015-sync.js
 ├── docs/
+│   └── V0.15-MULTIDEVICE.md
 └── supabase/
+    ├── functions/
+    │   ├── rota27-whatsapp/
+    │   └── rota27-sync/
+    └── migrations/
+        ├── 20260817_create_whatsapp_message_log.sql
+        └── 20260819_create_rota27_sync.sql
 ```
 
 ## GitHub Pages
+
+A produção continua publicada por:
 
 1. **Settings → Pages**
 2. **Build and deployment → Deploy from a branch**
 3. Branch: `main`
 4. Pasta: `/(root)`
-5. **Save**
 
-A v0.14 está publicada na `main` e é a versão atual de produção.
+**Não publicar a v0.15 na `main` antes da validação multidispositivo.**
 
 ## Instalar no iPhone
 
@@ -76,19 +108,17 @@ A v0.14 está publicada na `main` e é a versão atual de produção.
 4. Ative **Abrir como App da Web**, se a opção aparecer.
 5. Toque em **Adicionar**.
 
-Quem já possui a PWA instalada não precisa reinstalar. O Service Worker da v0.14 usa o cache `rota27-comandas-v0.14`; após a publicação, o aparelho deve atualizar ao abrir online e reabrir o app.
+Quem já possui a PWA v0.14 instalada não precisa reinstalar. O Service Worker de produção continua usando `rota27-comandas-v0.14` até a futura promoção da v0.15.
 
 ## Dados locais
 
-Comandas, cardápio, categorias, histórico e fila de envio do WhatsApp ficam armazenados localmente no dispositivo.
+Comandas, cardápio, categorias, histórico e fila de envio do WhatsApp continuam armazenados localmente no dispositivo.
 
-O backup JSON da v0.14 não inclui o token secreto do dispositivo. A restauração preserva o token local atual.
-
-**Ainda não há sincronização automática das comandas entre celulares.**
+Na v0.15, a configuração/fila de sincronização usa a chave local `rota27_sync_config_v1`. A fila do WhatsApp não é compartilhada entre aparelhos.
 
 ## WhatsApp Cloud API
 
-Arquitetura validada:
+Arquitetura validada de produção:
 
 `Rota 27 PWA/APK → Supabase Edge Function → WhatsApp Cloud API`
 
@@ -104,12 +134,13 @@ Templates em produção:
 
 Quando um lote contém mais de 5 itens, a Edge Function divide o envio em blocos de até 5 itens, preservando idempotência por bloco.
 
-Credenciais reais **nunca** devem ser commitadas no GitHub. Tokens da Meta e tokens de dispositivo permanecem somente nos Secrets do Supabase e na configuração local autorizada do aparelho.
+Credenciais reais **nunca** devem ser commitadas no GitHub. Tokens permanecem somente nos Secrets do Supabase e na configuração local autorizada do aparelho.
 
 ## Segurança
 
-A Edge Function usa autenticação própria pelo header `x-rota27-device-token`. Por isso, a função é implantada com `verify_jwt=false`, enquanto o acesso continua protegido pelo token do dispositivo e os Secrets permanecem no Supabase.
+As Edge Functions usam autenticação própria pelo header `x-rota27-device-token` e são implantadas com `verify_jwt=false`. As tabelas de backend permanecem com RLS habilitado e sem policies públicas; as funções usam service role no servidor.
 
 ## Versão
 
-Versão atual: **0.14**
+Produção: **0.14**  
+Branch atual: **0.15-dev.1**
