@@ -151,6 +151,8 @@
     document.querySelectorAll('.screen').forEach(el=>el.classList.toggle('active',el===screen));
     document.querySelectorAll('.navbtn').forEach(el=>el.classList.toggle('active',el===nav));
     hideSaleChrome();
+    const fab=byId('fabNew');
+    if(fab)fab.style.display='block';
     renderPanel();
     window.scrollTo({top:0,behavior:'auto'});
   }
