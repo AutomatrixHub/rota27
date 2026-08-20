@@ -18,7 +18,7 @@
     (async function(){
       const status=document.getElementById('status');
       try{
-        const res=await fetch('./base-v013.html?base=v013',{cache:'no-store'});
+        const res=await fetch('./base-v013.html',{cache:'no-store'});
         if(!res.ok)throw new Error('Não foi possível carregar a base do aplicativo');
         let html=await res.text();
         html=html.replace(/<title>[\s\S]*?<\/title>/i,'<title>Rota 27 Bodega • Comandas v0.14</title>');
