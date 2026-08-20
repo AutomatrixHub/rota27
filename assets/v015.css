@@ -1,0 +1,23 @@
+/* Rota 27 v0.15 DEV.1 — sincronização multidispositivo */
+.v15-sync-card{display:flex;align-items:center;justify-content:space-between;gap:12px;background:#eef3ee;border:1px solid #c9d8cc;border-radius:16px;padding:12px 13px;margin:0 0 12px}
+.v15-sync-card strong{display:block;font-size:14px}
+.v15-sync-card small{display:block;color:var(--muted);font-size:11px;margin-top:3px;line-height:1.35}
+.v15-sync-card button{border:0;background:#315f49;color:#fff;border-radius:12px;padding:9px 12px;font-weight:900;white-space:nowrap}
+.v15-sync-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#a69b8c;margin-right:5px}
+.v15-sync-dot.ready{background:#2e8a5d}.v15-sync-dot.wait{background:#d99a2b}.v15-sync-dot.error{background:#b6453b}
+.v15-sync-sheet-note{background:#f7ecdb;border:1px solid #e4cfaa;border-radius:14px;padding:11px 12px;margin:0 0 13px;color:var(--muted);font-size:11px;line-height:1.45}
+.v15-sync-sheet-note strong{color:var(--ink)}
+.v15-sync-state{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:10px 0 13px}
+.v15-sync-state>div{background:#f5ede1;border:1px solid #e1d1bc;border-radius:12px;padding:10px;min-width:0}
+.v15-sync-state small{display:block;color:var(--muted);font-size:9px}.v15-sync-state b{display:block;margin-top:3px;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.v15-sync-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.v15-sync-actions button{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:13px;padding:11px 10px;font-weight:850;font-size:11px}
+.v15-sync-actions button.primary{background:var(--brand);color:#fff;border-color:var(--brand)}
+.v15-sync-actions button.danger{background:#fff1ed!important;color:var(--danger)!important;border-color:#e6bdb3!important}
+.v15-sync-actions button:disabled{opacity:.45;cursor:not-allowed}
+.v15-sync-status{margin:10px 0 0;padding:10px 11px;border-radius:12px;background:#f4eee4;border:1px solid #e2d4c3;color:var(--muted);font-size:11px;line-height:1.4}
+.v15-sync-status.ok{background:#eaf4ed;border-color:#c6decf;color:#2f684a}.v15-sync-status.warn{background:#fff3d6;border-color:#ead18f;color:#775b19}.v15-sync-status.error{background:#fae9e5;border-color:#e4b7ad;color:#8a392f}
+.v15-device-list{display:grid;gap:7px;margin-top:10px}.v15-device{display:flex;justify-content:space-between;gap:10px;align-items:center;background:#f9f4ec;border:1px solid #e6d9c8;border-radius:11px;padding:9px 10px}.v15-device span{min-width:0}.v15-device b{font-size:11px;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.v15-device small{font-size:9px;color:var(--muted)}
+.v15-sync-pending{display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:4px 7px;background:#fff0c7;color:#76580f;font-size:9px;font-weight:900;margin-left:6px}
+.v15-sync-conflict{margin-top:10px;border:1px solid #e4b7ad;background:#fff1ed;border-radius:12px;padding:10px}.v15-sync-conflict strong{font-size:11px;color:#8a392f}.v15-sync-conflict small{display:block;margin-top:4px;color:#805b54;font-size:9px;line-height:1.4}
+@media(max-width:520px){.v15-sync-state{grid-template-columns:1fr 1fr}.v15-sync-actions{grid-template-columns:1fr}.v15-sync-card{align-items:flex-start}.v15-sync-card button{flex:0 0 auto}}
