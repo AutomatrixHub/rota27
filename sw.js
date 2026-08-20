@@ -1,4 +1,4 @@
-const CACHE_NAME = 'rota27-comandas-v0.14-rc.1';
+const CACHE_NAME = 'rota27-comandas-v0.14-rc.2';
 const APP_SHELL = [
   './',
   './index.html',
@@ -8,7 +8,8 @@ const APP_SHELL = [
   './assets/v014.js',
   './assets/v014-dev3.css',
   './assets/v014-dev3.js',
-  './assets/v014-rc1.js',
+  './assets/v014-rc2-category-fix.js',
+  './assets/v014-rc2.js',
   './manifest.webmanifest',
   './icons/apple-touch-icon.png',
   './icons/icon-192.png',
