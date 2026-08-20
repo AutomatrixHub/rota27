@@ -1,0 +1,12 @@
+/* Rota 27 v0.15 DEV.2 — proteção e clareza da sincronização */
+.v15d2-guard{margin:12px 0;padding:11px 12px;border:1px solid #dccbb8;border-radius:14px;background:#f7ecdb;color:var(--ink);font-size:11px;line-height:1.4}
+.v15d2-guard strong{display:block;font-size:12px;margin-bottom:3px}
+.v15d2-guard.ready{background:#eaf4ee;border-color:#bfd9c9;color:#285e43}
+.v15d2-guard.adopt{background:#fff3d7;border-color:#e4c675;color:#715616}
+.v15d2-guard.publish{background:#f4eadf;border-color:#d9bea0;color:#6f4f35}
+.v15d2-runtime{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:8px 0 12px;padding:9px 11px;border-radius:12px;background:#f4eee5;border:1px solid #e1d3c1;font-size:10px;color:var(--muted)}
+.v15d2-runtime b{color:var(--ink)}
+.v15d2-net{display:inline-flex;align-items:center;gap:6px;font-weight:900}
+.v15d2-net:before{content:"";width:8px;height:8px;border-radius:50%;background:#3e7c59}
+.v15d2-net.off:before{background:#b6453b}
+#v15AdoptBtn.v15d2-focus,#v15PublishBtn.v15d2-focus{box-shadow:0 0 0 3px rgba(226,180,63,.28),0 8px 18px rgba(64,43,20,.10)}
