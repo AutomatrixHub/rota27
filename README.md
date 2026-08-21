@@ -4,11 +4,12 @@ Aplicativo mobile-first para controle rápido de comandas da **Rota 27 Bodega**.
 
 ## Estado atual
 
-**PWA v0.14 — produção**
+**Produção: PWA v0.14**  
+**Candidata final: v0.15 — multidispositivo offline-first + Painel + consulta rápida de itens**
 
-A v0.14 mantém a operação local/offline da v0.13 e acrescenta gestão local, histórico analítico, importação/exportação do cardápio e backup/restauração reforçados. A integração com WhatsApp continua validada ponta a ponta.
+A `main` continua sendo a produção estável v0.14. A branch `feature/v0.15-multidispositivo` contém o artefato final candidato da v0.15 e **não deve ser mesclada antes da aprovação explícita do gate de produção**.
 
-## Principais recursos
+## Principais recursos da produção v0.14
 
 - abertura de comanda por mesa/local/cliente;
 - lançamento rápido de produtos;
@@ -35,56 +36,68 @@ A v0.14 mantém a operação local/offline da v0.13 e acrescenta gestão local, 
 - templates dinâmicos de WhatsApp para 1 a 5 itens por mensagem;
 - divisão automática em múltiplos blocos quando houver mais de 5 itens agrupados.
 
-## Estrutura da v0.14
+## v0.15 — candidata final
 
-A entrada de produção é `index.html`. A base visual/operacional congelada da v0.13 foi preservada em `base-v013.html`, e a v0.14 é aplicada em camadas versionadas.
+A v0.15 mantém a operação offline-first e compartilha comandas, histórico, cardápio e categorias entre aparelhos por meio de uma outbox local e um log remoto idempotente no Supabase.
 
-```text
-rota27/
-├── index.html                  # entrada de produção v0.14
-├── base-v013.html              # base estável preservada
-├── manifest.webmanifest
-├── sw.js
-├── VERSION
-├── assets/
-│   ├── v014.css
-│   ├── v014.js
-│   ├── v014-dev3.css
-│   ├── v014-dev3.js
-│   ├── v014-rc2-category-fix.js
-│   └── v014-final.js
-├── icons/
-├── docs/
-└── supabase/
+Recursos consolidados:
+
+- identificação persistente por aparelho;
+- publicação explícita do primeiro aparelho como base compartilhada;
+- adoção segura da base em aparelhos novos, com backup local prévio;
+- fila offline de alterações;
+- sincronização automática ao voltar online/primeiro plano e em intervalos curtos;
+- eventos aditivos de quantidade para preservar lançamentos concorrentes;
+- sincronização de comandas, histórico, cardápio e categorias;
+- preservação de conflitos quando chega alteração para comanda já fechada;
+- fila do WhatsApp mantida local para evitar duplicidade de mensagens;
+- bottom bar `Comandas | Painel | Cardápio | Histórico`;
+- FAB `+` como ação única de Nova comanda;
+- Painel operacional com informações de uso rápido;
+- proteção contra comanda duplicada acidental;
+- retomada de comanda ativa após recarga;
+- avisos técnicos somente por exceção;
+- nomes completos Mesa 1–5 e Parklet 1–6;
+- consulta rápida **Itens da comanda** pela barra inferior;
+- chip **Ver itens** com ícone, microanimação e estado ativo.
+
+Durante o gate final foi corrigido um detalhe exclusivamente visual: a camada RC.2.1 ainda reaplicava seu selo de teste em ciclos de status. `assets/v015-final.js` agora é a autoridade visual no `index.html` de produção e mantém o selo/título em **v0.15** sem alterar a lógica operacional.
+
+Documentação principal:
+
+- `docs/V0.15-MULTIDEVICE.md`
+- `docs/V0.15-RC2-OPS.md`
+- `docs/V0.15-RC3-ITENS.md`
+- `docs/V0.15-PRODUCTION-GATE.md`
+
+## Desenvolvimento local
+
+```powershell
+cd "C:\Users\marco\OneDrive\Documentos\Rota27\mvp\Rota27-comandas-git"
+npx --yes http-server . -p 3000 -c-1
+```
+
+Em outra janela:
+
+```powershell
+Start-Process "http://localhost:3000/index.html?release=015"
 ```
 
 ## GitHub Pages
 
-1. **Settings → Pages**
-2. **Build and deployment → Deploy from a branch**
-3. Branch: `main`
-4. Pasta: `/(root)`
-5. **Save**
+A produção continua publicada a partir de `main`/`/(root)`.
 
-A v0.14 está publicada na `main` e é a versão atual de produção.
+**Não publicar a v0.15 na `main` antes da validação final e aprovação explícita.**
 
-## Instalar no iPhone
+## Instalar no iPhone / Android
 
-1. Abra o endereço HTTPS no **Safari**.
-2. Toque em **Compartilhar**.
-3. Escolha **Adicionar à Tela de Início**.
-4. Ative **Abrir como App da Web**, se a opção aparecer.
-5. Toque em **Adicionar**.
-
-Quem já possui a PWA instalada não precisa reinstalar. O Service Worker da v0.14 usa o cache `rota27-comandas-v0.14`; após a publicação, o aparelho deve atualizar ao abrir online e reabrir o app.
+Quem já possui a PWA v0.14 instalada não deve limpar dados do site nem reinstalar durante os testes. A atualização final foi preparada para preservar o `localStorage` existente.
 
 ## Dados locais
 
-Comandas, cardápio, categorias, histórico e fila de envio do WhatsApp ficam armazenados localmente no dispositivo.
+Comandas, cardápio, categorias, histórico e fila de envio do WhatsApp continuam armazenados localmente no dispositivo.
 
-O backup JSON da v0.14 não inclui o token secreto do dispositivo. A restauração preserva o token local atual.
-
-**Ainda não há sincronização automática das comandas entre celulares.**
+Na v0.15, a configuração/fila de sincronização usa a chave local `rota27_sync_config_v1`. A fila do WhatsApp não é compartilhada entre aparelhos.
 
 ## WhatsApp Cloud API
 
@@ -94,22 +107,13 @@ Arquitetura validada:
 
 Os lançamentos são agrupados por aproximadamente **8 segundos** antes do envio. A Edge Function escolhe automaticamente o template aprovado adequado à quantidade de itens do lote.
 
-Templates em produção:
-
-- `atualizacao_comanda_rota27_v3_1` — 1 item;
-- `atualizacao_comanda_rota27_v3_2` — 2 itens;
-- `atualizacao_comanda_rota27_v3_3` — 3 itens;
-- `atualizacao_comanda_rota27_v3_4` — 4 itens;
-- `atualizacao_comanda_rota27_v3` — 5 itens.
-
-Quando um lote contém mais de 5 itens, a Edge Function divide o envio em blocos de até 5 itens, preservando idempotência por bloco.
-
-Credenciais reais **nunca** devem ser commitadas no GitHub. Tokens da Meta e tokens de dispositivo permanecem somente nos Secrets do Supabase e na configuração local autorizada do aparelho.
+Credenciais reais **nunca** devem ser commitadas no GitHub. Tokens permanecem somente nos Secrets do Supabase e na configuração local autorizada do aparelho.
 
 ## Segurança
 
-A Edge Function usa autenticação própria pelo header `x-rota27-device-token`. Por isso, a função é implantada com `verify_jwt=false`, enquanto o acesso continua protegido pelo token do dispositivo e os Secrets permanecem no Supabase.
+As Edge Functions usam autenticação própria pelo header `x-rota27-device-token` e são implantadas com `verify_jwt=false`. As tabelas de backend permanecem com RLS habilitado e sem policies públicas; as funções usam service role no servidor.
 
 ## Versão
 
-Versão atual: **0.14**
+Produção: **0.14**  
+Branch candidata: **0.15**
