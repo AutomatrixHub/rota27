@@ -1,12 +1,13 @@
-/* Rota 27 v0.15 RC.2 — melhorias operacionais de alto retorno
+/* Rota 27 v0.15 RC.2.1 — melhorias operacionais de alto retorno
  * 1) evita comandas duplicadas acidentais;
  * 2) retoma a comanda ativa após recarga/reabertura;
  * 3) mantém sync/offline invisível quando saudável e avisa somente em exceções.
+ * Hotfix RC.2.1: usa sinal explícito online/offline e reconhece falha de nuvem sem depender apenas de navigator.onLine.
  */
 (function(){
   'use strict';
 
-  const VERSION='0.15-rc.2';
+  const VERSION='0.15-rc.2.1';
   const UI_KEY='rota27_ui_resume_v015';
   const SYNC_KEY='rota27_sync_config_v1';
   let baseCreateCommand=null;
@@ -14,6 +15,7 @@
   let baseShowScreen=null;
   let statusTimer=null;
   let restoring=false;
+  let browserOffline=!navigator.onLine;
 
   function byId(id){return document.getElementById(id);}
   function appState(){try{return typeof state!=='undefined'?state:null;}catch{return null;}}
@@ -109,6 +111,10 @@
     setTimeout(()=>byId('v15SyncConfigBtn')?.click(),80);
   }
 
+  function looksLikeCloudConnectionError(message){
+    return /(fetch|network|rede|conex|offline|internet|tempo esgotado|failed|load|abort|timeout|conectar)/i.test(String(message||''));
+  }
+
   function renderExceptionBanner(){
     const banner=ensureExceptionBanner();
     if(!banner)return;
@@ -117,12 +123,13 @@
     const conflicts=Array.isArray(cfg.conflicts)?cfg.conflicts.length:0;
     const initialized=cfg.enabled===true&&cfg.initialized===true;
     const lastError=String(cfg.lastError||'').trim();
+    const cloudUnavailable=initialized&&lastError&&looksLikeCloudConnectionError(lastError);
     const stalePending=pending>0 && (!Number(cfg.lastSyncAt)||Date.now()-Number(cfg.lastSyncAt)>30000);
 
     let kind='',title='',text='',action='';
-    if(!navigator.onLine){
+    if(browserOffline||cloudUnavailable){
       kind='offline';
-      title='Sem internet';
+      title='Sem conexão com a nuvem';
       text='Continue trabalhando. Os lançamentos ficam salvos neste aparelho e serão enviados automaticamente quando a conexão voltar.';
     }else if(conflicts>0){
       kind='danger';
@@ -156,8 +163,8 @@
 
   function applyVersion(){
     const badge=byId('v14VersionBadge');
-    if(badge)badge.textContent='v0.15 RC.2';
-    document.title='Rota 27 Bodega • Comandas v0.15 RC.2';
+    if(badge)badge.textContent='v0.15 RC.2.1';
+    document.title='Rota 27 Bodega • Comandas v0.15 RC.2.1';
     window.ROTA27_SYNC_DEV_VERSION=VERSION;
   }
 
@@ -168,11 +175,11 @@
     renderExceptionBanner();
     setTimeout(restoreOperationalContext,120);
     clearInterval(statusTimer);
-    statusTimer=setInterval(renderExceptionBanner,3000);
-    window.addEventListener('online',renderExceptionBanner);
-    window.addEventListener('offline',renderExceptionBanner);
+    statusTimer=setInterval(()=>{applyVersion();renderExceptionBanner();},3000);
+    window.addEventListener('online',()=>{browserOffline=false;applyVersion();renderExceptionBanner();});
+    window.addEventListener('offline',()=>{browserOffline=true;applyVersion();renderExceptionBanner();});
     window.addEventListener('storage',event=>{if(event.key===SYNC_KEY)renderExceptionBanner();});
-    console.info('[Rota27] melhorias operacionais carregadas (v0.15 RC.2).');
+    console.info('[Rota27] melhorias operacionais carregadas (v0.15 RC.2.1).');
   }
 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
