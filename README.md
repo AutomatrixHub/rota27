@@ -4,100 +4,89 @@ Aplicativo mobile-first para controle rápido de comandas da **Rota 27 Bodega**.
 
 ## Estado atual
 
-**Produção: PWA v0.14**  
-**Candidata final: v0.15 — multidispositivo offline-first + Painel + consulta rápida de itens**
+**Produção: PWA v0.15 — multidispositivo offline-first + Painel + consulta rápida de itens**
 
-A `main` continua sendo a produção estável v0.14. A branch `feature/v0.15-multidispositivo` contém o artefato final candidato da v0.15 e **não deve ser mesclada antes da aprovação explícita do gate de produção**.
+A `main` contém a produção v0.15, promovida após validação em dois desktops, Android físico, laboratório público, teste de stress multidispositivo, smoke test e gate final de produção.
 
-## Principais recursos da produção v0.14
+## Principais recursos da produção v0.15
 
 - abertura de comanda por mesa/local/cliente;
 - lançamento rápido de produtos;
 - edição de quantidade e remoção de itens;
 - fechamento com confirmação e forma de pagamento;
-- histórico com filtros Hoje / 7 dias / 30 dias / Todos;
-- busca por cliente, mesa/local, produto e forma de pagamento;
-- faturamento, número de comandas, ticket médio e itens vendidos;
-- ranking de produtos e vendas por categoria;
-- detalhes completos de comandas fechadas;
+- histórico com filtros e busca;
+- faturamento, ticket médio, itens vendidos e rankings;
 - exportação de vendas em CSV;
 - backup/restauração JSON com diagnóstico de integridade;
-- importação de cardápio por CSV/TXT com prévia e validação;
-- exportação do cardápio e modelos CSV/TXT;
-- detecção de categorias semelhantes, incluindo singular/plural e erros de digitação;
-- unificação reversível de categorias sem alterar comandas históricas;
-- atalhos de produtos mais lançados;
+- importação/exportação de cardápio CSV/TXT;
+- detecção e unificação reversível de categorias semelhantes;
 - cardápio e categorias editáveis;
 - instalação como PWA no iPhone/Android;
-- funcionamento offline para a operação local;
-- envio opcional de atualizações da comanda por WhatsApp mediante consentimento;
-- agrupamento de lançamentos por aproximadamente 8 segundos;
-- retry automático sem perder lançamentos da comanda;
-- templates dinâmicos de WhatsApp para 1 a 5 itens por mensagem;
-- divisão automática em múltiplos blocos quando houver mais de 5 itens agrupados.
-
-## v0.15 — candidata final
-
-A v0.15 mantém a operação offline-first e compartilha comandas, histórico, cardápio e categorias entre aparelhos por meio de uma outbox local e um log remoto idempotente no Supabase.
-
-Recursos consolidados:
-
-- identificação persistente por aparelho;
-- publicação explícita do primeiro aparelho como base compartilhada;
-- adoção segura da base em aparelhos novos, com backup local prévio;
-- fila offline de alterações;
-- sincronização automática ao voltar online/primeiro plano e em intervalos curtos;
+- funcionamento offline-first;
+- sincronização multidispositivo de comandas, histórico, cardápio e categorias;
+- fila offline e reconexão automática;
 - eventos aditivos de quantidade para preservar lançamentos concorrentes;
-- sincronização de comandas, histórico, cardápio e categorias;
-- preservação de conflitos quando chega alteração para comanda já fechada;
-- fila do WhatsApp mantida local para evitar duplicidade de mensagens;
+- conflitos preservados quando chega alteração para comanda já fechada;
+- identificação persistente por aparelho;
+- publicação explícita e adoção segura da base compartilhada;
+- Painel operacional;
 - bottom bar `Comandas | Painel | Cardápio | Histórico`;
 - FAB `+` como ação única de Nova comanda;
-- Painel operacional com informações de uso rápido;
+- nomes completos Mesa 1–5 e Parklet 1–6;
 - proteção contra comanda duplicada acidental;
 - retomada de comanda ativa após recarga;
 - avisos técnicos somente por exceção;
-- nomes completos Mesa 1–5 e Parklet 1–6;
 - consulta rápida **Itens da comanda** pela barra inferior;
-- chip **Ver itens** com ícone, microanimação e estado ativo.
+- chip **Ver itens** com ícone, microanimação e estado ativo;
+- envio opcional de atualizações da comanda por WhatsApp mediante consentimento;
+- templates dinâmicos de WhatsApp para 1 a 5 itens por mensagem;
+- fila do WhatsApp mantida local por aparelho para evitar duplicidade.
 
-Durante o gate final foi corrigido um detalhe exclusivamente visual: a camada RC.2.1 ainda reaplicava seu selo de teste em ciclos de status. `assets/v015-final.js` agora é a autoridade visual no `index.html` de produção e mantém o selo/título em **v0.15** sem alterar a lógica operacional.
+## Arquitetura v0.15
 
-Documentação principal:
+A v0.15 mantém a operação local-first. Cada aparelho grava primeiro no `localStorage`; quando há conexão, a camada `rota27-sync` publica eventos pendentes e busca alterações dos demais aparelhos.
 
-- `docs/V0.15-MULTIDEVICE.md`
-- `docs/V0.15-RC2-OPS.md`
-- `docs/V0.15-RC3-ITENS.md`
-- `docs/V0.15-PRODUCTION-GATE.md`
+A sincronização usa:
 
-## Desenvolvimento local
+- outbox local;
+- log remoto idempotente no Supabase;
+- pull incremental por cursor;
+- snapshot inicial e adoção de base;
+- `item_delta` para alterações de quantidade concorrentes;
+- detecção de conflitos após fechamento.
 
-```powershell
-cd "C:\Users\marco\OneDrive\Documentos\Rota27\mvp\Rota27-comandas-git"
-npx --yes http-server . -p 3000 -c-1
-```
-
-Em outra janela:
-
-```powershell
-Start-Process "http://localhost:3000/index.html?release=015"
-```
+A fila do WhatsApp **não é sincronizada** entre aparelhos.
 
 ## GitHub Pages
 
-A produção continua publicada a partir de `main`/`/(root)`.
+A produção é publicada por GitHub Pages a partir de:
 
-**Não publicar a v0.15 na `main` antes da validação final e aprovação explícita.**
+- branch: `main`;
+- pasta: `/(root)`.
 
-## Instalar no iPhone / Android
+URL de produção:
 
-Quem já possui a PWA v0.14 instalada não deve limpar dados do site nem reinstalar durante os testes. A atualização final foi preparada para preservar o `localStorage` existente.
+`https://automatrixhub.github.io/rota27/`
+
+## Atualização no iPhone / Android
+
+Quem já possui a PWA instalada **não precisa reinstalar**.
+
+Fluxo recomendado após uma nova publicação:
+
+1. conectar o aparelho à internet;
+2. abrir a PWA uma vez e aguardar alguns segundos;
+3. fechar completamente;
+4. abrir novamente;
+5. confirmar o selo da versão e a sincronização saudável.
+
+Não limpar dados do navegador e não remover a PWA para atualizar. O Service Worker da v0.15 usa o cache `rota27-comandas-v0.15` e remove caches antigos sem tocar no `localStorage`.
 
 ## Dados locais
 
 Comandas, cardápio, categorias, histórico e fila de envio do WhatsApp continuam armazenados localmente no dispositivo.
 
-Na v0.15, a configuração/fila de sincronização usa a chave local `rota27_sync_config_v1`. A fila do WhatsApp não é compartilhada entre aparelhos.
+A configuração/fila de sincronização usa a chave local `rota27_sync_config_v1`. A fila do WhatsApp continua separada por aparelho.
 
 ## WhatsApp Cloud API
 
@@ -105,15 +94,20 @@ Arquitetura validada:
 
 `Rota 27 PWA/APK → Supabase Edge Function → WhatsApp Cloud API`
 
-Os lançamentos são agrupados por aproximadamente **8 segundos** antes do envio. A Edge Function escolhe automaticamente o template aprovado adequado à quantidade de itens do lote.
-
 Credenciais reais **nunca** devem ser commitadas no GitHub. Tokens permanecem somente nos Secrets do Supabase e na configuração local autorizada do aparelho.
 
 ## Segurança
 
 As Edge Functions usam autenticação própria pelo header `x-rota27-device-token` e são implantadas com `verify_jwt=false`. As tabelas de backend permanecem com RLS habilitado e sem policies públicas; as funções usam service role no servidor.
 
+## Documentação principal
+
+- `docs/V0.15-MULTIDEVICE.md`
+- `docs/V0.15-RC2-OPS.md`
+- `docs/V0.15-RC3-ITENS.md`
+- `docs/V0.15-PRODUCTION-GATE.md`
+- `docs/V0.15-RELEASE.md`
+
 ## Versão
 
-Produção: **0.14**  
-Branch candidata: **0.15**
+Produção: **0.15**
