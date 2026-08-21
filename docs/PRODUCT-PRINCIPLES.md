@@ -35,3 +35,28 @@ Antes de desenvolver qualquer nova função, responder:
 - O usuário entende o valor sem treinamento adicional?
 
 Se essas respostas não forem fortes, não implementar.
+
+## Regra de operação real
+
+Durante piloto ou turno real, estabilidade tem prioridade sobre evolução. A baseline em uso fica congelada durante o turno.
+
+Só publicar uma alteração durante a operação quando ela corrigir um problema de alta gravidade, como:
+
+- risco de perda ou corrupção de dados;
+- cobrança incorreta;
+- falha que impeça lançar, editar, fechar ou cancelar uma comanda;
+- falha de sincronização com impacto direto na operação;
+- falha de WhatsApp que provoque duplicidade, perda ou erro relevante.
+
+Melhorias visuais, novas métricas, atalhos e funcionalidades não críticas devem ser registradas e avaliadas depois da operação. O comportamento observado no ambiente real vale mais do que hipótese de laboratório.
+
+## Regra para o pós-piloto
+
+Cada melhoria candidata deve ser classificada em uma destas categorias:
+
+- **P0 — integridade:** evita perda, duplicidade, cobrança incorreta ou indisponibilidade;
+- **P1 — velocidade operacional:** reduz toques, tempo e retrabalho em tarefas frequentes;
+- **P2 — gestão:** melhora decisão gerencial sem atrapalhar o atendente;
+- **P3 — conveniência:** útil, mas sem impacto operacional forte.
+
+A prioridade de desenvolvimento segue P0 → P1 → P2 → P3, sempre confirmada por evidência do uso real.
