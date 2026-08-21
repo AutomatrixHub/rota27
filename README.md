@@ -5,9 +5,9 @@ Aplicativo mobile-first para controle rápido de comandas da **Rota 27 Bodega**.
 ## Estado atual
 
 **Produção: PWA v0.14**  
-**Desenvolvimento: v0.15-dev.1 — sincronização multidispositivo**
+**Desenvolvimento: v0.15 RC.3 — multidispositivo offline-first + Painel + consulta rápida de itens**
 
-A `main` continua sendo a produção estável v0.14. A branch `feature/v0.15-multidispositivo` adiciona a primeira fundação para compartilhar comandas, histórico e cardápio entre aparelhos mantendo o funcionamento offline-first.
+A `main` continua sendo a produção estável v0.14. A branch `feature/v0.15-multidispositivo` concentra a release candidate da v0.15 e **não deve ser mesclada antes da aprovação explícita**.
 
 ## Principais recursos da produção v0.14
 
@@ -36,79 +36,60 @@ A `main` continua sendo a produção estável v0.14. A branch `feature/v0.15-mul
 - templates dinâmicos de WhatsApp para 1 a 5 itens por mensagem;
 - divisão automática em múltiplos blocos quando houver mais de 5 itens agrupados.
 
-## v0.15-dev.1 — multidispositivo
+## v0.15 RC.3
 
-A nova camada usa uma outbox local e um log remoto idempotente no Supabase. Cada aparelho continua gravando primeiro no `localStorage`; quando há conexão, publica os eventos pendentes e busca os eventos que ainda não recebeu.
+A v0.15 mantém a operação offline-first e compartilha comandas, histórico, cardápio e categorias entre aparelhos por meio de uma outbox local e um log remoto idempotente no Supabase.
 
-Recursos já preparados na DEV.1:
+Recursos consolidados:
 
 - identificação persistente por aparelho;
-- configuração separada da Edge Function `rota27-sync`;
-- reaproveitamento opcional do token já configurado no WhatsApp;
 - publicação explícita do primeiro aparelho como base compartilhada;
 - adoção segura da base em aparelhos novos, com backup local prévio;
 - fila offline de alterações;
 - sincronização automática ao voltar online/primeiro plano e em intervalos curtos;
-- eventos aditivos de quantidade para reduzir perda de lançamentos simultâneos;
+- eventos aditivos de quantidade para preservar lançamentos concorrentes;
 - sincronização de comandas, histórico, cardápio e categorias;
-- registro dos aparelhos ativos;
 - preservação de conflitos quando chega alteração para comanda já fechada;
-- fila do WhatsApp mantida local para evitar duplicidade de mensagens.
+- fila do WhatsApp mantida local para evitar duplicidade de mensagens;
+- bottom bar `Comandas | Painel | Cardápio | Histórico`;
+- FAB `+` como ação única de Nova comanda;
+- Painel operacional com informações de uso rápido;
+- proteção contra comanda duplicada acidental;
+- retomada de comanda ativa após recarga;
+- avisos técnicos somente por exceção;
+- nomes completos Mesa 1–5 e Parklet 1–6;
+- **consulta rápida “Itens da comanda”** diretamente pela barra inferior da tela de lançamentos.
 
-Documentação: `docs/V0.15-MULTIDEVICE.md`.
+Na RC.3, o bloco que mostra `N itens` e o total da comanda pode ser tocado para abrir uma lista única com quantidade, produto, valor unitário, subtotal e total, sem navegar pelas categorias e sem entrar no fechamento. O fluxo já existente de **Editar itens** permanece separado.
 
-## Estrutura
+Documentação principal:
 
-A entrada de produção v0.14 continua em `index.html`. A v0.15 é testada apenas pelo preview dedicado.
+- `docs/V0.15-MULTIDEVICE.md`
+- `docs/V0.15-RC2-OPS.md`
+- `docs/V0.15-RC3-ITENS.md`
 
-```text
-rota27/
-├── index.html                  # produção v0.14
-├── base-v013.html              # base estável preservada
-├── v015-preview.html           # preview v0.15-dev.1
-├── manifest.webmanifest
-├── sw.js
-├── VERSION
-├── assets/
-│   ├── v014.css
-│   ├── v014.js
-│   ├── v014-dev3.css
-│   ├── v014-dev3.js
-│   ├── v014-rc2-category-fix.js
-│   ├── v014-final.js
-│   ├── v015.css
-│   └── v015-sync.js
-├── docs/
-│   └── V0.15-MULTIDEVICE.md
-└── supabase/
-    ├── functions/
-    │   ├── rota27-whatsapp/
-    │   └── rota27-sync/
-    └── migrations/
-        ├── 20260817_create_whatsapp_message_log.sql
-        └── 20260819_create_rota27_sync.sql
+## Desenvolvimento local
+
+```powershell
+cd "C:\Users\marco\OneDrive\Documentos\Rota27\mvp\Rota27-comandas-git"
+npx --yes http-server . -p 3000 -c-1
+```
+
+Em outra janela:
+
+```powershell
+Start-Process "http://localhost:3000/v015-preview.html?rc=3"
 ```
 
 ## GitHub Pages
 
-A produção continua publicada por:
+A produção continua publicada a partir de `main`/`/(root)`.
 
-1. **Settings → Pages**
-2. **Build and deployment → Deploy from a branch**
-3. Branch: `main`
-4. Pasta: `/(root)`
+**Não publicar a v0.15 na `main` antes da validação final e aprovação explícita.**
 
-**Não publicar a v0.15 na `main` antes da validação multidispositivo.**
+## Instalar no iPhone / Android
 
-## Instalar no iPhone
-
-1. Abra o endereço HTTPS no **Safari**.
-2. Toque em **Compartilhar**.
-3. Escolha **Adicionar à Tela de Início**.
-4. Ative **Abrir como App da Web**, se a opção aparecer.
-5. Toque em **Adicionar**.
-
-Quem já possui a PWA v0.14 instalada não precisa reinstalar. O Service Worker de produção continua usando `rota27-comandas-v0.14` até a futura promoção da v0.15.
+Quem já possui a PWA v0.14 instalada não deve limpar dados do site nem reinstalar durante os testes. A atualização final será preparada para preservar o `localStorage` existente.
 
 ## Dados locais
 
@@ -118,21 +99,11 @@ Na v0.15, a configuração/fila de sincronização usa a chave local `rota27_syn
 
 ## WhatsApp Cloud API
 
-Arquitetura validada de produção:
+Arquitetura validada:
 
 `Rota 27 PWA/APK → Supabase Edge Function → WhatsApp Cloud API`
 
 Os lançamentos são agrupados por aproximadamente **8 segundos** antes do envio. A Edge Function escolhe automaticamente o template aprovado adequado à quantidade de itens do lote.
-
-Templates em produção:
-
-- `atualizacao_comanda_rota27_v3_1` — 1 item;
-- `atualizacao_comanda_rota27_v3_2` — 2 itens;
-- `atualizacao_comanda_rota27_v3_3` — 3 itens;
-- `atualizacao_comanda_rota27_v3_4` — 4 itens;
-- `atualizacao_comanda_rota27_v3` — 5 itens.
-
-Quando um lote contém mais de 5 itens, a Edge Function divide o envio em blocos de até 5 itens, preservando idempotência por bloco.
 
 Credenciais reais **nunca** devem ser commitadas no GitHub. Tokens permanecem somente nos Secrets do Supabase e na configuração local autorizada do aparelho.
 
@@ -143,4 +114,4 @@ As Edge Functions usam autenticação própria pelo header `x-rota27-device-toke
 ## Versão
 
 Produção: **0.14**  
-Branch atual: **0.15-dev.1**
+Branch atual: **0.15-rc.3**
