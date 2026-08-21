@@ -1,0 +1,6 @@
+/* Rota 27 v0.15.1 — WhatsApp guard + cancelamento de comanda */
+.v0151-cancel-command{width:100%;margin-top:10px;border:1px solid #d8a59f;background:#fff3f1;color:#a63f34;border-radius:14px;padding:12px 14px;font-weight:900}
+.v0151-cancel-command:active{transform:scale(.99)}
+.v0151-confirm-copy{margin:10px 0 2px;padding:12px 14px;border:1px solid #ead7c8;background:#f8efe4;border-radius:14px;color:#5f5148;font-size:13px;line-height:1.45}
+.v0151-confirm-copy strong{display:block;color:#1b1816;font-size:15px;margin-bottom:4px}
+.v0151-confirm-danger{width:100%;border:0;background:#b6453b;color:#fff;border-radius:14px;padding:13px 16px;font-weight:900}
