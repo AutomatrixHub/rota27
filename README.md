@@ -4,10 +4,10 @@ Aplicativo mobile-first para controle rápido de comandas da **Rota 27 Bodega**.
 
 ## Estado atual
 
-**Produção: PWA v0.14**  
-**Desenvolvimento: v0.15 RC.3 — multidispositivo offline-first + Painel + consulta rápida de itens**
+**Produção na `main`: PWA v0.14**  
+**Branch de release: v0.15 preparada para gate final de produção**
 
-A `main` continua sendo a produção estável v0.14. A branch `feature/v0.15-multidispositivo` concentra a release candidate da v0.15 e **não deve ser mesclada antes da aprovação explícita**.
+A branch `feature/v0.15-multidispositivo` já contém os artefatos finais da v0.15 (`index.html`, `VERSION`, Service Worker/cache e assets), mas **não deve ser mesclada antes da aprovação explícita do gate final**.
 
 ## Principais recursos da produção v0.14
 
@@ -36,7 +36,7 @@ A `main` continua sendo a produção estável v0.14. A branch `feature/v0.15-mul
 - templates dinâmicos de WhatsApp para 1 a 5 itens por mensagem;
 - divisão automática em múltiplos blocos quando houver mais de 5 itens agrupados.
 
-## v0.15 RC.3
+## v0.15 — candidata de produção
 
 A v0.15 mantém a operação offline-first e compartilha comandas, histórico, cardápio e categorias entre aparelhos por meio de uma outbox local e um log remoto idempotente no Supabase.
 
@@ -58,15 +58,23 @@ Recursos consolidados:
 - retomada de comanda ativa após recarga;
 - avisos técnicos somente por exceção;
 - nomes completos Mesa 1–5 e Parklet 1–6;
-- **consulta rápida “Itens da comanda”** diretamente pela barra inferior da tela de lançamentos.
+- consulta rápida **Itens da comanda** diretamente pela barra inferior da tela de lançamentos;
+- **Ver itens** com chip destacado, ícone, microanimação e estado ativo enquanto a consulta está aberta.
 
-Na RC.3, o bloco que mostra `N itens` e o total da comanda pode ser tocado para abrir uma lista única com quantidade, produto, valor unitário, subtotal e total, sem navegar pelas categorias e sem entrar no fechamento. O fluxo já existente de **Editar itens** permanece separado.
+## Artefatos de produção v0.15
+
+- `index.html` — loader final da v0.15;
+- `VERSION` — `0.15`;
+- `sw.js` — cache `rota27-comandas-v0.15`;
+- `assets/v015-final.js` — selo/título final de produção;
+- `v015-preview.html` — preview de RC preservado para comparação.
 
 Documentação principal:
 
 - `docs/V0.15-MULTIDEVICE.md`
 - `docs/V0.15-RC2-OPS.md`
 - `docs/V0.15-RC3-ITENS.md`
+- `docs/V0.15-PRODUCTION-GATE.md`
 
 ## Desenvolvimento local
 
@@ -75,21 +83,21 @@ cd "C:\Users\marco\OneDrive\Documentos\Rota27\mvp\Rota27-comandas-git"
 npx --yes http-server . -p 3000 -c-1
 ```
 
-Em outra janela:
+Para testar o artefato final de produção da branch:
 
 ```powershell
-Start-Process "http://localhost:3000/v015-preview.html?rc=3"
+Start-Process "http://localhost:3000/index.html?release=015"
 ```
 
 ## GitHub Pages
 
-A produção continua publicada a partir de `main`/`/(root)`.
+A produção publicada continua vindo de `main`/`/(root)` e permanece na v0.14 até o merge do PR #6.
 
-**Não publicar a v0.15 na `main` antes da validação final e aprovação explícita.**
+**Não mesclar/publicar a v0.15 antes do gate final e aprovação explícita.**
 
-## Instalar no iPhone / Android
+## Atualização do iPhone / Android
 
-Quem já possui a PWA v0.14 instalada não deve limpar dados do site nem reinstalar durante os testes. A atualização final será preparada para preservar o `localStorage` existente.
+Quem já possui a PWA v0.14 **não deve limpar dados do site, remover a PWA ou reinstalar**. Após o merge, o novo Service Worker v0.15 troca o cache do app sem apagar `localStorage`.
 
 ## Dados locais
 
@@ -103,8 +111,6 @@ Arquitetura validada:
 
 `Rota 27 PWA/APK → Supabase Edge Function → WhatsApp Cloud API`
 
-Os lançamentos são agrupados por aproximadamente **8 segundos** antes do envio. A Edge Function escolhe automaticamente o template aprovado adequado à quantidade de itens do lote.
-
 Credenciais reais **nunca** devem ser commitadas no GitHub. Tokens permanecem somente nos Secrets do Supabase e na configuração local autorizada do aparelho.
 
 ## Segurança
@@ -113,5 +119,5 @@ As Edge Functions usam autenticação própria pelo header `x-rota27-device-toke
 
 ## Versão
 
-Produção: **0.14**  
-Branch atual: **0.15-rc.3**
+Produção na `main`: **0.14**  
+Branch de release: **0.15**
