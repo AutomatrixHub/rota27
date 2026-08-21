@@ -1,10 +1,10 @@
 /* Rota 27 v0.15 DEV.3 — guardas de bootstrap e status operacional
  * Hotfix Android preservado: remove loop de MutationObserver provocado por alterações de class/disabled feitas pela própria guarda.
+ * A camada de guarda não altera mais o selo/título global de versão; isso pertence à camada DEV/RC mais recente.
  */
 (function(){
   'use strict';
   const CONFIG_KEY='rota27_sync_config_v1';
-  const VERSION='0.15-dev.3';
   let applying=false;
   let pendingTimer=null;
 
@@ -85,11 +85,6 @@
         const next='<span class="v15d2-net '+(online?'':'off')+'">'+(online?'Online':'Offline')+'</span><span>Após alteração: <b>~1,4 s</b> · verificação automática: <b>~15 s</b></span>';
         if(runtime.innerHTML!==next)runtime.innerHTML=next;
       }
-
-      const badge=byId('v14VersionBadge');
-      if(badge&&badge.textContent!=='v0.15 DEV.3')badge.textContent='v0.15 DEV.3';
-      document.title='Rota 27 Bodega • Comandas v0.15 DEV.3';
-      window.ROTA27_SYNC_DEV_VERSION=VERSION;
     } finally { applying=false; }
   }
   function scheduleApply(delay=0){
@@ -108,7 +103,7 @@
     window.addEventListener('offline',()=>scheduleApply(0));
     window.addEventListener('storage',event=>{if(event.key===CONFIG_KEY)scheduleApply(0);});
     setInterval(()=>{if(byId('v15SyncWrap')?.classList.contains('open'))applyGuard();},1200);
-    console.info('[Rota27] proteção de bootstrap carregada (v0.15 DEV.3).');
+    console.info('[Rota27] proteção de bootstrap carregada (DEV.3, sem sobrescrever versão global).');
   }
 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
