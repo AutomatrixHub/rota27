@@ -1,12 +1,14 @@
-/* Rota 27 v0.15 RC.3 — consulta rápida dos itens da comanda
+/* Rota 27 v0.15 RC.3.1 — consulta rápida dos itens da comanda
  * Benefício operacional: conferir consumo sem navegar por categorias e sem entrar no fluxo de fechamento.
+ * Refinamento RC.3.1: ícone, microanimação e estado ativo na entrada "Ver itens".
  * A consulta é somente leitura; edição continua no fluxo já validado de "Editar itens".
  */
 (function(){
   'use strict';
 
-  const VERSION='0.15-rc.3';
+  const VERSION='0.15-rc.3.1';
   let refreshTimer=null;
+  let popTimer=null;
 
   function byId(id){return document.getElementById(id);}
   function esc(value){
@@ -118,6 +120,26 @@
     }).join('');
   }
 
+  function setTriggerOpen(open){
+    const summary=document.querySelector('#cartbar .cart-summary');
+    if(!summary)return;
+    summary.classList.toggle('is-open',Boolean(open));
+    summary.setAttribute('aria-expanded',open?'true':'false');
+    const view=summary.querySelector('.v15items-view');
+    if(view)view.setAttribute('aria-label',open?'Itens da comanda abertos':'Ver itens da comanda');
+  }
+
+  function pulseTrigger(){
+    const summary=document.querySelector('#cartbar .cart-summary');
+    if(!summary)return;
+    summary.classList.remove('v15items-pop');
+    requestAnimationFrame(()=>{
+      summary.classList.add('v15items-pop');
+      clearTimeout(popTimer);
+      popTimer=setTimeout(()=>summary.classList.remove('v15items-pop'),360);
+    });
+  }
+
   function openSummary(){
     const command=current();
     if(!command)return;
@@ -125,6 +147,8 @@
     renderSummary();
     wrap.classList.add('open');
     wrap.setAttribute('aria-hidden','false');
+    setTriggerOpen(true);
+    pulseTrigger();
     setTimeout(()=>byId('v15ItemsContinueBtn')?.focus(),40);
   }
 
@@ -133,16 +157,42 @@
     if(!wrap)return;
     wrap.classList.remove('open');
     wrap.setAttribute('aria-hidden','true');
+    setTriggerOpen(false);
+  }
+
+  function enhanceTriggerMarkup(summary){
+    if(!summary||summary.dataset.v15ItemsMarkup==='1')return;
+    const currentItems=byId('cartbarItems')?.textContent||'0 itens';
+    const currentTotal=byId('cartbarTotal')?.textContent||'R$ 0,00';
+    summary.innerHTML=`
+      <div class="v15items-summary-topline">
+        <small id="cartbarItems">${esc(currentItems)}</small>
+        <span class="v15items-view" aria-hidden="true">
+          <span class="v15items-view-icon">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6h11M8 12h11M8 18h11"/><path d="M4.5 6h.01M4.5 12h.01M4.5 18h.01"/></svg>
+          </span>
+          <span class="v15items-view-label">Ver itens</span>
+          <span class="v15items-view-chevron">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 14 4-4 4 4"/></svg>
+          </span>
+        </span>
+      </div>
+      <strong id="cartbarTotal">${esc(currentTotal)}</strong>`;
+    summary.dataset.v15ItemsMarkup='1';
   }
 
   function wireCartSummary(){
     const summary=document.querySelector('#cartbar .cart-summary');
-    if(!summary||summary.dataset.v15ItemsReady==='1')return;
+    if(!summary)return;
+    enhanceTriggerMarkup(summary);
+    if(summary.dataset.v15ItemsReady==='1')return;
     summary.dataset.v15ItemsReady='1';
     summary.classList.add('v15items-summary-trigger');
     summary.setAttribute('role','button');
     summary.setAttribute('tabindex','0');
     summary.setAttribute('aria-label','Ver itens da comanda');
+    summary.setAttribute('aria-controls','v15ItemsSummaryWrap');
+    summary.setAttribute('aria-expanded','false');
     summary.setAttribute('title','Ver itens da comanda');
     summary.addEventListener('click',openSummary);
     summary.addEventListener('keydown',event=>{
@@ -152,8 +202,8 @@
 
   function applyVersion(){
     const badge=byId('v14VersionBadge');
-    if(badge)badge.textContent='v0.15 RC.3';
-    document.title='Rota 27 Bodega • Comandas v0.15 RC.3';
+    if(badge)badge.textContent='v0.15 RC.3.1';
+    document.title='Rota 27 Bodega • Comandas v0.15 RC.3.1';
     window.ROTA27_SYNC_DEV_VERSION=VERSION;
   }
 
@@ -168,7 +218,7 @@
     },1500);
     document.addEventListener('keydown',event=>{if(event.key==='Escape'&&byId('v15ItemsSummaryWrap')?.classList.contains('open'))closeSummary();});
     window.openItemsSummary=openSummary;
-    console.info('[Rota27] consulta rápida de itens carregada (v0.15 RC.3).');
+    console.info('[Rota27] consulta rápida de itens refinada (v0.15 RC.3.1).');
   }
 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
