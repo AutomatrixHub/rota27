@@ -1,14 +1,9 @@
-/* Rota 27 v0.15 — selo final de produção
- * Esta camada roda por último somente no index.html de produção.
- * O preview RC mantém seus próprios selos para testes.
- * Hotfix de gate: camadas RC legadas ainda executam comportamento funcional,
- * mas não podem mais sobrescrever visualmente a versão final de produção.
- */
+/* Rota 27 v0.15.1 — selo final de produção */
 (function(){
   'use strict';
-  const VERSION='0.15';
-  const LABEL='v0.15';
-  const TITLE='Rota 27 Bodega • Comandas v0.15';
+  const VERSION='0.15.1';
+  const LABEL='v0.15.1';
+  const TITLE='Rota 27 Bodega • Comandas v0.15.1';
   let badgeObserver=null;
   let titleObserver=null;
 
