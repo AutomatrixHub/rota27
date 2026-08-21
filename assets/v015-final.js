@@ -9,7 +9,8 @@
   const VERSION='0.15';
   const LABEL='v0.15';
   const TITLE='Rota 27 Bodega • Comandas v0.15';
-  let observer=null;
+  let badgeObserver=null;
+  let titleObserver=null;
 
   function applyFinalVersion(){
     const badge=document.getElementById('v14VersionBadge');
@@ -20,18 +21,20 @@
 
   function protectFinalVersion(){
     applyFinalVersion();
-    if(observer)return;
-    observer=new MutationObserver(()=>applyFinalVersion());
     const badge=document.getElementById('v14VersionBadge');
     const title=document.querySelector('title');
-    if(badge)observer.observe(badge,{childList:true,characterData:true,subtree:true});
-    if(title)observer.observe(title,{childList:true,characterData:true,subtree:true});
+    if(badge&&!badgeObserver){
+      badgeObserver=new MutationObserver(()=>applyFinalVersion());
+      badgeObserver.observe(badge,{childList:true,characterData:true,subtree:true});
+    }
+    if(title&&!titleObserver){
+      titleObserver=new MutationObserver(()=>applyFinalVersion());
+      titleObserver.observe(title,{childList:true,characterData:true,subtree:true});
+    }
   }
 
   function start(){
     protectFinalVersion();
-    // RC.2.1 reage a eventos de conectividade e reaplica seu selo de teste.
-    // A camada final reafirma a versão de produção imediatamente após esses eventos.
     window.addEventListener('online',()=>setTimeout(applyFinalVersion,0));
     window.addEventListener('offline',()=>setTimeout(applyFinalVersion,0));
     window.addEventListener('pageshow',()=>setTimeout(applyFinalVersion,0));
