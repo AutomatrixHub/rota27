@@ -4,10 +4,10 @@ Aplicativo mobile-first para controle rápido de comandas da **Rota 27 Bodega**.
 
 ## Estado atual
 
-**Produção na `main`: PWA v0.14**  
-**Branch de release: v0.15 preparada para gate final de produção**
+**Produção: PWA v0.14**  
+**Candidata final: v0.15 — multidispositivo offline-first + Painel + consulta rápida de itens**
 
-A branch `feature/v0.15-multidispositivo` já contém os artefatos finais da v0.15 (`index.html`, `VERSION`, Service Worker/cache e assets), mas **não deve ser mesclada antes da aprovação explícita do gate final**.
+A `main` continua sendo a produção estável v0.14. A branch `feature/v0.15-multidispositivo` contém o artefato final candidato da v0.15 e **não deve ser mesclada antes da aprovação explícita do gate de produção**.
 
 ## Principais recursos da produção v0.14
 
@@ -36,7 +36,7 @@ A branch `feature/v0.15-multidispositivo` já contém os artefatos finais da v0.
 - templates dinâmicos de WhatsApp para 1 a 5 itens por mensagem;
 - divisão automática em múltiplos blocos quando houver mais de 5 itens agrupados.
 
-## v0.15 — candidata de produção
+## v0.15 — candidata final
 
 A v0.15 mantém a operação offline-first e compartilha comandas, histórico, cardápio e categorias entre aparelhos por meio de uma outbox local e um log remoto idempotente no Supabase.
 
@@ -58,16 +58,10 @@ Recursos consolidados:
 - retomada de comanda ativa após recarga;
 - avisos técnicos somente por exceção;
 - nomes completos Mesa 1–5 e Parklet 1–6;
-- consulta rápida **Itens da comanda** diretamente pela barra inferior da tela de lançamentos;
-- **Ver itens** com chip destacado, ícone, microanimação e estado ativo enquanto a consulta está aberta.
+- consulta rápida **Itens da comanda** pela barra inferior;
+- chip **Ver itens** com ícone, microanimação e estado ativo.
 
-## Artefatos de produção v0.15
-
-- `index.html` — loader final da v0.15;
-- `VERSION` — `0.15`;
-- `sw.js` — cache `rota27-comandas-v0.15`;
-- `assets/v015-final.js` — selo/título final de produção;
-- `v015-preview.html` — preview de RC preservado para comparação.
+Durante o gate final foi corrigido um detalhe exclusivamente visual: a camada RC.2.1 ainda reaplicava seu selo de teste em ciclos de status. `assets/v015-final.js` agora é a autoridade visual no `index.html` de produção e mantém o selo/título em **v0.15** sem alterar a lógica operacional.
 
 Documentação principal:
 
@@ -83,7 +77,7 @@ cd "C:\Users\marco\OneDrive\Documentos\Rota27\mvp\Rota27-comandas-git"
 npx --yes http-server . -p 3000 -c-1
 ```
 
-Para testar o artefato final de produção da branch:
+Em outra janela:
 
 ```powershell
 Start-Process "http://localhost:3000/index.html?release=015"
@@ -91,13 +85,13 @@ Start-Process "http://localhost:3000/index.html?release=015"
 
 ## GitHub Pages
 
-A produção publicada continua vindo de `main`/`/(root)` e permanece na v0.14 até o merge do PR #6.
+A produção continua publicada a partir de `main`/`/(root)`.
 
-**Não mesclar/publicar a v0.15 antes do gate final e aprovação explícita.**
+**Não publicar a v0.15 na `main` antes da validação final e aprovação explícita.**
 
-## Atualização do iPhone / Android
+## Instalar no iPhone / Android
 
-Quem já possui a PWA v0.14 **não deve limpar dados do site, remover a PWA ou reinstalar**. Após o merge, o novo Service Worker v0.15 troca o cache do app sem apagar `localStorage`.
+Quem já possui a PWA v0.14 instalada não deve limpar dados do site nem reinstalar durante os testes. A atualização final foi preparada para preservar o `localStorage` existente.
 
 ## Dados locais
 
@@ -111,6 +105,8 @@ Arquitetura validada:
 
 `Rota 27 PWA/APK → Supabase Edge Function → WhatsApp Cloud API`
 
+Os lançamentos são agrupados por aproximadamente **8 segundos** antes do envio. A Edge Function escolhe automaticamente o template aprovado adequado à quantidade de itens do lote.
+
 Credenciais reais **nunca** devem ser commitadas no GitHub. Tokens permanecem somente nos Secrets do Supabase e na configuração local autorizada do aparelho.
 
 ## Segurança
@@ -119,5 +115,5 @@ As Edge Functions usam autenticação própria pelo header `x-rota27-device-toke
 
 ## Versão
 
-Produção na `main`: **0.14**  
-Branch de release: **0.15**
+Produção: **0.14**  
+Branch candidata: **0.15**
