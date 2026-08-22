@@ -4,11 +4,11 @@ Aplicativo mobile-first para controle rápido de comandas da **Rota 27 Bodega**.
 
 ## Estado atual
 
-**Produção: PWA v0.15.1 — multidispositivo offline-first + Painel + consulta rápida de itens + WhatsApp + cancelamento seguro**
+**Produção preparada: PWA v0.16.0 — baseline v0.15.1 + Ajuda completa integrada**
 
-A `main` contém a produção v0.15.1. A release foi validada em desktops, Android físico, laboratório público e iPhone/PWA, incluindo teste de stress multidispositivo, smoke test, gate de produção, envio real pelo WhatsApp e cancelamento seguro de comanda.
+A v0.16.0 preserva o comportamento operacional validado da v0.15.1 e adiciona uma camada de Ajuda acessível pelo botão `?`, com explicações, exemplos, mini-guias visuais, respostas rápidas e conteúdo disponível offline. O piloto real da v0.16.0 está programado para 22/08/2026.
 
-## Principais recursos da produção v0.15.1
+## Principais recursos da produção v0.16.0
 
 - abertura de comanda por mesa/local/cliente;
 - lançamento rápido de produtos;
@@ -42,7 +42,28 @@ A `main` contém a produção v0.15.1. A release foi validada em desktops, Andro
 - envio opcional de atualizações da comanda por WhatsApp mediante consentimento;
 - templates dinâmicos de WhatsApp para 1 a 5 itens por mensagem;
 - fila do WhatsApp mantida local por aparelho para evitar duplicidade;
-- correção automática de configuração legada que apontava o WhatsApp para `rota27-sync`, preservando o token local.
+- correção automática de configuração legada que apontava o WhatsApp para `rota27-sync`, preservando o token local;
+- **Ajuda completa dentro do aplicativo**, com busca por intenção, exemplos de atendimento, comparações entre ações, mini-representações da interface, respostas rápidas e glossário;
+- seção **Se acontecer isso…** com primeira ação segura para situações comuns;
+- Ajuda disponível também offline pelo Service Worker.
+
+## Ajuda do sistema
+
+O botão `? Ajuda` fica no cabeçalho e não altera dados nem configurações. A Ajuda foi desenhada para quem nunca participou do desenvolvimento do sistema e inclui:
+
+- **Primeiros 3 minutos**;
+- mapa rápido do aplicativo;
+- abrir comanda;
+- lançar produtos;
+- diferença entre **Ver itens**, **Editar itens** e **Fechar**;
+- diferença entre **Fechar** e **Cancelar**;
+- Painel, Histórico e Cardápio;
+- sincronização e uso offline;
+- WhatsApp;
+- backup/restauração;
+- atualização da PWA;
+- respostas rápidas para situações de erro;
+- boas práticas e glossário.
 
 ## Arquitetura
 
@@ -83,7 +104,7 @@ Após uma nova publicação:
 4. abrir novamente;
 5. confirmar o selo da versão e a sincronização saudável.
 
-Não limpar dados do navegador e não remover a PWA para atualizar. O Service Worker da v0.15.1 usa o cache `rota27-comandas-v0.15.1` e remove caches antigos sem tocar no `localStorage`.
+Não limpar dados do navegador e não remover a PWA para atualizar. O Service Worker da v0.16.0 usa o cache `rota27-comandas-v0.16.0` e remove caches antigos sem tocar no `localStorage`.
 
 ## Dados locais
 
@@ -105,17 +126,18 @@ As Edge Functions usam autenticação própria pelo header `x-rota27-device-toke
 
 ## Operação real
 
-A v0.15.1 é a baseline congelada para o piloto em ambiente real. Durante o turno, alterações de software só devem ser publicadas para corrigir falha crítica, risco de perda/cobrança incorreta ou indisponibilidade operacional. Melhorias não críticas devem ser registradas para avaliação depois do turno.
+A v0.16.0 é a baseline preparada para o piloto real de 22/08/2026. Durante o turno, a baseline volta a ficar congelada: só publicar nova versão se surgir P0/P1 com impacto real em integridade, cobrança, sincronização, WhatsApp ou continuidade da operação.
 
 Documentos principais:
 
-- `docs/PILOTO-REAL-v0.15.1.md`
+- `docs/PILOTO-REAL-v0.16.0.md`
+- `docs/RELEASE-v0.16.0.md`
+- `docs/STATUS-PRODUCAO.md`
 - `docs/ROADMAP-POST-PILOTO.md`
-- `docs/RELEASE-v0.15.1.md`
 - `docs/V0.15-MULTIDEVICE.md`
 - `docs/V0.15-PRODUCTION-GATE.md`
 - `docs/PRODUCT-PRINCIPLES.md`
 
 ## Versão
 
-Produção: **0.15.1**
+Produção preparada: **0.16.0**
