@@ -5,7 +5,7 @@ const APP_SHELL = [
   './assets/v015.css','./assets/v015-sync.js','./assets/v015-dev2.css','./assets/v015-dev2.js','./assets/v015-dev3.css','./assets/v015-dev3.js','./assets/v015-dev4.css','./assets/v015-dev4.js','./assets/v015-rc2-ops.css','./assets/v015-rc2-ops.js','./assets/v015-rc3-items.css','./assets/v015-rc3-items.js',
   './assets/v0151-hotfix.css','./assets/v0151-hotfix.js','./assets/v0151-help.css','./assets/v0151-help.js',
   './assets/v016-help-polish.css','./assets/v016-help-polish.js',
-  './assets/v017.css','./assets/v017-core.js','./assets/v017-manager.js','./assets/v017-final.js',
+  './assets/v017.css','./assets/v017-core.js','./assets/v017-manager.js','./assets/v017-layout.js','./assets/v017-final.js',
   './manifest.webmanifest','./icons/apple-touch-icon.png','./icons/icon-192.png','./icons/icon-512.png','./icons/icon-192-maskable.png','./icons/icon-512-maskable.png','./icons/favicon-32.png'
 ];
 self.addEventListener('install',event=>{event.waitUntil(caches.open(CACHE_NAME).then(cache=>cache.addAll(APP_SHELL)));self.skipWaiting();});
