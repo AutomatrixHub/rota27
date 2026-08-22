@@ -1,4 +1,4 @@
-/* Rota 27 — Ajuda do usuário (candidata pós-piloto, sobre baseline v0.15.1) */
+/* Rota 27 — Ajuda do usuário v2 (candidata pós-piloto, sobre baseline v0.15.1) */
 (function(){
   'use strict';
 
@@ -8,308 +8,572 @@
 
   const sections=[
     {
-      id:'inicio',
-      icon:'◎',
-      title:'Comece aqui',
-      summary:'O fluxo principal do Rota 27 em poucos passos.',
+      id:'primeiros-minutos',
+      icon:'▶',
+      title:'Primeiros 3 minutos',
+      summary:'O essencial para usar o Rota 27 sem treinamento.',
       body:`
-        <p>O Rota 27 foi feito para lançar e fechar comandas com o mínimo de passos possível. O fluxo normal é:</p>
-        <ol>
-          <li><strong>Abrir uma comanda</strong> pelo botão <strong>+</strong>.</li>
-          <li>Escolher o local/mesa e identificar o cliente quando isso ajudar a operação.</li>
-          <li><strong>Lançar os produtos</strong> tocando nos itens do cardápio.</li>
-          <li>Usar <strong>Ver itens</strong> para conferir rapidamente o que já foi lançado.</li>
-          <li>Usar <strong>Editar itens</strong> quando precisar alterar quantidade ou remover algum item.</li>
-          <li>Usar <strong>Fechar</strong> quando o cliente pedir a conta e informar a forma de pagamento.</li>
+        <div class="r27-help-lead">
+          <strong>Se você nunca usou o Rota 27, comece por aqui.</strong>
+          <p>O aplicativo existe para registrar rapidamente o que cada cliente consumiu e fechar a conta com segurança.</p>
+        </div>
+
+        <div class="r27-help-flow" aria-label="Fluxo principal">
+          <span><b>1</b>Abrir</span><i>→</i><span><b>2</b>Lançar</span><i>→</i><span><b>3</b>Conferir</span><i>→</i><span><b>4</b>Fechar</span>
+        </div>
+
+        <h4>O que você faz durante o atendimento</h4>
+        <ol class="r27-help-steps">
+          <li><span>1</span><div><strong>Abra uma comanda</strong><p>Toque em <b>+</b>, escolha Balcão, Mesa ou Parklet e, se ajudar, informe o nome do cliente.</p></div></li>
+          <li><span>2</span><div><strong>Lance os produtos</strong><p>Abra a comanda e toque nos produtos consumidos. Cada toque acrescenta uma unidade.</p></div></li>
+          <li><span>3</span><div><strong>Confira quando precisar</strong><p>Use <b>Ver itens</b> para conferir tudo sem iniciar o fechamento.</p></div></li>
+          <li><span>4</span><div><strong>Feche quando o cliente pagar</strong><p>Confira o total, toque em <b>Fechar</b>, escolha a forma de pagamento e confirme.</p></div></li>
         </ol>
-        <div class="r27-help-tip"><strong>Regra simples:</strong> abrir → lançar → conferir → fechar. O sistema não cobra taxa de 10% e não imprime comandas.</div>
+
+        <div class="r27-help-example">
+          <span class="r27-help-example-label">Exemplo real</span>
+          <strong>Cliente sentou na Mesa 2 e pediu 2 cervejas e 1 queijo.</strong>
+          <p>Abra <b>Mesa 2</b> → toque duas vezes na cerveja → toque uma vez no queijo → quando pedir a conta, confira em <b>Ver itens</b> → toque em <b>Fechar</b> → escolha o pagamento.</p>
+        </div>
+
+        <div class="r27-help-tip"><strong>Regra simples:</strong> se você lembrar de <b>abrir → lançar → conferir → fechar</b>, já consegue operar o fluxo principal.</div>
       `
     },
     {
-      id:'navegacao',
+      id:'mapa-app',
       icon:'⌂',
-      title:'Navegação do aplicativo',
-      summary:'O que existe em cada área da barra inferior e no botão +.',
+      title:'Mapa rápido do aplicativo',
+      summary:'Onde fica cada função e quando usar cada área.',
       body:`
-        <h4>Comandas</h4>
-        <p>Mostra as comandas que ainda estão abertas. É a área principal durante o atendimento.</p>
-        <h4>Painel</h4>
-        <p>Resume a operação do dia e mostra informações rápidas sobre comandas em aberto, vendas fechadas e serviços do aparelho. Se tudo estiver saudável, você não precisa ficar consultando telas técnicas.</p>
-        <h4>Cardápio</h4>
-        <p>Permite administrar produtos e categorias e dá acesso às configurações operacionais, como sincronização, WhatsApp e recursos de dados.</p>
-        <h4>Histórico</h4>
-        <p>Mostra as comandas já fechadas, resultados e filtros de consulta.</p>
-        <h4>Botão +</h4>
-        <p>É a ação única para <strong>Nova comanda</strong>. Use-o sempre que iniciar um novo atendimento.</p>
+        <p>A barra inferior tem quatro áreas. Você não precisa entrar em todas durante um atendimento comum.</p>
+
+        <div class="r27-help-nav-demo" aria-label="Exemplo visual da navegação">
+          <div><span>▤</span><strong>Comandas</strong><small>atender</small></div>
+          <div><span>▥</span><strong>Painel</strong><small>acompanhar</small></div>
+          <div><span>☰</span><strong>Cardápio</strong><small>administrar</small></div>
+          <div><span>◷</span><strong>Histórico</strong><small>consultar</small></div>
+        </div>
+
+        <div class="r27-help-compare">
+          <div><strong>Comandas</strong><p>É a tela principal do atendente. Mostra o que ainda está em aberto.</p></div>
+          <div><strong>Painel</strong><p>Resumo rápido da operação do dia e do estado dos serviços.</p></div>
+          <div><strong>Cardápio</strong><p>Produtos, categorias e configurações administrativas.</p></div>
+          <div><strong>Histórico</strong><p>Vendas já fechadas, filtros, indicadores e exportação.</p></div>
+        </div>
+
+        <h4>E o botão +?</h4>
+        <p>O botão flutuante <b>+</b> serve apenas para <strong>Nova comanda</strong>. Ele fica visível nas áreas principais para que você não precise procurar onde começar um atendimento.</p>
+
+        <div class="r27-help-tip"><strong>Durante o atendimento:</strong> você normalmente alterna apenas entre <b>Comandas</b> e a comanda que está atendendo.</div>
       `
     },
     {
       id:'abrir-comanda',
       icon:'＋',
       title:'Abrir uma nova comanda',
-      summary:'Mesa, balcão, parklet e identificação do cliente.',
+      summary:'Como escolher local e identificar o cliente sem criar duplicidade.',
       body:`
-        <ol>
-          <li>Na tela de Comandas, toque no botão flutuante <strong>+</strong>.</li>
-          <li>Escolha o local. Existem atalhos para <strong>Balcão</strong>, <strong>Mesa 1–5</strong> e <strong>Parklet 1–6</strong>.</li>
-          <li>Informe o nome do cliente quando isso facilitar a identificação.</li>
-          <li>Confirme a abertura.</li>
+        <h4>Quando usar</h4>
+        <p>Use sempre que começar um novo atendimento que ainda não possui comanda aberta.</p>
+
+        <ol class="r27-help-steps">
+          <li><span>1</span><div><strong>Toque em +</strong><p>O painel de Nova comanda será aberto.</p></div></li>
+          <li><span>2</span><div><strong>Escolha o local</strong><p>Há atalhos para <b>Balcão</b>, <b>Mesa 1–5</b> e <b>Parklet 1–6</b>.</p></div></li>
+          <li><span>3</span><div><strong>Informe o cliente, se ajudar</strong><p>O nome é opcional, mas facilita quando existem comandas parecidas.</p></div></li>
+          <li><span>4</span><div><strong>Confirme</strong><p>A comanda passa a aparecer na lista de abertas.</p></div></li>
         </ol>
-        <p>O sistema possui proteção contra abertura duplicada acidental. Se uma comanda já existente parecer ser a mesma que você está tentando criar, confira antes de seguir.</p>
-        <div class="r27-help-tip"><strong>Dica:</strong> use o nome do cliente quando houver mais de uma comanda parecida ou quando o local sozinho não for suficiente para identificar rapidamente quem está sendo atendido.</div>
+
+        <div class="r27-help-example">
+          <span class="r27-help-example-label">Exemplo</span>
+          <strong>João está no Parklet 3.</strong>
+          <p>Toque em <b>+</b> → escolha <b>Parklet 3</b> → digite <b>João</b> → abra a comanda. Na lista você verá o local e o nome, facilitando encontrar o atendimento depois.</p>
+        </div>
+
+        <h4>Se aparecer aviso de possível duplicidade</h4>
+        <p>Confira a lista antes de criar outra. O sistema tenta evitar que a mesma mesa/cliente seja aberto duas vezes por engano.</p>
+
+        <div class="r27-help-warn"><strong>Não crie outra comanda só para corrigir nome ou mesa.</strong> Se a comanda já existe, edite os dados dela.</div>
       `
     },
     {
       id:'lancar-produtos',
       icon:'▦',
       title:'Lançar produtos',
-      summary:'Busca, categorias, Mais lançados e quantidade.',
+      summary:'Toque rápido, busca, categorias, Mais lançados e quantidade.',
       body:`
-        <p>Depois de abrir uma comanda, o cardápio aparece para lançamento rápido.</p>
+        <h4>O jeito mais rápido</h4>
+        <p>Abra a comanda correta e toque no produto consumido. Cada toque acrescenta uma unidade daquele item.</p>
+
+        <div class="r27-help-mini-screen">
+          <div class="r27-help-mini-head"><strong>Mesa 2 • João</strong><span>R$ 46,00</span></div>
+          <div class="r27-help-mini-search">⌕ Buscar produto…</div>
+          <div class="r27-help-mini-products">
+            <span>🍺 Cerveja<small>R$ 12,00</small><b>2</b></span>
+            <span>🧀 Queijo<small>R$ 22,00</small><b>1</b></span>
+          </div>
+          <div class="r27-help-mini-bar"><span>3 itens</span><b>Ver itens</b><strong>Fechar</strong></div>
+        </div>
+
         <ul>
-          <li><strong>Toque em um produto</strong> para lançá-lo na comanda.</li>
-          <li>Use a <strong>busca</strong> quando souber o nome do item.</li>
-          <li>Use as <strong>categorias</strong> para reduzir a lista visível.</li>
-          <li>A seção <strong>Mais lançados</strong> ajuda a acessar rapidamente os produtos usados com mais frequência.</li>
-          <li>O indicador de quantidade mostra quantas unidades daquele produto já estão na comanda.</li>
+          <li><strong>Busca:</strong> use quando souber o nome do item.</li>
+          <li><strong>Categorias:</strong> ajudam a reduzir a lista visível.</li>
+          <li><strong>Mais lançados:</strong> reúne itens frequentes para diminuir rolagem.</li>
+          <li><strong>Quantidade no card:</strong> mostra quantas unidades daquele produto já estão na comanda.</li>
         </ul>
-        <p>O lançamento deve ser feito por toque simples. Para corrigir uma quantidade ou excluir um item, use <strong>Editar itens</strong> em vez de tentar compensar com lançamentos adicionais.</p>
+
+        <div class="r27-help-example">
+          <span class="r27-help-example-label">Exemplo</span>
+          <strong>O cliente pediu 3 cervejas ao longo do atendimento.</strong>
+          <p>Você pode tocar uma vez a cada pedido. O contador do produto mostrará <b>3</b>. Se lançou uma a mais por engano, corrija em <b>Editar itens</b>.</p>
+        </div>
+
+        <div class="r27-help-warn"><strong>Antes de lançar:</strong> confirme o nome/mesa no topo. Isso evita registrar um produto na comanda errada.</div>
       `
     },
     {
-      id:'conferir-itens',
+      id:'ver-editar-fechar',
       icon:'✓',
-      title:'Conferir e editar itens',
-      summary:'Diferença entre Ver itens e Editar itens.',
+      title:'Ver itens, Editar itens ou Fechar?',
+      summary:'A diferença mais importante da tela de comanda.',
       body:`
-        <h4>Ver itens</h4>
-        <p>Abre a lista completa dos itens já lançados <strong>sem iniciar o fechamento</strong>. Use para responder rapidamente “o que já foi lançado nesta comanda?”.</p>
-        <h4>Editar itens</h4>
-        <p>Use quando precisar alterar quantidades ou remover produtos. Essa ação é para correção da comanda.</p>
-        <h4>Fechar</h4>
-        <p>Use somente quando o atendimento terminou e o cliente vai pagar. O fechamento exige forma de pagamento.</p>
-        <div class="r27-help-tip"><strong>Atalho mental:</strong> conferir = Ver itens; corrigir = Editar itens; terminar a venda = Fechar.</div>
+        <p>Os três comandos ficam próximos, mas servem para coisas diferentes.</p>
+
+        <div class="r27-help-action-compare">
+          <div class="view"><span>👁</span><strong>Ver itens</strong><p>Quero <b>conferir</b> o que já foi lançado.</p><small>Não altera nada e não fecha a venda.</small></div>
+          <div class="edit"><span>✎</span><strong>Editar itens</strong><p>Quero <b>corrigir</b> quantidade ou remover um produto.</p><small>Use para consertar a comanda.</small></div>
+          <div class="close"><span>✓</span><strong>Fechar</strong><p>O cliente <b>terminou e vai pagar</b>.</p><small>Transforma a comanda em venda.</small></div>
+        </div>
+
+        <div class="r27-help-example">
+          <span class="r27-help-example-label">Exemplo 1</span>
+          <strong>“Quanto já consumimos?”</strong>
+          <p>Use <b>Ver itens</b>. Você mostra a lista sem iniciar cobrança.</p>
+        </div>
+        <div class="r27-help-example">
+          <span class="r27-help-example-label">Exemplo 2</span>
+          <strong>“Você colocou 3 cervejas, mas foram 2.”</strong>
+          <p>Use <b>Editar itens</b> e ajuste a quantidade para 2.</p>
+        </div>
+        <div class="r27-help-example">
+          <span class="r27-help-example-label">Exemplo 3</span>
+          <strong>“Pode fechar. Vou pagar no Pix.”</strong>
+          <p>Confira a comanda e use <b>Fechar</b>.</p>
+        </div>
+
+        <div class="r27-help-tip"><strong>Atalho mental:</strong> conferir = Ver itens • corrigir = Editar itens • cobrar = Fechar.</div>
       `
     },
     {
       id:'editar-comanda',
       icon:'✎',
-      title:'Editar dados da comanda',
-      summary:'Corrigir local, mesa ou cliente sem abrir outra comanda.',
+      title:'Corrigir mesa, local ou cliente',
+      summary:'Como corrigir identificação sem perder lançamentos.',
       body:`
-        <p>Se a comanda foi aberta com mesa/local ou cliente incorreto, use a edição da própria comanda. Não abra uma segunda comanda apenas para corrigir identificação.</p>
-        <p>Na edição, o botão de retorno é identificado como <strong>Voltar</strong>. A opção <strong>Cancelar comanda</strong> é separada e exige confirmação, justamente para reduzir enganos.</p>
+        <p>Se a comanda foi aberta com o local ou nome incorreto, edite a própria comanda. Os produtos já lançados permanecem nela.</p>
+        <ol>
+          <li>Abra a comanda.</li>
+          <li>Entre em <strong>Editar comanda</strong>.</li>
+          <li>Corrija local/mesa ou cliente.</li>
+          <li>Salve e volte ao atendimento.</li>
+        </ol>
+
+        <div class="r27-help-example">
+          <span class="r27-help-example-label">Exemplo</span>
+          <strong>Ana estava no Balcão e mudou para a Mesa 4.</strong>
+          <p>Não abra uma comanda nova. Edite a comanda atual e troque o local para <b>Mesa 4</b>. Assim os itens já lançados continuam juntos.</p>
+        </div>
+
+        <div class="r27-help-tip">Na tela de edição, <b>Voltar</b> apenas retorna. <b>Cancelar comanda</b> é uma ação diferente e exige confirmação.</div>
       `
     },
     {
       id:'fechar-comanda',
       icon:'$',
-      title:'Fechar uma comanda',
-      summary:'Conferência final, pagamento e registro da venda.',
+      title:'Fechar uma comanda e receber',
+      summary:'Conferência final, forma de pagamento e registro da venda.',
       body:`
-        <ol>
-          <li>Confira os itens e o total.</li>
-          <li>Toque em <strong>Fechar</strong>.</li>
-          <li>Escolha a forma de pagamento.</li>
-          <li>Confirme o fechamento.</li>
+        <h4>Quando usar</h4>
+        <p>Somente quando o atendimento terminou e o cliente vai pagar.</p>
+
+        <ol class="r27-help-steps">
+          <li><span>1</span><div><strong>Confira</strong><p>Abra <b>Ver itens</b> se houver qualquer dúvida sobre o consumo.</p></div></li>
+          <li><span>2</span><div><strong>Toque em Fechar</strong><p>O sistema apresenta o fechamento da comanda.</p></div></li>
+          <li><span>3</span><div><strong>Escolha o pagamento</strong><p>Pix, Dinheiro, Crédito, Débito ou Outro.</p></div></li>
+          <li><span>4</span><div><strong>Confirme</strong><p>A comanda deixa de estar aberta e vira uma venda no Histórico.</p></div></li>
         </ol>
-        <p>Formas de pagamento disponíveis: <strong>Pix, Dinheiro, Crédito, Débito e Outro</strong>.</p>
-        <p>Uma comanda fechada vira venda: entra no <strong>Histórico</strong>, no faturamento e nos indicadores correspondentes.</p>
-        <div class="r27-help-warn"><strong>Atenção:</strong> antes de confirmar, confira o total e a forma de pagamento. Se a comanda foi apenas aberta por engano e não houve venda, use <strong>Cancelar comanda</strong>, não Fechar.</div>
+
+        <div class="r27-help-example">
+          <span class="r27-help-example-label">Exemplo</span>
+          <strong>Total: R$ 68,00. Cliente pagou no débito.</strong>
+          <p>Confira R$ 68,00 → toque em <b>Fechar</b> → escolha <b>Débito</b> → confirme. A venda será registrada no Histórico com essa forma de pagamento.</p>
+        </div>
+
+        <div class="r27-help-warn"><strong>Se o total parecer errado, não confirme o fechamento.</strong> Volte, confira itens e quantidades e corrija antes de cobrar.</div>
       `
     },
     {
       id:'cancelar-comanda',
       icon:'×',
-      title:'Cancelar uma comanda aberta por engano',
-      summary:'Quando cancelar e o que acontece depois.',
+      title:'Cancelar uma comanda',
+      summary:'Quando cancelar, quando não cancelar e o que acontece depois.',
       body:`
-        <p>O cancelamento existe para uma comanda que foi aberta por engano ou que não deve virar venda.</p>
-        <p>Caminho: <strong>Editar comanda → Cancelar comanda → confirmar</strong>.</p>
-        <p>Ao cancelar:</p>
+        <div class="r27-help-action-compare two">
+          <div class="close"><span>✓</span><strong>Fechar</strong><p>Houve consumo e pagamento.</p><small>Registra venda e faturamento.</small></div>
+          <div class="cancel"><span>×</span><strong>Cancelar</strong><p>A comanda não deve virar venda.</p><small>Não entra no faturamento.</small></div>
+        </div>
+
+        <h4>Use Cancelar quando</h4>
         <ul>
-          <li>a comanda sai da lista de abertas;</li>
-          <li><strong>não</strong> registra venda;</li>
-          <li><strong>não</strong> entra no faturamento;</li>
-          <li><strong>não</strong> entra no Histórico de vendas;</li>
-          <li>envios pendentes de WhatsApp daquela comanda são removidos;</li>
+          <li>a comanda foi aberta por engano;</li>
+          <li>o atendimento não aconteceu e ela não deve ser registrada como venda;</li>
+          <li>você precisa removê-la da lista de abertas sem gerar faturamento.</li>
+        </ul>
+
+        <p>Caminho: <strong>Editar comanda → Cancelar comanda → confirmar</strong>.</p>
+
+        <h4>O que acontece</h4>
+        <ul>
+          <li>sai das comandas abertas;</li>
+          <li>não registra venda;</li>
+          <li>não entra no faturamento;</li>
+          <li>não entra no Histórico de vendas;</li>
+          <li>remove envios pendentes de WhatsApp daquela comanda;</li>
           <li>o sistema tenta propagar o cancelamento aos demais aparelhos.</li>
         </ul>
-        <div class="r27-help-warn"><strong>Se o cliente pagou, não cancele.</strong> Feche a comanda normalmente com a forma de pagamento correta.</div>
+
+        <div class="r27-help-example">
+          <span class="r27-help-example-label">Exemplo</span>
+          <strong>Você abriu “Mesa 5” por engano e percebeu logo depois.</strong>
+          <p>Edite essa comanda → <b>Cancelar comanda</b> → confirme. Não use <b>Fechar</b>, pois isso registraria uma venda.</p>
+        </div>
+
+        <div class="r27-help-warn"><strong>Se o cliente consumiu e pagou, não cancele.</strong> Feche com a forma de pagamento correta.</div>
       `
     },
     {
       id:'whatsapp',
       icon:'◉',
-      title:'WhatsApp',
-      summary:'Atualizações opcionais, consentimento e fila por aparelho.',
+      title:'WhatsApp para o cliente',
+      summary:'Quando usar, consentimento, envio e mensagens pendentes.',
       body:`
-        <p>O envio por WhatsApp é <strong>opcional</strong> e deve ser usado com consentimento do cliente.</p>
+        <h4>Para que serve</h4>
+        <p>O WhatsApp permite enviar atualizações da comanda ao cliente quando ele concordar em receber.</p>
+
+        <h4>O que o atendente precisa saber</h4>
         <ul>
-          <li>Somente aparelhos autorizados precisam ter o WhatsApp configurado.</li>
-          <li>As mensagens podem ficar pendentes localmente quando não houver conexão e serão retomadas quando possível.</li>
-          <li>A fila de WhatsApp é <strong>separada em cada aparelho</strong> para evitar mensagens duplicadas.</li>
-          <li>Não é necessário configurar WhatsApp em todos os dispositivos que usam as comandas.</li>
+          <li>o recurso é <strong>opcional</strong>;</li>
+          <li>use somente com consentimento do cliente;</li>
+          <li>apenas aparelhos autorizados precisam ter WhatsApp configurado;</li>
+          <li>se não houver internet, mensagens podem ficar pendentes e ser retomadas depois;</li>
+          <li>a fila de WhatsApp fica separada por aparelho para evitar duplicidade.</li>
         </ul>
-        <p>Se houver uma falha persistente, verifique a configuração em Cardápio e a conectividade. Não limpe os dados do navegador para tentar corrigir WhatsApp.</p>
+
+        <div class="r27-help-example">
+          <span class="r27-help-example-label">Exemplo</span>
+          <strong>Cliente quer acompanhar a comanda no próprio celular.</strong>
+          <p>Com autorização, use o envio do WhatsApp. Se a internet cair no momento, não fique repetindo a ação várias vezes; verifique se o envio ficou pendente.</p>
+        </div>
+
+        <div class="r27-help-warn"><strong>Não tente “consertar” WhatsApp apagando dados do navegador.</strong> Isso pode afetar dados locais do aplicativo.</div>
       `
     },
     {
       id:'painel',
       icon:'▥',
-      title:'Painel',
-      summary:'Resumo operacional e estados que realmente merecem atenção.',
+      title:'Entender o Painel',
+      summary:'O que olhar e quando você pode simplesmente ignorá-lo.',
       body:`
-        <p>O Painel foi pensado para responder rapidamente “como está a operação agora?”. Ele reúne:</p>
-        <ul>
-          <li>valor e quantidade de comandas em aberto;</li>
-          <li>itens lançados nas comandas abertas;</li>
-          <li>faturamento, ticket médio, comandas fechadas e itens vendidos no dia;</li>
-          <li>situação de internet, sincronização, WhatsApp e conflitos.</li>
-        </ul>
-        <p>Quando tudo está saudável, a interface deve permanecer silenciosa. Alertas são importantes quando existe algo que exige ação, como falta de nuvem, conflito ou fila persistente.</p>
+        <p>O Painel é um resumo da operação. Ele não é obrigatório para lançar ou fechar comandas.</p>
+
+        <div class="r27-help-metric-demo">
+          <div><small>Em aberto</small><strong>R$ 184,00</strong><span>4 comandas</span></div>
+          <div><small>Faturamento</small><strong>R$ 620,00</strong><span>12 fechadas</span></div>
+          <div><small>Ticket médio</small><strong>R$ 51,67</strong><span>por comanda</span></div>
+          <div><small>Sync</small><strong>Ativa</strong><span>sem pendências</span></div>
+        </div>
+
+        <h4>Quando está tudo normal</h4>
+        <p>Você não precisa ficar monitorando o Painel. O Rota 27 foi desenhado para ser silencioso quando está saudável.</p>
+
+        <h4>Quando olhar com atenção</h4>
+        <p>Quando aparecer aviso de nuvem indisponível, fila persistente, conflito ou outro estado que peça ação.</p>
+
+        <div class="r27-help-tip"><strong>Para o atendente:</strong> prioridade é a comanda. O Painel serve para acompanhamento, não para interromper o atendimento.</div>
       `
     },
     {
       id:'historico',
       icon:'◷',
-      title:'Histórico de vendas',
-      summary:'Consultar vendas, buscar informações e exportar CSV.',
+      title:'Encontrar uma venda no Histórico',
+      summary:'Filtros, busca, detalhes, indicadores e CSV.',
       body:`
-        <p>O Histórico contém as comandas <strong>fechadas como venda</strong>. Você pode:</p>
+        <p>O Histórico contém vendas já <strong>fechadas</strong>. É onde você procura o que aconteceu depois que uma comanda deixou de estar aberta.</p>
+
+        <h4>Você pode buscar por</h4>
         <ul>
-          <li>filtrar por <strong>Hoje, 7 dias, 30 dias ou Todos</strong>;</li>
-          <li>buscar por cliente, mesa/local, produto ou forma de pagamento;</li>
-          <li>consultar faturamento, quantidade de comandas, ticket médio e unidades vendidas;</li>
-          <li>ver rankings e os detalhes de uma venda;</li>
-          <li>exportar os dados em <strong>CSV</strong>.</li>
+          <li>cliente;</li>
+          <li>mesa ou local;</li>
+          <li>produto;</li>
+          <li>forma de pagamento.</li>
         </ul>
-        <p>Comandas canceladas não fazem parte do Histórico de vendas e não entram no faturamento.</p>
+
+        <h4>Filtros de período</h4>
+        <p><b>Hoje</b>, <b>7 dias</b>, <b>30 dias</b> e <b>Todos</b>.</p>
+
+        <div class="r27-help-example">
+          <span class="r27-help-example-label">Exemplo</span>
+          <strong>“Qual foi a venda da Mesa 3 que pagou no Pix?”</strong>
+          <p>Abra <b>Histórico</b> → escolha o período adequado → pesquise por <b>Mesa 3</b> ou <b>Pix</b> → abra os detalhes da venda encontrada.</p>
+        </div>
+
+        <p>O Histórico também mostra faturamento, quantidade de comandas, ticket médio, unidades vendidas, rankings e permite exportar CSV.</p>
+
+        <div class="r27-help-tip">Comandas <b>canceladas</b> não aparecem como vendas e não entram no faturamento.</div>
       `
     },
     {
       id:'cardapio',
       icon:'☰',
-      title:'Cardápio e categorias',
-      summary:'Produtos, preços, categorias e importação/exportação.',
+      title:'Produtos, preços e categorias',
+      summary:'O que pode ser alterado no Cardápio e cuidados no meio do turno.',
       body:`
-        <p>Na área Cardápio é possível manter os itens usados no atendimento.</p>
+        <p>O Cardápio é a área administrativa dos itens vendidos.</p>
+
+        <h4>O que pode ser feito</h4>
         <ul>
           <li>criar e editar categorias;</li>
           <li>criar e editar produtos;</li>
-          <li>ajustar informações e preços dos itens;</li>
-          <li>importar e exportar cardápio em <strong>CSV/TXT</strong>;</li>
-          <li>validar a importação antes de adotar os dados;</li>
-          <li>normalizar e, quando necessário, unificar categorias semelhantes de forma reversível.</li>
+          <li>ajustar preços e informações;</li>
+          <li>importar e exportar em CSV/TXT;</li>
+          <li>validar uma importação antes de adotar os dados;</li>
+          <li>normalizar e unificar categorias semelhantes de forma reversível.</li>
         </ul>
-        <div class="r27-help-warn"><strong>Durante um turno:</strong> evite alterações administrativas desnecessárias no cardápio. Se precisar corrigir preço ou produto, confira o impacto antes de continuar os lançamentos.</div>
+
+        <div class="r27-help-example">
+          <span class="r27-help-example-label">Exemplo</span>
+          <strong>O preço de uma cerveja mudou de R$ 12 para R$ 13.</strong>
+          <p>Abra <b>Cardápio</b> → localize o produto → edite o preço → salve. Faça isso com atenção para que os próximos lançamentos usem a informação correta.</p>
+        </div>
+
+        <div class="r27-help-warn"><strong>Evite reorganizações grandes durante o atendimento.</strong> Alterações administrativas podem esperar quando não são necessárias para a próxima venda.</div>
       `
     },
     {
       id:'sync',
       icon:'↻',
       title:'Sincronização entre aparelhos',
-      summary:'Como funciona, o que fazer offline e quando intervir.',
+      summary:'Explicação sem termos técnicos: o que acontece e quando intervir.',
       body:`
-        <p>O Rota 27 é <strong>local-first</strong>: cada aparelho registra primeiro os dados localmente. Quando há conexão, a sincronização envia alterações pendentes e recebe mudanças dos outros aparelhos.</p>
-        <h4>Operação normal</h4>
+        <div class="r27-help-lead">
+          <strong>Pense assim:</strong>
+          <p>Cada aparelho trabalha sozinho primeiro e, quando existe conexão, troca as novidades com os outros aparelhos.</p>
+        </div>
+
+        <div class="r27-help-sync-demo">
+          <span>📱 Atendente A</span><i>⇄</i><strong>Nuvem</strong><i>⇄</i><span>📱 Atendente B</span>
+        </div>
+
+        <h4>Durante o uso normal</h4>
         <ul>
-          <li>Você não precisa abrir a tela de sincronização a cada lançamento.</li>
-          <li>As alterações são sincronizadas automaticamente.</li>
-          <li>Se a internet cair, continue trabalhando: os dados permanecem locais e sobem quando a conexão voltar.</li>
-          <li>Em uso simultâneo, alterações de quantidade são tratadas como deltas para preservar lançamentos concorrentes.</li>
+          <li>você não precisa tocar em “Sincronizar” a cada lançamento;</li>
+          <li>as alterações sobem automaticamente;</li>
+          <li>se a internet cair, o aparelho continua trabalhando localmente;</li>
+          <li>quando a conexão volta, as pendências são enviadas e as mudanças dos outros aparelhos chegam.</li>
         </ul>
-        <h4>Primeira configuração de um aparelho</h4>
-        <p>Somente o aparelho que contém os dados de referência deve <strong>publicar a base inicial</strong>. Um aparelho novo, quando a base compartilhada já existe, deve <strong>adotar a base existente</strong>.</p>
-        <div class="r27-help-warn"><strong>Não repita publicar/adotar por rotina.</strong> Depois que o aparelho participa da base compartilhada, a operação normal é sincronizar.</div>
-        <h4>Quando merece atenção</h4>
-        <p>Verifique se a fila continua pendente por muito tempo depois da reconexão, se uma comanda não aparece em outro aparelho após tempo razoável ou se houver conflito indicado pelo sistema.</p>
+
+        <div class="r27-help-example">
+          <span class="r27-help-example-label">Exemplo</span>
+          <strong>Android lançou 1 cerveja e o iPhone lançou 1 queijo na mesma comanda.</strong>
+          <p>Com a sincronização funcionando, as duas alterações devem convergir e a comanda deve terminar com os dois lançamentos.</p>
+        </div>
+
+        <h4>Publicar base x Adotar base</h4>
+        <div class="r27-help-compare">
+          <div><strong>Publicar base</strong><p>Usado apenas na implantação inicial, pelo aparelho que contém os dados de referência.</p></div>
+          <div><strong>Adotar base</strong><p>Usado por um aparelho novo quando a base compartilhada já existe.</p></div>
+        </div>
+
+        <div class="r27-help-warn"><strong>Depois de configurado, não repita publicar/adotar por rotina.</strong> A operação normal é automática.</div>
       `
     },
     {
       id:'offline',
       icon:'⌁',
-      title:'Uso sem internet',
-      summary:'O que continua funcionando e o que fica pendente.',
+      title:'O que fazer se a internet cair',
+      summary:'O que continua funcionando, o que fica pendente e o que não fazer.',
       body:`
-        <p>O aplicativo foi projetado para continuar o atendimento mesmo com perda temporária de conexão.</p>
+        <div class="r27-help-lead">
+          <strong>Primeiro: continue atendendo.</strong>
+          <p>O Rota 27 foi feito para funcionar localmente mesmo quando a nuvem fica temporariamente indisponível.</p>
+        </div>
+
+        <h4>Continua funcionando no aparelho</h4>
         <ul>
-          <li>Continue abrindo, lançando, editando e fechando comandas localmente.</li>
-          <li>Alterações destinadas a outros aparelhos ficam pendentes até a conexão voltar.</li>
-          <li>Mensagens de WhatsApp também dependem de conexão para serem enviadas.</li>
+          <li>abrir comandas;</li>
+          <li>lançar produtos;</li>
+          <li>editar itens;</li>
+          <li>conferir;</li>
+          <li>fechar comandas localmente.</li>
         </ul>
-        <p>Quando a internet voltar, dê tempo para as filas convergirem. Se o sistema mostrar um alerta de nuvem indisponível, isso não significa que os dados locais foram apagados.</p>
-        <div class="r27-help-warn"><strong>Não limpe dados do Safari/Chrome e não reinstale a PWA</strong> como tentativa normal de correção.</div>
+
+        <h4>O que fica esperando conexão</h4>
+        <ul>
+          <li>sincronizar mudanças com outros aparelhos;</li>
+          <li>receber alterações feitas nos outros aparelhos;</li>
+          <li>enviar mensagens de WhatsApp.</li>
+        </ul>
+
+        <div class="r27-help-example">
+          <span class="r27-help-example-label">Exemplo</span>
+          <strong>A internet caiu por 5 minutos no meio do atendimento.</strong>
+          <p>Continue lançando no aparelho. Quando a conexão voltar, aguarde a sincronização convergir antes de concluir que houve perda de dados.</p>
+        </div>
+
+        <div class="r27-help-warn"><strong>Não limpe Safari/Chrome e não reinstale a PWA.</strong> Essas ações podem remover dados locais e não são o procedimento normal para falta de internet.</div>
       `
     },
     {
       id:'backup',
       icon:'⇩',
       title:'Backup e restauração',
-      summary:'Proteção dos dados locais e cuidados antes de restaurar.',
+      summary:'Quando fazer backup e por que restaurar exige cuidado.',
       body:`
-        <p>O sistema permite exportar e restaurar backup em <strong>JSON</strong> e possui diagnóstico de integridade.</p>
+        <h4>Backup</h4>
+        <p>Cria um arquivo JSON com uma cópia dos dados operacionais do aparelho, como comandas, cardápio, categorias e histórico. O token do dispositivo não é exportado.</p>
+
+        <h4>Quando vale fazer</h4>
         <ul>
-          <li>Use backup quando quiser guardar uma cópia dos dados do aparelho ou quando houver qualquer dúvida de integridade.</li>
-          <li>O backup protege dados operacionais como comandas, cardápio, categorias e histórico.</li>
-          <li>O token do dispositivo não é exportado no backup.</li>
+          <li>antes de uma intervenção importante;</li>
+          <li>quando houver qualquer dúvida sobre integridade;</li>
+          <li>quando você quiser guardar uma cópia adicional dos dados.</li>
         </ul>
-        <div class="r27-help-warn"><strong>Restaurar substitui dados locais.</strong> Antes de restaurar, confira se o arquivo é o correto e evite fazer isso durante atendimento sem necessidade real.</div>
+
+        <h4>Restauração</h4>
+        <p>Substitui os dados locais pelo conteúdo do arquivo escolhido. Por isso deve ser usada com atenção.</p>
+
+        <div class="r27-help-example">
+          <span class="r27-help-example-label">Exemplo</span>
+          <strong>Você recebeu um arquivo de backup antigo.</strong>
+          <p>Não restaure “só para testar” no aparelho de operação. Primeiro confirme que o arquivo é realmente o desejado e que a restauração é necessária.</p>
+        </div>
+
+        <div class="r27-help-warn"><strong>Evite restaurar durante atendimento real sem necessidade.</strong></div>
       `
     },
     {
       id:'atualizacao',
       icon:'↑',
-      title:'Atualizar a PWA',
-      summary:'Como receber uma nova versão sem apagar dados.',
+      title:'Atualizar o aplicativo',
+      summary:'Como receber uma nova versão sem reinstalar e sem apagar dados.',
       body:`
-        <p>Quem já possui a PWA instalada <strong>não precisa reinstalar</strong> para receber uma atualização.</p>
-        <ol>
-          <li>Conecte o aparelho à internet.</li>
-          <li>Abra a PWA instalada e aguarde alguns segundos.</li>
-          <li>Feche completamente o aplicativo.</li>
-          <li>Abra novamente.</li>
-          <li>Confira o selo da versão e a situação da sincronização.</li>
+        <p>Quem já possui a PWA instalada normalmente <strong>não precisa reinstalar</strong>.</p>
+
+        <ol class="r27-help-steps">
+          <li><span>1</span><div><strong>Conecte à internet</strong><p>O aparelho precisa alcançar a versão publicada.</p></div></li>
+          <li><span>2</span><div><strong>Abra a PWA</strong><p>Aguarde alguns segundos para permitir a atualização do cache.</p></div></li>
+          <li><span>3</span><div><strong>Feche completamente</strong><p>Não apenas minimize.</p></div></li>
+          <li><span>4</span><div><strong>Abra novamente</strong><p>Confira o selo da versão e a situação da sincronização.</p></div></li>
         </ol>
-        <div class="r27-help-warn"><strong>Nunca limpe os dados do navegador para forçar atualização.</strong> Isso pode remover dados locais importantes.</div>
+
+        <div class="r27-help-warn"><strong>Nunca apague os dados do navegador para “forçar” atualização.</strong> Dados importantes da operação ficam armazenados localmente.</div>
+      `
+    },
+    {
+      id:'se-acontecer',
+      icon:'?',
+      title:'Se acontecer isso…',
+      summary:'Respostas rápidas para situações comuns do dia a dia.',
+      body:`
+        <div class="r27-help-scenarios">
+          <details open><summary>Preciso conferir o que já foi lançado.</summary><p>Abra a comanda e toque em <b>Ver itens</b>. Isso não fecha nem altera a comanda.</p></details>
+          <details><summary>Lancei um produto a mais.</summary><p>Use <b>Editar itens</b> e corrija a quantidade ou remova o item.</p></details>
+          <details><summary>Abri a comanda na mesa errada.</summary><p>Edite os dados da própria comanda. Não crie outra só para corrigir o local.</p></details>
+          <details><summary>Abri uma comanda por engano.</summary><p>Use <b>Editar comanda → Cancelar comanda</b>. Assim ela não vira venda.</p></details>
+          <details><summary>Uma comanda não apareceu no outro aparelho.</summary><p>Confirme conexão e aguarde tempo razoável para convergência. Se continuar divergente após reconexão, trate como problema de sincronização.</p></details>
+          <details><summary>O WhatsApp não enviou.</summary><p>Confira internet e configuração do aparelho autorizado. Verifique se o envio ficou pendente antes de repetir.</p></details>
+          <details><summary>Apareceu “Sem conexão com a nuvem”.</summary><p>Continue a operação local. Aguarde a conexão voltar e a sincronização convergir.</p></details>
+          <details><summary>O total parece errado.</summary><p><b>Não feche.</b> Confira itens e quantidades. Total incorreto deve ser resolvido antes da cobrança.</p></details>
+          <details><summary>Quero encontrar uma venda antiga.</summary><p>Use <b>Histórico</b>, escolha o período e pesquise por cliente, local, produto ou pagamento.</p></details>
+          <details><summary>O aplicativo parece desatualizado.</summary><p>Siga o procedimento normal de atualização da PWA. Não reinstale nem apague dados como primeira tentativa.</p></details>
+        </div>
       `
     },
     {
       id:'problemas',
       icon:'!',
-      title:'Se algo parecer errado',
-      summary:'Passos seguros antes de tentar ações destrutivas.',
+      title:'Quando parar e pedir ajuda',
+      summary:'Como reconhecer problemas críticos e evitar piorar a situação.',
       body:`
-        <h4>Uma comanda não apareceu em outro aparelho</h4>
-        <p>Confirme que os dois aparelhos estão conectados e dê um tempo razoável para a sincronização convergir. Se continuar divergente após reconexão, trate como falha de sincronização.</p>
-        <h4>Apareceu “Sem conexão com a nuvem”</h4>
-        <p>Continue a operação local. O aviso indica que a nuvem não está acessível naquele momento; os dados locais continuam disponíveis.</p>
-        <h4>WhatsApp não enviou</h4>
-        <p>Confira internet e configuração no aparelho autorizado. Uma mensagem pode permanecer pendente e ser retomada depois.</p>
-        <h4>O total parece errado</h4>
-        <p><strong>Não feche a comanda.</strong> Confira os itens e quantidades. Divergência de total ou cobrança é situação crítica e deve ser tratada antes de registrar a venda.</p>
-        <h4>O aplicativo parece desatualizado</h4>
-        <p>Use o procedimento normal de atualização da PWA. Não reinstale e não apague dados como primeira tentativa.</p>
+        <p>Alguns problemas merecem atenção imediata porque podem afetar cobrança ou integridade dos dados.</p>
+
+        <div class="r27-help-critical">
+          <strong>Pare antes de confirmar a venda se houver:</strong>
+          <ul>
+            <li>total ou cobrança incorreta;</li>
+            <li>itens desaparecendo ou duplicando de forma grave;</li>
+            <li>fechamento registrando informação errada;</li>
+            <li>dúvida real sobre qual comanda está sendo cobrada.</li>
+          </ul>
+        </div>
+
+        <h4>Problemas de sincronização</h4>
+        <p>Se uma divergência não desaparecer depois que a conexão voltou e houve tempo razoável para sincronizar, registre aparelho, horário, comanda envolvida e o que aconteceu.</p>
+
+        <h4>O que não fazer por impulso</h4>
+        <ul>
+          <li>não apagar dados do navegador;</li>
+          <li>não reinstalar a PWA como primeira tentativa;</li>
+          <li>não restaurar backup sem saber o impacto;</li>
+          <li>não repetir ações de WhatsApp várias vezes sem verificar a fila;</li>
+          <li>não criar outra comanda para “compensar” um erro que pode ser editado.</li>
+        </ul>
       `
     },
     {
       id:'boas-praticas',
       icon:'★',
-      title:'Boas práticas no atendimento',
-      summary:'Hábitos simples para reduzir erro e retrabalho.',
+      title:'Boas práticas para atender mais rápido',
+      summary:'Pequenos hábitos que evitam erro, retrabalho e perda de tempo.',
       body:`
-        <ul>
-          <li>Antes de lançar, confirme que você está na comanda correta.</li>
-          <li>Use <strong>Ver itens</strong> para conferência rápida em vez de procurar produto por produto.</li>
-          <li>Corrija quantidades por <strong>Editar itens</strong>.</li>
-          <li>Antes de fechar, confira itens, total e forma de pagamento.</li>
-          <li>Use <strong>Cancelar comanda</strong> somente quando ela não deve virar venda.</li>
-          <li>Se estiver offline, continue trabalhando e aguarde a sincronização depois.</li>
-          <li>Evite telas técnicas quando tudo estiver funcionando normalmente.</li>
-          <li>Não limpe dados locais e não reinstale a PWA sem uma razão específica.</li>
+        <ul class="r27-help-checklist">
+          <li><span>✓</span><div><strong>Confirme a comanda antes de lançar.</strong><p>Olhe mesa/local e cliente no topo.</p></div></li>
+          <li><span>✓</span><div><strong>Use Mais lançados para itens frequentes.</strong><p>Evite procurar toda hora o que já está acessível no início.</p></div></li>
+          <li><span>✓</span><div><strong>Use Ver itens para conferência.</strong><p>Não navegue categoria por categoria para lembrar o consumo.</p></div></li>
+          <li><span>✓</span><div><strong>Corrija pelo Editar itens.</strong><p>Não “compense” um lançamento errado com outra operação.</p></div></li>
+          <li><span>✓</span><div><strong>Confira antes de fechar.</strong><p>Itens, total e forma de pagamento.</p></div></li>
+          <li><span>✓</span><div><strong>Deixe o sistema saudável em silêncio.</strong><p>Não abra telas técnicas se não existe problema.</p></div></li>
+          <li><span>✓</span><div><strong>Se ficar offline, continue trabalhando.</strong><p>Depois aguarde a sincronização convergir.</p></div></li>
         </ul>
       `
+    },
+    {
+      id:'glossario',
+      icon:'i',
+      title:'Palavras que aparecem no sistema',
+      summary:'Um pequeno glossário para quem está usando pela primeira vez.',
+      body:`
+        <div class="r27-help-glossary">
+          <div><strong>Comanda aberta</strong><p>Atendimento ainda em andamento.</p></div>
+          <div><strong>Fechar</strong><p>Finalizar o atendimento e registrar a venda.</p></div>
+          <div><strong>Cancelar</strong><p>Remover uma comanda que não deve virar venda.</p></div>
+          <div><strong>Histórico</strong><p>Vendas que já foram fechadas.</p></div>
+          <div><strong>Sincronização</strong><p>Troca de alterações entre os aparelhos.</p></div>
+          <div><strong>Fila pendente</strong><p>Alterações que ainda aguardam envio para a nuvem ou WhatsApp.</p></div>
+          <div><strong>Conflito</strong><p>Situação em que alterações de aparelhos diferentes precisam ser revisadas.</p></div>
+          <div><strong>PWA</strong><p>O Rota 27 instalado no celular como aplicativo a partir do navegador.</p></div>
+          <div><strong>Backup</strong><p>Cópia de segurança dos dados locais.</p></div>
+        </div>
+      `
     }
+  ];
+
+  const quickActions=[
+    {id:'primeiros-minutos',icon:'▶',label:'Começar agora',hint:'Nunca usei o sistema'},
+    {id:'abrir-comanda',icon:'＋',label:'Abrir comanda',hint:'Iniciar atendimento'},
+    {id:'lancar-produtos',icon:'▦',label:'Lançar item',hint:'Registrar consumo'},
+    {id:'ver-editar-fechar',icon:'✓',label:'Conferir/corrigir',hint:'Ver ou editar itens'},
+    {id:'fechar-comanda',icon:'$',label:'Fechar conta',hint:'Registrar pagamento'},
+    {id:'se-acontecer',icon:'?',label:'Algo deu errado',hint:'Respostas rápidas'}
   ];
 
   function normalize(text){
@@ -330,7 +594,21 @@
   }
 
   function renderChips(){
-    return sections.slice(0,10).map(section=>`<button type="button" class="r27-help-chip" data-help-target="${section.id}">${section.title}</button>`).join('');
+    return ['primeiros-minutos','abrir-comanda','lancar-produtos','ver-editar-fechar','fechar-comanda','cancelar-comanda','sync','se-acontecer']
+      .map(id=>sections.find(section=>section.id===id))
+      .filter(Boolean)
+      .map(section=>`<button type="button" class="r27-help-chip" data-help-target="${section.id}">${section.title}</button>`)
+      .join('');
+  }
+
+  function renderQuickActions(){
+    return quickActions.map(action=>`
+      <button type="button" class="r27-help-quick" data-help-target="${action.id}">
+        <span aria-hidden="true">${action.icon}</span>
+        <div><strong>${action.label}</strong><small>${action.hint}</small></div>
+        <b aria-hidden="true">›</b>
+      </button>
+    `).join('');
   }
 
   function createOverlay(){
@@ -345,28 +623,39 @@
           <div>
             <small>Rota 27 Bodega</small>
             <h2 id="r27HelpTitle">Ajuda do sistema</h2>
-            <p>Guia completo para atendimento e operação.</p>
+            <p>Explicações simples, exemplos e respostas rápidas.</p>
           </div>
           <button type="button" class="r27-help-close" aria-label="Fechar ajuda">×</button>
         </header>
+
         <div class="r27-help-toolbar">
           <label class="r27-help-search">
             <span aria-hidden="true">⌕</span>
-            <input type="search" id="r27HelpSearch" placeholder="Buscar na ajuda…" autocomplete="off" />
+            <input type="search" id="r27HelpSearch" placeholder="O que você quer fazer?" autocomplete="off" />
             <button type="button" class="r27-help-clear" aria-label="Limpar busca">×</button>
           </label>
           <div class="r27-help-chips" aria-label="Atalhos da ajuda">${renderChips()}</div>
         </div>
+
         <div class="r27-help-content">
           <div class="r27-help-intro">
-            <strong>Precisa resolver algo rápido?</strong>
-            <p>Use a busca acima ou abra um tópico. Esta ajuda não altera dados, comandas ou configurações.</p>
+            <strong>Escolha o que você precisa agora</strong>
+            <p>Você pode usar os atalhos abaixo ou pesquisar palavras como “cancelar”, “Pix”, “internet”, “WhatsApp” ou “backup”.</p>
           </div>
+
+          <div class="r27-help-quick-grid" aria-label="Ações rápidas">${renderQuickActions()}</div>
+
+          <div class="r27-help-controls">
+            <button type="button" data-help-expand="all">Abrir todos</button>
+            <button type="button" data-help-expand="none">Fechar todos</button>
+          </div>
+
           <div id="r27HelpResults" class="r27-help-results" hidden></div>
           ${renderSections()}
+
           <footer class="r27-help-footer">
             <strong>Rota 27 Bodega — Comandas</strong>
-            <span>Ajuda baseada na produção v0.15.1</span>
+            <span>Ajuda v2 • baseada na produção v0.15.1</span>
           </footer>
         </div>
       </section>`;
@@ -380,6 +669,8 @@
     });
     overlay.querySelector('#r27HelpSearch')?.addEventListener('input',event=>filterHelp(event.target.value));
     overlay.querySelectorAll('[data-help-target]').forEach(button=>button.addEventListener('click',()=>openSection(button.dataset.helpTarget)));
+    overlay.querySelector('[data-help-expand="all"]')?.addEventListener('click',()=>setAllSections(true));
+    overlay.querySelector('[data-help-expand="none"]')?.addEventListener('click',()=>setAllSections(false));
     return overlay;
   }
 
@@ -419,11 +710,18 @@
 
   function openSection(id){
     const overlay=createOverlay();
+    const input=overlay.querySelector('#r27HelpSearch');
+    if(input?.value){input.value='';filterHelp('');}
     const section=overlay.querySelector('#r27-help-'+id);
     if(!section)return;
     section.hidden=false;
     section.open=true;
     section.scrollIntoView({behavior:'smooth',block:'start'});
+  }
+
+  function setAllSections(open){
+    const overlay=createOverlay();
+    overlay.querySelectorAll('.r27-help-section:not([hidden])').forEach(section=>{section.open=open;});
   }
 
   function filterHelp(value){
@@ -436,16 +734,24 @@
       if(matches){visible+=1;if(query)section.open=true;}
       else section.open=false;
     });
+    overlay.querySelector('.r27-help-quick-grid')?.toggleAttribute('hidden',Boolean(query));
+    overlay.querySelector('.r27-help-controls')?.toggleAttribute('hidden',Boolean(query));
     const results=overlay.querySelector('#r27HelpResults');
     if(results){
       if(query){
         results.hidden=false;
-        results.textContent=visible?`${visible} tópico${visible===1?'':'s'} encontrado${visible===1?'':'s'}.`:'Nenhum tópico encontrado. Tente outra palavra.';
+        results.innerHTML=visible
+          ? `<strong>${visible}</strong> tópico${visible===1?'':'s'} encontrado${visible===1?'':'s'} para “${escapeText(value.trim())}”.`
+          : `Nenhum tópico encontrado para “${escapeText(value.trim())}”. Tente outra palavra.`;
       }else{
         results.hidden=true;
         results.textContent='';
       }
     }
+  }
+
+  function escapeText(value){
+    return String(value||'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
   }
 
   function start(){
@@ -454,7 +760,7 @@
     document.addEventListener('keydown',event=>{
       if(event.key==='Escape'&&document.getElementById(HELP_ID)?.classList.contains('open'))closeHelp();
     });
-    console.info('[Rota27] ajuda do usuário carregada (candidata pós-piloto).');
+    console.info('[Rota27] ajuda do usuário v2 carregada (candidata pós-piloto).');
   }
 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
