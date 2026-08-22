@@ -2,28 +2,47 @@
 
 Última revisão: 21/08/2026
 
-## Baseline atual
+## Baseline preparada
 
-- versão: **v0.15.1**
+- versão: **v0.16.0**
 - branch de produção: `main`
 - entrada pública: `index.html`
-- Service Worker: cache `rota27-comandas-v0.15.1`
-- código da release funcional v0.15.1 promovido pelo PR #7
-- piloto em ambiente real autorizado
+- Service Worker: cache `rota27-comandas-v0.16.0`
+- base funcional herdada da v0.15.1
+- nova Ajuda integrada preparada pelo PR #8
+- piloto real da v0.16.0 previsto para **22/08/2026**
 
-## Estado do GitHub no fechamento desta revisão
+## Estado funcional
 
-- PRs de desenvolvimento ativos: **nenhum**;
-- issues abertas: **nenhuma**;
-- PR histórico v0.14 que ainda estava aberto foi encerrado como superseded;
-- README, guia de publicação, release notes, princípios de produto, roteiro do piloto e roadmap pós-piloto foram atualizados na `main`.
+A v0.16.0 preserva as funções já validadas da v0.15.1:
 
-Branches históricas podem permanecer como registro de desenvolvimento; elas não representam trabalho ativo nem produção pendente.
+- operação desktop, Android e iPhone/PWA;
+- abertura, lançamento, edição, fechamento e cancelamento;
+- sincronização multidispositivo;
+- operação offline-first;
+- WhatsApp real;
+- Histórico, Painel, Cardápio, backup e importação/exportação.
+
+A única evolução funcional de interface desta release é a Ajuda integrada. Ela não altera dados, totais, fechamento, cancelamento, sync ou WhatsApp.
+
+## Ajuda integrada
+
+- botão `? Ajuda` no cabeçalho;
+- busca por intenção;
+- atalhos de ação;
+- Primeiros 3 minutos;
+- exemplos reais;
+- mini-guias visuais;
+- respostas rápidas;
+- glossário;
+- conteúdo offline;
+- refinamento da seção **Se acontecer isso…** para impedir quebra palavra por palavra e melhorar legibilidade.
 
 ## Backends
 
 - `rota27-whatsapp`: versão validada permanece implantada;
 - `rota27-sync`: versão validada permanece implantada;
+- nenhum backend foi alterado pela v0.16.0;
 - secrets/tokens não são armazenados no GitHub;
 - autenticação customizada por `x-rota27-device-token` preservada.
 
@@ -33,24 +52,39 @@ Branches históricas podem permanecer como registro de desenvolvimento; elas nã
 - não limpar dados do Safari/Chrome;
 - `localStorage` continua sendo a base local do aparelho;
 - sync e WhatsApp possuem filas separadas;
-- cancelamento possui fila própria para propagação quando necessário.
+- cancelamento possui fila própria para propagação quando necessário;
+- Service Worker troca o cache antigo pelo `rota27-comandas-v0.16.0` sem tocar no `localStorage`.
 
-## Pendências funcionais
+## Pendências funcionais conhecidas
 
-**Nenhuma pendência funcional conhecida bloqueia o piloto real da v0.15.1.**
+**Nenhuma pendência funcional conhecida bloqueia o piloto real da v0.16.0 neste momento.**
+
+A Ajuda ainda deve ser validada no ambiente real em desktop/Android/iPhone durante o piloto de 22/08/2026.
 
 ## Pontos de evolução já registrados
 
-Não são bugs bloqueantes e não devem ser alterados durante o turno:
+Continuam pós-piloto, salvo evidência real:
 
-- tornar cancelamento um evento nativo/tombstone com trilha de auditoria, caso o piloto demonstre necessidade;
-- normalizar identificadores internos DEV/RC usados apenas em metadados técnicos da camada histórica de sincronização;
-- avaliar busca em comandas abertas somente se o volume real justificar;
-- avaliar proteção por PIN para ações administrativas somente se houver risco real de uso indevido;
-- avaliar resumo de turno apenas se substituir tarefa manual existente.
+- cancelamento como evento nativo/tombstone com trilha de auditoria;
+- normalização adicional de metadados históricos DEV/RC, quando necessário;
+- busca em comandas abertas somente se o volume justificar;
+- proteção por PIN para ações administrativas somente se houver risco real de uso indevido;
+- resumo de turno somente se substituir tarefa manual existente.
 
-Todos esses itens estão registrados em `docs/ROADMAP-POST-PILOTO.md` e serão priorizados por evidência do ambiente real.
+## Regra para o piloto de 22/08/2026
 
-## Regra a partir daqui
+Ao iniciar o turno, a v0.16.0 fica congelada.
 
-Durante o piloto, a v0.15.1 fica congelada. Só publicar nova versão se surgir P0/P1 com impacto real em integridade, cobrança, sincronização, WhatsApp ou continuidade da operação.
+- P0/P1 podem justificar hotfix;
+- P2/P3 devem ser registrados para depois do turno;
+- não reinstalar PWA;
+- não limpar `localStorage`;
+- não alterar `rota27-sync` ou `rota27-whatsapp` sem necessidade real;
+- manter a interface silenciosa quando tudo estiver saudável.
+
+Documentos de referência:
+
+- `docs/PILOTO-REAL-v0.16.0.md`
+- `docs/RELEASE-v0.16.0.md`
+- `docs/ROADMAP-POST-PILOTO.md`
+- `docs/PRODUCT-PRINCIPLES.md`
