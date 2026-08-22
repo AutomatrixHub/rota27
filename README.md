@@ -4,11 +4,11 @@ Aplicativo mobile-first para controle rápido de comandas da **Rota 27 Bodega**.
 
 ## Estado atual
 
-**Produção: PWA v0.16.0 — baseline v0.15.1 + Ajuda completa integrada**
+**Produção: PWA v0.16.1 — baseline v0.15.1 + Ajuda completa integrada + hotfix preventivo de versão**
 
-A `main` contém a produção v0.16.0. Ela preserva o comportamento operacional validado da v0.15.1 e adiciona uma camada de Ajuda acessível pelo botão `?`, com explicações, exemplos, mini-guias visuais, respostas rápidas e conteúdo disponível offline. O piloto real da v0.16.0 está programado para 22/08/2026.
+A `main` passará a conter a produção v0.16.1 após o merge deste hotfix. Ela preserva o comportamento operacional validado da v0.15.1, mantém a Ajuda completa introduzida na v0.16.0 e elimina a sobreposição entre protetores de versão legados. O piloto real da v0.16.1 está programado para 22/08/2026.
 
-## Principais recursos da produção v0.16.0
+## Principais recursos da produção v0.16.1
 
 - abertura de comanda por mesa/local/cliente;
 - lançamento rápido de produtos;
@@ -45,7 +45,8 @@ A `main` contém a produção v0.16.0. Ela preserva o comportamento operacional 
 - correção automática de configuração legada que apontava o WhatsApp para `rota27-sync`, preservando o token local;
 - **Ajuda completa dentro do aplicativo**, com busca por intenção, exemplos de atendimento, comparações entre ações, mini-representações da interface, respostas rápidas e glossário;
 - seção **Se acontecer isso…** com primeira ação segura para situações comuns;
-- Ajuda disponível também offline pelo Service Worker.
+- Ajuda disponível também offline pelo Service Worker;
+- protetor final único de versão em `assets/v0161-final.js`, evitando disputa com finals legados.
 
 ## Ajuda do sistema
 
@@ -104,7 +105,7 @@ Após uma nova publicação:
 4. abrir novamente;
 5. confirmar o selo da versão e a sincronização saudável.
 
-Não limpar dados do navegador e não remover a PWA para atualizar. O Service Worker da v0.16.0 usa o cache `rota27-comandas-v0.16.0` e remove caches antigos sem tocar no `localStorage`.
+Não limpar dados do navegador e não remover a PWA para atualizar. O Service Worker da v0.16.1 usa o cache `rota27-comandas-v0.16.1` e remove caches antigos sem tocar no `localStorage`.
 
 ## Dados locais
 
@@ -126,12 +127,12 @@ As Edge Functions usam autenticação própria pelo header `x-rota27-device-toke
 
 ## Operação real
 
-A v0.16.0 é a baseline oficial para o piloto real de 22/08/2026. Ao iniciar o turno, a baseline volta a ficar congelada: só publicar nova versão se surgir P0/P1 com impacto real em integridade, cobrança, sincronização, WhatsApp ou continuidade da operação.
+A v0.16.1 é a baseline oficial para o piloto real de 22/08/2026. Ao iniciar o turno, a baseline volta a ficar congelada: só publicar nova versão se surgir P0/P1 com impacto real em integridade, cobrança, sincronização, WhatsApp ou continuidade da operação.
 
 Documentos principais:
 
-- `docs/PILOTO-REAL-v0.16.0.md`
-- `docs/RELEASE-v0.16.0.md`
+- `docs/PILOTO-REAL-v0.16.1.md`
+- `docs/RELEASE-v0.16.1.md`
 - `docs/STATUS-PRODUCAO.md`
 - `docs/ROADMAP-POST-PILOTO.md`
 - `docs/V0.15-MULTIDEVICE.md`
@@ -140,4 +141,4 @@ Documentos principais:
 
 ## Versão
 
-Produção: **0.16.0**
+Produção: **0.16.1**
