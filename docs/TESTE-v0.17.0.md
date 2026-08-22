@@ -6,9 +6,25 @@ Produção atual: **v0.16.1**.
 
 Branch de teste: `feature/v0.17.0-clientes-gerente-layout`.
 
+## Estado da validação em 22/08/2026
+
+A Fase 1 local foi aprovada em `http://localhost:3002/`:
+
+- importação TXT/CSV de clientes: OK;
+- cadastro manual de clientes: OK;
+- criação automática de cliente pela comanda com WhatsApp: OK;
+- autocomplete na Nova comanda e Editar comanda: OK;
+- hierarquia visual cliente em destaque + mesa/local abaixo: OK;
+- configuração do WhatsApp do gerente: OK;
+- smoke operacional de abrir, lançar, corrigir, editar, fechar e cancelar: OK.
+
+Pendente nesta fase apenas o **envio real de lançamento para o WhatsApp do gerente**.
+
+O `rota27-sync` v0.17.0 foi implantado de forma controlada no Supabase para aceitar `client_upsert`, `client_delete` e `manager_config_replace`. O `rota27-whatsapp` não foi alterado.
+
 ## Etapa A — smoke local sem sincronização
 
-Usar uma origem LAB, preferencialmente `http://localhost:3001/`, com sincronização desativada.
+Usar uma origem LAB, preferencialmente `http://localhost:3002/`, com sincronização desativada.
 
 Validar:
 
@@ -125,13 +141,13 @@ Testar também lançamento offline + reconexão.
 
 ## Etapa E — backend/sincronização v0.17
 
-Antes desta etapa, implantar a versão v0.17.0 da Edge Function `rota27-sync`, que adiciona suporte aos eventos:
+A versão v0.17.0 da Edge Function `rota27-sync` já foi implantada e adiciona suporte aos eventos:
 
 - `client_upsert`;
 - `client_delete`;
 - `manager_config_replace`.
 
-Depois usar dois aparelhos de teste.
+Agora usar dois aparelhos de teste.
 
 ### Clientes
 
