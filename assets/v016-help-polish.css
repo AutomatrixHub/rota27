@@ -1,0 +1,76 @@
+/* Rota 27 v0.16.0 — refinamento da Ajuda para piloto real */
+
+/* Corrige o conflito entre o summary da seção principal e os summaries internos
+   da área "Se acontecer isso…". */
+.r27-help-scenarios details > summary{
+  display:flex!important;
+  grid-template-columns:none!important;
+  align-items:center!important;
+  gap:10px!important;
+  min-width:0;
+  padding:12px 13px!important;
+  font-size:12.5px!important;
+  font-weight:900!important;
+  line-height:1.35!important;
+  white-space:normal!important;
+  word-break:normal!important;
+  overflow-wrap:break-word!important;
+  color:#2f261f;
+  background:#fbf7f1;
+}
+.r27-help-scenarios details > summary::-webkit-details-marker{display:none}
+.r27-help-scenarios details[open] > summary{background:#fff8ec;border-bottom:1px dashed #e2d2bd}
+.r27-help-scenarios .r27-scenario-icon{
+  flex:0 0 auto;width:34px;height:34px;border-radius:11px;display:grid;place-items:center;
+  background:#f1e2cc;color:#6d4d32;font-size:16px;font-weight:950
+}
+.r27-help-scenarios .r27-scenario-copy{min-width:0;flex:1;display:block}
+.r27-help-scenarios .r27-scenario-title{display:block;min-width:0;font-size:12.5px;line-height:1.35}
+.r27-help-scenarios .r27-scenario-tag{
+  display:inline-flex;align-items:center;margin-top:4px;padding:2px 7px;border-radius:999px;
+  background:#f0e7da;color:#766151;font-size:8.5px;font-weight:900;letter-spacing:.03em;text-transform:uppercase
+}
+.r27-help-scenarios .r27-scenario-chevron{flex:0 0 auto;color:#927b67;font-size:18px;transition:transform .18s ease}
+.r27-help-scenarios details[open] .r27-scenario-chevron{transform:rotate(90deg)}
+.r27-help-scenarios details > p{
+  margin:0!important;padding:11px 13px 13px 57px!important;font-size:12px!important;
+  line-height:1.5!important;color:#5f5349!important;background:#fffdf9
+}
+.r27-help-scenarios details > p::before{
+  content:'O que fazer';display:block;margin-bottom:4px;color:#785a3f;font-size:9px;font-weight:950;
+  letter-spacing:.04em;text-transform:uppercase
+}
+.r27-help-scenarios details[data-level="critical"]{border-color:#e5b9b2;background:#fff8f6}
+.r27-help-scenarios details[data-level="critical"] > summary{background:#fff0ed;color:#65352f}
+.r27-help-scenarios details[data-level="critical"] .r27-scenario-icon{background:#f5d6d0;color:#8b4037}
+.r27-help-scenarios details[data-level="critical"] .r27-scenario-tag{background:#f3d6d1;color:#803c34}
+.r27-help-scenarios details[data-level="attention"] .r27-scenario-icon{background:#f6e7c5;color:#7d5c16}
+.r27-help-scenarios details[data-level="attention"] .r27-scenario-tag{background:#f5e8c9;color:#735918}
+
+.r27-help-scenario-intro{
+  margin:0 0 9px;padding:11px 12px;border:1px solid #e5d4bd;border-radius:13px;background:#fffaf0
+}
+.r27-help-scenario-intro strong{display:block;font-size:12.5px;color:#33271e}
+.r27-help-scenario-intro p{margin:3px 0 0!important;font-size:11.5px!important;line-height:1.45;color:#6a5b4e}
+.r27-help-scenario-safety{
+  margin-top:10px;padding:11px 12px;border-radius:13px;background:#fff0ed;border:1px solid #e6b8b0;
+  color:#69352e;font-size:11.5px;line-height:1.5
+}
+.r27-help-scenario-safety strong{display:block;margin-bottom:3px;font-size:12px}
+
+/* Um pouco mais de respiro e legibilidade para o manual completo. */
+.r27-help-section-body{max-width:100%}
+.r27-help-section-body b,.r27-help-section-body strong{overflow-wrap:normal;word-break:normal}
+.r27-help-section-body p{overflow-wrap:break-word;word-break:normal}
+.r27-help-section > summary > span:nth-child(2){min-width:0}
+
+@media (max-width:430px){
+  .r27-help-scenarios details > summary{padding:11px 10px!important;gap:8px!important}
+  .r27-help-scenarios .r27-scenario-icon{width:32px;height:32px;border-radius:10px}
+  .r27-help-scenarios details > p{padding:10px 10px 12px 50px!important}
+  .r27-help-scenario-intro,.r27-help-scenario-safety{margin-left:0;margin-right:0}
+}
+
+@media (prefers-reduced-motion:reduce){
+  .r27-help-scenarios .r27-scenario-chevron{transition:none!important}
+}
