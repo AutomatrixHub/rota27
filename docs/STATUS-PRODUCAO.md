@@ -2,15 +2,22 @@
 
 Última revisão: 21/08/2026
 
-## Baseline preparada
+## Baseline atual
 
 - versão: **v0.16.0**
 - branch de produção: `main`
 - entrada pública: `index.html`
 - Service Worker: cache `rota27-comandas-v0.16.0`
 - base funcional herdada da v0.15.1
-- nova Ajuda integrada preparada pelo PR #8
+- Ajuda integrada promovida pelo PR #8
 - piloto real da v0.16.0 previsto para **22/08/2026**
+
+## Estado do GitHub
+
+- PR #8: **mesclado**;
+- `main` contém a v0.16.0;
+- nenhuma alteração de backend foi necessária;
+- documentação de release e piloto atualizada.
 
 ## Estado funcional
 
@@ -36,7 +43,8 @@ A única evolução funcional de interface desta release é a Ajuda integrada. E
 - respostas rápidas;
 - glossário;
 - conteúdo offline;
-- refinamento da seção **Se acontecer isso…** para impedir quebra palavra por palavra e melhorar legibilidade.
+- refinamento da seção **Se acontecer isso…** para impedir quebra palavra por palavra e melhorar legibilidade;
+- destaque especial para situações em que o usuário deve parar antes de fechar a venda.
 
 ## Backends
 
