@@ -4,9 +4,9 @@ Aplicativo mobile-first para controle rápido de comandas da **Rota 27 Bodega**.
 
 ## Estado atual
 
-**Produção preparada: PWA v0.16.0 — baseline v0.15.1 + Ajuda completa integrada**
+**Produção: PWA v0.16.0 — baseline v0.15.1 + Ajuda completa integrada**
 
-A v0.16.0 preserva o comportamento operacional validado da v0.15.1 e adiciona uma camada de Ajuda acessível pelo botão `?`, com explicações, exemplos, mini-guias visuais, respostas rápidas e conteúdo disponível offline. O piloto real da v0.16.0 está programado para 22/08/2026.
+A `main` contém a produção v0.16.0. Ela preserva o comportamento operacional validado da v0.15.1 e adiciona uma camada de Ajuda acessível pelo botão `?`, com explicações, exemplos, mini-guias visuais, respostas rápidas e conteúdo disponível offline. O piloto real da v0.16.0 está programado para 22/08/2026.
 
 ## Principais recursos da produção v0.16.0
 
@@ -126,7 +126,7 @@ As Edge Functions usam autenticação própria pelo header `x-rota27-device-toke
 
 ## Operação real
 
-A v0.16.0 é a baseline preparada para o piloto real de 22/08/2026. Durante o turno, a baseline volta a ficar congelada: só publicar nova versão se surgir P0/P1 com impacto real em integridade, cobrança, sincronização, WhatsApp ou continuidade da operação.
+A v0.16.0 é a baseline oficial para o piloto real de 22/08/2026. Ao iniciar o turno, a baseline volta a ficar congelada: só publicar nova versão se surgir P0/P1 com impacto real em integridade, cobrança, sincronização, WhatsApp ou continuidade da operação.
 
 Documentos principais:
 
@@ -140,4 +140,4 @@ Documentos principais:
 
 ## Versão
 
-Produção preparada: **0.16.0**
+Produção: **0.16.0**
