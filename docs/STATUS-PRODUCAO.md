@@ -1,105 +1,57 @@
 # Rota 27 — Status de produção
 
-Última revisão: 21/08/2026
+Última revisão: 22/08/2026
 
-## Baseline atual
+## Produção atual
 
 - versão: **v0.16.1**
 - branch de produção: `main`
 - entrada pública: `index.html`
 - Service Worker: cache `rota27-comandas-v0.16.1`
-- base funcional herdada da v0.15.1
-- Ajuda integrada promovida pelo PR #8
-- hotfix preventivo de identidade/versionamento preparado antes do piloto
-- piloto real da v0.16.1 previsto para **22/08/2026**
+- baseline oficial do piloto real
 
-## Estado do GitHub
+## Candidata v0.17.0
 
-- PR #8: **mesclado**;
-- v0.16.0 introduziu a Ajuda completa;
-- v0.16.1 substitui a v0.16.0 como baseline do piloto;
-- nenhuma alteração de backend foi necessária;
-- documentação de release e piloto atualizada.
+A evolução v0.17.0 está em desenvolvimento no PR #10, branch `feature/v0.17.0-clientes-gerente-layout`, ainda fora da `main`.
 
-## Motivo da v0.16.1
+A Fase 1 local em `http://localhost:3002/` foi aprovada em 22/08/2026:
 
-A v0.15.1 possuía um observador final que forçava continuamente o selo/título de versão. A v0.16.0 também introduziu um protetor final. Para evitar que duas camadas de releases diferentes disputem o mesmo selo/título, a v0.16.1 remove os finals legados do carregamento ativo e usa somente `assets/v0161-final.js` como protetor final da release.
+- cadastro manual de clientes: OK;
+- importação TXT/CSV: OK;
+- criação automática de cliente a partir de comanda com WhatsApp: OK;
+- autocomplete em Nova/Editar comanda: OK;
+- nome do cliente em destaque e mesa/local abaixo: OK;
+- configuração do WhatsApp do gerente: OK;
+- smoke operacional: OK.
 
-## Estado funcional
+Pendente no momento:
 
-A v0.16.1 preserva as funções já validadas da v0.15.1:
+- envio real de itens para o WhatsApp do gerente;
+- teste multidispositivo dos novos eventos de clientes/gerente;
+- regressão final de sync e WhatsApp antes do merge.
 
-- operação desktop, Android e iPhone/PWA;
-- abertura, lançamento, edição, fechamento e cancelamento;
-- sincronização multidispositivo;
-- operação offline-first;
-- WhatsApp real;
-- Histórico, Painel, Cardápio, backup e importação/exportação.
+## Backend
 
-A evolução funcional de interface continua sendo a Ajuda integrada. O hotfix v0.16.1 não altera dados, totais, fechamento, cancelamento, sync ou WhatsApp.
+O `rota27-sync` v0.17.0 foi implantado de forma controlada no projeto Supabase em 22/08/2026. A alteração é retrocompatível com a v0.16.1 e apenas amplia a lista de eventos aceitos para:
 
-## Ajuda integrada
+- `client_upsert`;
+- `client_delete`;
+- `manager_config_replace`.
 
-- botão `? Ajuda` no cabeçalho;
-- busca por intenção;
-- atalhos de ação;
-- Primeiros 3 minutos;
-- exemplos reais;
-- mini-guias visuais;
-- respostas rápidas;
-- glossário;
-- conteúdo offline;
-- refinamento da seção **Se acontecer isso…** para impedir quebra palavra por palavra e melhorar legibilidade;
-- destaque especial para situações em que o usuário deve parar antes de fechar a venda.
+A função continua com autenticação própria por `x-rota27-device-token` e `verify_jwt=false`, como na produção anterior.
 
-## Backends
+O backend `rota27-whatsapp` **não foi alterado** para a v0.17.0 até este ponto.
 
-- `rota27-whatsapp`: versão validada permanece implantada;
-- `rota27-sync`: versão validada permanece implantada;
-- nenhum backend foi alterado pela v0.16.0/v0.16.1;
-- secrets/tokens não são armazenados no GitHub;
-- autenticação customizada por `x-rota27-device-token` preservada.
+## Regra de promoção
 
-## PWA / dados locais
+A v0.17.0 só deve ser promovida para `main` após:
 
-- atualizar sem reinstalar;
-- não limpar dados do Safari/Chrome;
-- `localStorage` continua sendo a base local do aparelho;
-- sync e WhatsApp possuem filas separadas;
-- cancelamento possui fila própria para propagação quando necessário;
-- Service Worker troca caches antigos pelo `rota27-comandas-v0.16.1` sem tocar no `localStorage`.
+1. envio real ao gerente validado;
+2. sincronização de clientes e gerente validada entre aparelhos;
+3. smoke operacional sem regressões;
+4. confirmação de que faturamento, comandas e histórico permanecem corretos;
+5. versão/cache/selo coerentes em `0.17.0`.
 
-## Pendências funcionais conhecidas
+## Próxima atualização visual
 
-**Nenhuma pendência funcional conhecida bloqueia o piloto real da v0.16.1 neste momento.**
-
-A Ajuda e o hotfix de identidade ainda devem ser observados no ambiente real em desktop/Android/iPhone durante o piloto de 22/08/2026.
-
-## Pontos de evolução já registrados
-
-Continuam pós-piloto, salvo evidência real:
-
-- cancelamento como evento nativo/tombstone com trilha de auditoria;
-- normalização adicional de metadados históricos DEV/RC, quando necessário;
-- busca em comandas abertas somente se o volume justificar;
-- proteção por PIN para ações administrativas somente se houver risco real de uso indevido;
-- resumo de turno somente se substituir tarefa manual existente.
-
-## Regra para o piloto de 22/08/2026
-
-Ao iniciar o turno, a v0.16.1 fica congelada.
-
-- P0/P1 podem justificar hotfix;
-- P2/P3 devem ser registrados para depois do turno;
-- não reinstalar PWA;
-- não limpar `localStorage`;
-- não alterar `rota27-sync` ou `rota27-whatsapp` sem necessidade real;
-- manter a interface silenciosa quando tudo estiver saudável.
-
-Documentos de referência:
-
-- `docs/PILOTO-REAL-v0.16.1.md`
-- `docs/RELEASE-v0.16.1.md`
-- `docs/RELEASE-v0.16.0.md`
-- `docs/ROADMAP-POST-PILOTO.md`
-- `docs/PRODUCT-PRINCIPLES.md`
+Nova paleta, novo logo e identidade visual ampla permanecem fora do escopo da v0.17.0 e ficam para a atualização posterior.
