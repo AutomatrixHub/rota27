@@ -12,7 +12,7 @@
 - `rota27-sync`: versão 2 ACTIVE;
 - `rota27-whatsapp-inbound`: versão 1 ACTIVE.
 
-A v0.17.1 consolida clientes/autocomplete, WhatsApp do gerente, formato final `mini2_*`, Ajuda v3 e o backend para respostas do cliente.
+A v0.17.1 consolida clientes/autocomplete, WhatsApp do gerente, formato final `mini2_*`, Ajuda v3 e respostas do cliente encaminhadas ao gerente.
 
 ## WhatsApp final
 
@@ -44,18 +44,20 @@ Template aprovado:
 - categoria `UTILITY`;
 - idioma `pt_BR`.
 
-Infraestrutura implantada:
+Infraestrutura implantada e validada em produção:
 
 - tabela `rota27_whatsapp_inbound`;
 - Edge Function `rota27-whatsapp-inbound` v1 ACTIVE;
 - correlação por `context.id` + `wa_message_id` + telefone do cliente;
 - idempotência por `meta_message_id`;
 - bloqueio de loop do gerente;
-- suporte a texto/interativo e indicação de mídia.
+- suporte a texto/interativo e indicação de mídia;
+- callback Meta registrado para o app Rota27 e WABA com override apontando para a Edge Function;
+- teste real em 23/08/2026: resposta de cliente na comanda `Parklet 5` foi identificada, persistida com status `forwarded` e encaminhada com sucesso ao gerente em uma única mensagem.
 
 ## Ativação do callback Meta
 
-O código e o backend estão em produção. A Meta exige **App Access Token/App Secret** para registrar o app no objeto `whatsapp_business_account`, campo `messages`; o token operacional de WhatsApp não pode executar esse endpoint.
+O callback está ativo em produção. A Meta exige **App Access Token/App Secret** para registrar o app no objeto `whatsapp_business_account`, campo `messages`; o token operacional de WhatsApp não pode executar esse endpoint sozinho.
 
 A ativação é feita localmente, sem armazenar segredo, por:
 

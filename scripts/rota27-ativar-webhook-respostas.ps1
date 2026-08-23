@@ -199,10 +199,16 @@ try {
         } |
         Select-Object -First 1
 
-    $messagesSubscribed = $false
+    $messagesSubscribed = [bool]$appSub.success
     if ($appRow) {
-        $fields = @($appRow.fields)
-        $messagesSubscribed = [bool]($fields -contains "messages")
+        $fieldNames = @($appRow.fields | ForEach-Object {
+            if ($_ -is [string]) { $_ }
+            elseif ($_.name) { [string]$_.name }
+            else { [string]$_ }
+        })
+        if ($fieldNames -contains "messages") {
+            $messagesSubscribed = $true
+        }
     }
 
     Write-Host ""
