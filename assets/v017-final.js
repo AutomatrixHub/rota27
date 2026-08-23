@@ -1,9 +1,9 @@
-/* Rota 27 v0.17.0 — selo final da release */
+/* Rota 27 v0.17.1 — selo final da release */
 (function(){
   'use strict';
-  const VERSION='0.17.0';
-  const LABEL='v0.17.0';
-  const TITLE='Rota 27 Bodega • Comandas v0.17.0';
+  const VERSION='0.17.1';
+  const LABEL='v0.17.1';
+  const TITLE='Rota 27 Bodega • Comandas v0.17.1';
   let badgeObserver=null;
   let titleObserver=null;
   function apply(){
