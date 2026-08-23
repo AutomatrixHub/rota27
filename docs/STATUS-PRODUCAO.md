@@ -2,32 +2,23 @@
 
 Última revisão: 23/08/2026
 
-## Produção atual
+## Produção
 
-- versão atualmente publicada na `main`: **v0.17.0**;
+- versão: **v0.17.1**;
+- branch: `main`;
+- GitHub Pages: `https://automatrixhub.github.io/rota27/`;
+- Service Worker: `rota27-comandas-v0.17.1`;
 - backend `rota27-whatsapp`: versão 23 ACTIVE (`rota27-whatsapp-v6-mini2`);
-- templates `mini2_1` a `mini2_5`: APPROVED / UTILITY / `pt_BR`;
-- sincronização v0.17 ativa para comandas, catálogo, histórico, clientes e configuração do gerente.
+- `rota27-sync`: versão 2 ACTIVE;
+- `rota27-whatsapp-inbound`: versão 1 ACTIVE.
 
-## Release v0.17.1 pronta para promoção
-
-Branch: `feature/whatsapp-inbound-forwarding`  
-PR: #14
-
-A v0.17.1 adiciona:
-
-- Ajuda v3 atualizada com todos os recursos v0.17;
-- documentação consolidada;
-- cache PWA `rota27-comandas-v0.17.1`;
-- selo/versão pública `0.17.1`;
-- infraestrutura de respostas do cliente encaminhadas ao gerente;
-- script seguro para registrar o webhook `messages` na Meta.
+A v0.17.1 consolida clientes/autocomplete, WhatsApp do gerente, formato final `mini2_*`, Ajuda v3 e o backend para respostas do cliente.
 
 ## WhatsApp final
 
 ### Atualizações da comanda
 
-Produção usa a família `atualizacao_comanda_rota27_mini2_1` a `_5`:
+Família `atualizacao_comanda_rota27_mini2_1` a `_5`, APPROVED / UTILITY / `pt_BR`:
 
 - cabeçalho `Comanda: <local>`;
 - lançamentos sem `Item:` e sem `+`;
@@ -39,7 +30,7 @@ Produção usa a família `atualizacao_comanda_rota27_mini2_1` a `_5`:
 ### Gerente
 
 - configuração sincronizada entre aparelhos;
-- cópia agrupada dos lançamentos;
+- cópia agrupada de adições, remoções e correções;
 - proteção de duplicidade;
 - fila local por aparelho;
 - retry offline.
@@ -53,33 +44,47 @@ Template aprovado:
 - categoria `UTILITY`;
 - idioma `pt_BR`.
 
-Backend já implantado:
+Infraestrutura implantada:
 
+- tabela `rota27_whatsapp_inbound`;
 - Edge Function `rota27-whatsapp-inbound` v1 ACTIVE;
-- tabela `rota27_whatsapp_inbound` criada;
 - correlação por `context.id` + `wa_message_id` + telefone do cliente;
 - idempotência por `meta_message_id`;
 - bloqueio de loop do gerente;
 - suporte a texto/interativo e indicação de mídia.
 
-## Gate externo Meta
+## Ativação do callback Meta
 
-O app Meta `Rota27` está vinculado à WABA, mas a API da Meta exige **App Access Token/App Secret** para registrar o objeto `whatsapp_business_account` no campo `messages`. O token operacional de WhatsApp existente não possui permissão para concluir esse endpoint.
+O código e o backend estão em produção. A Meta exige **App Access Token/App Secret** para registrar o app no objeto `whatsapp_business_account`, campo `messages`; o token operacional de WhatsApp não pode executar esse endpoint.
 
-Para não armazenar segredo no GitHub/Supabase, a ativação final é feita localmente com:
+A ativação é feita localmente, sem armazenar segredo, por:
 
 `scripts/rota27-ativar-webhook-respostas.ps1`
 
-O script solicita App Secret e WhatsApp Access Token de forma segura, registra o callback e confere a inscrição. Após essa confirmação, o PR #14 pode ser promovido para `main` sem pendência funcional.
+O script solicita App Secret e WhatsApp Access Token via `Read-Host -AsSecureString`, registra/confere `messages`, a WABA e o callback da Edge Function.
+
+## Ajuda v3
+
+A Ajuda agora cobre:
+
+- cadastro/importação/exportação de clientes;
+- autocomplete;
+- hierarquia cliente/local;
+- WhatsApp final do cliente;
+- WhatsApp do gerente;
+- respostas dos clientes;
+- sincronização dos novos domínios;
+- filas locais de WhatsApp;
+- novos cenários em `Se acontecer isso…`.
 
 ## Segurança
 
 - nenhum token/App Secret é versionado;
 - o bootstrap temporário usado no diagnóstico foi desativado e protegido por JWT;
 - a extensão PostgreSQL `http` usada somente no diagnóstico foi removida;
-- o inbound opera em modo `context-bound` enquanto `META_APP_SECRET` não estiver configurado como secret do runtime: somente respostas a mensagens outbound reconhecidas são processadas.
+- o inbound opera em modo `context-bound` enquanto `META_APP_SECRET` não estiver configurado como secret do runtime: somente respostas a mensagens outbound reconhecidas do mesmo cliente podem ser processadas.
 
-## Atualização da PWA após promoção
+## Atualização da PWA
 
 Não reinstalar e não limpar dados:
 
