@@ -1,6 +1,6 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 
-const EDGE_VERSION = "rota27-whatsapp-v4-compact";
+const EDGE_VERSION = "rota27-whatsapp-v5-mini";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -61,15 +61,15 @@ function safeEqual(a: string, b: string) {
 function templateForItemCount(count: number) {
   switch (count) {
     case 1:
-      return "atualizacao_comanda_rota27_curta_1";
+      return "atualizacao_comanda_rota27_mini_1";
     case 2:
-      return "atualizacao_comanda_rota27_curta_2";
+      return "atualizacao_comanda_rota27_mini_2";
     case 3:
-      return "atualizacao_comanda_rota27_curta_3";
+      return "atualizacao_comanda_rota27_mini_3";
     case 4:
-      return "atualizacao_comanda_rota27_curta_4";
+      return "atualizacao_comanda_rota27_mini_4";
     case 5:
-      return "atualizacao_comanda_rota27_curta_5";
+      return "atualizacao_comanda_rota27_mini_5";
     default:
       throw new Error(`Quantidade de itens não suportada pelo template: ${count}`);
   }
@@ -171,10 +171,25 @@ Deno.serve(async (req: Request) => {
   }
 
   const itemLines: string[] = normalizedItems.map((item: any) => {
-    const sign = item.delta > 0 ? "+" : "-";
     const subtotal = item.quantity * item.unitPrice;
-    return safeTemplateText(`${sign} ${item.quantity}x ${item.name} - ${moneyBRL(subtotal)}`, 500);
+    const cleanName = safeTemplateText(
+      String(item.name || "Produto").replace(/^REMOVIDO:\s*/i, ""),
+      160,
+    ) || "Produto";
+
+    if (item.delta < 0) {
+      return safeTemplateText(
+        `REMOVIDO: ${item.quantity}x ${cleanName} - ${moneyBRL(subtotal)}`,
+        500,
+      );
+    }
+
+    return safeTemplateText(
+      `+ ${item.quantity}x ${cleanName} - ${moneyBRL(subtotal)}`,
+      500,
+    );
   });
+
   const itemChunks: string[][] = chunkArray<string>(itemLines, 5);
 
   const accessToken = Deno.env.get("WHATSAPP_ACCESS_TOKEN");
