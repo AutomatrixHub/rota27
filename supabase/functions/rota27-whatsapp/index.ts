@@ -1,6 +1,6 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 
-const EDGE_VERSION = "rota27-whatsapp-v3-dynamic";
+const EDGE_VERSION = "rota27-whatsapp-v4-compact";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -14,10 +14,7 @@ const jsonHeaders = {
 };
 
 function json(status: number, body: unknown) {
-  return new Response(JSON.stringify(body), {
-    status,
-    headers: jsonHeaders,
-  });
+  return new Response(JSON.stringify(body), { status, headers: jsonHeaders });
 }
 
 function digits(value: unknown) {
@@ -26,11 +23,7 @@ function digits(value: unknown) {
 
 function normalizePhone(value: unknown) {
   let d = digits(value).replace(/^0+/, "");
-
-  if (d.length === 10 || d.length === 11) {
-    d = `55${d}`;
-  }
-
+  if (d.length === 10 || d.length === 11) d = `55${d}`;
   return d;
 }
 
@@ -40,17 +33,11 @@ function validPhone(value: string) {
 
 function moneyBRL(value: unknown) {
   const n = Number(value || 0);
-
-  return `R$ ${n
-    .toFixed(2)
-    .replace(".", ",")}`;
+  return `R$ ${n.toFixed(2).replace(".", ",")}`;
 }
 
 function safeText(value: unknown, max = 300) {
-  return String(value ?? "")
-    .replace(/\u0000/g, "")
-    .trim()
-    .slice(0, max);
+  return String(value ?? "").replace(/\u0000/g, "").trim().slice(0, max);
 }
 
 function safeTemplateText(value: unknown, max = 900) {
@@ -65,68 +52,39 @@ function safeTemplateText(value: unknown, max = 900) {
 function safeEqual(a: string, b: string) {
   const ea = new TextEncoder().encode(a);
   const eb = new TextEncoder().encode(b);
-
-  if (ea.length !== eb.length) {
-    return false;
-  }
-
+  if (ea.length !== eb.length) return false;
   let diff = 0;
-
-  for (let i = 0; i < ea.length; i++) {
-    diff |= ea[i] ^ eb[i];
-  }
-
+  for (let i = 0; i < ea.length; i++) diff |= ea[i] ^ eb[i];
   return diff === 0;
 }
 
-/**
- * Escolhe o template aprovado conforme
- * a quantidade de itens do bloco.
- */
 function templateForItemCount(count: number) {
   switch (count) {
     case 1:
-      return "atualizacao_comanda_rota27_v3_1";
-
+      return "atualizacao_comanda_rota27_curta_1";
     case 2:
-      return "atualizacao_comanda_rota27_v3_2";
-
+      return "atualizacao_comanda_rota27_curta_2";
     case 3:
-      return "atualizacao_comanda_rota27_v3_3";
-
+      return "atualizacao_comanda_rota27_curta_3";
     case 4:
-      return "atualizacao_comanda_rota27_v3_4";
-
+      return "atualizacao_comanda_rota27_curta_4";
     case 5:
-      return "atualizacao_comanda_rota27_v3";
-
+      return "atualizacao_comanda_rota27_curta_5";
     default:
-      throw new Error(
-        `Quantidade de itens não suportada pelo template: ${count}`,
-      );
+      throw new Error(`Quantidade de itens não suportada pelo template: ${count}`);
   }
 }
 
-/**
- * Divide um array em blocos de até "size".
- */
 function chunkArray<T>(items: T[], size: number): T[][] {
   const chunks: T[][] = [];
-
-  for (let i = 0; i < items.length; i += size) {
-    chunks.push(items.slice(i, i + size));
-  }
-
+  for (let i = 0; i < items.length; i += size) chunks.push(items.slice(i, i + size));
   return chunks;
 }
 
 async function readExisting(eventId: string) {
   const url = Deno.env.get("SUPABASE_URL");
   const key = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
-
-  if (!url || !key) {
-    return null;
-  }
+  if (!url || !key) return null;
 
   const endpoint =
     `${url}/rest/v1/whatsapp_message_log` +
@@ -141,849 +99,273 @@ async function readExisting(eventId: string) {
       Accept: "application/json",
     },
   });
-
-  if (!response.ok) {
-    return null;
-  }
-
+  if (!response.ok) return null;
   const rows = await response.json().catch(() => []);
-
-  return Array.isArray(rows) && rows.length
-    ? rows[0]
-    : null;
+  return Array.isArray(rows) && rows.length ? rows[0] : null;
 }
 
 async function upsertLog(row: Record<string, unknown>) {
   const url = Deno.env.get("SUPABASE_URL");
   const key = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+  if (!url || !key) return;
 
-  if (!url || !key) {
-    return;
-  }
-
-  await fetch(
-    `${url}/rest/v1/whatsapp_message_log?on_conflict=event_id`,
-    {
-      method: "POST",
-
-      headers: {
-        apikey: key,
-        Authorization: `Bearer ${key}`,
-        "Content-Type": "application/json",
-        Prefer: "resolution=merge-duplicates,return=minimal",
-      },
-
-      body: JSON.stringify(row),
+  await fetch(`${url}/rest/v1/whatsapp_message_log?on_conflict=event_id`, {
+    method: "POST",
+    headers: {
+      apikey: key,
+      Authorization: `Bearer ${key}`,
+      "Content-Type": "application/json",
+      Prefer: "resolution=merge-duplicates,return=minimal",
     },
-  );
+    body: JSON.stringify(row),
+  });
 }
 
 Deno.serve(async (req: Request) => {
+  if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
+  if (req.method !== "POST") return json(405, { ok: false, error: "Método não permitido." });
 
-  // ============================================================
-  // CORS
-  // ============================================================
-
-  if (req.method === "OPTIONS") {
-    return new Response("ok", {
-      headers: corsHeaders,
-    });
+  const configuredDeviceToken = Deno.env.get("ROTA27_DEVICE_TOKEN") || "";
+  const receivedDeviceToken = req.headers.get("x-rota27-device-token") || "";
+  if (configuredDeviceToken.length < 16 || !safeEqual(receivedDeviceToken, configuredDeviceToken)) {
+    return json(401, { ok: false, error: "Dispositivo não autorizado." });
   }
 
-  if (req.method !== "POST") {
-    return json(405, {
-      ok: false,
-      error: "Método não permitido.",
-    });
-  }
-
-  // ============================================================
-  // AUTENTICAÇÃO DO DISPOSITIVO
-  // ============================================================
-
-  const configuredDeviceToken =
-    Deno.env.get("ROTA27_DEVICE_TOKEN") || "";
-
-  const receivedDeviceToken =
-    req.headers.get("x-rota27-device-token") || "";
-
-  if (
-    configuredDeviceToken.length < 16 ||
-    !safeEqual(
-      receivedDeviceToken,
-      configuredDeviceToken,
-    )
-  ) {
-    return json(401, {
-      ok: false,
-      error: "Dispositivo não autorizado.",
-    });
-  }
-
-  // ============================================================
-  // LIMITE DO PAYLOAD
-  // ============================================================
-
-  const contentLength =
-    Number(req.headers.get("content-length") || 0);
-
-  if (contentLength > 64_000) {
-    return json(413, {
-      ok: false,
-      error: "Payload muito grande.",
-    });
-  }
-
-  // ============================================================
-  // JSON
-  // ============================================================
+  const contentLength = Number(req.headers.get("content-length") || 0);
+  if (contentLength > 64_000) return json(413, { ok: false, error: "Payload muito grande." });
 
   let body: any;
-
   try {
     body = await req.json();
   } catch {
-    return json(400, {
-      ok: false,
-      error: "JSON inválido.",
-    });
+    return json(400, { ok: false, error: "JSON inválido." });
   }
 
-  // ============================================================
-  // CAMPOS
-  // ============================================================
+  const eventId = safeText(body?.eventId, 120);
+  const commandId = safeText(body?.commandId, 120);
+  const commandLabel = safeTemplateText(body?.commandLabel || "Comanda", 120);
+  const customerName = safeTemplateText(body?.customerName || "Cliente", 120);
+  const phone = normalizePhone(body?.phone);
+  const consent = body?.consent === true;
+  const total = Number(body?.total || 0);
+  const items = Array.isArray(body?.items) ? body.items.slice(0, 30) : [];
 
-  const eventId =
-    safeText(body?.eventId, 120);
+  if (!eventId || !commandId) return json(400, { ok: false, error: "eventId e commandId são obrigatórios." });
+  if (!consent) return json(400, { ok: false, error: "Consentimento não confirmado." });
+  if (!validPhone(phone)) return json(400, { ok: false, error: "Número de WhatsApp inválido." });
+  if (!items.length) return json(400, { ok: false, error: "Nenhum item para enviar." });
+  if (!Number.isFinite(total) || total < 0) return json(400, { ok: false, error: "Total inválido." });
 
-  const commandId =
-    safeText(body?.commandId, 120);
-
-  const commandLabel =
-    safeTemplateText(
-      body?.commandLabel || "Comanda",
-      120,
-    );
-
-  const customerName =
-    safeTemplateText(
-      body?.customerName || "Cliente",
-      120,
-    );
-
-  const phone =
-    normalizePhone(body?.phone);
-
-  const consent =
-    body?.consent === true;
-
-  const total =
-    Number(body?.total || 0);
-
-  const items =
-    Array.isArray(body?.items)
-      ? body.items.slice(0, 30)
-      : [];
-
-  // ============================================================
-  // VALIDAÇÕES
-  // ============================================================
-
-  if (!eventId || !commandId) {
-    return json(400, {
-      ok: false,
-      error:
-        "eventId e commandId são obrigatórios.",
-    });
-  }
-
-  if (!consent) {
-    return json(400, {
-      ok: false,
-      error:
-        "Consentimento não confirmado.",
-    });
-  }
-
-  if (!validPhone(phone)) {
-    return json(400, {
-      ok: false,
-      error:
-        "Número de WhatsApp inválido.",
-    });
-  }
-
-  if (!items.length) {
-    return json(400, {
-      ok: false,
-      error:
-        "Nenhum item para enviar.",
-    });
-  }
-
-  if (!Number.isFinite(total) || total < 0) {
-    return json(400, {
-      ok: false,
-      error:
-        "Total inválido.",
-    });
-  }
-
-  // ============================================================
-  // NORMALIZAÇÃO DOS ITENS
-  // ============================================================
-
-  const normalizedItems =
-    items
-      .map((item: any) => {
-
-        const delta =
-          Number(item?.delta || 0);
-
-        const quantity =
-          Math.max(
-            1,
-            Math.abs(
-              Number(
-                item?.quantity ||
-                delta ||
-                1,
-              ),
-            ),
-          );
-
-        const name =
-          safeTemplateText(
-            item?.name || "Produto",
-            160,
-          );
-
-        const unitPrice =
-          Math.max(
-            0,
-            Number(
-              item?.unitPrice || 0,
-            ),
-          );
-
-        return {
-          delta,
-          quantity,
-          name,
-          unitPrice,
-        };
-      })
-      .filter(
-        (item: any) =>
-          Number.isFinite(item.delta) &&
-          item.delta !== 0,
-      );
+  const normalizedItems = items
+    .map((item: any) => {
+      const delta = Number(item?.delta || 0);
+      const quantity = Math.max(1, Math.abs(Number(item?.quantity || delta || 1)));
+      const name = safeTemplateText(item?.name || "Produto", 160);
+      const unitPrice = Math.max(0, Number(item?.unitPrice || 0));
+      return { delta, quantity, name, unitPrice };
+    })
+    .filter((item: any) => Number.isFinite(item.delta) && item.delta !== 0);
 
   if (!normalizedItems.length) {
-    return json(400, {
-      ok: false,
-      error:
-        "Nenhuma alteração válida para enviar.",
-    });
+    return json(400, { ok: false, error: "Nenhuma alteração válida para enviar." });
   }
 
-  // ============================================================
-  // FORMATAÇÃO
-  // ============================================================
+  const itemLines: string[] = normalizedItems.map((item: any) => {
+    const sign = item.delta > 0 ? "+" : "-";
+    const subtotal = item.quantity * item.unitPrice;
+    return safeTemplateText(`${sign} ${item.quantity}x ${item.name} - ${moneyBRL(subtotal)}`, 500);
+  });
+  const itemChunks: string[][] = chunkArray<string>(itemLines, 5);
 
-  const itemLines =
-    normalizedItems.map((item: any) => {
+  const accessToken = Deno.env.get("WHATSAPP_ACCESS_TOKEN");
+  const phoneNumberId = Deno.env.get("WHATSAPP_PHONE_NUMBER_ID");
+  const graphVersion = Deno.env.get("META_GRAPH_VERSION");
+  const templateLang = Deno.env.get("WHATSAPP_TEMPLATE_LANG") || "pt_BR";
 
-      const sign =
-        item.delta > 0
-          ? "+"
-          : "-";
-
-      const subtotal =
-        item.quantity *
-        item.unitPrice;
-
-      return safeTemplateText(
-        `${sign} ${item.quantity}x ${item.name} - ${moneyBRL(subtotal)}`,
-        500,
-      );
-    });
-
-  /**
-   * Os templates suportam até 5 linhas.
-   *
-   * Na situação normal haverá apenas um bloco.
-   * Se houver 6 ou mais itens agrupados, serão
-   * geradas mensagens adicionais de até 5 itens.
-   */
-  const itemChunks =
-    chunkArray(itemLines, 5);
-
-  // ============================================================
-  // SECRETS META
-  // ============================================================
-
-  const accessToken =
-    Deno.env.get(
-      "WHATSAPP_ACCESS_TOKEN",
-    );
-
-  const phoneNumberId =
-    Deno.env.get(
-      "WHATSAPP_PHONE_NUMBER_ID",
-    );
-
-  const graphVersion =
-    Deno.env.get(
-      "META_GRAPH_VERSION",
-    );
-
-  const templateLang =
-    Deno.env.get(
-      "WHATSAPP_TEMPLATE_LANG",
-    ) ||
-    "pt_BR";
-
-  if (
-    !accessToken ||
-    !phoneNumberId ||
-    !graphVersion
-  ) {
+  if (!accessToken || !phoneNumberId || !graphVersion) {
     return json(500, {
       ok: false,
-      error:
-        "Backend incompleto: configure WHATSAPP_ACCESS_TOKEN, WHATSAPP_PHONE_NUMBER_ID e META_GRAPH_VERSION.",
+      error: "Backend incompleto: configure WHATSAPP_ACCESS_TOKEN, WHATSAPP_PHONE_NUMBER_ID e META_GRAPH_VERSION.",
     });
   }
 
-  const metaEndpoint =
-    `https://graph.facebook.com/` +
-    `${encodeURIComponent(graphVersion)}/` +
-    `${encodeURIComponent(phoneNumberId)}/messages`;
-
-  // ============================================================
-  // PROCESSAMENTO DOS BLOCOS
-  // ============================================================
+  const metaEndpoint = `https://graph.facebook.com/${encodeURIComponent(graphVersion)}/${encodeURIComponent(phoneNumberId)}/messages`;
 
   const messageIds: string[] = [];
   const usedTemplates: string[] = [];
-
   let messagesSent = 0;
   let duplicateChunks = 0;
 
-  for (
-    let chunkIndex = 0;
-    chunkIndex < itemChunks.length;
-    chunkIndex++
-  ) {
+  for (let chunkIndex = 0; chunkIndex < itemChunks.length; chunkIndex++) {
+    const chunk = itemChunks[chunkIndex];
+    const templateName = templateForItemCount(chunk.length);
+    usedTemplates.push(templateName);
 
-    const chunk =
-      itemChunks[chunkIndex];
-
-    const templateName =
-      templateForItemCount(
-        chunk.length,
-      );
-
-    usedTemplates.push(
-      templateName,
-    );
-
-    /**
-     * Um lote comum usa o eventId original.
-     *
-     * Em lotes com mais de 5 itens usamos um
-     * eventId próprio para cada mensagem.
-     *
-     * Isso impede duplicações caso apenas um dos
-     * blocos falhe e o aplicativo faça retry.
-     */
-    const chunkEventId =
-      itemChunks.length === 1
-        ? eventId
-        : `${eventId}::${chunkIndex + 1}`;
-
-    const existing =
-      await readExisting(
-        chunkEventId,
-      );
-
-    // ----------------------------------------------------------
-    // BLOCO JÁ ENVIADO
-    // ----------------------------------------------------------
+    const chunkEventId = itemChunks.length === 1 ? eventId : `${eventId}::${chunkIndex + 1}`;
+    const existing = await readExisting(chunkEventId);
 
     if (existing?.status === "sent") {
-
       duplicateChunks++;
-
-      if (existing.wa_message_id) {
-        messageIds.push(
-          existing.wa_message_id,
-        );
-      }
-
+      if (existing.wa_message_id) messageIds.push(existing.wa_message_id);
       continue;
     }
 
-    // ----------------------------------------------------------
-    // PARÂMETROS DINÂMICOS
-    //
-    // {{1}} cliente
-    // {{2}} comanda
-    // {{3...}} produtos
-    // último parâmetro = total acumulado
-    // ----------------------------------------------------------
-
-    const parameters: Array<{
-      type: string;
-      text: string;
-    }> = [
-      {
-        type: "text",
-        text: customerName,
-      },
-
-      {
-        type: "text",
-        text: commandLabel,
-      },
+    const parameters: Array<{ type: string; text: string }> = [
+      { type: "text", text: customerName },
+      { type: "text", text: commandLabel },
     ];
+    for (const itemLine of chunk) parameters.push({ type: "text", text: itemLine });
+    parameters.push({ type: "text", text: moneyBRL(total) });
 
-    for (const itemLine of chunk) {
-      parameters.push({
-        type: "text",
-        text: itemLine,
-      });
-    }
-
-    parameters.push({
-      type: "text",
-      text: moneyBRL(total),
-    });
-
-    // ----------------------------------------------------------
-    // LOG PROCESSING
-    // ----------------------------------------------------------
-
-    const now =
-      new Date().toISOString();
-
+    const now = new Date().toISOString();
     const logPayload = {
-      parentEventId:
-        eventId,
-
-      eventId:
-        chunkEventId,
-
+      parentEventId: eventId,
+      eventId: chunkEventId,
       commandId,
-
       commandLabel,
-
       customerName,
-
       phone,
-
       total,
-
-      items:
-        normalizedItems,
-
-      chunkItems:
-        chunk,
-
-      chunkIndex:
-        chunkIndex + 1,
-
-      chunkCount:
-        itemChunks.length,
-
-      template:
-        templateName,
-
-      edgeVersion:
-        EDGE_VERSION,
-
-      clientTimestamp:
-        safeText(
-          body?.clientTimestamp,
-          80,
-        ),
+      items: normalizedItems,
+      chunkItems: chunk,
+      chunkIndex: chunkIndex + 1,
+      chunkCount: itemChunks.length,
+      template: templateName,
+      edgeVersion: EDGE_VERSION,
+      clientTimestamp: safeText(body?.clientTimestamp, 80),
     };
 
     await upsertLog({
-      event_id:
-        chunkEventId,
-
-      command_id:
-        commandId,
-
+      event_id: chunkEventId,
+      command_id: commandId,
       phone,
-
-      customer_name:
-        customerName,
-
-      command_label:
-        commandLabel,
-
-      payload:
-        logPayload,
-
-      status:
-        "processing",
-
-      attempts:
-        Number(
-          existing?.attempts || 0,
-        ) + 1,
-
-      last_error:
-        null,
-
-      updated_at:
-        now,
+      customer_name: customerName,
+      command_label: commandLabel,
+      payload: logPayload,
+      status: "processing",
+      attempts: Number(existing?.attempts || 0) + 1,
+      last_error: null,
+      updated_at: now,
     });
 
-    // ----------------------------------------------------------
-    // META PAYLOAD
-    // ----------------------------------------------------------
-
     const metaPayload = {
-      messaging_product:
-        "whatsapp",
-
-      recipient_type:
-        "individual",
-
-      to:
-        phone,
-
-      type:
-        "template",
-
+      messaging_product: "whatsapp",
+      recipient_type: "individual",
+      to: phone,
+      type: "template",
       template: {
-        name:
-          templateName,
-
-        language: {
-          code:
-            templateLang,
-        },
-
-        components: [
-          {
-            type:
-              "body",
-
-            parameters,
-          },
-        ],
+        name: templateName,
+        language: { code: templateLang },
+        components: [{ type: "body", parameters }],
       },
     };
 
-    // ----------------------------------------------------------
-    // ENVIO META
-    // ----------------------------------------------------------
-
     try {
+      const metaResponse = await fetch(metaEndpoint, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(metaPayload),
+      });
 
-      const metaResponse =
-        await fetch(
-          metaEndpoint,
-          {
-            method: "POST",
-
-            headers: {
-              Authorization:
-                `Bearer ${accessToken}`,
-
-              "Content-Type":
-                "application/json",
-            },
-
-            body:
-              JSON.stringify(
-                metaPayload,
-              ),
-          },
-        );
-
-      const metaData =
-        await metaResponse
-          .json()
-          .catch(() => ({}));
-
-      // --------------------------------------------------------
-      // ERRO META
-      // --------------------------------------------------------
+      const metaData = await metaResponse.json().catch(() => ({}));
 
       if (!metaResponse.ok) {
-
-        const errorText =
-          safeText(
-            metaData?.error?.message ||
-            `Meta HTTP ${metaResponse.status}`,
-            500,
-          );
-
-        const errorDetails =
-          safeText(
-            metaData?.error
-              ?.error_data
-              ?.details ||
-            "",
-            800,
-          );
-
-        const metaCode =
-          metaData?.error?.code ||
-          null;
-
-        const metaSubcode =
-          metaData?.error
-            ?.error_subcode ||
-          null;
-
-        const fbtraceId =
-          safeText(
-            metaData?.error
-              ?.fbtrace_id ||
-            "",
-            200,
-          );
-
-        const combinedError =
-          errorDetails
-            ? `${errorText} | ${errorDetails}`
-            : errorText;
+        const errorText = safeText(metaData?.error?.message || `Meta HTTP ${metaResponse.status}`, 500);
+        const errorDetails = safeText(metaData?.error?.error_data?.details || "", 800);
+        const metaCode = metaData?.error?.code || null;
+        const metaSubcode = metaData?.error?.error_subcode || null;
+        const fbtraceId = safeText(metaData?.error?.fbtrace_id || "", 200);
+        const combinedError = errorDetails ? `${errorText} | ${errorDetails}` : errorText;
 
         await upsertLog({
-          event_id:
-            chunkEventId,
-
-          command_id:
-            commandId,
-
+          event_id: chunkEventId,
+          command_id: commandId,
           phone,
-
-          customer_name:
-            customerName,
-
-          command_label:
-            commandLabel,
-
-          payload:
-            logPayload,
-
-          status:
-            "failed",
-
-          last_error:
-            combinedError,
-
-          updated_at:
-            new Date().toISOString(),
+          customer_name: customerName,
+          command_label: commandLabel,
+          payload: logPayload,
+          status: "failed",
+          last_error: combinedError,
+          updated_at: new Date().toISOString(),
         });
 
         return json(502, {
           ok: false,
-
-          error:
-            errorText,
-
-          details:
-            errorDetails || null,
-
+          error: errorText,
+          details: errorDetails || null,
           metaCode,
-
           metaSubcode,
-
-          fbtraceId:
-            fbtraceId || null,
-
-          failedChunk:
-            chunkIndex + 1,
-
-          chunkCount:
-            itemChunks.length,
-
-          template:
-            templateName,
-
-          edgeVersion:
-            EDGE_VERSION,
+          fbtraceId: fbtraceId || null,
+          failedChunk: chunkIndex + 1,
+          chunkCount: itemChunks.length,
+          template: templateName,
+          edgeVersion: EDGE_VERSION,
         });
       }
 
-      // --------------------------------------------------------
-      // SUCESSO
-      // --------------------------------------------------------
-
       const waMessageId =
-        Array.isArray(
-          metaData?.messages,
-        ) &&
-        metaData.messages.length
-          ? safeText(
-              metaData
-                .messages[0]
-                ?.id,
-              300,
-            )
+        Array.isArray(metaData?.messages) && metaData.messages.length
+          ? safeText(metaData.messages[0]?.id, 300)
           : "";
-
       const messageStatus =
-        Array.isArray(
-          metaData?.messages,
-        ) &&
-        metaData.messages.length
-          ? safeText(
-              metaData
-                .messages[0]
-                ?.message_status,
-              100,
-            )
+        Array.isArray(metaData?.messages) && metaData.messages.length
+          ? safeText(metaData.messages[0]?.message_status, 100)
           : "";
 
-      if (waMessageId) {
-        messageIds.push(
-          waMessageId,
-        );
-      }
-
+      if (waMessageId) messageIds.push(waMessageId);
       messagesSent++;
 
       await upsertLog({
-        event_id:
-          chunkEventId,
-
-        command_id:
-          commandId,
-
+        event_id: chunkEventId,
+        command_id: commandId,
         phone,
-
-        customer_name:
-          customerName,
-
-        command_label:
-          commandLabel,
-
-        payload: {
-          ...logPayload,
-
-          messageStatus,
-        },
-
-        status:
-          "sent",
-
-        wa_message_id:
-          waMessageId || null,
-
-        last_error:
-          null,
-
-        sent_at:
-          new Date().toISOString(),
-
-        updated_at:
-          new Date().toISOString(),
+        customer_name: customerName,
+        command_label: commandLabel,
+        payload: { ...logPayload, messageStatus },
+        status: "sent",
+        wa_message_id: waMessageId || null,
+        last_error: null,
+        sent_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
       });
-
     } catch (error) {
-
-      // --------------------------------------------------------
-      // REDE / EXCEÇÃO
-      // --------------------------------------------------------
-
-      const errorText =
-        safeText(
-          error instanceof Error
-            ? error.message
-            : "Falha ao chamar a Meta.",
-          500,
-        );
+      const errorText = safeText(error instanceof Error ? error.message : "Falha ao chamar a Meta.", 500);
 
       await upsertLog({
-        event_id:
-          chunkEventId,
-
-        command_id:
-          commandId,
-
+        event_id: chunkEventId,
+        command_id: commandId,
         phone,
-
-        customer_name:
-          customerName,
-
-        command_label:
-          commandLabel,
-
-        payload:
-          logPayload,
-
-        status:
-          "failed",
-
-        last_error:
-          errorText,
-
-        updated_at:
-          new Date().toISOString(),
+        customer_name: customerName,
+        command_label: commandLabel,
+        payload: logPayload,
+        status: "failed",
+        last_error: errorText,
+        updated_at: new Date().toISOString(),
       });
 
       return json(502, {
         ok: false,
-
-        error:
-          errorText,
-
-        failedChunk:
-          chunkIndex + 1,
-
-        chunkCount:
-          itemChunks.length,
-
-        template:
-          templateName,
-
-        edgeVersion:
-          EDGE_VERSION,
+        error: errorText,
+        failedChunk: chunkIndex + 1,
+        chunkCount: itemChunks.length,
+        template: templateName,
+        edgeVersion: EDGE_VERSION,
       });
     }
   }
 
-  // ============================================================
-  // SUCESSO FINAL
-  // ============================================================
-
   return json(200, {
     ok: true,
-
-    /**
-     * Mantido por compatibilidade com o frontend atual.
-     */
-    messageId:
-      messageIds.length
-        ? messageIds[0]
-        : null,
-
-    messageStatus:
-      "accepted",
-
-    groupedItems:
-      normalizedItems.length,
-
+    messageId: messageIds.length ? messageIds[0] : null,
+    messageStatus: "accepted",
+    groupedItems: normalizedItems.length,
     messagesSent,
-
     duplicateChunks,
-
-    chunkCount:
-      itemChunks.length,
-
-    templates:
-      usedTemplates,
-
-    edgeVersion:
-      EDGE_VERSION,
+    chunkCount: itemChunks.length,
+    templates: usedTemplates,
+    edgeVersion: EDGE_VERSION,
   });
 });
