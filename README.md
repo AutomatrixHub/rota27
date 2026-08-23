@@ -1,176 +1,123 @@
 # Rota 27 Bodega — Comandas
 
-Aplicativo mobile-first para controle rápido de comandas da **Rota 27 Bodega**.
+Aplicativo mobile-first, offline-first e multidispositivo para controle rápido de comandas da **Rota 27 Bodega**.
 
-## Estado atual
+## Produção
 
-**Produção: PWA v0.16.1 — baseline v0.15.1 + Ajuda completa integrada + hotfix preventivo de versão**
+**Versão: v0.17.1**  
+Branch: `main`  
+GitHub Pages: `https://automatrixhub.github.io/rota27/`  
+Service Worker: `rota27-comandas-v0.17.1`
 
-A `main` contém a produção v0.16.1. Ela preserva o comportamento operacional validado da v0.15.1, mantém a Ajuda completa introduzida na v0.16.0 e elimina a sobreposição entre protetores de versão legados.
+A v0.17.1 consolida a operação validada da v0.17.0, o novo formato enxuto de WhatsApp `mini2_*`, a Ajuda v3 e a infraestrutura de respostas de clientes encaminhadas ao gerente.
 
-**Próxima versão em validação: v0.17.0** na branch `feature/v0.17.0-clientes-gerente-layout`.
+## Recursos principais
 
-A v0.17.0 adiciona cadastro/importação de clientes, autocomplete, sincronização dos novos dados, cópia agrupada dos lançamentos para o WhatsApp do gerente e uma hierarquia visual melhor para cliente/local. Ela **não está publicada em produção** até concluir o roteiro de testes e receber autorização de merge.
-
-## Principais recursos da produção v0.16.1
-
-- abertura de comanda por mesa/local/cliente;
-- lançamento rápido de produtos;
-- edição de quantidade e remoção de itens;
-- fechamento com confirmação e forma de pagamento;
-- cancelamento seguro de comanda aberta por engano, sem registrar venda/faturamento;
-- histórico com filtros e busca;
-- faturamento, ticket médio, itens vendidos e rankings;
-- exportação de vendas em CSV;
-- backup/restauração JSON com diagnóstico de integridade;
-- importação/exportação de cardápio CSV/TXT;
-- detecção e unificação reversível de categorias semelhantes;
-- cardápio e categorias editáveis;
-- instalação como PWA no iPhone/Android;
-- funcionamento offline-first;
-- sincronização multidispositivo de comandas, histórico, cardápio e categorias;
-- fila offline e reconexão automática;
-- eventos aditivos de quantidade para preservar lançamentos concorrentes;
-- conflitos preservados quando chega alteração para comanda já fechada;
-- identificação persistente por aparelho;
-- publicação explícita e adoção segura da base compartilhada;
-- Painel operacional;
-- bottom bar `Comandas | Painel | Cardápio | Histórico`;
-- FAB `+` como ação única de Nova comanda;
-- nomes completos Mesa 1–5 e Parklet 1–6;
+### Comandas
+- abertura por Balcão, Mesa 1–5, Parklet 1–6 e nome do cliente;
+- lançamento rápido por toque, busca, categorias e Mais lançados;
+- consulta `Ver itens`, correção em `Editar itens`, fechamento com forma de pagamento e cancelamento seguro;
 - proteção contra comanda duplicada acidental;
-- retomada de comanda ativa após recarga;
-- avisos técnicos somente por exceção;
-- consulta rápida **Itens da comanda** pela barra inferior;
-- chip **Ver itens** com ícone, microanimação e estado ativo;
-- envio opcional de atualizações da comanda por WhatsApp mediante consentimento;
-- templates dinâmicos de WhatsApp para 1 a 5 itens por mensagem;
-- fila do WhatsApp mantida local por aparelho para evitar duplicidade;
-- correção automática de configuração legada que apontava o WhatsApp para `rota27-sync`, preservando o token local;
-- **Ajuda completa dentro do aplicativo**, com busca por intenção, exemplos de atendimento, comparações entre ações, mini-representações da interface, respostas rápidas e glossário;
-- seção **Se acontecer isso…** com primeira ação segura para situações comuns;
-- Ajuda disponível também offline pelo Service Worker;
-- protetor final único de versão em `assets/v0161-final.js`, evitando disputa com finals legados.
+- nome do cliente como informação principal e local/mesa como informação secundária quando houver cliente;
+- histórico, filtros, indicadores, rankings e exportação CSV.
 
-## v0.17.0 em validação
+### Clientes
+- cadastro manual de clientes;
+- criação/captura automática quando uma comanda contém nome + WhatsApp válido;
+- importação TXT/CSV com validação e prévia;
+- exportação CSV;
+- autocomplete de nome/telefone em Nova comanda e Editar comanda;
+- consentimento para mensagens continua específico de cada comanda e nunca é ativado automaticamente pelo cadastro;
+- cadastro sincronizado entre aparelhos.
 
-Escopo implementado na branch de desenvolvimento:
+### WhatsApp do cliente
+- envio opcional mediante consentimento;
+- mensagens UTILITY compactas usando `atualizacao_comanda_rota27_mini2_1` a `_5`;
+- cabeçalho `Comanda: <local>`;
+- lançamentos positivos no formato `1x Produto - R$ ...`;
+- remoções no formato `REMOVIDO: 1x Produto - R$ ...`;
+- até 5 alterações por mensagem; lotes maiores são divididos em blocos de 5;
+- envio incremental: não reenvia toda a comanda acumulada, somente as mudanças novas + total atual;
+- outbox local por aparelho, com retry e idempotência.
 
-- cadastro compartilhado de clientes;
-- captura automática de nome + WhatsApp informados na comanda;
-- importação TXT/CSV de clientes com validação e prévia;
-- exportação CSV de clientes;
-- autocomplete de cliente/telefone na abertura e edição da comanda;
-- consentimento do cliente continua específico por comanda e nunca é ativado automaticamente pelo cadastro;
-- eventos de sync próprios para clientes e configuração do gerente;
-- configuração **WhatsApp do gerente** no Cardápio;
-- cópia agrupada dos lançamentos para o gerente com retry e eventId próprio;
-- fila de mensagens do gerente local por aparelho, sem sincronização da outbox;
-- nome do cliente como informação principal e mesa/local na linha abaixo na lista e na comanda aberta;
-- cache PWA candidato `rota27-comandas-v0.17.0`;
-- protetor final candidato `assets/v017-final.js`.
+### WhatsApp do gerente
+- configuração de nome, telefone e `Receber lançamentos` no Cardápio;
+- configuração sincronizada entre aparelhos;
+- cópia agrupada de adições, remoções e correções;
+- proteção contra duplicidade concorrente;
+- outbox do gerente local por aparelho;
+- bloqueio de cópia redundante quando cliente e gerente usam o mesmo número na operação.
 
-A nova paleta de cores e o novo logo ficam fora desta versão.
+### Respostas dos clientes
+- template UTILITY aprovado: `resposta_cliente_rota27_gerente_v1` (`pt_BR`);
+- nova Edge Function `rota27-whatsapp-inbound`;
+- correlação da resposta pelo `context.id` com o `wa_message_id` real da mensagem enviada pela comanda;
+- identificação automática de cliente e comanda;
+- encaminhamento ao gerente com comanda, cliente, WhatsApp e conteúdo recebido;
+- texto, botão/interativo e indicação de mídia suportados;
+- idempotência por `meta_message_id` para ignorar retries repetidos;
+- loop bloqueado quando a origem é o próprio gerente;
+- modo seguro inicial `context-bound`: somente respostas vinculadas a uma mensagem outbound conhecida do Rota 27 são encaminhadas.
 
-## Ajuda do sistema
+### Sincronização e offline
+- local-first: cada aparelho grava primeiro localmente;
+- sync multidispositivo de comandas, histórico, cardápio, categorias, clientes e configuração do gerente;
+- `item_delta` para preservar lançamentos concorrentes;
+- outbox, cursor e log remoto idempotente;
+- continua operando localmente quando a internet cai;
+- filas do WhatsApp do cliente e do gerente **não são sincronizadas**, evitando envios duplicados.
 
-O botão `? Ajuda` fica no cabeçalho e não altera dados nem configurações. A Ajuda foi desenhada para quem nunca participou do desenvolvimento do sistema e inclui:
+### Ajuda v3
+O botão `? Ajuda` fica no cabeçalho e funciona offline. A Ajuda inclui:
+- Primeiros 3 minutos e mapa rápido;
+- abrir, lançar, conferir, editar, fechar e cancelar;
+- clientes, cadastro, importação/exportação e autocomplete;
+- WhatsApp do cliente e formato atual das mensagens;
+- WhatsApp do gerente;
+- respostas dos clientes encaminhadas ao gerente;
+- sincronização, uso offline, backup/restauração e atualização da PWA;
+- seção `Se acontecer isso…`, boas práticas e glossário.
 
-- **Primeiros 3 minutos**;
-- mapa rápido do aplicativo;
-- abrir comanda;
-- lançar produtos;
-- diferença entre **Ver itens**, **Editar itens** e **Fechar**;
-- diferença entre **Fechar** e **Cancelar**;
-- Painel, Histórico e Cardápio;
-- sincronização e uso offline;
-- WhatsApp;
-- backup/restauração;
-- atualização da PWA;
-- respostas rápidas para situações de erro;
-- boas práticas e glossário.
+## Backend Supabase
 
-## Arquitetura
+Projeto: `owkvwsiblbzlpxjwybrt`
 
-A produção mantém a operação local-first. Cada aparelho grava primeiro no `localStorage`; quando há conexão, a camada `rota27-sync` publica eventos pendentes e busca alterações dos demais aparelhos.
+- `rota27-sync`: sincronização multidispositivo com autenticação própria;
+- `rota27-whatsapp`: envio de templates do cliente/gerente;
+- `rota27-whatsapp-inbound`: callback público para respostas do cliente;
+- tabela `whatsapp_message_log`: auditoria/idempotência outbound;
+- tabela `rota27_whatsapp_inbound`: auditoria/idempotência inbound;
+- tabelas de sincronização com RLS habilitado; acesso operacional ocorre pelas Edge Functions com service role.
 
-A sincronização usa:
+As funções que usam `verify_jwt=false` possuem autenticação/validação própria adequada ao contrato: token de dispositivo nas APIs da PWA e validação contextual no callback público da Meta.
 
-- outbox local;
-- log remoto idempotente no Supabase;
-- pull incremental por cursor;
-- snapshot inicial e adoção de base;
-- `item_delta` para alterações de quantidade concorrentes;
-- detecção de conflitos após fechamento;
-- fila separada para propagar cancelamentos com segurança.
+## Configuração Meta do webhook de respostas
 
-Na v0.17.0, clientes e configuração do gerente usam eventos adicionais no mesmo log remoto com cursor/outbox próprios da nova camada. A fila do WhatsApp do cliente e a fila de mensagens do gerente **não são sincronizadas** entre aparelhos para impedir envios duplicados.
+O repositório contém `scripts/rota27-ativar-webhook-respostas.ps1`. O script registra o objeto `whatsapp_business_account`, campo `messages`, vincula a WABA ao app `Rota27` e fixa o callback da Edge Function. Credenciais são solicitadas via `Read-Host -AsSecureString` e não são gravadas no repositório.
 
-## GitHub Pages
+## Atualização da PWA
 
-A produção é publicada a partir de:
-
-- branch: `main`;
-- pasta: `/(root)`.
-
-URL de produção:
-
-`https://automatrixhub.github.io/rota27/`
-
-## Atualização no iPhone / Android
-
-Quem já possui a PWA instalada **não precisa reinstalar**.
-
-Após uma nova publicação:
-
-1. conectar o aparelho à internet;
-2. abrir a PWA uma vez e aguardar alguns segundos;
+Quem já possui o Rota 27 instalado **não precisa reinstalar**:
+1. conectar à internet;
+2. abrir a PWA e aguardar cerca de 10–20 segundos;
 3. fechar completamente;
 4. abrir novamente;
-5. confirmar o selo da versão e a sincronização saudável.
+5. confirmar `v0.17.1` e sincronização saudável.
 
-Não limpar dados do navegador e não remover a PWA para atualizar. O Service Worker da produção v0.16.1 usa o cache `rota27-comandas-v0.16.1` e remove caches antigos sem tocar no `localStorage`.
+Não limpar dados do navegador e não remover a PWA para atualizar.
 
-## Dados locais
+## Dados e segurança
 
-Comandas, cardápio, categorias, histórico e fila de envio do WhatsApp continuam armazenados localmente no dispositivo.
+Comandas, catálogo, categorias, histórico e filas técnicas continuam locais no aparelho. `clients` e `managerWhatsapp` integram o `state` e entram no Backup JSON. Tokens e secrets reais nunca devem ser commitados no GitHub.
 
-A configuração/fila de sincronização usa a chave local `rota27_sync_config_v1`. A fila do WhatsApp continua separada por aparelho. Cancelamentos pendentes de propagação usam uma fila local própria até a sincronização concluir.
+## Documentos principais
 
-Na v0.17.0, `clients` e `managerWhatsapp` passam a integrar o objeto `state`, portanto entram no Backup JSON existente. Outboxes técnicas continuam separadas.
-
-## WhatsApp Cloud API
-
-Arquitetura validada:
-
-`Rota 27 PWA/APK → Supabase Edge Function → WhatsApp Cloud API`
-
-Credenciais reais **nunca** devem ser commitadas no GitHub. Tokens permanecem somente nos Secrets do Supabase e na configuração local autorizada do aparelho.
-
-## Segurança
-
-As Edge Functions usam autenticação própria pelo header `x-rota27-device-token` e permanecem com `verify_jwt=false` porque a autenticação customizada é feita dentro das funções. As tabelas de backend permanecem com RLS habilitado e sem policies públicas; as funções usam service role no servidor.
-
-## Operação real
-
-A v0.16.1 permanece a baseline oficial de produção. Durante o piloto, só publicar hotfix se surgir P0/P1 com impacto real em integridade, cobrança, sincronização, WhatsApp ou continuidade da operação.
-
-A v0.17.0 deve ser validada fora da produção conforme `docs/TESTE-v0.17.0.md` antes de qualquer merge.
-
-Documentos principais:
-
-- `docs/PILOTO-REAL-v0.16.1.md`
-- `docs/RELEASE-v0.16.1.md`
-- `docs/RELEASE-v0.17.0.md`
-- `docs/TESTE-v0.17.0.md`
+- `docs/RELEASE-v0.17.1.md`
 - `docs/STATUS-PRODUCAO.md`
-- `docs/ROADMAP-POST-PILOTO.md`
-- `docs/V0.15-MULTIDEVICE.md`
-- `docs/V0.15-PRODUCTION-GATE.md`
+- `docs/TESTE-v0.17.0.md`
 - `docs/PRODUCT-PRINCIPLES.md`
+- `docs/V0.15-MULTIDEVICE.md`
 
 ## Versão
 
-Produção: **0.16.1**
-
-Em validação: **0.17.0**
+Produção: **0.17.1**

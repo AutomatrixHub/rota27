@@ -1,57 +1,95 @@
 # Rota 27 — Status de produção
 
-Última revisão: 22/08/2026
+Última revisão: 23/08/2026
 
-## Produção atual
+## Produção
 
-- versão: **v0.16.1**
-- branch de produção: `main`
-- entrada pública: `index.html`
-- Service Worker: cache `rota27-comandas-v0.16.1`
-- baseline oficial do piloto real
+- versão: **v0.17.1**;
+- branch: `main`;
+- GitHub Pages: `https://automatrixhub.github.io/rota27/`;
+- Service Worker: `rota27-comandas-v0.17.1`;
+- backend `rota27-whatsapp`: versão 23 ACTIVE (`rota27-whatsapp-v6-mini2`);
+- `rota27-sync`: versão 2 ACTIVE;
+- `rota27-whatsapp-inbound`: versão 1 ACTIVE.
 
-## Candidata v0.17.0
+A v0.17.1 consolida clientes/autocomplete, WhatsApp do gerente, formato final `mini2_*`, Ajuda v3 e o backend para respostas do cliente.
 
-A evolução v0.17.0 está em desenvolvimento no PR #10, branch `feature/v0.17.0-clientes-gerente-layout`, ainda fora da `main`.
+## WhatsApp final
 
-A Fase 1 local em `http://localhost:3002/` foi aprovada em 22/08/2026:
+### Atualizações da comanda
 
-- cadastro manual de clientes: OK;
-- importação TXT/CSV: OK;
-- criação automática de cliente a partir de comanda com WhatsApp: OK;
-- autocomplete em Nova/Editar comanda: OK;
-- nome do cliente em destaque e mesa/local abaixo: OK;
-- configuração do WhatsApp do gerente: OK;
-- smoke operacional: OK.
+Família `atualizacao_comanda_rota27_mini2_1` a `_5`, APPROVED / UTILITY / `pt_BR`:
 
-Pendente no momento:
+- cabeçalho `Comanda: <local>`;
+- lançamentos sem `Item:` e sem `+`;
+- remoção `REMOVIDO: 1x Produto - R$ ...`;
+- lote máximo de 5 alterações por mensagem;
+- lotes maiores divididos em blocos de 5;
+- total atual em cada atualização.
 
-- envio real de itens para o WhatsApp do gerente;
-- teste multidispositivo dos novos eventos de clientes/gerente;
-- regressão final de sync e WhatsApp antes do merge.
+### Gerente
 
-## Backend
+- configuração sincronizada entre aparelhos;
+- cópia agrupada de adições, remoções e correções;
+- proteção de duplicidade;
+- fila local por aparelho;
+- retry offline.
 
-O `rota27-sync` v0.17.0 foi implantado de forma controlada no projeto Supabase em 22/08/2026. A alteração é retrocompatível com a v0.16.1 e apenas amplia a lista de eventos aceitos para:
+### Respostas dos clientes
 
-- `client_upsert`;
-- `client_delete`;
-- `manager_config_replace`.
+Template aprovado:
 
-A função continua com autenticação própria por `x-rota27-device-token` e `verify_jwt=false`, como na produção anterior.
+- `resposta_cliente_rota27_gerente_v1`;
+- status `APPROVED`;
+- categoria `UTILITY`;
+- idioma `pt_BR`.
 
-O backend `rota27-whatsapp` **não foi alterado** para a v0.17.0 até este ponto.
+Infraestrutura implantada:
 
-## Regra de promoção
+- tabela `rota27_whatsapp_inbound`;
+- Edge Function `rota27-whatsapp-inbound` v1 ACTIVE;
+- correlação por `context.id` + `wa_message_id` + telefone do cliente;
+- idempotência por `meta_message_id`;
+- bloqueio de loop do gerente;
+- suporte a texto/interativo e indicação de mídia.
 
-A v0.17.0 só deve ser promovida para `main` após:
+## Ativação do callback Meta
 
-1. envio real ao gerente validado;
-2. sincronização de clientes e gerente validada entre aparelhos;
-3. smoke operacional sem regressões;
-4. confirmação de que faturamento, comandas e histórico permanecem corretos;
-5. versão/cache/selo coerentes em `0.17.0`.
+O código e o backend estão em produção. A Meta exige **App Access Token/App Secret** para registrar o app no objeto `whatsapp_business_account`, campo `messages`; o token operacional de WhatsApp não pode executar esse endpoint.
 
-## Próxima atualização visual
+A ativação é feita localmente, sem armazenar segredo, por:
 
-Nova paleta, novo logo e identidade visual ampla permanecem fora do escopo da v0.17.0 e ficam para a atualização posterior.
+`scripts/rota27-ativar-webhook-respostas.ps1`
+
+O script solicita App Secret e WhatsApp Access Token via `Read-Host -AsSecureString`, registra/confere `messages`, a WABA e o callback da Edge Function.
+
+## Ajuda v3
+
+A Ajuda agora cobre:
+
+- cadastro/importação/exportação de clientes;
+- autocomplete;
+- hierarquia cliente/local;
+- WhatsApp final do cliente;
+- WhatsApp do gerente;
+- respostas dos clientes;
+- sincronização dos novos domínios;
+- filas locais de WhatsApp;
+- novos cenários em `Se acontecer isso…`.
+
+## Segurança
+
+- nenhum token/App Secret é versionado;
+- o bootstrap temporário usado no diagnóstico foi desativado e protegido por JWT;
+- a extensão PostgreSQL `http` usada somente no diagnóstico foi removida;
+- o inbound opera em modo `context-bound` enquanto `META_APP_SECRET` não estiver configurado como secret do runtime: somente respostas a mensagens outbound reconhecidas do mesmo cliente podem ser processadas.
+
+## Atualização da PWA
+
+Não reinstalar e não limpar dados:
+
+1. internet ativa;
+2. abrir a PWA por 10–20 segundos;
+3. fechar completamente;
+4. abrir novamente;
+5. confirmar `v0.17.1` e sync saudável.
