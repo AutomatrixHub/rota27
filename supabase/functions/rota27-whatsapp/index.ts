@@ -1,6 +1,6 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 
-const EDGE_VERSION = "rota27-whatsapp-v5-mini";
+const EDGE_VERSION = "rota27-whatsapp-v6-mini2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -61,15 +61,15 @@ function safeEqual(a: string, b: string) {
 function templateForItemCount(count: number) {
   switch (count) {
     case 1:
-      return "atualizacao_comanda_rota27_mini_1";
+      return "atualizacao_comanda_rota27_mini2_1";
     case 2:
-      return "atualizacao_comanda_rota27_mini_2";
+      return "atualizacao_comanda_rota27_mini2_2";
     case 3:
-      return "atualizacao_comanda_rota27_mini_3";
+      return "atualizacao_comanda_rota27_mini2_3";
     case 4:
-      return "atualizacao_comanda_rota27_mini_4";
+      return "atualizacao_comanda_rota27_mini2_4";
     case 5:
-      return "atualizacao_comanda_rota27_mini_5";
+      return "atualizacao_comanda_rota27_mini2_5";
     default:
       throw new Error(`Quantidade de itens não suportada pelo template: ${count}`);
   }
@@ -185,7 +185,7 @@ Deno.serve(async (req: Request) => {
     }
 
     return safeTemplateText(
-      `+ ${item.quantity}x ${cleanName} - ${moneyBRL(subtotal)}`,
+      `${item.quantity}x ${cleanName} - ${moneyBRL(subtotal)}`,
       500,
     );
   });
