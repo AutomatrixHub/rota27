@@ -107,7 +107,7 @@ try {
         )
     }
 
-    $APP_ACCESS_TOKEN = String($appTokenResponse.access_token).Trim()
+    $APP_ACCESS_TOKEN = ([string]$appTokenResponse.access_token).Trim()
     if ([string]::IsNullOrWhiteSpace($APP_ACCESS_TOKEN)) {
         throw "A Meta nao retornou App Access Token."
     }
