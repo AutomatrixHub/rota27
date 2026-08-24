@@ -4,12 +4,12 @@ Aplicativo mobile-first, offline-first e multidispositivo para controle rápido 
 
 ## Produção
 
-**Versão: v0.19.0**  
+**Versão: v0.20.0**  
 Branch: `main`  
 GitHub Pages: `https://automatrixhub.github.io/rota27/`  
-Service Worker: `rota27-comandas-v0.19.0`
+Service Worker: `rota27-comandas-v0.20.0`
 
-A v0.19.0 preserva toda a operação validada da v0.18.3 e acrescenta o **Fechamento do Turno**, com conferência final, bloqueios operacionais, registro imutável por data e sincronização multidispositivo.
+A v0.20.0 preserva toda a operação validada da v0.19.0 e acrescenta a **Visão Gerencial histórica e comparativa**, construída sobre os snapshots imutáveis do Fechamento do Turno.
 
 ## Recursos principais
 
@@ -40,6 +40,36 @@ Na tela Histórico:
 
 O fechamento funciona localmente offline. Quando a sincronização está configurada, usa uma outbox própria e o evento `turn_closed` para convergir entre aparelhos sem sincronizar filas de WhatsApp.
 
+### Visão Gerencial
+No `Painel`, o acesso **Visão Gerencial** usa exclusivamente os fechamentos imutáveis da v0.19.0 como fonte de verdade e oferece:
+- períodos de 7, 30, 90 dias e todo o histórico;
+- faturamento acumulado;
+- média por turno fechado;
+- ticket médio;
+- comandas fechadas, itens vendidos e cancelamentos;
+- comparação com o período anterior equivalente quando existe base suficiente;
+- gráfico de faturamento por turno fechado;
+- melhor dia do período;
+- consolidação de produtos mais vendidos;
+- consolidação de formas de pagamento;
+- exportação CSV dos dados reais do período.
+
+Dias sem fechamento não são inventados como faturamento zero.
+
+### Modo demonstração da Visão Gerencial
+A v0.20.0 mantém em produção um recurso opcional **Modo demonstração**:
+- começa sempre desligado;
+- é ativado manualmente dentro da Visão Gerencial;
+- gera uma amostra simulada somente em memória para explorar gráficos, comparações e rankings;
+- não grava em `localStorage`;
+- não entra em sincronização;
+- não altera comandas, histórico ou fechamentos reais;
+- não altera WhatsApp;
+- a exportação CSV fica bloqueada enquanto o modo demonstração estiver ativo;
+- ao recarregar o app, os dados reais voltam automaticamente.
+
+O modo demonstração é identificado visualmente para evitar confusão com números reais.
+
 ### Clientes
 - cadastro manual;
 - criação/captura automática quando uma comanda contém nome + WhatsApp válido;
@@ -63,7 +93,8 @@ O fechamento funciona localmente offline. Quando a sincronização está configu
 - `item_delta` para preservar lançamentos concorrentes;
 - outbox/cursor/log remoto idempotente;
 - operação local continua disponível sem internet;
-- filas de WhatsApp nunca são sincronizadas entre aparelhos.
+- filas de WhatsApp nunca são sincronizadas entre aparelhos;
+- a v0.20.0 não adiciona tabela, migration ou Edge Function nova.
 
 ## Tema oficial da marca
 
@@ -74,8 +105,8 @@ Tema padrão da aplicação:
 - creme/marfim para fundos e superfícies;
 - verde/amarelo/vermelho reservados para estados funcionais.
 
-### Ajuda v4.3 — Tema Capixaba
-A seção `Ajuda` usa azul, branco e rosa inspirados na identidade capixaba e inclui também **Fechamento do turno**, além de operação, clientes, WhatsApp, Resumo do Turno, Auditoria, sincronização, offline, backup/restauração e atualização da PWA.
+### Ajuda v4.4 — Tema Capixaba
+A seção `Ajuda` usa azul, branco e rosa inspirados na identidade capixaba e inclui **Fechamento do turno**, **Visão Gerencial** e **Modo demonstração**, além de operação, clientes, WhatsApp, Resumo do Turno, Auditoria, sincronização, offline, backup/restauração e atualização da PWA.
 
 No celular, a Ajuda usa viewport dinâmico para permanecer integralmente visível e não ficar sobreposta pela barra do navegador.
 
@@ -90,7 +121,7 @@ Projeto: `owkvwsiblbzlpxjwybrt`
 - `whatsapp_message_log`: auditoria/idempotência outbound;
 - `rota27_whatsapp_inbound`: auditoria/idempotência inbound.
 
-A v0.19.0 não exigiu migration destrutiva nem alteração dos contratos do WhatsApp.
+A v0.20.0 não exigiu migration, alteração de Edge Function ou mudança dos contratos do WhatsApp.
 
 ## Atualização da PWA
 
@@ -99,7 +130,7 @@ Quem já possui o Rota 27 instalado **não precisa reinstalar**:
 2. abrir a PWA e aguardar cerca de 10–20 segundos;
 3. fechar completamente;
 4. abrir novamente;
-5. confirmar `v0.19.0` e sincronização saudável.
+5. confirmar `v0.20.0` e sincronização saudável.
 
 Não limpar dados do navegador e não remover a PWA para atualizar.
 
@@ -108,14 +139,16 @@ Não limpar dados do navegador e não remover a PWA para atualizar.
 - nenhum token/App Secret é versionado;
 - credenciais reais não devem ser gravadas no GitHub;
 - o fluxo de operação continua local-first;
-- nenhuma migração destrutiva foi necessária para a v0.19.0.
+- o Modo demonstração é somente leitura/em memória e não contamina dados reais;
+- nenhuma migração destrutiva foi necessária para a v0.20.0.
 
 ## Documentos principais
 
-- `docs/RELEASE-v0.19.0.md`
+- `docs/RELEASE-v0.20.0.md`
 - `docs/STATUS-PRODUCAO.md`
-- `docs/TESTE-v0.19.0.md`
-- `docs/ESPEC-v0.19.0.md`
+- `docs/TESTE-v0.20.0.md`
+- `docs/ESPEC-v0.20.0.md`
+- `docs/RELEASE-v0.19.0.md`
 - `docs/MARCA-TEMA-v0.18.2.md`
 - `docs/PILOTO-REAL-v0.17.1.md`
 - `docs/PRODUCT-PRINCIPLES.md`
@@ -123,4 +156,4 @@ Não limpar dados do navegador e não remover a PWA para atualizar.
 
 ## Versão
 
-Produção: **0.19.0**
+Produção: **0.20.0**
