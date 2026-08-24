@@ -2,6 +2,12 @@
 
 Data de início: 23/08/2026
 
+## Resultado
+
+**VALIDADO.** Em 23/08/2026 foram realizados vários testes reais de operação na v0.17.1 e o resultado reportado foi: **tudo OK**.
+
+Nenhum problema P0/P1 foi reportado nesse ciclo de validação. A versão v0.17.1 permanece como baseline operacional estável de produção.
+
 ## Decisão
 
 A versão **v0.17.1** fica congelada como baseline operacional para o piloto real.
@@ -81,13 +87,15 @@ Não abrir tarefa apenas por preferência estética durante o piloto.
 
 ## Fechamento do piloto
 
-Ao final do período de uso real, consolidar:
+Validação registrada em 23/08/2026:
 
-- problemas P0/P1 encontrados e correções necessárias;
-- atritos repetidos observados pelos atendentes;
-- recursos realmente pedidos durante o uso;
-- o que funcionou sem intervenção e deve permanecer intocado;
-- decisão de escopo da próxima versão.
+- vários testes realizados;
+- operação reportada como estável;
+- nenhum P0/P1 reportado;
+- fluxo de WhatsApp cliente → gerente já validado em produção;
+- v0.17.1 aprovada para permanência em produção.
+
+A partir daqui, novas funcionalidades devem entrar somente em uma próxima versão planejada, preservando a v0.17.1 como referência estável.
 
 ## Candidata inicial para v0.18
 
@@ -100,7 +108,7 @@ A hipótese inicial é um **Resumo do Turno**, sem alterar a velocidade de lanç
 - ocorrências relevantes de sync/WhatsApp;
 - pontos que mereçam conferência gerencial.
 
-Essa hipótese só será promovida para desenvolvimento após o piloto real confirmar valor.
+Essa hipótese só será promovida para desenvolvimento após definição explícita do escopo da próxima versão.
 
 ## Segurança pós-ativação Meta
 
