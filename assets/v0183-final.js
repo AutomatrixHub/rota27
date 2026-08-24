@@ -6,6 +6,7 @@
   const LABEL='v0.18.3';
   const TITLE='Rota 27 Bodega • Comandas v0.18.3';
   const CARD_STYLE_ID='r27-v0183-card-refine';
+  const LOGO_BG='#C3B59B';
   let badgeObserver=null;
   let titleObserver=null;
 
@@ -23,9 +24,8 @@
   }
 
   /*
-   * O logo original da base é um data URI já validado nos aparelhos.
-   * Não reescrevemos mais o src: isso evita o quadro vazio observado na candidata.
-   * O raio interno acompanha a linguagem do logo-shell sem alterar seu tamanho.
+   * Mantém o logo validado da base e equaliza a moldura com o próprio fundo bege da arte.
+   * Assim eliminamos o quadro branco sem alterar tamanho, centralização ou src.
    */
   function preserveBaseLogo(){
     const img=document.querySelector('.logo-image');
@@ -33,7 +33,13 @@
     img.setAttribute('alt','Rota 27 Bodega');
     img.style.borderRadius='12px';
     img.style.clipPath='inset(0 round 12px)';
-    img.style.backgroundColor='#fff';
+    img.style.backgroundColor=LOGO_BG;
+
+    const shell=img.closest('.logo-shell');
+    if(shell){
+      shell.style.backgroundColor=LOGO_BG;
+      shell.style.boxShadow='inset 0 0 0 1px rgba(17,17,17,.08),0 8px 18px rgba(17,17,17,.08)';
+    }
   }
 
   /*
@@ -42,12 +48,22 @@
    * - laranja fino na parte superior;
    * - preto somente no trecho inferior;
    * - remove o antigo fragmento horizontal no canto superior esquerdo.
+   *
+   * Ajuda no celular:
+   * - usa viewport dinâmico para não ficar atrás da barra do navegador;
+   * - ocupa a área visível inteira e mantém o cabeçalho dentro do viewport.
    */
   function injectCardRefinementStyles(){
     if(document.getElementById(CARD_STYLE_ID))return;
     const style=document.createElement('style');
     style.id=CARD_STYLE_ID;
     style.textContent=`
+      .logo-shell{
+        background:${LOGO_BG}!important;
+      }
+      .logo-image{
+        background:${LOGO_BG}!important;
+      }
       .command-card{
         border-radius:var(--r27-card-radius,28px)!important;
         overflow:hidden!important;
@@ -75,6 +91,33 @@
         display:none!important;
         border:0!important;
         box-shadow:none!important;
+      }
+      @media(max-width:720px){
+        .r27-help-overlay.open{
+          align-items:stretch!important;
+          height:100dvh!important;
+          min-height:100dvh!important;
+        }
+        .r27-help-panel{
+          height:100dvh!important;
+          max-height:100dvh!important;
+          min-height:0!important;
+          border-radius:0!important;
+        }
+        .r27-help-header{
+          padding-top:calc(18px + env(safe-area-inset-top))!important;
+        }
+        .r27-help-content{
+          overscroll-behavior:contain;
+        }
+      }
+      @supports not (height:100dvh){
+        @media(max-width:720px){
+          .r27-help-overlay.open,.r27-help-panel{
+            height:100vh!important;
+            max-height:100vh!important;
+          }
+        }
       }
       @media(max-width:520px){
         .command-card{border-radius:var(--r27-card-radius,25px)!important}
@@ -130,6 +173,9 @@
 
       const footer=overlay.querySelector('.r27-help-footer span');
       if(footer)footer.textContent='Ajuda v4.2 • v0.18.3';
+
+      const content=overlay.querySelector('.r27-help-content');
+      if(content)content.scrollTop=0;
 
       overlay.dataset.r27V0183Help='1';
     }
