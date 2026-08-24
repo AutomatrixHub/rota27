@@ -4,23 +4,37 @@
 
 ## Produção
 
-- versão: **v0.17.1**;
+- versão: **v0.18.0**;
 - branch: `main`;
 - GitHub Pages: `https://automatrixhub.github.io/rota27/`;
-- Service Worker: `rota27-comandas-v0.17.1`;
+- Service Worker: `rota27-comandas-v0.18.0`;
 - backend `rota27-whatsapp`: versão 23 ACTIVE (`rota27-whatsapp-v6-mini2`);
 - `rota27-sync`: versão 2 ACTIVE;
 - `rota27-whatsapp-inbound`: versão 1 ACTIVE.
 
-A v0.17.1 consolida clientes/autocomplete, WhatsApp do gerente, formato final `mini2_*`, Ajuda v3 e respostas do cliente encaminhadas ao gerente.
+A v0.18.0 preserva a baseline operacional validada da v0.17.1 e adiciona o **Resumo do Turno** na tela Histórico, além da Ajuda v4.
 
-## Baseline validada
+## Validação da v0.18.0
 
-A **v0.17.1 está validada em produção**.
+Em 23/08/2026 a candidata foi aberta localmente na porta dedicada da v0.18.0 e validada com dados de teste. O Resumo do Turno exibiu corretamente faturamento, comandas fechadas, comandas abertas, valor em aberto, ticket médio, itens vendidos, ranking de produtos e forma de pagamento. O visual foi aprovado para produção.
 
-Em 23/08/2026 foram realizados vários testes reais de operação e o resultado reportado foi **tudo OK**, sem P0/P1 reportado nesse ciclo. A v0.17.1 permanece congelada como baseline operacional estável.
+A v0.17.1 permanece como baseline anterior validada e referência de rollback.
 
-Roteiro e registro do piloto: `docs/PILOTO-REAL-v0.17.1.md`.
+## Resumo do Turno
+
+A v0.18.0 inclui:
+
+- faturamento fechado hoje;
+- comandas fechadas hoje;
+- comandas abertas agora;
+- valor atualmente em aberto;
+- ticket médio das comandas fechadas;
+- unidades vendidas hoje;
+- produtos mais vendidos do dia;
+- distribuição por forma de pagamento;
+- alertas somente quando há ação necessária: offline, erro conhecido de sync, fila de WhatsApp com falha ou cancelamento aguardando sincronização.
+
+Cancelamentos ainda não aparecem como contador histórico porque a arquitetura anterior não mantém histórico consolidado desse evento após a remoção operacional. Esse número só será adicionado quando houver trilha de auditoria confiável.
 
 ## WhatsApp final
 
@@ -61,21 +75,11 @@ Infraestrutura implantada e validada em produção:
 - bloqueio de loop do gerente;
 - suporte a texto/interativo e indicação de mídia;
 - callback Meta registrado para o app Rota27 e WABA com override apontando para a Edge Function;
-- teste real em 23/08/2026: resposta de cliente na comanda `Parklet 5` foi identificada, persistida com status `forwarded` e encaminhada com sucesso ao gerente em uma única mensagem.
+- teste real em 23/08/2026: resposta de cliente foi identificada, persistida com status `forwarded` e encaminhada com sucesso ao gerente.
 
-## Ativação do callback Meta
+## Ajuda v4
 
-O callback está ativo em produção. A Meta exige **App Access Token/App Secret** para registrar o app no objeto `whatsapp_business_account`, campo `messages`; o token operacional de WhatsApp não pode executar esse endpoint sozinho.
-
-A ativação é feita localmente, sem armazenar segredo, por:
-
-`scripts/rota27-ativar-webhook-respostas.ps1`
-
-O script solicita App Secret e WhatsApp Access Token via `Read-Host -AsSecureString`, registra/confere `messages`, a WABA e o callback da Edge Function.
-
-## Ajuda v3
-
-A Ajuda agora cobre:
+A Ajuda cobre:
 
 - cadastro/importação/exportação de clientes;
 - autocomplete;
@@ -83,27 +87,26 @@ A Ajuda agora cobre:
 - WhatsApp final do cliente;
 - WhatsApp do gerente;
 - respostas dos clientes;
+- Resumo do Turno;
 - sincronização dos novos domínios;
 - filas locais de WhatsApp;
-- novos cenários em `Se acontecer isso…`.
+- cenários em `Se acontecer isso…`.
 
 ## Segurança
 
 - nenhum token/App Secret é versionado;
-- o bootstrap temporário usado no diagnóstico foi desativado e protegido por JWT;
+- o bootstrap temporário usado no diagnóstico está protegido por JWT e não participa do fluxo operacional;
 - a extensão PostgreSQL `http` usada somente no diagnóstico foi removida;
-- o inbound opera em modo `context-bound` enquanto `META_APP_SECRET` não estiver configurado como secret do runtime: somente respostas a mensagens outbound reconhecidas do mesmo cliente podem ser processadas;
+- o inbound opera em modo `context-bound` enquanto `META_APP_SECRET` não estiver configurado como secret do runtime;
 - credenciais expostas durante a ativação devem ser rotacionadas fora do horário operacional, com substituição antes da revogação para evitar indisponibilidade.
 
 ## Próxima etapa
 
-1. manter v0.17.1 estável em produção;
-2. não alterar a baseline sem necessidade operacional;
-3. tratar apenas P0/P1 como hotfix;
-4. consolidar pedidos reais e melhorias para próxima versão;
-5. definir explicitamente o escopo da v0.18 antes de desenvolver.
-
-A hipótese inicial para v0.18 é um **Resumo do Turno**, ainda aguardando definição formal de escopo.
+1. observar a v0.18.0 em produção sem mexer no fluxo rápido de atendimento;
+2. tratar apenas P0/P1 como hotfix;
+3. preparar trilha de auditoria de cancelamentos antes de exibir esse indicador;
+4. evoluir a camada gerencial sem transformar a PWA em um ERP pesado;
+5. priorizar recursos que reduzam conferência manual e risco operacional.
 
 ## Atualização da PWA
 
@@ -113,4 +116,4 @@ Não reinstalar e não limpar dados:
 2. abrir a PWA por 10–20 segundos;
 3. fechar completamente;
 4. abrir novamente;
-5. confirmar `v0.17.1` e sync saudável.
+5. confirmar `v0.18.0` e sync saudável.
