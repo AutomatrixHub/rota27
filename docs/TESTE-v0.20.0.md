@@ -1,10 +1,12 @@
-# Rota 27 v0.20.0 — teste da candidata
+# Rota 27 v0.20.0 — validação final
 
 ## Estado
 
-**CANDIDATA — produção permanece na v0.19.0 até aprovação.**
+**VALIDADA — autorizada para produção em 24/08/2026.**
 
-## Abrir a preview
+A candidata foi testada e aprovada, incluindo a Visão Gerencial, períodos, comparações, gráfico, rankings, exportação e regressão da operação anterior.
+
+## Preview utilizada na validação
 
 ```powershell
 cd "C:\Users\marco\OneDrive\Documentos\Rota27\mvp\Rota27-comandas-git"
@@ -15,85 +17,84 @@ Get-Content .\VERSION
 powershell -ExecutionPolicy Bypass -File ".\scripts\testar-v0200.ps1"
 ```
 
-Esperado:
+Esperado/validado:
 - `VERSION` = `0.20.0`;
 - preview PC em `http://localhost:3023/?preview=v0200`;
 - endereço `CELULAR:` exibido no PowerShell;
-- badge e título mostram v0.20.0 sem alternância;
+- badge e título em v0.20.0 sem alternância;
 - sem travamento ou uso anormal de CPU.
 
-### Dados históricos da preview
-Quando a URL contém `?preview=v0200`, a candidata injeta em memória uma amostra de fechamentos passados para permitir testar gráficos e comparações agora, sem esperar semanas de operação real.
+## Histórico simulado da preview
+
+Quando a URL contém `?preview=v0200`, a candidata injeta em memória uma amostra de fechamentos passados para permitir testar gráficos e comparações sem esperar semanas de operação real.
 
 Essa amostra:
-- não grava no localStorage;
-- não altera seus fechamentos reais;
+- não grava em `localStorage`;
+- não altera fechamentos reais;
 - não entra no sync;
-- não aparece em produção;
-- é identificada por um aviso visível dentro da Visão Gerencial.
+- é identificada por aviso visível.
 
-## Cenário A — acesso pelo Painel
-1. abra `Painel`;
-2. localize `Visão Gerencial`;
-3. toque `Abrir visão gerencial`.
+## Modo demonstração de produção
 
-Esperado:
-- abre folha gerencial sem alterar a tela operacional;
-- informa quantos fechamentos imutáveis existem na base;
-- na preview, exibe aviso de histórico simulado para teste.
+Após a aprovação da Visão Gerencial, foi consolidado um recurso seguro equivalente para produção: **Modo demonstração**.
 
-## Cenário B — períodos
-Teste `7 dias`, `30 dias`, `90 dias` e `Todos`.
+Regras:
+- começa desligado;
+- ativação manual dentro da Visão Gerencial;
+- dados simulados somente em memória;
+- não grava `localStorage`;
+- não sincroniza;
+- não altera comandas, histórico ou fechamentos reais;
+- não interfere em WhatsApp;
+- exportação CSV é bloqueada enquanto o modo está ativo;
+- recarregar o app retorna automaticamente aos dados reais;
+- a tela exibe identificação explícita de demonstração.
 
-Esperado:
-- métricas mudam conforme os fechamentos pertencentes ao período;
-- dias sem fechamento não aparecem como faturamento zero;
-- todo o histórico não inventa comparação anterior.
+## Cenários validados
 
-## Cenário C — comparação
-Conferir:
+### A — acesso pelo Painel
+- `Painel → Visão Gerencial` abre a folha gerencial;
+- a tela operacional permanece preservada.
+
+### B — períodos
+- `7 dias`, `30 dias`, `90 dias` e `Todos`;
+- métricas variam conforme os fechamentos do período;
+- dias sem fechamento não viram zero artificialmente.
+
+### C — comparação
 - faturamento;
 - ticket médio;
 - comandas;
-- itens vendidos.
+- itens vendidos;
+- percentual só aparece quando existe base anterior suficiente.
 
-Esperado:
-- variação positiva/negativa aparece como percentual quando existe base anterior;
-- sem base anterior, aparece mensagem de insuficiência em vez de percentual falso.
+### D — gráfico e rankings
+- gráfico por turno fechado;
+- melhor dia coerente;
+- mais vendidos e formas de pagamento derivados dos snapshots.
 
-## Cenário D — gráfico e rankings
-Esperado:
-- gráfico mostra somente turnos efetivamente fechados;
-- melhor dia é coerente com os fechamentos;
-- mais vendidos e formas de pagamento refletem os snapshots do período.
+### E — exportação
+- CSV com uma linha por fechamento real;
+- data, faturamento, comandas, canceladas, ticket, itens e formas de pagamento.
 
-## Cenário E — exportação
-1. selecione um período com fechamento;
-2. toque `Exportar CSV`.
+### F — multidispositivo
+- fechamentos reais continuam convergindo pela infraestrutura da v0.19.0;
+- a v0.20.0 não cria tabela, migration, Edge Function ou novo contrato de sync.
 
-Esperado:
-- gera arquivo CSV com uma linha por fechamento;
-- inclui data, faturamento, comandas, canceladas, ticket, itens e formas de pagamento.
-
-## Cenário F — multidispositivo
-Para validar dados reais entre aparelhos, ignore a amostra visual da preview e confira primeiro `Histórico → Fechamentos` nos dois aparelhos.
-
-Esperado:
-- fechamentos reais continuam convergindo pela v0.19.0;
-- a v0.20.0 não cria nova tabela/migration nem novo evento de sync.
-
-## Cenário G — Ajuda
-Esperado:
+### G — Ajuda
 - Tema Capixaba preservado;
-- nova seção `Visão Gerencial`;
+- seção `Visão Gerencial`;
+- nota sobre `Modo demonstração`;
 - rodapé `Ajuda v4.4 • v0.20.0`;
-- cabeçalho mobile continua sem sobreposição.
+- cabeçalho mobile preservado.
 
-## Regressão mínima
+## Regressão
+
 - abrir/lançar/editar/fechar comanda;
-- Fechamento do Turno continua funcionando;
-- Histórico e Auditoria continuam funcionando;
-- WhatsApp cliente/gerente permanece inalterado;
-- sync continua convergente.
+- Fechamento do Turno;
+- Histórico;
+- Auditoria;
+- WhatsApp cliente/gerente;
+- sincronização.
 
-Não limpar localStorage e não reinstalar a PWA para testar.
+Resultado final: **APROVADA PARA PRODUÇÃO**.
