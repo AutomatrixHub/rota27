@@ -1,12 +1,12 @@
-# Rota 27 — Release candidata v0.18.1
+# Rota 27 — Release v0.18.1
 
 Data: 23/08/2026
 
 ## Estado
 
-**CANDIDATA — NÃO PROMOVIDA PARA PRODUÇÃO**
+**PRODUÇÃO — VALIDADA**
 
-Produção continua em v0.18.0 enquanto a v0.18.1 é validada.
+A v0.18.1 foi validada no fluxo operacional e promovida a partir da v0.18.0.
 
 ## Objetivo
 
@@ -39,7 +39,7 @@ O Resumo também ganhou o botão **Ver auditoria**, que abre a linha do tempo do
 
 ## Ajuda
 
-A Ajuda candidata v4.1 inclui uma seção `Auditoria operacional` explicando:
+A Ajuda v4.1 inclui a seção `Auditoria operacional` explicando:
 
 - o que é registrado;
 - onde consultar;
@@ -57,6 +57,10 @@ Novo endpoint isolado:
 - nenhuma alteração em `rota27-sync`;
 - nenhuma alteração em `rota27-whatsapp` ou `rota27-whatsapp-inbound`.
 
+## Validação
+
+Em 23/08/2026 a v0.18.1 foi testada no fluxo operacional com abertura de comanda, lançamentos, remoção, cancelamento, Resumo do Turno e consulta da linha do tempo. O resultado reportado foi **tudo funcionando perfeitamente**.
+
 ## Preservações
 
 - sem mudança no cálculo de total;
@@ -64,4 +68,4 @@ Novo endpoint isolado:
 - sem mudança no fluxo de lançamento rápido;
 - sem sincronizar outboxes de WhatsApp;
 - sem limpeza/migração destrutiva;
-- v0.18.0 permanece como rollback/baseline de produção até aprovação.
+- v0.18.0 permanece como baseline anterior de rollback.
