@@ -15,3 +15,79 @@
 @media(max-width:900px){.v022-summary.v022g-summary{grid-template-columns:repeat(3,minmax(0,1fr))}.v022g-quick-actions{grid-template-columns:repeat(2,minmax(0,1fr))}.v022g-grid{grid-template-columns:1fr}.v022g-priorities,.v022g-receipts{grid-column:auto}.v022-restock-row{grid-template-columns:auto 1fr}.v022-product{grid-column:2}.v022-qty{grid-column:1/2}.v022-supplier{grid-column:2}.v022g-stock-facts{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:760px){.v022-sheet{width:100%!important;max-width:none!important;max-height:100dvh!important;padding:10px 16px calc(18px + env(safe-area-inset-bottom))!important}.v022-head h3{font-size:23px}.v022-summary.v022g-summary{grid-template-columns:repeat(2,minmax(0,1fr))}.v022g-quick-actions{grid-template-columns:1fr 1fr}.v022g-quick-actions button{grid-template-columns:auto 1fr;padding:10px}.v022g-stock-totals{grid-template-columns:repeat(2,minmax(0,1fr))}.v022g-priority-row{grid-template-columns:1fr}.v022g-facts{grid-template-columns:repeat(4,minmax(0,1fr))}.v022g-stock-facts{grid-template-columns:repeat(2,minmax(0,1fr))}.v022g-card{padding:12px}.v022g-card-head{align-items:flex-start}.v022g-card-head button{font-size:10px}.v022g-flow-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:430px){.v022g-quick-actions{grid-template-columns:1fr}.v022g-facts{grid-template-columns:repeat(2,minmax(0,1fr))}.v022g-flow-grid{grid-template-columns:1fr 1fr}.v022g-supplier-insight{grid-template-columns:1fr 1fr}.v022g-supplier-insight p{grid-column:1/-1}}
+
+/* Revisão mobile: a central continua rica, mas deixa de ser um dashboard desktop comprimido. */
+@media(max-width:760px){
+  #v022PurchasesWrap{overflow:hidden}
+  #v022PurchasesWrap .v022-sheet{box-sizing:border-box;overflow-x:hidden;overscroll-behavior:contain}
+  #v022PurchasesWrap .v022-head{gap:10px}
+  #v022PurchasesWrap .v022-head>div{min-width:0}
+  #v022PurchasesWrap .v022-head .desc{max-width:none;font-size:12px;line-height:1.35;margin-right:4px}
+  #v022PurchasesWrap .v022-x{flex:0 0 42px;width:42px;height:42px}
+  #v022PurchasesWrap .v022-summary.v022g-summary{gap:7px;margin:12px 0 10px}
+  #v022PurchasesWrap .v022g-metric{padding:10px 11px;border-radius:14px}
+  #v022PurchasesWrap .v022g-metric small{font-size:10px;line-height:1.2}
+  #v022PurchasesWrap .v022g-metric strong{font-size:20px}
+  #v022PurchasesWrap .v022g-metric span{font-size:10px;margin-top:4px;white-space:normal;overflow-wrap:anywhere}
+  #v022PurchasesWrap .v022g-quick-actions{gap:7px}
+  #v022PurchasesWrap .v022g-quick-actions button{min-height:62px;align-items:center}
+  #v022PurchasesWrap .v022g-quick-actions button>span{width:34px;height:34px}
+  #v022PurchasesWrap .v022g-quick-actions b{font-size:12px}
+  #v022PurchasesWrap .v022g-quick-actions small{font-size:10px;white-space:normal;overflow:visible;text-overflow:clip;line-height:1.2}
+  #v022PurchasesWrap .v022g-grid{gap:8px}
+  #v022PurchasesWrap .v022g-card{overflow:hidden;border-radius:16px}
+  #v022PurchasesWrap .v022g-card-head{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px}
+  #v022PurchasesWrap .v022g-card-head>div{min-width:0}
+  #v022PurchasesWrap .v022g-card-head h4{font-size:15px;line-height:1.2}
+  #v022PurchasesWrap .v022g-card-head button{align-self:start;max-width:120px;white-space:normal;line-height:1.15}
+  #v022PurchasesWrap .v022g-health-legend{gap:8px 12px}
+  #v022PurchasesWrap .v022g-stock-totals span,#v022PurchasesWrap .v022g-flow-grid>div{min-width:0;padding:9px}
+  #v022PurchasesWrap .v022g-stock-totals small,#v022PurchasesWrap .v022g-flow-grid small{white-space:normal;overflow-wrap:anywhere}
+  #v022PurchasesWrap .v022g-priority-row{gap:7px}
+  #v022PurchasesWrap .v022g-priority-main strong{font-size:13px}
+  #v022PurchasesWrap .v022g-priority-main small{white-space:normal;overflow:visible;text-overflow:clip}
+  #v022PurchasesWrap .v022g-facts{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+  #v022PurchasesWrap .v022g-facts span{padding:7px 8px;border-radius:10px;background:#f5ecdf}
+  #v022PurchasesWrap .v022g-receipt-row{align-items:flex-start}
+  #v022PurchasesWrap .v022g-receipt-row>div{min-width:0}
+  #v022PurchasesWrap .v022g-receipt-row small{white-space:normal;overflow-wrap:anywhere}
+  #v022PurchasesWrap .v022-tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;overflow:visible}
+  #v022PurchasesWrap .v022-tabs button{min-width:0;width:100%;padding:10px 6px;font-size:12px;white-space:normal}
+  #v022PurchasesWrap .v022-toolbar{display:grid;grid-template-columns:minmax(0,1fr);gap:7px}
+  #v022PurchasesWrap .v022-toolbar input,#v022PurchasesWrap .v022-toolbar select,#v022PurchasesWrap .v022-toolbar button{box-sizing:border-box;width:100%;min-width:0;min-height:44px;font-size:16px}
+  #v022PurchasesWrap .v022-restock-row{grid-template-columns:28px minmax(0,1fr);gap:8px 9px;padding:12px}
+  #v022PurchasesWrap .v022-select{grid-column:1;grid-row:1;align-self:start;padding-top:3px}
+  #v022PurchasesWrap .v022-product{grid-column:2;grid-row:1;min-width:0}
+  #v022PurchasesWrap .v022-product strong{font-size:15px;line-height:1.2;overflow-wrap:anywhere}
+  #v022PurchasesWrap .v022g-stock-facts{grid-column:1/-1;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin-top:4px}
+  #v022PurchasesWrap .v022g-stock-facts span{min-width:0;padding:7px}
+  #v022PurchasesWrap .v022-qty,#v022PurchasesWrap .v022-supplier{grid-column:1/-1;min-width:0}
+  #v022PurchasesWrap .v022-qty input,#v022PurchasesWrap .v022-supplier select{box-sizing:border-box;width:100%;min-width:0;min-height:46px;font-size:16px}
+  #v022PurchasesWrap .v022-sticky-actions{margin-top:10px}
+  #v022PurchasesWrap .v022-sticky-actions button{min-height:48px;white-space:normal}
+  #v022PurchasesWrap .v022-order-card{overflow:hidden;padding:12px}
+  #v022PurchasesWrap .v022-order-top,#v022PurchasesWrap .v022-order-foot{gap:8px}
+  #v022PurchasesWrap .v022-order-top>div,#v022PurchasesWrap .v022-order-foot>div{min-width:0}
+  #v022PurchasesWrap .v022-order-top small{white-space:normal;overflow-wrap:anywhere}
+  #v022PurchasesWrap .v022g-order-progress-top{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+  #v022PurchasesWrap .v022g-order-progress-top>strong{grid-column:1/-1}
+  #v022PurchasesWrap .v022-order-actions{width:100%;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+  #v022PurchasesWrap .v022-order-actions button{min-width:0;min-height:42px;white-space:normal}
+  #v022PurchasesWrap .v022-supplier-card{grid-template-columns:1fr;gap:8px}
+  #v022PurchasesWrap .v022-supplier-card>div{min-width:0}
+  #v022PurchasesWrap .v022g-supplier-insight{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+}
+@media(max-width:430px){
+  #v022PurchasesWrap .v022-sheet{padding-left:12px!important;padding-right:12px!important}
+  #v022PurchasesWrap .v022-head h3{font-size:21px}
+  #v022PurchasesWrap .v022-summary.v022g-summary{grid-template-columns:repeat(2,minmax(0,1fr))}
+  #v022PurchasesWrap .v022g-quick-actions{grid-template-columns:1fr}
+  #v022PurchasesWrap .v022g-quick-actions button{grid-template-columns:34px minmax(0,1fr)}
+  #v022PurchasesWrap .v022g-stock-totals,#v022PurchasesWrap .v022g-flow-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  #v022PurchasesWrap .v022g-card-head{grid-template-columns:1fr}
+  #v022PurchasesWrap .v022g-card-head button{max-width:none;width:100%;min-height:40px}
+  #v022PurchasesWrap .v022g-stock-facts{grid-template-columns:repeat(2,minmax(0,1fr))}
+  #v022PurchasesWrap .v022-tabs button{font-size:11px;padding-left:4px;padding-right:4px}
+  #v022PurchasesWrap .v022-order-actions{grid-template-columns:1fr}
+  #v022PurchasesWrap .v022g-supplier-insight{grid-template-columns:1fr 1fr}
+}
