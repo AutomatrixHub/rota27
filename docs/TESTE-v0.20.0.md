@@ -50,6 +50,8 @@ Regras:
 - recarregar o app retorna automaticamente aos dados reais;
 - a tela exibe identificação explícita de demonstração.
 
+A implementação do Modo demonstração é isolada da fonte persistente e, por padrão, não muda nenhuma leitura real da aplicação.
+
 ## Cenários validados
 
 ### A — acesso pelo Painel
@@ -97,4 +99,4 @@ Regras:
 - WhatsApp cliente/gerente;
 - sincronização.
 
-Resultado final: **APROVADA PARA PRODUÇÃO**.
+Resultado final da candidata principal: **APROVADA PARA PRODUÇÃO**.
