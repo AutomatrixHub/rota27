@@ -4,12 +4,12 @@ Aplicativo mobile-first, offline-first e multidispositivo para controle rápido 
 
 ## Produção
 
-**Versão: v0.18.0**  
+**Versão: v0.18.1**  
 Branch: `main`  
 GitHub Pages: `https://automatrixhub.github.io/rota27/`  
-Service Worker: `rota27-comandas-v0.18.0`
+Service Worker: `rota27-comandas-v0.18.1`
 
-A v0.18.0 preserva a operação validada da v0.17.1 e acrescenta o **Resumo do Turno**, com indicadores gerenciais do dia e alertas apenas quando existe ação necessária. A Ajuda passa a v4.
+A v0.18.1 preserva o Resumo do Turno da v0.18.0 e acrescenta **auditoria operacional**, contador confiável de cancelamentos e Ajuda v4.1, sem adicionar passos ao atendimento.
 
 ## Recursos principais
 
@@ -22,7 +22,7 @@ A v0.18.0 preserva a operação validada da v0.17.1 e acrescenta o **Resumo do T
 - histórico, filtros, indicadores, rankings e exportação CSV.
 
 ### Resumo do Turno
-Na tela Histórico, a v0.18.0 mostra uma visão rápida do dia com:
+Na tela Histórico, a v0.18.1 mostra uma visão rápida do dia com:
 - faturamento fechado hoje;
 - comandas fechadas e comandas ainda abertas;
 - valor atualmente em aberto;
@@ -30,9 +30,19 @@ Na tela Histórico, a v0.18.0 mostra uma visão rápida do dia com:
 - itens vendidos;
 - produtos mais vendidos do dia;
 - totais por forma de pagamento;
-- alertas operacionais somente quando há algo que precisa de atenção, como offline, sync ou fila de WhatsApp com falha.
+- **cancelamentos do turno**;
+- botão **Ver auditoria**;
+- alertas operacionais somente quando há algo que precisa de atenção.
 
-A primeira entrega não inventa um contador de cancelamentos: a baseline anterior não mantém histórico consolidado desse evento após a remoção operacional da comanda.
+### Auditoria operacional
+A v0.18.1 registra e apresenta uma trilha do turno com:
+- abertura e fechamento de comandas;
+- cancelamentos;
+- adições e remoções de itens;
+- alteração de cliente/local da comanda;
+- horário e aparelho de origem quando disponível.
+
+O registro local funciona offline. Com sincronização ativa, a auditoria é reconciliada com os eventos compartilhados por meio da Edge Function somente leitura `rota27-audit`.
 
 ### Clientes
 - cadastro manual de clientes;
@@ -80,7 +90,7 @@ A primeira entrega não inventa um contador de cancelamentos: a baseline anterio
 - continua operando localmente quando a internet cai;
 - filas do WhatsApp do cliente e do gerente **não são sincronizadas**, evitando envios duplicados.
 
-### Ajuda v4
+### Ajuda v4.1
 O botão `? Ajuda` fica no cabeçalho e funciona offline. A Ajuda inclui:
 - Primeiros 3 minutos e mapa rápido;
 - abrir, lançar, conferir, editar, fechar e cancelar;
@@ -89,6 +99,7 @@ O botão `? Ajuda` fica no cabeçalho e funciona offline. A Ajuda inclui:
 - WhatsApp do gerente;
 - respostas dos clientes encaminhadas ao gerente;
 - Resumo do Turno e seus indicadores/alertas;
+- Auditoria operacional, cancelamentos e linha do tempo do turno;
 - sincronização, uso offline, backup/restauração e atualização da PWA;
 - seção `Se acontecer isso…`, boas práticas e glossário.
 
@@ -97,6 +108,7 @@ O botão `? Ajuda` fica no cabeçalho e funciona offline. A Ajuda inclui:
 Projeto: `owkvwsiblbzlpxjwybrt`
 
 - `rota27-sync`: sincronização multidispositivo com autenticação própria;
+- `rota27-audit`: consulta somente leitura da trilha operacional compartilhada;
 - `rota27-whatsapp`: envio de templates do cliente/gerente;
 - `rota27-whatsapp-inbound`: callback público para respostas do cliente;
 - tabela `whatsapp_message_log`: auditoria/idempotência outbound;
@@ -116,23 +128,23 @@ Quem já possui o Rota 27 instalado **não precisa reinstalar**:
 2. abrir a PWA e aguardar cerca de 10–20 segundos;
 3. fechar completamente;
 4. abrir novamente;
-5. confirmar `v0.18.0` e sincronização saudável.
+5. confirmar `v0.18.1` e sincronização saudável.
 
 Não limpar dados do navegador e não remover a PWA para atualizar.
 
 ## Dados e segurança
 
-Comandas, catálogo, categorias, histórico e filas técnicas continuam locais no aparelho. `clients` e `managerWhatsapp` integram o `state` e entram no Backup JSON. Tokens e secrets reais nunca devem ser commitados no GitHub.
+Comandas, catálogo, categorias, histórico, auditoria local e filas técnicas continuam locais no aparelho. `clients` e `managerWhatsapp` integram o `state` e entram no Backup JSON. Tokens e secrets reais nunca devem ser commitados no GitHub.
 
 ## Documentos principais
 
-- `docs/RELEASE-v0.18.0.md`
+- `docs/RELEASE-v0.18.1.md`
 - `docs/STATUS-PRODUCAO.md`
-- `docs/TESTE-v0.18.0.md`
+- `docs/TESTE-v0.18.1.md`
 - `docs/PILOTO-REAL-v0.17.1.md`
 - `docs/PRODUCT-PRINCIPLES.md`
 - `docs/V0.15-MULTIDEVICE.md`
 
 ## Versão
 
-Produção: **0.18.0**
+Produção: **0.18.1**
