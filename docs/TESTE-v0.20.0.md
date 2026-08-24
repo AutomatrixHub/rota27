@@ -22,6 +22,16 @@ Esperado:
 - badge e título mostram v0.20.0 sem alternância;
 - sem travamento ou uso anormal de CPU.
 
+### Dados históricos da preview
+Quando a URL contém `?preview=v0200`, a candidata injeta em memória uma amostra de fechamentos passados para permitir testar gráficos e comparações agora, sem esperar semanas de operação real.
+
+Essa amostra:
+- não grava no localStorage;
+- não altera seus fechamentos reais;
+- não entra no sync;
+- não aparece em produção;
+- é identificada por um aviso visível dentro da Visão Gerencial.
+
 ## Cenário A — acesso pelo Painel
 1. abra `Painel`;
 2. localize `Visão Gerencial`;
@@ -29,7 +39,8 @@ Esperado:
 
 Esperado:
 - abre folha gerencial sem alterar a tela operacional;
-- informa quantos fechamentos imutáveis existem na base.
+- informa quantos fechamentos imutáveis existem na base;
+- na preview, exibe aviso de histórico simulado para teste.
 
 ## Cenário B — períodos
 Teste `7 dias`, `30 dias`, `90 dias` e `Todos`.
@@ -40,14 +51,14 @@ Esperado:
 - todo o histórico não inventa comparação anterior.
 
 ## Cenário C — comparação
-Quando houver base no período anterior, conferir:
+Conferir:
 - faturamento;
 - ticket médio;
 - comandas;
 - itens vendidos.
 
 Esperado:
-- variação positiva/negativa aparece como percentual;
+- variação positiva/negativa aparece como percentual quando existe base anterior;
 - sem base anterior, aparece mensagem de insuficiência em vez de percentual falso.
 
 ## Cenário D — gráfico e rankings
@@ -65,13 +76,11 @@ Esperado:
 - inclui data, faturamento, comandas, canceladas, ticket, itens e formas de pagamento.
 
 ## Cenário F — multidispositivo
-Com dois aparelhos sincronizados:
-1. confirme que os fechamentos já aparecem em ambos;
-2. abra Visão Gerencial nos dois.
+Para validar dados reais entre aparelhos, ignore a amostra visual da preview e confira primeiro `Histórico → Fechamentos` nos dois aparelhos.
 
 Esperado:
-- indicadores convergem após a sincronização dos fechamentos da v0.19.0;
-- nenhuma nova tabela/migration é necessária.
+- fechamentos reais continuam convergindo pela v0.19.0;
+- a v0.20.0 não cria nova tabela/migration nem novo evento de sync.
 
 ## Cenário G — Ajuda
 Esperado:
