@@ -42,7 +42,7 @@
       chips.appendChild(btn);
     }
     const footer=overlay.querySelector('.r27-help-footer span');
-    if(footer)footer.textContent='Ajuda v4 • candidata v0.18.0';
+    if(footer)footer.textContent='Ajuda v4 • produção v0.18.0';
     return true;
   }
 
