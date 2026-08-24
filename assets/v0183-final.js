@@ -5,7 +5,7 @@
   const VERSION='0.18.3';
   const LABEL='v0.18.3';
   const TITLE='Rota 27 Bodega • Comandas v0.18.3';
-  const OFFICIAL_LOGO='./assets/brand/rota27-logo-oficial.png';
+  const CARD_STYLE_ID='r27-v0183-card-refine';
   let badgeObserver=null;
   let titleObserver=null;
 
@@ -22,13 +22,61 @@
     try{window.ROTA27_SYNC_DEV_VERSION=VERSION;}catch{}
   }
 
-  function applyOfficialLogo(){
+  /*
+   * O logo original da base é um data URI já validado nos aparelhos.
+   * Não reescrevemos mais o src: isso evita o quadro vazio observado na candidata.
+   */
+  function preserveBaseLogo(){
     const img=document.querySelector('.logo-image');
     if(!img)return;
-    if(img.getAttribute('src')!==OFFICIAL_LOGO){
-      img.setAttribute('src',OFFICIAL_LOGO);
-      img.setAttribute('alt','Rota 27 Bodega');
-    }
+    img.setAttribute('alt','Rota 27 Bodega');
+  }
+
+  /*
+   * Acento lateral das comandas:
+   * - uma única curva natural, produzida pelo inset-shadow e recortada pelo raio do card;
+   * - laranja fino na parte superior;
+   * - preto somente no trecho inferior;
+   * - remove o antigo fragmento horizontal no canto superior esquerdo.
+   */
+  function injectCardRefinementStyles(){
+    if(document.getElementById(CARD_STYLE_ID))return;
+    const style=document.createElement('style');
+    style.id=CARD_STYLE_ID;
+    style.textContent=`
+      .command-card{
+        border-radius:var(--r27-card-radius,28px)!important;
+        overflow:hidden!important;
+        box-shadow:
+          inset 4px 0 0 var(--brand-2),
+          0 5px 16px rgba(17,17,17,.05)!important;
+      }
+      .command-card:before{
+        content:""!important;
+        position:absolute!important;
+        left:0!important;
+        top:auto!important;
+        bottom:0!important;
+        width:4px!important;
+        height:31%!important;
+        border:0!important;
+        border-radius:0!important;
+        background:var(--brand)!important;
+        box-shadow:none!important;
+        transform:none!important;
+        pointer-events:none!important;
+      }
+      .command-card:after{
+        content:none!important;
+        display:none!important;
+        border:0!important;
+        box-shadow:none!important;
+      }
+      @media(max-width:520px){
+        .command-card{border-radius:var(--r27-card-radius,25px)!important}
+      }
+    `;
+    document.head.appendChild(style);
   }
 
   function reorderChildrenByLabel(container,selector,order){
@@ -100,7 +148,8 @@
 
   function apply(){
     protectVersion();
-    applyOfficialLogo();
+    preserveBaseLogo();
+    injectCardRefinementStyles();
     reorderBottomNavigation();
     refineHelp();
   }
@@ -108,7 +157,8 @@
   function start(){
     apply();
     const observer=new MutationObserver(()=>{
-      applyOfficialLogo();
+      preserveBaseLogo();
+      injectCardRefinementStyles();
       reorderBottomNavigation();
       if(refineHelp()){
         const overlay=document.getElementById('r27HelpOverlay');
