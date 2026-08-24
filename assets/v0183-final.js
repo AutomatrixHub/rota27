@@ -25,11 +25,15 @@
   /*
    * O logo original da base é um data URI já validado nos aparelhos.
    * Não reescrevemos mais o src: isso evita o quadro vazio observado na candidata.
+   * O raio interno acompanha a linguagem do logo-shell sem alterar seu tamanho.
    */
   function preserveBaseLogo(){
     const img=document.querySelector('.logo-image');
     if(!img)return;
     img.setAttribute('alt','Rota 27 Bodega');
+    img.style.borderRadius='12px';
+    img.style.clipPath='inset(0 round 12px)';
+    img.style.backgroundColor='#fff';
   }
 
   /*
