@@ -1,0 +1,99 @@
+/* Rota 27 v0.21.0 — Estoque Essencial */
+.v021-panel-entry{
+  margin:14px 0;
+  border:1px solid #D9C7A7;
+  background:#FFF9F0;
+  border-radius:20px;
+  box-shadow:0 6px 18px rgba(17,17,17,.05);
+  overflow:hidden;
+}
+.v021-panel-entry.attention{
+  border-color:#D7A04B;
+  box-shadow:inset 4px 0 0 #C58A1D,0 6px 18px rgba(17,17,17,.06);
+}
+.v021-panel-entry-head{
+  display:flex;align-items:center;justify-content:space-between;gap:14px;padding:16px;
+}
+.v021-panel-entry-head>div{display:flex;flex-direction:column;gap:4px;min-width:0}
+.v021-panel-entry-head strong{font-size:16px;color:#111}
+.v021-panel-entry-head small{color:#756656;line-height:1.35}
+.v021-panel-entry-head button{
+  border:0;border-radius:14px;padding:11px 14px;background:#111;color:#fff;font-weight:800;white-space:nowrap;
+}
+.v021-sheet{width:min(860px,calc(100vw - 24px));max-height:min(88dvh,880px);overflow:auto}
+.v021-small-sheet{width:min(560px,calc(100vw - 24px));max-height:min(88dvh,760px);overflow:auto}
+.v021-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:12px}
+.v021-head h3{margin:0 0 4px}
+.v021-head .desc{margin:0;color:#756656}
+.v021-x{width:38px;height:38px;border-radius:12px;border:1px solid #D9C7A7;background:#FFF9F0;font-size:24px;line-height:1;color:#111;flex:0 0 auto}
+.v021-status{padding:10px 12px;border-radius:14px;background:#F5E9D5;color:#5E5145;font-size:13px;margin-bottom:12px}
+.v021-status.ok{background:#EDF7F0;color:#2F6A44}
+.v021-status.warn{background:#FFF4DA;color:#8A6416}
+.v021-toolbar{display:grid;grid-template-columns:minmax(180px,1fr) auto;gap:10px;align-items:center;margin-bottom:12px}
+.v021-search{display:flex;align-items:center;gap:8px;border:1px solid #D9C7A7;border-radius:14px;background:#fff;padding:0 12px;min-height:44px}
+.v021-search input{border:0;outline:0;background:transparent;width:100%;font:inherit;color:#111}
+.v021-filters{display:flex;gap:6px;flex-wrap:wrap}
+.v021-filters button{border:1px solid #D9C7A7;background:#FFF9F0;color:#594B3F;border-radius:999px;padding:8px 11px;font-size:12px;font-weight:800}
+.v021-filters button.active{background:#111;color:#fff;border-color:#111}
+.v021-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-bottom:12px}
+.v021-metrics>div{background:#FFF9F0;border:1px solid #E3D3B7;border-radius:16px;padding:12px;display:flex;flex-direction:column;gap:4px}
+.v021-metrics small{color:#756656;font-size:11px}
+.v021-metrics strong{font-size:20px;color:#111}
+.v021-stock-list{display:flex;flex-direction:column;gap:8px}
+.v021-stock-row{display:flex;align-items:center;justify-content:space-between;gap:12px;border:1px solid #E2D1B4;border-radius:17px;background:#FFF9F0;padding:13px 14px}
+.v021-stock-row.low{box-shadow:inset 4px 0 0 #C58A1D}
+.v021-stock-row.out,.v021-stock-row.danger{box-shadow:inset 4px 0 0 #B5483C}
+.v021-stock-row.ok{box-shadow:inset 4px 0 0 #2F7A4A}
+.v021-stock-copy{min-width:0;display:flex;flex-direction:column;gap:5px}
+.v021-stock-title{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.v021-stock-title strong{font-size:15px}
+.v021-stock-copy small{color:#756656;line-height:1.35}
+.v021-pill{font-size:10px;font-weight:900;border-radius:999px;padding:4px 7px;background:#EEE}
+.v021-pill.ok{background:#E9F5ED;color:#2F7A4A}
+.v021-pill.low{background:#FFF1CF;color:#96680E}
+.v021-pill.out,.v021-pill.danger{background:#FBE7E4;color:#A53B32}
+.v021-pill.off{background:#EEE8DF;color:#77695C}
+.v021-stock-buttons{display:flex;gap:7px;flex:0 0 auto}
+.v021-stock-buttons button,.v021-actions button{border:1px solid #CDBA9A;background:#fff;color:#111;border-radius:12px;padding:9px 11px;font-weight:800}
+.v021-actions{display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap;margin-top:14px}
+.v021-actions .primary,.v021-stock-buttons .primary{background:#DF6536;color:#fff;border-color:#DF6536}
+.v021-actions button:disabled{opacity:.45}
+.v021-switch-row{display:flex;align-items:center;justify-content:space-between;gap:16px;background:#FFF9F0;border:1px solid #E2D1B4;border-radius:16px;padding:14px;margin-bottom:12px}
+.v021-switch-row>span{display:flex;flex-direction:column;gap:3px}
+.v021-switch-row small{color:#756656}
+.v021-switch-row input{width:22px;height:22px;accent-color:#DF6536}
+.v021-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.v021-form-grid label,.v021-field{display:flex;flex-direction:column;gap:6px}
+.v021-form-grid label>span,.v021-field>span{font-size:12px;font-weight:800;color:#55483D}
+.v021-form-grid input,.v021-field input{border:1px solid #D9C7A7;border-radius:13px;padding:11px 12px;background:#fff;color:#111;font:inherit;outline:none}
+.v021-form-grid small{color:#756656;font-size:11px}
+.v021-note{margin:10px 0;padding:10px 12px;border-radius:13px;background:#F5E9D5;color:#665747;font-size:12px;line-height:1.4}
+.v021-move-balance{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.v021-move-balance>div{border:1px solid #E2D1B4;background:#FFF9F0;border-radius:15px;padding:12px;display:flex;flex-direction:column;gap:4px}
+.v021-move-balance small{color:#756656}
+.v021-move-balance strong{font-size:20px}
+.v021-type-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:12px}
+.v021-type-grid button{border:1px solid #D9C7A7;background:#FFF9F0;border-radius:12px;padding:9px 7px;font-weight:800;font-size:12px}
+.v021-type-grid button.active{background:#111;color:#fff;border-color:#111}
+.v021-field{margin-bottom:10px}
+.v021-history-list{display:flex;flex-direction:column;gap:7px}
+.v021-history-row{display:flex;align-items:center;justify-content:space-between;gap:12px;border:1px solid #E2D1B4;background:#FFF9F0;border-radius:15px;padding:11px 12px}
+.v021-history-row>div{display:flex;flex-direction:column;gap:3px;min-width:0}
+.v021-history-row small{color:#756656;line-height:1.35}
+.v021-history-row b{font-size:16px;white-space:nowrap}
+.v021-history-row b.plus{color:#2F7A4A}
+.v021-history-row b.minus{color:#A7483F}
+.v021-empty{padding:20px;text-align:center;border:1px dashed #D9C7A7;border-radius:16px;color:#756656;background:#FFF9F0}
+@media(max-width:720px){
+  .v021-sheet,.v021-small-sheet{width:100%;height:100dvh;max-height:100dvh;border-radius:0!important}
+  .v021-toolbar{grid-template-columns:1fr}
+  .v021-metrics{grid-template-columns:1fr 1fr}
+  .v021-stock-row{align-items:flex-start;flex-direction:column}
+  .v021-stock-buttons{width:100%}
+  .v021-stock-buttons button{flex:1}
+  .v021-form-grid{grid-template-columns:1fr}
+  .v021-type-grid{grid-template-columns:1fr 1fr}
+  .v021-panel-entry-head{align-items:flex-start;flex-direction:column}
+  .v021-panel-entry-head button{width:100%}
+}
+@supports not (height:100dvh){@media(max-width:720px){.v021-sheet,.v021-small-sheet{height:100vh;max-height:100vh}}}
