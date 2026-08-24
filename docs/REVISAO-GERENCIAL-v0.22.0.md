@@ -101,6 +101,25 @@ Esta revisão **não calcula valor de estoque nem valor estimado de compra**.
 
 O catálogo atual contém preço de venda, mas isso não deve ser usado como custo de aquisição. Valor financeiro de compras só deve entrar quando houver um campo de custo confiável e uma regra explícita para sua manutenção.
 
+## Revisão mobile
+Após a validação visual da central ampliada em desktop, foi identificado que simplesmente comprimir o dashboard para a largura do celular manteria informação demais lado a lado.
+
+A interface mobile passa a usar composição própria:
+- folha de Compras ocupa toda a largura útil e bloqueia overflow horizontal;
+- indicadores superiores reorganizam em duas colunas;
+- ações rápidas quebram de forma responsiva e, em telas estreitas, passam para uma coluna;
+- cartões gerenciais ficam em uma única coluna;
+- totais de estoque, fluxo e fatos de prioridade usam grades de duas colunas;
+- abas Reposição/Pedidos/Fornecedores ocupam a largura disponível sem rolagem horizontal;
+- busca, filtros e botões de toolbar passam para linhas de largura total;
+- linha de reposição deixa de tentar manter produto, quantidade e fornecedor lado a lado;
+- quantidade e fornecedor passam para linhas próprias no celular;
+- fatos de estoque continuam visíveis em blocos compactos de duas colunas;
+- progresso e ações de pedido reorganizam verticalmente;
+- cartões de fornecedores deixam de usar coluna lateral fixa.
+
+A meta mobile não é esconder informação, e sim preservar a mesma informação em leitura vertical natural, com alvos de toque maiores e sem exigir zoom ou rolagem lateral.
+
 ## Estabilidade
 A ampliação não adiciona polling visual nem novo MutationObserver.
 
