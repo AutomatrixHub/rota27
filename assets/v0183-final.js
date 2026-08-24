@@ -16,17 +16,18 @@
       .toLowerCase().trim();
   }
 
+  function ownsVersion(){
+    return String(document.querySelector('meta[name="rota27-version"]')?.getAttribute('content')||'')===VERSION;
+  }
+
   function applyVersion(){
+    if(!ownsVersion())return;
     const badge=document.getElementById('v14VersionBadge');
     if(badge&&badge.textContent!==LABEL)badge.textContent=LABEL;
     if(document.title!==TITLE)document.title=TITLE;
     try{window.ROTA27_SYNC_DEV_VERSION=VERSION;}catch{}
   }
 
-  /*
-   * Mantém o logo validado da base e equaliza a moldura com o próprio fundo bege da arte.
-   * Assim eliminamos o quadro branco sem alterar tamanho, centralização ou src.
-   */
   function preserveBaseLogo(){
     const img=document.querySelector('.logo-image');
     if(!img)return;
@@ -42,86 +43,34 @@
     }
   }
 
-  /*
-   * Acento lateral das comandas:
-   * - uma única curva natural, produzida pelo inset-shadow e recortada pelo raio do card;
-   * - laranja fino na parte superior;
-   * - preto somente no trecho inferior;
-   * - remove o antigo fragmento horizontal no canto superior esquerdo.
-   *
-   * Ajuda no celular:
-   * - usa viewport dinâmico para não ficar atrás da barra do navegador;
-   * - ocupa a área visível inteira e mantém o cabeçalho dentro do viewport.
-   */
   function injectCardRefinementStyles(){
     if(document.getElementById(CARD_STYLE_ID))return;
     const style=document.createElement('style');
     style.id=CARD_STYLE_ID;
     style.textContent=`
-      .logo-shell{
-        background:${LOGO_BG}!important;
-      }
-      .logo-image{
-        background:${LOGO_BG}!important;
-      }
+      .logo-shell{background:${LOGO_BG}!important;}
+      .logo-image{background:${LOGO_BG}!important;}
       .command-card{
         border-radius:var(--r27-card-radius,28px)!important;
         overflow:hidden!important;
-        box-shadow:
-          inset 4px 0 0 var(--brand-2),
-          0 5px 16px rgba(17,17,17,.05)!important;
+        box-shadow:inset 4px 0 0 var(--brand-2),0 5px 16px rgba(17,17,17,.05)!important;
       }
       .command-card:before{
-        content:""!important;
-        position:absolute!important;
-        left:0!important;
-        top:auto!important;
-        bottom:0!important;
-        width:4px!important;
-        height:31%!important;
-        border:0!important;
-        border-radius:0!important;
-        background:var(--brand)!important;
-        box-shadow:none!important;
-        transform:none!important;
-        pointer-events:none!important;
+        content:""!important;position:absolute!important;left:0!important;top:auto!important;bottom:0!important;
+        width:4px!important;height:31%!important;border:0!important;border-radius:0!important;background:var(--brand)!important;
+        box-shadow:none!important;transform:none!important;pointer-events:none!important;
       }
-      .command-card:after{
-        content:none!important;
-        display:none!important;
-        border:0!important;
-        box-shadow:none!important;
-      }
+      .command-card:after{content:none!important;display:none!important;border:0!important;box-shadow:none!important;}
       @media(max-width:720px){
-        .r27-help-overlay.open{
-          align-items:stretch!important;
-          height:100dvh!important;
-          min-height:100dvh!important;
-        }
-        .r27-help-panel{
-          height:100dvh!important;
-          max-height:100dvh!important;
-          min-height:0!important;
-          border-radius:0!important;
-        }
-        .r27-help-header{
-          padding-top:calc(18px + env(safe-area-inset-top))!important;
-        }
-        .r27-help-content{
-          overscroll-behavior:contain;
-        }
+        .r27-help-overlay.open{align-items:stretch!important;height:100dvh!important;min-height:100dvh!important;}
+        .r27-help-panel{height:100dvh!important;max-height:100dvh!important;min-height:0!important;border-radius:0!important;}
+        .r27-help-header{padding-top:calc(18px + env(safe-area-inset-top))!important;}
+        .r27-help-content{overscroll-behavior:contain;}
       }
       @supports not (height:100dvh){
-        @media(max-width:720px){
-          .r27-help-overlay.open,.r27-help-panel{
-            height:100vh!important;
-            max-height:100vh!important;
-          }
-        }
+        @media(max-width:720px){.r27-help-overlay.open,.r27-help-panel{height:100vh!important;max-height:100vh!important;}}
       }
-      @media(max-width:520px){
-        .command-card{border-radius:var(--r27-card-radius,25px)!important}
-      }
+      @media(max-width:520px){.command-card{border-radius:var(--r27-card-radius,25px)!important}}
     `;
     document.head.appendChild(style);
   }
@@ -144,81 +93,56 @@
   function reorderBottomNavigation(){
     const nav=document.querySelector('.bottomnav');
     if(!nav||nav.dataset.r27V0183Order==='1')return;
-    if(reorderChildrenByLabel(nav,'.navbtn',['comandas','cardapio','painel','historico'])){
-      nav.dataset.r27V0183Order='1';
-    }
+    if(reorderChildrenByLabel(nav,'.navbtn',['comandas','cardapio','painel','historico']))nav.dataset.r27V0183Order='1';
   }
 
   function refineHelp(){
     const overlay=document.getElementById('r27HelpOverlay');
     if(!overlay)return false;
-
     if(overlay.dataset.r27V0183Help!=='1'){
       const header=overlay.querySelector('.r27-help-header');
       const copy=header?.querySelector('div');
       if(copy&&!copy.querySelector('.r27-help-capixaba-badge')){
-        const badge=document.createElement('span');
-        badge.className='r27-help-capixaba-badge';
-        badge.textContent='Identidade Capixaba';
-        const h2=copy.querySelector('h2');
-        if(h2)copy.insertBefore(badge,h2);
-        else copy.appendChild(badge);
+        const badge=document.createElement('span');badge.className='r27-help-capixaba-badge';badge.textContent='Identidade Capixaba';
+        const h2=copy.querySelector('h2');if(h2)copy.insertBefore(badge,h2);else copy.appendChild(badge);
       }
-
       const demo=overlay.querySelector('.r27-help-nav-demo');
       reorderChildrenByLabel(demo,':scope > div',['comandas','cardapio','painel','historico']);
-
       const compare=overlay.querySelector('#r27-help-mapa-app .r27-help-compare');
       reorderChildrenByLabel(compare,':scope > div',['comandas','cardapio','painel','historico']);
-
-      const footer=overlay.querySelector('.r27-help-footer span');
-      if(footer)footer.textContent='Ajuda v4.2 • v0.18.3';
-
-      const content=overlay.querySelector('.r27-help-content');
-      if(content)content.scrollTop=0;
-
+      const footer=overlay.querySelector('.r27-help-footer span');if(footer&&ownsVersion())footer.textContent='Ajuda v4.2 • v0.18.3';
+      const content=overlay.querySelector('.r27-help-content');if(content)content.scrollTop=0;
       overlay.dataset.r27V0183Help='1';
     }
     return true;
   }
 
   function protectVersion(){
+    if(!ownsVersion()){
+      if(badgeObserver){badgeObserver.disconnect();badgeObserver=null;}
+      if(titleObserver){titleObserver.disconnect();titleObserver=null;}
+      return;
+    }
     applyVersion();
     const badge=document.getElementById('v14VersionBadge');
     const title=document.querySelector('title');
-    if(badge&&!badgeObserver){
-      badgeObserver=new MutationObserver(applyVersion);
-      badgeObserver.observe(badge,{childList:true,characterData:true,subtree:true});
-    }
-    if(title&&!titleObserver){
-      titleObserver=new MutationObserver(applyVersion);
-      titleObserver.observe(title,{childList:true,characterData:true,subtree:true});
-    }
+    if(badge&&!badgeObserver){badgeObserver=new MutationObserver(applyVersion);badgeObserver.observe(badge,{childList:true,characterData:true,subtree:true});}
+    if(title&&!titleObserver){titleObserver=new MutationObserver(applyVersion);titleObserver.observe(title,{childList:true,characterData:true,subtree:true});}
   }
 
-  function apply(){
-    protectVersion();
-    preserveBaseLogo();
-    injectCardRefinementStyles();
-    reorderBottomNavigation();
-    refineHelp();
-  }
+  function apply(){protectVersion();preserveBaseLogo();injectCardRefinementStyles();reorderBottomNavigation();refineHelp();}
 
   function start(){
     apply();
     const observer=new MutationObserver(()=>{
-      preserveBaseLogo();
-      injectCardRefinementStyles();
-      reorderBottomNavigation();
+      preserveBaseLogo();injectCardRefinementStyles();reorderBottomNavigation();
       if(refineHelp()){
         const overlay=document.getElementById('r27HelpOverlay');
         if(overlay?.dataset.r27V0183Help==='1')observer.disconnect();
       }
     });
     observer.observe(document.documentElement,{childList:true,subtree:true});
-    setTimeout(apply,80);
-    setTimeout(apply,500);
-    setTimeout(applyVersion,3500);
+    setTimeout(apply,80);setTimeout(apply,500);setTimeout(applyVersion,3500);
     window.addEventListener('pageshow',()=>setTimeout(apply,0));
     window.addEventListener('online',()=>setTimeout(applyVersion,0));
     window.addEventListener('offline',()=>setTimeout(applyVersion,0));

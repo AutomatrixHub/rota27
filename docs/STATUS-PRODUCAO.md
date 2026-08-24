@@ -4,71 +4,53 @@
 
 ## Produção
 
-- versão: **v0.18.3**;
+- versão: **v0.19.0**;
 - branch: `main`;
 - GitHub Pages: `https://automatrixhub.github.io/rota27/`;
-- Service Worker: `rota27-comandas-v0.18.3`;
+- Service Worker: `rota27-comandas-v0.19.0`;
 - backend `rota27-whatsapp`: versão 23 ACTIVE (`rota27-whatsapp-v6-mini2`);
-- `rota27-sync`: versão 2 ACTIVE;
+- `rota27-sync`: **versão 3 ACTIVE** (`rota27-sync-v0.19.0`);
 - `rota27-whatsapp-inbound`: versão 1 ACTIVE;
 - `rota27-audit`: versão 1 ACTIVE, somente leitura e com autenticação própria por token de dispositivo.
 
-A v0.18.3 preserva a operação validada da v0.18.1 e consolida a identidade oficial do aplicativo sem alterar total, lançamento, fechamento, cancelamento, sincronização ou WhatsApp.
+A v0.19.0 preserva a operação validada da v0.18.3 e acrescenta o **Fechamento do Turno**, sem alterar cálculo de total, fechamento/cancelamento de comandas ou fluxos de WhatsApp.
 
-## Validação da v0.18.3
+## Validação da v0.19.0
 
-Em 24/08/2026 a candidata foi validada em desktop e celular. Foram conferidos:
+Em 24/08/2026 a candidata foi testada e validada no fluxo definido para desktop/celular, incluindo:
 
-- fluidez e ausência do travamento/alto uso de CPU corrigido durante a candidata;
-- cards de comandas com faixa lateral final aprovada;
-- ordem `Comandas → Cardápio → Painel → Histórico`;
-- topbar e logo com fundo integrado à arte;
-- Ajuda v4.2 com Tema Capixaba;
-- abertura da Ajuda no celular sem sobreposição da barra do navegador;
-- navegação e fluxo operacional preservados.
+- bloqueio de fechamento com comandas abertas;
+- liberação do fechamento somente após zerar pendências bloqueantes;
+- conferência final de faturamento, fechadas, canceladas, ticket, itens, produtos e formas de pagamento;
+- criação do registro imutável do turno;
+- consulta em `Fechamentos`;
+- bloqueio de nova comanda depois do fechamento do dia;
+- preservação da Ajuda Tema Capixaba com nova seção de Fechamento do Turno;
+- smoke de navegação e operação anterior.
 
-Resultado final reportado: **PERFEITO — funcionou tudo**.
+Resultado final reportado: **tudo testado e validado**.
 
-A v0.18.1 permanece como baseline anterior de rollback.
+A v0.18.3 permanece como baseline anterior de rollback.
 
-## Tema oficial
+## Fechamento do Turno
 
-### Operação
-- laranja, preto e creme como identidade principal;
-- laranja reservado a ação/destaque;
-- preto para títulos, valores e autoridade visual;
-- superfícies claras para leitura e operação rápida;
-- cores funcionais preservadas para sucesso, atenção e erro.
+A v0.19.0 inclui:
 
-### Cards de comandas
-- curvatura final validada;
-- faixa lateral fina em laranja com trecho preto inferior;
-- sem traço horizontal artificial no topo;
-- área clicável, textos, valores e botão `Abrir` inalterados.
-
-### Topbar e logo
-- topbar mantém proporções aprovadas;
-- logo da base preservado;
-- moldura do logo usa o tom bege predominante da própria arte, eliminando o quadro branco;
-- imagem interna permanece arredondada e centralizada.
-
-## Ajuda v4.2 — Tema Capixaba
-
-A Ajuda mantém todo o conteúdo operacional e recebe identidade institucional em azul, branco e rosa, com:
-
-- busca;
-- chips/atalhos;
-- cards de acesso rápido;
-- acordeons e blocos explicativos;
-- Resumo do Turno e Auditoria;
-- WhatsApp do cliente/gerente e respostas inbound;
-- sincronização, offline, backup/restauração e atualização da PWA.
-
-No celular, o painel usa viewport dinâmico (`100dvh`) e abre no topo, evitando sobreposição com as barras do navegador.
+- botão `Fechar turno` dentro do Histórico/Resumo do Turno;
+- bloqueio quando há comanda aberta;
+- bloqueio quando há cancelamento aguardando confirmação;
+- conferência final antes da confirmação;
+- snapshot imutável identificado pela data operacional;
+- armazenamento local-first;
+- histórico de fechamentos;
+- bloqueio de novas comandas no mesmo dia após encerramento;
+- funcionamento offline com outbox própria;
+- sincronização multidispositivo via evento `turn_closed`;
+- proteção contra duplicação e conflito de fechamento por data.
 
 ## Resumo do Turno e Auditoria
 
-Permanecem ativos e validados:
+Permanecem ativos:
 
 - faturamento fechado hoje;
 - comandas fechadas e abertas;
@@ -81,22 +63,33 @@ Permanecem ativos e validados:
 - botão `Ver auditoria`;
 - linha do tempo de abertura, fechamento, cancelamento, itens e alterações.
 
+## Ajuda v4.3 — Tema Capixaba
+
+A Ajuda preserva a identidade azul, branco e rosa e passa a incluir uma seção específica explicando:
+
+- quando fechar o turno;
+- por que comandas abertas bloqueiam o encerramento;
+- registro imutável;
+- consulta posterior em `Fechamentos`;
+- comportamento offline e sincronização entre aparelhos.
+
+No celular, continua usando viewport dinâmico (`100dvh`) para evitar sobreposição com as barras do navegador.
+
 ## WhatsApp e sincronização
 
-Sem mudança de arquitetura na v0.18.3:
-
 - família `atualizacao_comanda_rota27_mini2_1` a `_5` permanece em uso;
-- template `resposta_cliente_rota27_gerente_v1` permanece aprovado e ativo;
+- template `resposta_cliente_rota27_gerente_v1` permanece ativo;
 - callback inbound permanece implantado;
 - filas de WhatsApp continuam locais por aparelho e nunca são sincronizadas;
-- sincronização multidispositivo continua local-first/idempotente.
+- `rota27-sync` v3 adiciona somente suporte compatível ao evento `turn_closed`;
+- não houve migration destrutiva.
 
 ## Segurança
 
 - nenhum token/App Secret é versionado;
-- nenhuma migration destrutiva foi aplicada;
-- nenhuma alteração de backend foi necessária para a v0.18.3;
-- a versão é predominantemente visual e preserva os contratos operacionais anteriores.
+- nenhuma alteração destrutiva foi aplicada;
+- outbox do fechamento é separada das filas de WhatsApp;
+- a operação continua local-first.
 
 ## Atualização da PWA
 
@@ -106,8 +99,8 @@ Não reinstalar e não limpar dados:
 2. abrir a PWA por 10–20 segundos;
 3. fechar completamente;
 4. abrir novamente;
-5. confirmar `v0.18.3` e sync saudável.
+5. confirmar `v0.19.0` e sync saudável.
 
 ## Próxima etapa
 
-Com a identidade visual estabilizada, a próxima evolução funcional recomendada continua sendo o **Fechamento do Turno**, aproveitando a trilha de auditoria já consolidada.
+Com o Fechamento do Turno consolidado, a próxima evolução funcional recomendada é a **Visão Gerencial histórica e comparativa**, usando os snapshots encerrados como fonte confiável por dia.

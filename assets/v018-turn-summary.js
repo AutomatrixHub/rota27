@@ -113,6 +113,7 @@
 
   function render(){
     const box=ensureSummary();if(!box)return;
+    const extension=byId('v019TurnCloseCard');
     const s=buildSummary(),alerts=operationalAlerts();
     const date=new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric'});
 
@@ -143,6 +144,8 @@
         <div class="v018-turn-foot">Resumo calculado com os dados operacionais do aparelho e a nova trilha de auditoria. A auditoria registra aberturas, fechamentos, cancelamentos, alterações e lançamentos do turno.</div>
         <button type="button" class="v0181-audit-open" onclick="window.Rota27V0181&&window.Rota27V0181.openAudit()">Ver auditoria</button>
       </div>`;
+    if(extension)box.appendChild(extension);
+    try{window.dispatchEvent(new CustomEvent('rota27:v018-summary-rendered'));}catch{}
   }
 
   function schedule(delay=60){clearTimeout(refreshTimer);refreshTimer=setTimeout(render,delay);}
