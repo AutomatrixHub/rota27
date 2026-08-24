@@ -11,7 +11,7 @@ const APP_SHELL = [
   './assets/v0182-brand-theme.css',
   './assets/v0183-capixaba-help.css','./assets/v0183-final.js',
   './assets/v019-turn-close.css','./assets/v019-turn-close.js',
-  './assets/v020-manager-dashboard.css','./assets/v020-manager-dashboard.js',
+  './assets/v020-manager-dashboard.css','./assets/v020-manager-dashboard.js','./assets/v020-preview-demo.js',
   './assets/brand/rota27-logo-oficial.png',
   './manifest.webmanifest','./icons/apple-touch-icon.png','./icons/icon-192.png','./icons/icon-512.png','./icons/icon-192-maskable.png','./icons/icon-512-maskable.png','./icons/favicon-32.png'
 ];
