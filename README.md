@@ -4,12 +4,12 @@ Aplicativo mobile-first, offline-first e multidispositivo para controle rápido 
 
 ## Produção
 
-**Versão: v0.18.1**  
+**Versão: v0.18.3**  
 Branch: `main`  
 GitHub Pages: `https://automatrixhub.github.io/rota27/`  
-Service Worker: `rota27-comandas-v0.18.1`
+Service Worker: `rota27-comandas-v0.18.3`
 
-A v0.18.1 preserva o Resumo do Turno da v0.18.0 e acrescenta **auditoria operacional**, contador confiável de cancelamentos e Ajuda v4.1, sem adicionar passos ao atendimento.
+A v0.18.3 preserva toda a operação validada da v0.18.1 e consolida a identidade oficial do produto com o **Tema Operação Rota 27**, refinamento visual dos cards, ordem de navegação `Comandas → Cardápio → Painel → Histórico`, logo ajustado e **Ajuda v4.2 com Tema Capixaba**.
 
 ## Recursos principais
 
@@ -17,109 +17,83 @@ A v0.18.1 preserva o Resumo do Turno da v0.18.0 e acrescenta **auditoria operaci
 - abertura por Balcão, Mesa 1–5, Parklet 1–6 e nome do cliente;
 - lançamento rápido por toque, busca, categorias e Mais lançados;
 - consulta `Ver itens`, correção em `Editar itens`, fechamento com forma de pagamento e cancelamento seguro;
-- proteção contra comanda duplicada acidental;
+- proteção contra duplicidade acidental;
 - nome do cliente como informação principal e local/mesa como informação secundária quando houver cliente;
-- histórico, filtros, indicadores, rankings e exportação CSV.
+- cards com identidade visual oficial em laranja, preto e creme.
 
-### Resumo do Turno
-Na tela Histórico, a v0.18.1 mostra uma visão rápida do dia com:
+### Resumo do Turno e Auditoria
+Na tela Histórico:
 - faturamento fechado hoje;
-- comandas fechadas e comandas ainda abertas;
-- valor atualmente em aberto;
+- comandas fechadas e abertas;
+- valor em aberto;
 - ticket médio;
 - itens vendidos;
-- produtos mais vendidos do dia;
-- totais por forma de pagamento;
-- **cancelamentos do turno**;
-- botão **Ver auditoria**;
-- alertas operacionais somente quando há algo que precisa de atenção.
+- produtos mais vendidos;
+- formas de pagamento;
+- cancelamentos do turno;
+- botão **Ver auditoria** com linha do tempo de abertura, fechamento, cancelamento, adição/remoção de itens e alterações de cliente/local.
 
-### Auditoria operacional
-A v0.18.1 registra e apresenta uma trilha do turno com:
-- abertura e fechamento de comandas;
-- cancelamentos;
-- adições e remoções de itens;
-- alteração de cliente/local da comanda;
-- horário e aparelho de origem quando disponível.
-
-O registro local funciona offline. Com sincronização ativa, a auditoria é reconciliada com os eventos compartilhados por meio da Edge Function somente leitura `rota27-audit`.
+A auditoria funciona localmente offline e pode ser reconciliada com os eventos compartilhados pela Edge Function somente leitura `rota27-audit`.
 
 ### Clientes
-- cadastro manual de clientes;
+- cadastro manual;
 - criação/captura automática quando uma comanda contém nome + WhatsApp válido;
-- importação TXT/CSV com validação e prévia;
+- importação TXT/CSV com prévia e validação;
 - exportação CSV;
-- autocomplete de nome/telefone em Nova comanda e Editar comanda;
-- consentimento para mensagens continua específico de cada comanda e nunca é ativado automaticamente pelo cadastro;
+- autocomplete de nome/telefone;
 - cadastro sincronizado entre aparelhos.
 
-### WhatsApp do cliente
-- envio opcional mediante consentimento;
-- mensagens UTILITY compactas usando `atualizacao_comanda_rota27_mini2_1` a `_5`;
-- cabeçalho `Comanda: <local>`;
-- lançamentos positivos no formato `1x Produto - R$ ...`;
-- remoções no formato `REMOVIDO: 1x Produto - R$ ...`;
-- até 5 alterações por mensagem; lotes maiores são divididos em blocos de 5;
-- envio incremental: não reenvia toda a comanda acumulada, somente as mudanças novas + total atual;
-- outbox local por aparelho, com retry e idempotência.
-
-### WhatsApp do gerente
-- configuração de nome, telefone e `Receber lançamentos` no Cardápio;
-- configuração sincronizada entre aparelhos;
-- cópia agrupada de adições, remoções e correções;
-- proteção contra duplicidade concorrente;
-- outbox do gerente local por aparelho;
-- bloqueio de cópia redundante quando cliente e gerente usam o mesmo número na operação.
-
-### Respostas dos clientes
-- template UTILITY aprovado: `resposta_cliente_rota27_gerente_v1` (`pt_BR`);
-- Edge Function `rota27-whatsapp-inbound`;
-- correlação da resposta pelo `context.id` com o `wa_message_id` real da mensagem enviada pela comanda;
-- identificação automática de cliente e comanda;
-- encaminhamento ao gerente com comanda, cliente, WhatsApp e conteúdo recebido;
-- texto, botão/interativo e indicação de mídia suportados;
-- idempotência por `meta_message_id` para ignorar retries repetidos;
-- loop bloqueado quando a origem é o próprio gerente;
-- modo seguro inicial `context-bound`: somente respostas vinculadas a uma mensagem outbound conhecida do Rota 27 são encaminhadas.
+### WhatsApp
+- envio opcional ao cliente mediante consentimento;
+- templates UTILITY `atualizacao_comanda_rota27_mini2_1` a `_5`;
+- envio incremental e agrupado;
+- outbox local por aparelho com retry e idempotência;
+- configuração sincronizada do WhatsApp do gerente;
+- respostas dos clientes encaminhadas ao gerente pelo template `resposta_cliente_rota27_gerente_v1`;
+- webhook inbound com correlação por `context.id`, idempotência e bloqueio de loop.
 
 ### Sincronização e offline
-- local-first: cada aparelho grava primeiro localmente;
-- sync multidispositivo de comandas, histórico, cardápio, categorias, clientes e configuração do gerente;
+- gravação local-first;
+- sincronização multidispositivo de comandas, histórico, cardápio, categorias, clientes e configuração do gerente;
 - `item_delta` para preservar lançamentos concorrentes;
-- outbox, cursor e log remoto idempotente;
-- continua operando localmente quando a internet cai;
-- filas do WhatsApp do cliente e do gerente **não são sincronizadas**, evitando envios duplicados.
+- outbox/cursor/log remoto idempotente;
+- operação local continua disponível sem internet;
+- filas de WhatsApp nunca são sincronizadas entre aparelhos.
 
-### Ajuda v4.1
-O botão `? Ajuda` fica no cabeçalho e funciona offline. A Ajuda inclui:
-- Primeiros 3 minutos e mapa rápido;
+## Tema oficial da marca
+
+### Tema Operação Rota 27
+Tema padrão da aplicação:
+- laranja da marca para ação e destaque;
+- preto para títulos, valores e hierarquia;
+- creme/marfim para fundos e superfícies;
+- verde/amarelo/vermelho reservados para estados funcionais.
+
+### Ajuda v4.2 — Tema Capixaba
+A seção `Ajuda` usa azul, branco e rosa inspirados na identidade capixaba, mantendo leitura e contraste. Inclui:
+- Primeiros 3 minutos;
+- mapa rápido do aplicativo;
 - abrir, lançar, conferir, editar, fechar e cancelar;
-- clientes, cadastro, importação/exportação e autocomplete;
-- WhatsApp do cliente e formato atual das mensagens;
-- WhatsApp do gerente;
-- respostas dos clientes encaminhadas ao gerente;
-- Resumo do Turno e seus indicadores/alertas;
-- Auditoria operacional, cancelamentos e linha do tempo do turno;
-- sincronização, uso offline, backup/restauração e atualização da PWA;
-- seção `Se acontecer isso…`, boas práticas e glossário.
+- clientes e importação/exportação;
+- WhatsApp do cliente e gerente;
+- respostas dos clientes;
+- Resumo do Turno;
+- Auditoria operacional;
+- sincronização, offline, backup/restauração e atualização da PWA;
+- busca, atalhos e seção de problemas comuns.
+
+No celular, a Ajuda usa viewport dinâmico para permanecer integralmente visível e não ficar sobreposta pela barra do navegador.
 
 ## Backend Supabase
 
 Projeto: `owkvwsiblbzlpxjwybrt`
 
-- `rota27-sync`: sincronização multidispositivo com autenticação própria;
-- `rota27-audit`: consulta somente leitura da trilha operacional compartilhada;
-- `rota27-whatsapp`: envio de templates do cliente/gerente;
-- `rota27-whatsapp-inbound`: callback público para respostas do cliente;
-- tabela `whatsapp_message_log`: auditoria/idempotência outbound;
-- tabela `rota27_whatsapp_inbound`: auditoria/idempotência inbound;
-- tabelas de sincronização com RLS habilitado; acesso operacional ocorre pelas Edge Functions com service role.
-
-As funções que usam `verify_jwt=false` possuem autenticação/validação própria adequada ao contrato: token de dispositivo nas APIs da PWA e validação contextual no callback público da Meta.
-
-## Configuração Meta do webhook de respostas
-
-O repositório contém `scripts/rota27-ativar-webhook-respostas.ps1`. O script registra o objeto `whatsapp_business_account`, campo `messages`, vincula a WABA ao app `Rota27` e fixa o callback da Edge Function. Credenciais são solicitadas via `Read-Host -AsSecureString` e não são gravadas no repositório.
+- `rota27-sync`: sincronização multidispositivo;
+- `rota27-audit`: consulta somente leitura da trilha operacional;
+- `rota27-whatsapp`: envio de templates;
+- `rota27-whatsapp-inbound`: callback público das respostas;
+- `whatsapp_message_log`: auditoria/idempotência outbound;
+- `rota27_whatsapp_inbound`: auditoria/idempotência inbound.
 
 ## Atualização da PWA
 
@@ -128,23 +102,27 @@ Quem já possui o Rota 27 instalado **não precisa reinstalar**:
 2. abrir a PWA e aguardar cerca de 10–20 segundos;
 3. fechar completamente;
 4. abrir novamente;
-5. confirmar `v0.18.1` e sincronização saudável.
+5. confirmar `v0.18.3` e sincronização saudável.
 
 Não limpar dados do navegador e não remover a PWA para atualizar.
 
-## Dados e segurança
+## Segurança
 
-Comandas, catálogo, categorias, histórico, auditoria local e filas técnicas continuam locais no aparelho. `clients` e `managerWhatsapp` integram o `state` e entram no Backup JSON. Tokens e secrets reais nunca devem ser commitados no GitHub.
+- nenhum token/App Secret é versionado;
+- credenciais reais não devem ser gravadas no GitHub;
+- o fluxo de operação continua local-first;
+- nenhuma migração destrutiva foi necessária para a v0.18.3.
 
 ## Documentos principais
 
-- `docs/RELEASE-v0.18.1.md`
+- `docs/RELEASE-v0.18.3.md`
 - `docs/STATUS-PRODUCAO.md`
-- `docs/TESTE-v0.18.1.md`
+- `docs/TESTE-v0.18.3.md`
+- `docs/MARCA-TEMA-v0.18.2.md`
 - `docs/PILOTO-REAL-v0.17.1.md`
 - `docs/PRODUCT-PRINCIPLES.md`
 - `docs/V0.15-MULTIDEVICE.md`
 
 ## Versão
 
-Produção: **0.18.1**
+Produção: **0.18.3**
