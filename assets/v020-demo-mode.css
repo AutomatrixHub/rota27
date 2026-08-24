@@ -1,0 +1,9 @@
+/* Rota 27 v0.20.0 — Modo Demonstração da Visão Gerencial */
+.v020-demo-mode{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:10px 0 12px;padding:11px 12px;border:1px dashed var(--line);border-radius:14px;background:var(--surface-2)}
+.v020-demo-mode>div{min-width:0;display:grid;gap:2px}.v020-demo-mode strong{font-size:12px}.v020-demo-mode span{color:var(--muted);font-size:10px;line-height:1.35}
+.v020-demo-mode button{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:11px;padding:9px 11px;font-size:11px;font-weight:850;white-space:nowrap}
+.v020-demo-active .v020-demo-mode{border-style:solid;border-color:rgba(197,138,29,.45);background:rgba(197,138,29,.08)}
+.v020-demo-active .v020-demo-mode button{background:var(--brand);color:#fff;border-color:var(--brand)}
+.v020-demo-active #v020ManagerBody:before{content:'MODO DEMONSTRAÇÃO • DADOS SIMULADOS — não são salvos, não sincronizam e não alteram seus números reais.';display:block;margin:0 0 10px;padding:10px 11px;border:1px solid rgba(197,138,29,.42);background:rgba(197,138,29,.09);border-radius:12px;font-size:10px;line-height:1.4;font-weight:850;letter-spacing:.01em}
+.v020-demo-active #v020Export{opacity:.55}
+@media(max-width:520px){.v020-demo-mode{align-items:stretch;flex-direction:column}.v020-demo-mode button{width:100%}}
