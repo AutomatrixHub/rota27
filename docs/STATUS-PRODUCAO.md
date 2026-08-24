@@ -4,37 +4,52 @@
 
 ## Produção
 
-- versão: **v0.18.0**;
+- versão: **v0.18.1**;
 - branch: `main`;
 - GitHub Pages: `https://automatrixhub.github.io/rota27/`;
-- Service Worker: `rota27-comandas-v0.18.0`;
+- Service Worker: `rota27-comandas-v0.18.1`;
 - backend `rota27-whatsapp`: versão 23 ACTIVE (`rota27-whatsapp-v6-mini2`);
 - `rota27-sync`: versão 2 ACTIVE;
-- `rota27-whatsapp-inbound`: versão 1 ACTIVE.
+- `rota27-whatsapp-inbound`: versão 1 ACTIVE;
+- `rota27-audit`: versão 1 ACTIVE, somente leitura e com autenticação própria por token de dispositivo.
 
-A v0.18.0 preserva a baseline operacional validada da v0.17.1 e adiciona o **Resumo do Turno** na tela Histórico, além da Ajuda v4.
+A v0.18.1 preserva a operação validada da v0.18.0 e acrescenta auditoria operacional rastreável, contador de cancelamentos no Resumo do Turno e Ajuda v4.1.
 
-## Validação da v0.18.0
+## Validação da v0.18.1
 
-Em 23/08/2026 a candidata foi aberta localmente na porta dedicada da v0.18.0 e validada com dados de teste. O Resumo do Turno exibiu corretamente faturamento, comandas fechadas, comandas abertas, valor em aberto, ticket médio, itens vendidos, ranking de produtos e forma de pagamento. O visual foi aprovado para produção.
+Em 23/08/2026 a candidata foi validada no fluxo operacional. Foram testados abertura de comanda, lançamentos, remoção de item, cancelamento, atualização do Resumo do Turno e consulta em `Ver auditoria`. O resultado reportado foi **tudo funcionando perfeitamente**.
 
-A v0.17.1 permanece como baseline anterior validada e referência de rollback.
+A v0.18.0 permanece como baseline anterior de rollback.
 
 ## Resumo do Turno
 
-A v0.18.0 inclui:
+A v0.18.1 inclui:
 
 - faturamento fechado hoje;
 - comandas fechadas hoje;
-- comandas abertas agora;
-- valor atualmente em aberto;
-- ticket médio das comandas fechadas;
-- unidades vendidas hoje;
-- produtos mais vendidos do dia;
+- comandas abertas agora e valor em aberto;
+- ticket médio;
+- unidades vendidas;
+- produtos mais vendidos;
 - distribuição por forma de pagamento;
-- alertas somente quando há ação necessária: offline, erro conhecido de sync, fila de WhatsApp com falha ou cancelamento aguardando sincronização.
+- **cancelamentos do turno** calculados a partir da trilha de auditoria;
+- botão **Ver auditoria**;
+- alertas somente quando existe ação necessária.
 
-Cancelamentos ainda não aparecem como contador histórico porque a arquitetura anterior não mantém histórico consolidado desse evento após a remoção operacional. Esse número só será adicionado quando houver trilha de auditoria confiável.
+## Auditoria operacional
+
+A nova camada registra e apresenta:
+
+- abertura de comanda;
+- fechamento de comanda;
+- cancelamento;
+- adição e remoção de itens;
+- alteração de cliente/local;
+- horário e aparelho de origem quando disponível.
+
+O registro local funciona offline. Quando a sincronização está configurada, a PWA reconcilia a visão local com os eventos compartilhados já armazenados em `rota27_sync_events`.
+
+A Edge Function `rota27-audit` é somente leitura e não altera comandas, histórico, catálogo, sincronização ou WhatsApp.
 
 ## WhatsApp final
 
@@ -59,12 +74,7 @@ Família `atualizacao_comanda_rota27_mini2_1` a `_5`, APPROVED / UTILITY / `pt_B
 
 ### Respostas dos clientes
 
-Template aprovado:
-
-- `resposta_cliente_rota27_gerente_v1`;
-- status `APPROVED`;
-- categoria `UTILITY`;
-- idioma `pt_BR`.
+Template aprovado `resposta_cliente_rota27_gerente_v1`, categoria `UTILITY`, idioma `pt_BR`.
 
 Infraestrutura implantada e validada em produção:
 
@@ -74,39 +84,26 @@ Infraestrutura implantada e validada em produção:
 - idempotência por `meta_message_id`;
 - bloqueio de loop do gerente;
 - suporte a texto/interativo e indicação de mídia;
-- callback Meta registrado para o app Rota27 e WABA com override apontando para a Edge Function;
-- teste real em 23/08/2026: resposta de cliente foi identificada, persistida com status `forwarded` e encaminhada com sucesso ao gerente.
+- callback Meta ativo apontando para a Edge Function.
 
-## Ajuda v4
+## Ajuda v4.1
 
-A Ajuda cobre:
-
-- cadastro/importação/exportação de clientes;
-- autocomplete;
-- hierarquia cliente/local;
-- WhatsApp final do cliente;
-- WhatsApp do gerente;
-- respostas dos clientes;
-- Resumo do Turno;
-- sincronização dos novos domínios;
-- filas locais de WhatsApp;
-- cenários em `Se acontecer isso…`.
+A Ajuda cobre os recursos anteriores e agora também inclui `Auditoria operacional`, explicando cancelamentos, linha do tempo, horário/aparelho, comportamento offline e reconciliação multidispositivo.
 
 ## Segurança
 
 - nenhum token/App Secret é versionado;
-- o bootstrap temporário usado no diagnóstico está protegido por JWT e não participa do fluxo operacional;
-- a extensão PostgreSQL `http` usada somente no diagnóstico foi removida;
+- `rota27-audit` usa autenticação própria por `x-rota27-device-token`;
+- o bootstrap temporário usado no diagnóstico continua protegido por JWT e não participa do fluxo operacional;
 - o inbound opera em modo `context-bound` enquanto `META_APP_SECRET` não estiver configurado como secret do runtime;
 - credenciais expostas durante a ativação devem ser rotacionadas fora do horário operacional, com substituição antes da revogação para evitar indisponibilidade.
 
 ## Próxima etapa
 
-1. observar a v0.18.0 em produção sem mexer no fluxo rápido de atendimento;
-2. tratar apenas P0/P1 como hotfix;
-3. preparar trilha de auditoria de cancelamentos antes de exibir esse indicador;
-4. evoluir a camada gerencial sem transformar a PWA em um ERP pesado;
-5. priorizar recursos que reduzam conferência manual e risco operacional.
+1. observar a v0.18.1 em produção e tratar apenas P0/P1 como hotfix;
+2. usar a trilha de auditoria como fundação do **Fechamento do Turno**;
+3. impedir fechamento de turno enquanto houver comanda aberta ou pendência operacional relevante;
+4. depois evoluir para visão gerencial histórica e comparativa.
 
 ## Atualização da PWA
 
@@ -116,4 +113,4 @@ Não reinstalar e não limpar dados:
 2. abrir a PWA por 10–20 segundos;
 3. fechar completamente;
 4. abrir novamente;
-5. confirmar `v0.18.0` e sync saudável.
+5. confirmar `v0.18.1` e sync saudável.

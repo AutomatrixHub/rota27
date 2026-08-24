@@ -1,8 +1,8 @@
-/* Rota 27 v0.18.0 — Resumo do Turno */
+/* Rota 27 v0.18.1 — Resumo do Turno com auditoria */
 (function(){
   'use strict';
 
-  const VERSION='0.18.0';
+  const VERSION='0.18.1';
   const MANAGER_OUTBOX_KEY='rota27_v017_manager_outbox_v1';
   const CANCEL_OUTBOX_KEY='rota27_cancel_outbox_v0151';
   let baseRenderHistory=null;
@@ -55,6 +55,9 @@
     });
     open.forEach(c=>{openValue+=recordTotal(c);});
 
+    let audit={cancelled:0,events:0,serverSynced:false};
+    try{audit=window.Rota27V0181?.todayStats?.()||audit;}catch{}
+
     return {
       revenue,
       closedCount:closed.length,
@@ -62,6 +65,9 @@
       openValue,
       avgTicket:closed.length?revenue/closed.length:0,
       units,
+      cancelled:Number(audit.cancelled||0),
+      auditEvents:Number(audit.events||0),
+      auditServerSynced:audit.serverSynced===true,
       products:[...products.values()].sort((a,b)=>b.qty-a.qty||b.revenue-a.revenue).slice(0,5),
       payments:[...payments.entries()].map(([name,value])=>({name,value})).sort((a,b)=>b.value-a.value)
     };
@@ -113,6 +119,7 @@
     const alertHtml=alerts.length?`<div class="v018-turn-alerts">${alerts.map(a=>`<div class="v018-turn-alert"><i>!</i><div><strong>${esc(a.title)}</strong><span>${esc(a.text)}</span></div></div>`).join('')}</div>`:'';
     const topHtml=s.products.length?s.products.map(p=>`<div class="v018-turn-row"><strong>${esc(p.name)}</strong><span>${esc(`${p.qty} un. • ${moneyValue(p.revenue)}`)}</span></div>`).join(''):'<div class="v018-turn-empty">Nenhum item vendido hoje.</div>';
     const payHtml=s.payments.length?s.payments.map(p=>`<div class="v018-turn-row"><strong>${esc(p.name)}</strong><span>${esc(moneyValue(p.value))}</span></div>`).join(''):'<div class="v018-turn-empty">Nenhuma forma de pagamento registrada hoje.</div>';
+    const auditHint=s.auditServerSynced?'auditoria sincronizada':'auditoria local';
 
     box.innerHTML=`
       <div class="v018-turn-head">
@@ -126,13 +133,16 @@
         ${metric('Ticket médio',moneyValue(s.avgTicket),'comandas fechadas')}
         ${metric('Itens vendidos',String(s.units),'unidades hoje')}
         ${metric('Fechadas',String(s.closedCount),'hoje')}
-        ${metric('Valor em aberto',moneyValue(s.openValue),`${s.openCount} ${s.openCount===1?'comanda':'comandas'}`)}
+        ${metric('Canceladas',String(s.cancelled),auditHint)}
       </div>
       <div class="v018-turn-grid">
         <div class="v018-turn-panel"><h4>Mais vendidos hoje</h4><div class="v018-turn-list">${topHtml}</div></div>
         <div class="v018-turn-panel"><h4>Formas de pagamento</h4><div class="v018-turn-list">${payHtml}</div></div>
       </div>
-      <div class="v018-turn-foot">Resumo calculado a partir dos dados já disponíveis e sincronizados neste aparelho. Cancelamentos não são contabilizados nesta primeira entrega porque a v0.17.1 não mantém histórico consolidado desse evento.</div>`;
+      <div class="v0181-turn-foot">
+        <div class="v018-turn-foot">Resumo calculado com os dados operacionais do aparelho e a nova trilha de auditoria. A auditoria registra aberturas, fechamentos, cancelamentos, alterações e lançamentos do turno.</div>
+        <button type="button" class="v0181-audit-open" onclick="window.Rota27V0181&&window.Rota27V0181.openAudit()">Ver auditoria</button>
+      </div>`;
   }
 
   function schedule(delay=60){clearTimeout(refreshTimer);refreshTimer=setTimeout(render,delay);}
@@ -156,9 +166,10 @@
     window.addEventListener('offline',()=>schedule());
     window.addEventListener('storage',()=>schedule());
     window.addEventListener('rota27:v017-domain-updated',()=>schedule());
+    window.addEventListener('rota27:v0181-audit-updated',()=>schedule());
     document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')schedule();});
     setInterval(()=>{wrapRenders();render();},10000);
-    console.info('[Rota27] v0.18.0 Resumo do Turno carregado.');
+    console.info('[Rota27] v0.18.1 Resumo do Turno com auditoria carregado.');
   }
 
   window.Rota27V018={version:VERSION,refreshTurnSummary:render};
