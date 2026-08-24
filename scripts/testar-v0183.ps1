@@ -29,6 +29,27 @@ if ($listener) {
     throw "A porta $port ja esta em uso. Feche o servidor anterior da preview v0.18.3 e execute novamente."
 }
 
+# Descobre o IPv4 do adaptador que possui a rota padrao para facilitar o teste em celular na mesma rede Wi-Fi.
+$lanIp = $null
+try {
+    $defaultRoute = Get-NetRoute -AddressFamily IPv4 -DestinationPrefix "0.0.0.0/0" -ErrorAction Stop |
+        Where-Object { $_.NextHop -and $_.NextHop -ne "0.0.0.0" } |
+        Sort-Object RouteMetric, InterfaceMetric |
+        Select-Object -First 1
+
+    if ($defaultRoute) {
+        $lanIp = Get-NetIPAddress -AddressFamily IPv4 -InterfaceIndex $defaultRoute.InterfaceIndex -ErrorAction Stop |
+            Where-Object {
+                $_.IPAddress -notmatch '^127\.' -and
+                $_.IPAddress -notmatch '^169\.254\.' -and
+                -not $_.SkipAsSource
+            } |
+            Select-Object -ExpandProperty IPAddress -First 1
+    }
+} catch {
+    $lanIp = $null
+}
+
 Write-Host "Iniciando servidor dedicado da v0.18.3 na porta $port..." -ForegroundColor Cyan
 $server = Start-Process powershell.exe `
     -WorkingDirectory $RepoRoot `
@@ -36,7 +57,7 @@ $server = Start-Process powershell.exe `
         '-NoProfile',
         '-NoExit',
         '-Command',
-        "npx --yes http-server . -p $port -c-1"
+        "npx --yes http-server . -a 0.0.0.0 -p $port -c-1"
     ) `
     -PassThru
 
@@ -69,5 +90,13 @@ try {
 }
 
 Write-Host "Servidor pronto." -ForegroundColor Green
-Write-Host "Abrindo $Url" -ForegroundColor Green
+Write-Host "PC:      $Url" -ForegroundColor Green
+if ($lanIp) {
+    $MobileUrl = "http://${lanIp}:$port/?preview=v0183"
+    Write-Host "CELULAR: $MobileUrl" -ForegroundColor Yellow
+    Write-Host "Use o celular na mesma rede Wi-Fi do PC. Se o Windows pedir permissao de firewall, permita em rede Privada." -ForegroundColor DarkGray
+} else {
+    Write-Host "Nao consegui detectar automaticamente o IP da rede local. A preview no PC continuara funcionando normalmente." -ForegroundColor Yellow
+}
+
 Start-Process $Url
