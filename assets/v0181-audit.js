@@ -13,7 +13,6 @@
   let previous=null;
   let reconciling=false;
 
-  function now(){return Date.now();}
   function iso(v=Date.now()){const d=new Date(v);return Number.isNaN(d.getTime())?new Date().toISOString():d.toISOString();}
   function clone(v){return JSON.parse(JSON.stringify(v==null?null:v));}
   function clean(v,max=180){return String(v??'').trim().replace(/\s+/g,' ').slice(0,max);}
@@ -91,9 +90,10 @@
     const fingerprint=clean(extra.fingerprint||`${type}|${commandId}|${productId}|${delta}|${atMs}`,300);
     if(store.events.some(e=>sameFingerprint(e,{fingerprint})))return;
     const dm=deviceMeta();
+    const eventTotal=extra.total!==undefined&&extra.total!==null?Number(extra.total):Number(total(command)||0);
     store.events.push({
       id:uid(),source:'local',type,commandId,label:clean(extra.label||label(command),180),
-      total:Number(extra.total??total(command)||0),productId,delta,detail:clean(extra.detail||'',180),
+      total:Number.isFinite(eventTotal)?eventTotal:0,productId,delta,detail:clean(extra.detail||'',180),
       deviceId:dm.deviceId,deviceName:dm.deviceName,appVersion:VERSION,at:iso(atMs),fingerprint
     });
     persist();notifyChanged();
