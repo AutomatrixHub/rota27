@@ -1,0 +1,93 @@
+/* Rota 27 v0.18.2 — Tema Operação Rota 27
+ * Base visual: escudo oficial (laranja, preto e branco/creme).
+ * Acentos capixabas ficam restritos a áreas institucionais, principalmente Ajuda.
+ */
+:root{
+  --bg:#F5E9D5;
+  --surface:#FFF9F0;
+  --surface-2:#F1E4D2;
+  --ink:#111111;
+  --muted:#756656;
+  --brand:#111111;
+  --brand-2:#DF6536;
+  --accent:#DF6536;
+  --accent-2:#F1B18F;
+  --danger:#B5483C;
+  --line:#D9C7A7;
+  --ok:#2F7A4A;
+  --info:#4A6A7F;
+  --warn:#C58A1D;
+  --capixaba-blue:#2FA8E5;
+  --capixaba-pink:#E7A7C9;
+  --shadow:0 12px 30px rgba(17,17,17,.12);
+}
+
+html,body{background:var(--bg);color:var(--ink)}
+.topbar{background:linear-gradient(180deg,var(--bg) 0%,var(--bg) 78%,rgba(245,233,213,0) 100%)}
+.brand{background:linear-gradient(135deg,#FFF9F0 0%,#F4E7D1 100%);border-color:rgba(223,101,54,.42);box-shadow:inset 0 3px 0 rgba(223,101,54,.92),0 10px 24px rgba(17,17,17,.08)}
+.logo-shell{background:#FFFDF8;box-shadow:inset 0 0 0 1px rgba(17,17,17,.10),0 8px 18px rgba(17,17,17,.10)}
+.brand h1,.section-head h2,.command-title,.detail-title h2,.v018-turn-head h3{color:var(--ink)}
+.brand small{color:#765F4C}
+#v14VersionBadge,.badge{background:#F3D5C4;color:#8F4421;border-color:#E4A886}
+
+.primary{background:var(--brand-2);color:#fff;box-shadow:0 10px 18px rgba(223,101,54,.25)}
+.primary:active{filter:brightness(.95)}
+.secondary{background:var(--surface);border-color:var(--line);color:var(--ink)}
+.open-btn{background:#F7E8DA;color:#8F4421;box-shadow:inset 0 0 0 1px #E7B99E}
+.back,.edit-command,.v017-icon-btn,.v0181-audit-x{background:var(--surface-2);color:var(--ink)}
+
+.command-card{background:var(--surface);border-color:var(--line);box-shadow:0 5px 16px rgba(17,17,17,.05)}
+.command-card:before{background:linear-gradient(180deg,var(--brand-2) 0%,var(--brand-2) 68%,var(--brand) 68%,var(--brand) 100%)}
+.v017-command-location,.v017-sale-location{color:#9A4826!important}
+.money,.total-pill,.product .price{color:var(--brand)}
+
+.search,.v017-search,.field input{background:#fff;border-color:var(--line)}
+.field input:focus,.search:focus-within,.v017-search:focus-within{border-color:var(--brand-2);box-shadow:0 0 0 3px rgba(223,101,54,.12)}
+.chip.active{background:var(--brand-2);border-color:var(--brand-2);color:#fff}
+.qty-badge{background:var(--brand-2);color:#fff}
+
+.cartbar{background:linear-gradient(135deg,#111 0%,#29211D 100%);box-shadow:0 14px 30px rgba(17,17,17,.24)}
+.cartbar .close-btn{background:var(--brand-2);color:#fff}
+.cartbar small{color:#E9DDD1}
+
+.bottomnav{background:rgba(255,249,240,.98);border-top-color:#D6C1A5;box-shadow:0 -10px 26px rgba(17,17,17,.08)}
+.navbtn{color:#746657}
+.navbtn .navicon{background:#F3E7D5;color:#6E5B4A;box-shadow:inset 0 0 0 1px #DDCBB2,0 4px 10px rgba(17,17,17,.04)}
+.navbtn.active{color:#111;background:#F7E4D6}
+.navbtn.active .navicon{background:linear-gradient(135deg,#DF6536,#C95025);color:#fff;box-shadow:0 8px 18px rgba(223,101,54,.27)}
+.fab{background:var(--brand-2);color:#fff;box-shadow:0 14px 28px rgba(223,101,54,.34)}
+
+.v018-turn-summary{background:var(--surface);border-color:var(--line);box-shadow:0 6px 18px rgba(17,17,17,.06)}
+.v018-turn-metric,.v018-turn-panel,.v0181-audit-row{background:#F8EEDD;border-color:var(--line)}
+.v018-turn-date{background:#F2E4D1;color:#6D5B49;border-color:#DDC9AC}
+.v0181-audit-open{background:#111;color:#fff;border-color:#111}
+.v0181-audit-open:active{background:#262626}
+.v0181-audit-icon{background:#F3E4D0;color:#111}
+.v0181-audit-icon.cancelled{background:#FDE9E6;color:var(--danger)}
+.v0181-audit-icon.closed{background:#E7F4EA;color:var(--ok)}
+
+.v017-admin-tools>button,.v017-client-row,.v017-toggle{background:var(--surface);border-color:var(--line)}
+.v017-admin-tools>button>span,.v017-client-avatar,.v017-manager-note{background:#F2E4D1}
+.v017-toggle input:checked+span{background:var(--ok)}
+
+/* Estados funcionais: cores reservadas para significado, não decoração. */
+.v017-manager-state.ok,.v0181-audit-status.ok{border-color:rgba(47,122,74,.34);background:#E7F4EA;color:#2D6140}
+.v017-manager-state.warn{border-color:rgba(197,138,29,.38);background:#FFF4D8;color:#6B521F}
+.v018-turn-alert,.v0181-audit-status.warn{border-color:rgba(181,72,60,.30);background:#FDE9E6;color:#71362F}
+
+/* Ajuda: área institucional recebe a referência capixaba do manual de marca. */
+.r27-help-header{position:relative;background:linear-gradient(180deg,#FFF9F0,#F4E7D1);border-bottom-color:#D9C7A7;padding-bottom:18px}
+.r27-help-header:after{content:"";position:absolute;left:0;right:0;bottom:0;height:4px;background:linear-gradient(90deg,var(--capixaba-blue) 0 34%,#fff 34% 66%,var(--capixaba-pink) 66% 100%)}
+.r27-help-button{background:rgba(255,249,240,.92);border-color:rgba(223,101,54,.28);color:#111}
+.r27-help-button small{color:#765F4C}
+.r27-help-chip{background:#F7E9D8;color:#4E3D30;border-color:#DCC8AA}
+.r27-help-section-icon{background:#F5E3D3;color:#8F4421}
+.r27-help-lead{border-left-color:var(--brand-2);background:#F8ECE0}
+.r27-help-flow span b,.r27-help-mini-bar strong{background:var(--brand-2)}
+.r27-help-steps li>span{background:#111}
+.r27-help-example-label{background:#111;color:#fff}
+
+@media(max-width:520px){
+  .brand{border-radius:25px;padding:13px 15px}
+  .logo-shell{width:78px;height:78px}
+}
