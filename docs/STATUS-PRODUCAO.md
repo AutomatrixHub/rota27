@@ -14,13 +14,13 @@
 
 A v0.17.1 consolida clientes/autocomplete, WhatsApp do gerente, formato final `mini2_*`, Ajuda v3 e respostas do cliente encaminhadas ao gerente.
 
-## Baseline congelada para piloto
+## Baseline validada
 
-A **v0.17.1 está congelada como baseline operacional** a partir de 23/08/2026.
+A **v0.17.1 está validada em produção**.
 
-Durante o piloto real não entram novos recursos nem refinamentos cosméticos. Somente P0/P1 justificam hotfix imediato: perda/corrupção de dados, total/cobrança incorreta, fechamento/cancelamento inconsistente, indisponibilidade, falha de sync que não converge, duplicidade operacional relevante ou falha de WhatsApp que possa provocar erro de atendimento.
+Em 23/08/2026 foram realizados vários testes reais de operação e o resultado reportado foi **tudo OK**, sem P0/P1 reportado nesse ciclo. A v0.17.1 permanece congelada como baseline operacional estável.
 
-Roteiro operacional: `docs/PILOTO-REAL-v0.17.1.md`.
+Roteiro e registro do piloto: `docs/PILOTO-REAL-v0.17.1.md`.
 
 ## WhatsApp final
 
@@ -97,13 +97,13 @@ A Ajuda agora cobre:
 
 ## Próxima etapa
 
-1. manter v0.17.1 congelada;
-2. executar piloto real;
-3. registrar apenas P0/P1 imediatamente;
-4. consolidar atritos e pedidos reais ao fim do piloto;
-5. decidir o escopo da v0.18 com base na operação.
+1. manter v0.17.1 estável em produção;
+2. não alterar a baseline sem necessidade operacional;
+3. tratar apenas P0/P1 como hotfix;
+4. consolidar pedidos reais e melhorias para próxima versão;
+5. definir explicitamente o escopo da v0.18 antes de desenvolver.
 
-A hipótese inicial para v0.18 é um **Resumo do Turno**, mas ainda não está aprovada para desenvolvimento.
+A hipótese inicial para v0.18 é um **Resumo do Turno**, ainda aguardando definição formal de escopo.
 
 ## Atualização da PWA
 
