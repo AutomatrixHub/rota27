@@ -28,7 +28,7 @@
     for(let offset=-199;offset<=0;offset++){
       const d=shiftDate(offset);
       const dow=d.getDay();
-      if(dow===1)continue; // segunda sem turno, para a amostra parecer uma operação realista
+      if(dow===1)continue;
       const date=localDateKey(d);
       const weekend=(dow===5||dow===6)?1.28:(dow===0?1.12:1);
       const trend=1+((offset+199)/199)*0.16;
@@ -118,7 +118,8 @@
 
   function enhanceHelp(){
     const section=byId('r27-help-visao-gerencial');
-    if(!section||byId('r27-help-demo-gerencial'))return false;
+    if(!section)return false;
+    if(byId('r27-help-demo-gerencial'))return true;
     const body=section.querySelector('.r27-help-section-body');if(!body)return false;
     const tip=document.createElement('div');tip.id='r27-help-demo-gerencial';tip.className='r27-help-tip';
     tip.innerHTML='<b>Modo demonstração:</b> na Visão Gerencial, use <b>Ver dados de demonstração</b> para explorar gráficos e comparações com uma amostra simulada. Esse modo começa desligado, não grava nada, não sincroniza e não altera os números reais.';
@@ -127,15 +128,17 @@
 
   function start(){
     if(!ownVersion())return;
-    installClosureProxy();ensureUi();enhanceHelp();
+    installClosureProxy();ensureUi();
+    const helpReady=enhanceHelp();
     setTimeout(()=>{installClosureProxy();ensureUi();enhanceHelp();},180);
     setTimeout(()=>{installClosureProxy();ensureUi();enhanceHelp();},700);
 
-    // A Ajuda pode ser construída depois do carregamento; observa apenas até inserir a nota e desconecta.
-    helpObserver=new MutationObserver(()=>{
-      if(enhanceHelp()&&helpObserver){helpObserver.disconnect();helpObserver=null;}
-    });
-    helpObserver.observe(document.body,{childList:true,subtree:true});
+    if(!helpReady){
+      helpObserver=new MutationObserver(()=>{
+        if(enhanceHelp()&&helpObserver){helpObserver.disconnect();helpObserver=null;}
+      });
+      helpObserver.observe(document.body,{childList:true,subtree:true});
+    }
 
     document.addEventListener('click',e=>{
       if(!demoMode)return;
