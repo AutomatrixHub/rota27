@@ -30,16 +30,47 @@ if ($listener) {
 }
 
 Write-Host "Iniciando servidor dedicado da v0.18.2 na porta $port..." -ForegroundColor Cyan
-Start-Process powershell.exe `
+$server = Start-Process powershell.exe `
     -WorkingDirectory $RepoRoot `
     -ArgumentList @(
         '-NoProfile',
         '-NoExit',
         '-Command',
         "npx --yes http-server . -p $port -c-1"
-    )
+    ) `
+    -PassThru
 
-Start-Sleep -Seconds 3
+Write-Host "Aguardando o servidor ficar pronto..." -ForegroundColor DarkGray
+$ready = $false
+for ($i = 0; $i -lt 30; $i++) {
+    Start-Sleep -Seconds 1
+
+    if ($server.HasExited) {
+        throw "O servidor da preview encerrou antes de iniciar. Veja a janela PowerShell que foi aberta para o erro do npx/http-server."
+    }
+
+    $listener = Get-NetTCPConnection -LocalPort $port -State Listen -ErrorAction SilentlyContinue
+    if ($listener) {
+        $ready = $true
+        break
+    }
+}
+
+if (-not $ready) {
+    throw "O servidor nao ficou disponivel na porta $port em 30 segundos. Veja a janela PowerShell do servidor para identificar o erro."
+}
+
 $Url = "http://localhost:$port/?preview=v0182"
+
+try {
+    $probe = Invoke-WebRequest -Uri "http://127.0.0.1:$port/" -UseBasicParsing -TimeoutSec 5
+    if ($probe.StatusCode -lt 200 -or $probe.StatusCode -ge 400) {
+        throw "HTTP $($probe.StatusCode)"
+    }
+} catch {
+    throw "A porta $port abriu, mas a pagina ainda nao respondeu corretamente: $($_.Exception.Message)"
+}
+
+Write-Host "Servidor pronto." -ForegroundColor Green
 Write-Host "Abrindo $Url" -ForegroundColor Green
 Start-Process $Url
