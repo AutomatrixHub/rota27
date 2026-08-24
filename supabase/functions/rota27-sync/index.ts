@@ -1,7 +1,7 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
 
-const EDGE_VERSION = "rota27-sync-v0.19.0";
+const EDGE_VERSION = "rota27-sync-v0.21.0";
 const ALLOWED_TYPES = new Set([
   "state_snapshot",
   "command_opened",
@@ -16,6 +16,8 @@ const ALLOWED_TYPES = new Set([
   "client_delete",
   "manager_config_replace",
   "turn_closed",
+  "stock_config_upsert",
+  "stock_movement",
 ]);
 
 const corsHeaders = {
