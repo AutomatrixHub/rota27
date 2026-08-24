@@ -120,6 +120,18 @@ A interface mobile passa a usar composição própria:
 
 A meta mobile não é esconder informação, e sim preservar a mesma informação em leitura vertical natural, com alvos de toque maiores e sem exigir zoom ou rolagem lateral.
 
+## Teste mobile real
+A revisão é suficientemente previsível para ser implementada antes do teste em aparelho, mas a aprovação final de responsividade exige pelo menos um teste físico em celular.
+
+Checar no aparelho:
+- ausência de rolagem horizontal;
+- nenhum corte de card, botão, input ou select;
+- inputs sem zoom automático;
+- abas legíveis;
+- criação de pedido sem necessidade de girar a tela;
+- recebimento parcial/total operável com uma mão;
+- rolagem vertical natural do início ao fim da central.
+
 ## Estabilidade
 A ampliação não adiciona polling visual nem novo MutationObserver.
 
