@@ -19,6 +19,20 @@ Esperado:
 - endereço `CELULAR:` exibido no PowerShell;
 - sem travamento ou uso anormal de CPU.
 
+## Regressão crítica — Painel estável
+1. abra `Painel` e permaneça nele por pelo menos 15 segundos;
+2. observe os cards `Visão Gerencial` e `Estoque Essencial`;
+3. navegue para outra tela e volte ao Painel;
+4. abra e feche a Ajuda.
+
+Esperado:
+- `Visão Gerencial` não desaparece nem pisca periodicamente;
+- `Estoque Essencial` permanece estável no mesmo lugar;
+- tela continua responsiva;
+- botões e navegação respondem imediatamente;
+- Ajuda abre sem aumento anormal de CPU ou travamento;
+- nenhum card é recriado de forma visível durante o refresh legado do Painel.
+
 ## Cenário A — ativar controle
 1. abra `Painel → Estoque Essencial`;
 2. altere o filtro para `Todos`;
@@ -118,7 +132,8 @@ Esperado:
 - seção `Visão Gerencial` preservada;
 - nova seção `Estoque Essencial`;
 - rodapé `Ajuda v4.5 • v0.21.0`;
-- cabeçalho mobile sem sobreposição.
+- cabeçalho mobile sem sobreposição;
+- nenhum loop de MutationObserver ao atualizar o rodapé da Ajuda.
 
 ## Regressão mínima
 - abrir/editar/fechar/cancelar comanda;
