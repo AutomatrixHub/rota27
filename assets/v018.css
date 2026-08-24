@@ -1,0 +1,25 @@
+/* Rota 27 v0.18.0 — Resumo do Turno */
+.v018-turn-summary{margin:0 0 16px;padding:16px;background:var(--surface);border:1px solid var(--line);border-radius:20px;box-shadow:0 6px 18px rgba(45,29,16,.07)}
+.v018-turn-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:13px}
+.v018-turn-head h3{margin:0;font-size:19px;letter-spacing:-.02em}
+.v018-turn-head p{margin:4px 0 0;color:var(--muted);font-size:12px;line-height:1.4}
+.v018-turn-date{white-space:nowrap;font-size:12px;font-weight:850;color:var(--muted);background:var(--surface-2);border:1px solid var(--line);border-radius:999px;padding:7px 10px}
+.v018-turn-alerts{display:grid;gap:7px;margin:0 0 12px}
+.v018-turn-alert{display:flex;gap:9px;align-items:flex-start;border:1px solid rgba(182,69,59,.28);background:rgba(182,69,59,.07);border-radius:13px;padding:10px 11px;font-size:12px;line-height:1.4}
+.v018-turn-alert strong{display:block;margin-bottom:2px;font-size:12px}
+.v018-turn-alert i{font-style:normal;font-size:16px;line-height:1.1}
+.v018-turn-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+.v018-turn-metric{min-width:0;background:var(--bg);border:1px solid var(--line);border-radius:15px;padding:11px}
+.v018-turn-metric small{display:block;color:var(--muted);font-size:11px;font-weight:750;line-height:1.2}
+.v018-turn-metric strong{display:block;margin-top:5px;font-size:18px;line-height:1.05;overflow:hidden;text-overflow:ellipsis}
+.v018-turn-metric span{display:block;margin-top:4px;color:var(--muted);font-size:10px;line-height:1.25}
+.v018-turn-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.v018-turn-panel{background:var(--bg);border:1px solid var(--line);border-radius:15px;padding:12px;min-width:0}
+.v018-turn-panel h4{margin:0 0 9px;font-size:13px}
+.v018-turn-list{display:grid;gap:8px}
+.v018-turn-row{display:flex;align-items:center;justify-content:space-between;gap:9px;font-size:12px}
+.v018-turn-row strong{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.v018-turn-row span{white-space:nowrap;color:var(--muted);font-weight:750}
+.v018-turn-empty{color:var(--muted);font-size:12px;line-height:1.4}
+.v018-turn-foot{margin-top:10px;color:var(--muted);font-size:10px;line-height:1.4}
+@media(max-width:520px){.v018-turn-summary{padding:13px}.v018-turn-metrics{grid-template-columns:1fr 1fr}.v018-turn-grid{grid-template-columns:1fr}.v018-turn-head{align-items:center}.v018-turn-metric strong{font-size:17px}}
