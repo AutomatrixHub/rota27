@@ -1,12 +1,12 @@
-# Rota 27 — Release candidata v0.18.0
+# Rota 27 — Release v0.18.0
 
 Data: 23/08/2026
 
 ## Estado
 
-**CANDIDATA — NÃO PROMOVIDA PARA PRODUÇÃO**
+**PRODUÇÃO**
 
-Produção continua em v0.17.1 enquanto a v0.18.0 é validada.
+A v0.18.0 foi validada visual e funcionalmente na prévia local, incluindo cálculo do Resumo do Turno com comandas abertas/fechadas, faturamento, ticket médio, itens vendidos, produtos e forma de pagamento. Após aprovação, foi promovida para produção.
 
 ## Objetivo
 
@@ -41,7 +41,7 @@ A primeira entrega não exibe total histórico de cancelamentos porque a baselin
 
 ## Ajuda
 
-Ajuda candidata v4 adiciona a seção `Resumo do turno` e explica os indicadores e alertas.
+Ajuda v4 adiciona a seção `Resumo do turno` e explica os indicadores e alertas.
 
 ## Arquivos novos
 
@@ -59,4 +59,4 @@ Ajuda candidata v4 adiciona a seção `Resumo do turno` e explica os indicadores
 - sem alteração dos templates Meta;
 - sem alteração da lógica de totais/fechamento/cancelamento;
 - sem sincronizar filas de WhatsApp;
-- v0.17.1 continua como rollback/baseline de produção.
+- v0.17.1 permanece como rollback/baseline anterior validada.
