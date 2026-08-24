@@ -4,12 +4,12 @@ Aplicativo mobile-first, offline-first e multidispositivo para controle rápido 
 
 ## Produção
 
-**Versão: v0.17.1**  
+**Versão: v0.18.0**  
 Branch: `main`  
 GitHub Pages: `https://automatrixhub.github.io/rota27/`  
-Service Worker: `rota27-comandas-v0.17.1`
+Service Worker: `rota27-comandas-v0.18.0`
 
-A v0.17.1 consolida a operação validada da v0.17.0, o novo formato enxuto de WhatsApp `mini2_*`, a Ajuda v3 e a infraestrutura de respostas de clientes encaminhadas ao gerente.
+A v0.18.0 preserva a operação validada da v0.17.1 e acrescenta o **Resumo do Turno**, com indicadores gerenciais do dia e alertas apenas quando existe ação necessária. A Ajuda passa a v4.
 
 ## Recursos principais
 
@@ -20,6 +20,19 @@ A v0.17.1 consolida a operação validada da v0.17.0, o novo formato enxuto de W
 - proteção contra comanda duplicada acidental;
 - nome do cliente como informação principal e local/mesa como informação secundária quando houver cliente;
 - histórico, filtros, indicadores, rankings e exportação CSV.
+
+### Resumo do Turno
+Na tela Histórico, a v0.18.0 mostra uma visão rápida do dia com:
+- faturamento fechado hoje;
+- comandas fechadas e comandas ainda abertas;
+- valor atualmente em aberto;
+- ticket médio;
+- itens vendidos;
+- produtos mais vendidos do dia;
+- totais por forma de pagamento;
+- alertas operacionais somente quando há algo que precisa de atenção, como offline, sync ou fila de WhatsApp com falha.
+
+A primeira entrega não inventa um contador de cancelamentos: a baseline anterior não mantém histórico consolidado desse evento após a remoção operacional da comanda.
 
 ### Clientes
 - cadastro manual de clientes;
@@ -50,7 +63,7 @@ A v0.17.1 consolida a operação validada da v0.17.0, o novo formato enxuto de W
 
 ### Respostas dos clientes
 - template UTILITY aprovado: `resposta_cliente_rota27_gerente_v1` (`pt_BR`);
-- nova Edge Function `rota27-whatsapp-inbound`;
+- Edge Function `rota27-whatsapp-inbound`;
 - correlação da resposta pelo `context.id` com o `wa_message_id` real da mensagem enviada pela comanda;
 - identificação automática de cliente e comanda;
 - encaminhamento ao gerente com comanda, cliente, WhatsApp e conteúdo recebido;
@@ -67,7 +80,7 @@ A v0.17.1 consolida a operação validada da v0.17.0, o novo formato enxuto de W
 - continua operando localmente quando a internet cai;
 - filas do WhatsApp do cliente e do gerente **não são sincronizadas**, evitando envios duplicados.
 
-### Ajuda v3
+### Ajuda v4
 O botão `? Ajuda` fica no cabeçalho e funciona offline. A Ajuda inclui:
 - Primeiros 3 minutos e mapa rápido;
 - abrir, lançar, conferir, editar, fechar e cancelar;
@@ -75,6 +88,7 @@ O botão `? Ajuda` fica no cabeçalho e funciona offline. A Ajuda inclui:
 - WhatsApp do cliente e formato atual das mensagens;
 - WhatsApp do gerente;
 - respostas dos clientes encaminhadas ao gerente;
+- Resumo do Turno e seus indicadores/alertas;
 - sincronização, uso offline, backup/restauração e atualização da PWA;
 - seção `Se acontecer isso…`, boas práticas e glossário.
 
@@ -102,7 +116,7 @@ Quem já possui o Rota 27 instalado **não precisa reinstalar**:
 2. abrir a PWA e aguardar cerca de 10–20 segundos;
 3. fechar completamente;
 4. abrir novamente;
-5. confirmar `v0.17.1` e sincronização saudável.
+5. confirmar `v0.18.0` e sincronização saudável.
 
 Não limpar dados do navegador e não remover a PWA para atualizar.
 
@@ -112,12 +126,13 @@ Comandas, catálogo, categorias, histórico e filas técnicas continuam locais n
 
 ## Documentos principais
 
-- `docs/RELEASE-v0.17.1.md`
+- `docs/RELEASE-v0.18.0.md`
 - `docs/STATUS-PRODUCAO.md`
-- `docs/TESTE-v0.17.0.md`
+- `docs/TESTE-v0.18.0.md`
+- `docs/PILOTO-REAL-v0.17.1.md`
 - `docs/PRODUCT-PRINCIPLES.md`
 - `docs/V0.15-MULTIDEVICE.md`
 
 ## Versão
 
-Produção: **0.17.1**
+Produção: **0.18.0**
