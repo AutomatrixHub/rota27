@@ -4,8 +4,8 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#F5E9D5" />
-  <meta name="rota27-version" content="0.18.2" />
-  <title>Rota 27 Bodega • Comandas v0.18.2</title>
+  <meta name="rota27-version" content="0.18.3" />
+  <title>Rota 27 Bodega • Comandas v0.18.3</title>
   <style>
     html,body{margin:0;min-height:100%;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:#F5E9D5;color:#111111}
     .loader{min-height:100vh;display:grid;place-items:center;padding:24px;text-align:center}.card{max-width:420px;background:#FFF9F0;border:1px solid #D9C7A7;border-radius:20px;padding:24px;box-shadow:0 14px 34px rgba(17,17,17,.12)}
@@ -13,7 +13,7 @@
   </style>
 </head>
 <body>
-  <div class="loader"><div class="card"><strong>Rota 27 v0.18.2</strong><p id="status">Carregando comandas, resumo, auditoria e identidade oficial…</p></div></div>
+  <div class="loader"><div class="card"><strong>Rota 27 v0.18.3</strong><p id="status">Carregando comandas, resumo, auditoria e identidade capixaba…</p></div></div>
   <script>
     (async function(){
       const status=document.getElementById('status');
@@ -21,7 +21,7 @@
         const res=await fetch('./base-v013.html',{cache:'no-store'});
         if(!res.ok)throw new Error('Não foi possível carregar a base do aplicativo');
         let html=await res.text();
-        html=html.replace(/<title>[\s\S]*?<\/title>/i,'<title>Rota 27 Bodega • Comandas v0.18.2</title>');
+        html=html.replace(/<title>[\s\S]*?<\/title>/i,'<title>Rota 27 Bodega • Comandas v0.18.3</title>');
         html=html.replace('</head>',
           '<link rel="stylesheet" href="./assets/v014.css" />'+
           '<link rel="stylesheet" href="./assets/v014-dev3.css" />'+
@@ -32,12 +32,13 @@
           '<link rel="stylesheet" href="./assets/v015-rc2-ops.css" />'+
           '<link rel="stylesheet" href="./assets/v015-rc3-items.css" />'+
           '<link rel="stylesheet" href="./assets/v0151-hotfix.css?v=0151" />'+
-          '<link rel="stylesheet" href="./assets/v0151-help.css?v=0182-help" />'+
-          '<link rel="stylesheet" href="./assets/v016-help-polish.css?v=0182" />'+
-          '<link rel="stylesheet" href="./assets/v017.css?v=0182" />'+
-          '<link rel="stylesheet" href="./assets/v018.css?v=0182" />'+
-          '<link rel="stylesheet" href="./assets/v0181.css?v=0182" />'+
-          '<link rel="stylesheet" href="./assets/v0182-brand-theme.css?v=0182" />'+
+          '<link rel="stylesheet" href="./assets/v0151-help.css?v=0183-help" />'+
+          '<link rel="stylesheet" href="./assets/v016-help-polish.css?v=0183" />'+
+          '<link rel="stylesheet" href="./assets/v017.css?v=0183" />'+
+          '<link rel="stylesheet" href="./assets/v018.css?v=0183" />'+
+          '<link rel="stylesheet" href="./assets/v0181.css?v=0183" />'+
+          '<link rel="stylesheet" href="./assets/v0182-brand-theme.css?v=0183" />'+
+          '<link rel="stylesheet" href="./assets/v0183-capixaba-help.css?v=0183" />'+
           '</head>');
         html=html.replace('</body>',
           '<script src="./assets/v014.js"><\/script>'+
@@ -51,24 +52,24 @@
           '<script src="./assets/v015-rc2-ops.js"><\/script>'+
           '<script src="./assets/v015-rc3-items.js"><\/script>'+
           '<script src="./assets/v0151-hotfix.js?v=0151"><\/script>'+
-          '<script src="./assets/v0151-help.js?v=0182-help"><\/script>'+
-          '<script src="./assets/v0171-help-update.js?v=0182"><\/script>'+
-          '<script src="./assets/v016-help-polish.js?v=0182"><\/script>'+
-          '<script src="./assets/v017-core.js?v=0182"><\/script>'+
-          '<script src="./assets/v017-client-ids.js?v=0182"><\/script>'+
-          '<script src="./assets/v017-manager.js?v=0182"><\/script>'+
-          '<script src="./assets/v017-whatsapp-polish.js?v=0182"><\/script>'+
-          '<script src="./assets/v017-layout.js?v=0182"><\/script>'+
-          '<script src="./assets/v0181-audit.js?v=0182"><\/script>'+
-          '<script src="./assets/v018-turn-summary.js?v=0182"><\/script>'+
-          '<script src="./assets/v018-help.js?v=0182"><\/script>'+
-          '<script src="./assets/v0181-help.js?v=0182"><\/script>'+
-          '<script src="./assets/v0182-final.js?v=0182"><\/script>'+
+          '<script src="./assets/v0151-help.js?v=0183-help"><\/script>'+
+          '<script src="./assets/v0171-help-update.js?v=0183"><\/script>'+
+          '<script src="./assets/v016-help-polish.js?v=0183"><\/script>'+
+          '<script src="./assets/v017-core.js?v=0183"><\/script>'+
+          '<script src="./assets/v017-client-ids.js?v=0183"><\/script>'+
+          '<script src="./assets/v017-manager.js?v=0183"><\/script>'+
+          '<script src="./assets/v017-whatsapp-polish.js?v=0183"><\/script>'+
+          '<script src="./assets/v017-layout.js?v=0183"><\/script>'+
+          '<script src="./assets/v0181-audit.js?v=0183"><\/script>'+
+          '<script src="./assets/v018-turn-summary.js?v=0183"><\/script>'+
+          '<script src="./assets/v018-help.js?v=0183"><\/script>'+
+          '<script src="./assets/v0181-help.js?v=0183"><\/script>'+
+          '<script src="./assets/v0183-final.js?v=0183"><\/script>'+
           '</body>');
         document.open();document.write(html);document.close();
       }catch(err){
         status.className='error';
-        status.textContent='Falha ao carregar o Rota 27 v0.18.2: '+(err&&err.message?err.message:'erro desconhecido')+'. Verifique a conexão e tente novamente.';
+        status.textContent='Falha ao carregar o Rota 27 v0.18.3: '+(err&&err.message?err.message:'erro desconhecido')+'. Verifique a conexão e tente novamente.';
       }
     })();
   </script>
