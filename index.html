@@ -23,6 +23,7 @@
         let html=await res.text();
         html=html.replace(/<title>[\s\S]*?<\/title>/i,'<title>Rota 27 Bodega • Comandas v0.19.0</title>');
         html=html.replace('</head>',
+          '<meta name="rota27-version" content="0.19.0" />'+
           '<link rel="stylesheet" href="./assets/v014.css" />'+
           '<link rel="stylesheet" href="./assets/v014-dev3.css" />'+
           '<link rel="stylesheet" href="./assets/v015.css" />'+
