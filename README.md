@@ -4,12 +4,12 @@ Aplicativo mobile-first, offline-first e multidispositivo para controle rápido 
 
 ## Produção
 
-**Versão: v0.20.0**  
+**Versão: v0.21.0**  
 Branch: `main`  
 GitHub Pages: `https://automatrixhub.github.io/rota27/`  
-Service Worker: `rota27-comandas-v0.20.0`
+Service Worker: `rota27-comandas-v0.21.0`
 
-A v0.20.0 preserva toda a operação validada da v0.19.0 e acrescenta a **Visão Gerencial histórica e comparativa**, construída sobre os snapshots imutáveis do Fechamento do Turno.
+A v0.21.0 preserva a operação, o Fechamento do Turno e a Visão Gerencial das versões anteriores e acrescenta o **Estoque Essencial**, opcional por produto, com saldo real, comprometido em comandas abertas, disponível projetado, movimentos manuais e sincronização multidispositivo.
 
 ## Recursos principais
 
@@ -18,8 +18,27 @@ A v0.20.0 preserva toda a operação validada da v0.19.0 e acrescenta a **Visão
 - lançamento rápido por toque, busca, categorias e Mais lançados;
 - consulta `Ver itens`, correção em `Editar itens`, fechamento com forma de pagamento e cancelamento seguro;
 - proteção contra duplicidade acidental;
-- nome do cliente como informação principal e local/mesa como informação secundária quando houver cliente;
-- cards com identidade visual oficial em laranja, preto e creme.
+- produtos sem controle de estoque continuam operando exatamente como antes.
+
+### Estoque Essencial — v0.21.0
+Acesso em `Painel → Estoque Essencial`.
+
+- controle opcional por produto;
+- estoque inicial e estoque mínimo;
+- `Estoque`, `Comprometido` e `Disponível projetado`;
+- itens em comandas abertas reduzem somente o disponível projetado;
+- baixa definitiva somente no fechamento da comanda;
+- baixa de venda idempotente por `comanda + produto`;
+- movimentos manuais: Entrada, Perda, Consumo interno e Ajuste;
+- bloqueio de movimento manual que deixaria saldo negativo;
+- bloqueio de novo lançamento quando o disponível projetado chega a zero;
+- alertas somente quando há baixo estoque, indisponibilidade ou erro de sincronização;
+- filtro `Atenção` como lista rápida de reposição;
+- histórico de movimentos;
+- exportação CSV;
+- operação offline e sincronização posterior.
+
+A fórmula do saldo é `estoque inicial + soma dos movimentos imutáveis`.
 
 ### Resumo do Turno, Auditoria e Fechamento
 Na tela Histórico:
@@ -31,52 +50,42 @@ Na tela Histórico:
 - produtos mais vendidos;
 - formas de pagamento;
 - cancelamentos do turno;
-- botão **Ver auditoria** com linha do tempo operacional;
-- botão **Fechar turno** com conferência antes do encerramento;
-- bloqueio do fechamento enquanto houver comanda aberta ou cancelamento ainda pendente;
+- `Ver auditoria` com linha do tempo operacional;
+- `Fechar turno` com conferência e bloqueios;
 - snapshot imutável por data;
-- consulta posterior em **Fechamentos**;
+- consulta em `Fechamentos`;
 - bloqueio de nova comanda após o encerramento do dia.
 
-O fechamento funciona localmente offline. Quando a sincronização está configurada, usa uma outbox própria e o evento `turn_closed` para convergir entre aparelhos sem sincronizar filas de WhatsApp.
-
 ### Visão Gerencial
-No `Painel`, o acesso **Visão Gerencial** usa exclusivamente os fechamentos imutáveis da v0.19.0 como fonte de verdade e oferece:
+No `Painel`, a **Visão Gerencial** usa os fechamentos imutáveis como fonte de verdade e oferece:
 - períodos de 7, 30, 90 dias e todo o histórico;
-- faturamento acumulado;
-- média por turno fechado;
-- ticket médio;
-- comandas fechadas, itens vendidos e cancelamentos;
-- comparação com o período anterior equivalente quando existe base suficiente;
-- gráfico de faturamento por turno fechado;
-- melhor dia do período;
-- consolidação de produtos mais vendidos;
-- consolidação de formas de pagamento;
-- exportação CSV dos dados reais do período.
+- faturamento acumulado, média por turno e ticket médio;
+- comandas, itens e cancelamentos;
+- comparação com período anterior equivalente;
+- gráfico por turno fechado e melhor dia;
+- consolidação de produtos e formas de pagamento;
+- exportação CSV dos dados reais.
 
 Dias sem fechamento não são inventados como faturamento zero.
 
-### Modo demonstração da Visão Gerencial
-A v0.20.0 mantém em produção um recurso opcional **Modo demonstração**:
-- começa sempre desligado;
-- é ativado manualmente dentro da Visão Gerencial;
-- gera uma amostra simulada somente em memória para explorar gráficos, comparações e rankings;
+### Modo demonstração
+A Visão Gerencial possui um modo opcional de apresentação e treinamento:
+- desligado por padrão;
+- dados simulados somente em memória;
 - não grava em `localStorage`;
-- não entra em sincronização;
-- não altera comandas, histórico ou fechamentos reais;
-- não altera WhatsApp;
-- a exportação CSV fica bloqueada enquanto o modo demonstração estiver ativo;
-- ao recarregar o app, os dados reais voltam automaticamente.
-
-O modo demonstração é identificado visualmente para evitar confusão com números reais.
+- não sincroniza;
+- não altera comandas, histórico, estoque ou fechamentos reais;
+- não interfere em WhatsApp;
+- exportação CSV bloqueada durante a demonstração;
+- recarregar o app restaura os dados reais.
 
 ### Clientes
 - cadastro manual;
-- criação/captura automática quando uma comanda contém nome + WhatsApp válido;
+- captura automática quando a comanda contém nome + WhatsApp válido;
 - importação TXT/CSV com prévia e validação;
 - exportação CSV;
 - autocomplete de nome/telefone;
-- cadastro sincronizado entre aparelhos.
+- sincronização multidispositivo.
 
 ### WhatsApp
 - envio opcional ao cliente mediante consentimento;
@@ -85,75 +94,64 @@ O modo demonstração é identificado visualmente para evitar confusão com núm
 - outbox local por aparelho com retry e idempotência;
 - configuração sincronizada do WhatsApp do gerente;
 - respostas dos clientes encaminhadas ao gerente pelo template `resposta_cliente_rota27_gerente_v1`;
-- webhook inbound com correlação por `context.id`, idempotência e bloqueio de loop.
+- webhook inbound com correlação, idempotência e bloqueio de loop.
 
 ### Sincronização e offline
 - gravação local-first;
-- sincronização multidispositivo de comandas, histórico, cardápio, categorias, clientes, configuração do gerente e fechamento do turno;
-- `item_delta` para preservar lançamentos concorrentes;
+- sincronização multidispositivo de comandas, histórico, cardápio, categorias, clientes, configuração do gerente, fechamentos de turno e estoque;
+- `item_delta` para lançamentos concorrentes;
+- eventos de estoque `stock_config_upsert` e `stock_movement`;
 - outbox/cursor/log remoto idempotente;
 - operação local continua disponível sem internet;
-- filas de WhatsApp nunca são sincronizadas entre aparelhos;
-- a v0.20.0 não adiciona tabela, migration ou Edge Function nova.
+- filas de WhatsApp nunca são sincronizadas entre aparelhos.
+
+## Estabilidade do Painel
+Durante o primeiro teste da v0.21.0 foi corrigida uma cintilação do card `Visão Gerencial` e um risco de loop de `MutationObserver` na Ajuda. A correção final usa observer restrito aos filhos diretos do Painel, sem polling visual, e observers da Ajuda que se desconectam após concluir a inserção necessária.
 
 ## Tema oficial da marca
-
-### Tema Operação Rota 27
-Tema padrão da aplicação:
-- laranja da marca para ação e destaque;
-- preto para títulos, valores e hierarquia;
-- creme/marfim para fundos e superfícies;
-- verde/amarelo/vermelho reservados para estados funcionais.
-
-### Ajuda v4.4 — Tema Capixaba
-A seção `Ajuda` usa azul, branco e rosa inspirados na identidade capixaba e inclui **Fechamento do turno**, **Visão Gerencial** e **Modo demonstração**, além de operação, clientes, WhatsApp, Resumo do Turno, Auditoria, sincronização, offline, backup/restauração e atualização da PWA.
-
-No celular, a Ajuda usa viewport dinâmico para permanecer integralmente visível e não ficar sobreposta pela barra do navegador.
+- operação: laranja, preto e creme/marfim;
+- verde/amarelo/vermelho reservados a estados funcionais;
+- Ajuda v4.5 preserva o Tema Capixaba em azul, branco e rosa e inclui **Visão Gerencial**, **Modo demonstração** e **Estoque Essencial**.
 
 ## Backend Supabase
-
 Projeto: `owkvwsiblbzlpxjwybrt`
 
-- `rota27-sync`: **versão 3 ACTIVE**, com suporte compatível ao evento `turn_closed`;
-- `rota27-audit`: consulta somente leitura da trilha operacional;
-- `rota27-whatsapp`: envio de templates;
-- `rota27-whatsapp-inbound`: callback público das respostas;
-- `whatsapp_message_log`: auditoria/idempotência outbound;
-- `rota27_whatsapp_inbound`: auditoria/idempotência inbound.
+- `rota27-sync`: **versão 5 ACTIVE** (`rota27-sync-v0.21.0`), com `turn_closed`, `stock_config_upsert` e `stock_movement`;
+- `rota27-audit`: versão 1 ACTIVE, somente leitura;
+- `rota27-whatsapp`: versão 23 ACTIVE (`rota27-whatsapp-v6-mini2`);
+- `rota27-whatsapp-inbound`: versão 1 ACTIVE.
 
-A v0.20.0 não exigiu migration, alteração de Edge Function ou mudança dos contratos do WhatsApp.
+A v0.21.0 não exigiu migration nem tabela nova. O backend de sync foi ampliado apenas no allowlist de eventos, mantendo compatibilidade com os contratos anteriores.
 
 ## Atualização da PWA
-
 Quem já possui o Rota 27 instalado **não precisa reinstalar**:
-1. conectar à internet;
+1. manter internet ativa;
 2. abrir a PWA e aguardar cerca de 10–20 segundos;
 3. fechar completamente;
 4. abrir novamente;
-5. confirmar `v0.20.0` e sincronização saudável.
+5. confirmar `v0.21.0` e sincronização saudável.
 
 Não limpar dados do navegador e não remover a PWA para atualizar.
 
 ## Segurança
-
 - nenhum token/App Secret é versionado;
 - credenciais reais não devem ser gravadas no GitHub;
-- o fluxo de operação continua local-first;
-- o Modo demonstração é somente leitura/em memória e não contamina dados reais;
-- nenhuma migração destrutiva foi necessária para a v0.20.0.
+- o fluxo continua local-first;
+- outbox do WhatsApp permanece local por aparelho;
+- nenhuma migração destrutiva foi necessária para a v0.21.0.
+
+## Próxima versão planejada
+**v0.22.0 — Compras & Reposição**: transformar alertas do Estoque Essencial em uma fila simples de compra/reposição, sem criar um ERP pesado. Ver `docs/PLANEJAMENTO-v0.22.0.md`.
 
 ## Documentos principais
-
-- `docs/RELEASE-v0.20.0.md`
+- `docs/RELEASE-v0.21.0.md`
 - `docs/STATUS-PRODUCAO.md`
-- `docs/TESTE-v0.20.0.md`
-- `docs/ESPEC-v0.20.0.md`
-- `docs/RELEASE-v0.19.0.md`
-- `docs/MARCA-TEMA-v0.18.2.md`
-- `docs/PILOTO-REAL-v0.17.1.md`
+- `docs/TESTE-v0.21.0.md`
+- `docs/ESPEC-v0.21.0.md`
+- `docs/HANDOFF-CONTEXTO-v0.21.0.md`
+- `docs/PROMPT-NOVO-CHAT-v0.21.0.md`
+- `docs/PLANEJAMENTO-v0.22.0.md`
 - `docs/PRODUCT-PRINCIPLES.md`
-- `docs/V0.15-MULTIDEVICE.md`
 
 ## Versão
-
-Produção: **0.20.0**
+Produção: **0.21.0**
