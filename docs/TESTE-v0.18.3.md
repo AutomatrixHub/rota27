@@ -1,51 +1,60 @@
-# Rota 27 v0.18.3 — teste visual da candidata
+# Rota 27 v0.18.3 — validação final
+
+Data: 24/08/2026
+
+## Estado
+
+**VALIDADA — PRONTA PARA PRODUÇÃO**
 
 ## Objetivo
-Validar duas mudanças exclusivamente visuais sobre a candidata anterior:
 
-1. refinamento da faixa colorida dos cards de comandas;
-2. nova identidade capixaba da seção Ajuda.
+Validar o pacote visual final da v0.18.3:
 
-A produção permanece na v0.18.1 até aprovação final.
+1. Tema Operação Rota 27;
+2. refinamento dos cards de comandas;
+3. ordem `Comandas → Cardápio → Painel → Histórico`;
+4. topbar/logo refinados;
+5. Ajuda v4.2 com Tema Capixaba;
+6. comportamento correto no celular.
 
-## Abrir a preview
+## Validação executada
 
-```powershell
-cd "C:\Users\marco\OneDrive\Documentos\Rota27\mvp\Rota27-comandas-git"
-git fetch origin
-git switch feature/v0.18.3-capixaba-help
-git pull --ff-only
-Get-Content .\VERSION
-powershell -ExecutionPolicy Bypass -File ".\scripts\testar-v0183.ps1"
-```
+### Desktop
+- versão `0.18.3` carregada corretamente;
+- sem travamento ou aumento anormal de CPU;
+- cards refinados e aprovados;
+- logo/topbar aprovados;
+- navegação inferior na ordem final;
+- Ajuda Capixaba aprovada.
 
-Esperado:
-- `VERSION` = `0.18.3`;
-- preview em `http://localhost:3021/?preview=v0183`;
-- sem travamento ou aumento anormal de CPU.
+### Celular
+A preview foi servida pela rede local na porta `3021` e validada em aparelho real.
 
-## Gate visual — cards
-- canto superior esquerdo com curva fina, leve e gradual;
-- faixa vertical laranja/preta mais estreita;
-- o traço superior laranja deve afinar até desaparecer, sem bloco pesado;
-- curvatura externa continua coerente com a TOPBAR;
-- textos, valores, botão Abrir e área clicável permanecem intactos.
+Foram conferidos:
+- topbar;
+- logo;
+- cards das comandas;
+- barra inferior;
+- Ajuda Tema Capixaba;
+- fluidez geral;
+- correção da sobreposição inicial da Ajuda com a barra do navegador;
+- abertura da Ajuda no topo do conteúdo usando viewport dinâmico.
 
-## Gate visual — Ajuda Tema Capixaba
-- cabeçalho usa azul, branco e rosa de forma suave;
-- busca e chips permanecem legíveis;
-- atalhos e ícones usam variações azul/rosa/laranja/verde sem excesso;
-- conteúdo longo continua confortável para leitura;
-- alertas funcionais preservam semântica: verde=ok, amarelo=atenção, vermelho=erro;
-- mapa da navegação mostra `Comandas → Cardápio → Painel → Histórico`;
-- rodapé mostra `Ajuda v4.2 • v0.18.3`.
+## Smoke funcional
 
-## Smoke funcional mínimo
-- abrir uma comanda;
-- lançar e remover um item;
+Durante o ciclo da candidata foram preservados e conferidos:
+- abrir comanda;
+- lançar/remover item;
 - voltar à lista;
 - navegar por Comandas, Cardápio, Painel e Histórico;
-- abrir e fechar Ajuda;
-- conferir Resumo do Turno e Auditoria.
+- abrir/fechar Ajuda;
+- Resumo do Turno;
+- Auditoria.
 
-Nenhum fluxo operacional deve mudar nesta versão.
+Nenhuma lógica de total, fechamento, cancelamento, sincronização, WhatsApp ou backend foi alterada por este pacote visual.
+
+## Resultado
+
+Validação final do usuário: **“PERFEITO! Funcionou tudo.”**
+
+A v0.18.3 está autorizada para promoção à `main` e publicação oficial.
