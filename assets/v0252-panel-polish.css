@@ -1,0 +1,212 @@
+/* Rota 27 v0.25.2 R7 — normalização visual dos quatro cards principais */
+
+/*
+ * Visão Gerencial, Estoque Essencial, Compras & Reposição e
+ * Clientes & Fidelização passam a compartilhar a mesma gramática visual:
+ * card, ícone, tipografia, descrição e ação.
+ */
+#screenPanel #v020ManagerEntry,
+#screenPanel #v021StockEntry,
+#screenPanel #v022PurchasesEntry,
+#screenPanel #v0252RelationshipSection{
+  box-sizing:border-box!important;
+  margin:0 0 14px!important;
+  padding:0!important;
+  min-height:112px!important;
+  border:1px solid #dcc9a9!important;
+  border-radius:22px!important;
+  background:#fffaf2!important;
+  box-shadow:0 5px 16px rgba(59,39,24,.045)!important;
+  overflow:hidden!important;
+}
+
+#screenPanel .v020-manager-entry-head,
+#screenPanel .v021-stock-entry-head,
+#screenPanel #v022PurchasesEntry .v022-panel-entry-head,
+#screenPanel #v0252RelationshipSection .v0252-relationship-entry-head{
+  box-sizing:border-box!important;
+  min-height:112px!important;
+  padding:18px 18px!important;
+  display:grid!important;
+  grid-template-columns:50px minmax(0,1fr) 172px!important;
+  gap:14px!important;
+  align-items:center!important;
+  background:transparent!important;
+  border:0!important;
+}
+
+#screenPanel .v020-manager-entry-head > div,
+#screenPanel .v021-stock-entry-head > div,
+#screenPanel #v022PurchasesEntry .v022-panel-entry-head > div,
+#screenPanel #v0252RelationshipSection .v0252-relationship-copy{
+  min-width:0!important;
+  width:auto!important;
+  display:flex!important;
+  flex-direction:column!important;
+  justify-content:center!important;
+  gap:4px!important;
+}
+
+/* Tipografia única para os quatro cards. */
+#screenPanel .v020-manager-entry-head > div > strong,
+#screenPanel .v021-stock-entry-head > div > strong,
+#screenPanel #v022PurchasesEntry .v022-panel-entry-head > div > strong,
+#screenPanel #v0252RelationshipSection .v0252-relationship-copy > strong{
+  margin:0!important;
+  font-size:18px!important;
+  line-height:1.2!important;
+  font-weight:850!important;
+  color:#111!important;
+}
+
+#screenPanel .v020-manager-entry-head > div > small,
+#screenPanel .v021-stock-entry-head > div > small,
+#screenPanel #v022PurchasesEntry .v022-panel-entry-head > div > small,
+#screenPanel #v0252RelationshipSection .v0252-relationship-copy > small{
+  display:block!important;
+  margin:0!important;
+  font-size:14px!important;
+  line-height:1.45!important;
+  font-weight:450!important;
+  color:#735e4d!important;
+}
+
+/* Remove qualquer rastro visual de versão legada no card de Compras. */
+#screenPanel #v022PurchasesEntry .v022-mini-label{
+  display:none!important;
+}
+
+/* Ícones lineares e monocromáticos, estáveis mesmo com innerHTML legado. */
+#screenPanel .v020-manager-entry-head::before,
+#screenPanel .v021-stock-entry-head::before,
+#screenPanel #v022PurchasesEntry .v022-panel-entry-head::before,
+#screenPanel #v0252RelationshipSection .v0252-relationship-entry-head::before{
+  content:"";
+  width:50px;
+  height:50px;
+  box-sizing:border-box;
+  display:block;
+  border-radius:15px;
+  border:1px solid rgba(143,68,33,.08);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.55);
+  background-position:center;
+  background-repeat:no-repeat;
+  background-size:26px 26px;
+}
+
+#screenPanel .v020-manager-entry-head::before{
+  background-color:#f1e4d2;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236f4935' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 19V10M10 19V5M16 19v-7M3 19h18'/%3E%3C/svg%3E");
+}
+
+#screenPanel .v021-stock-entry-head::before{
+  background-color:#edf1df;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23576b3f' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 7.5 12 3l8 4.5v9L12 21l-8-4.5zM4 7.5 12 12l8-4.5M12 12v9'/%3E%3C/svg%3E");
+}
+
+#screenPanel #v022PurchasesEntry .v022-panel-entry-head::before{
+  background-color:#eee5d5;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23775331' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 5h2l2 10h10l2-7H6M9 19a1 1 0 1 0 0 .01M17 19a1 1 0 1 0 0 .01'/%3E%3C/svg%3E");
+}
+
+#screenPanel #v0252RelationshipSection .v0252-relationship-entry-head::before{
+  background-color:#eee8f2;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23664f76' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M16 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2M9.5 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8M17 11a3 3 0 1 0 0-6M21 21v-2a4 4 0 0 0-3-3.87'/%3E%3C/svg%3E");
+}
+
+/* Ações principais com a mesma caixa. Cada módulo preserva sua cor. */
+#screenPanel .v020-manager-open,
+#screenPanel .v021-stock-open,
+#screenPanel #v022PurchasesEntry .v022-panel-entry-head > button,
+#screenPanel #v0252RelationshipSection .v0252-relationship-open{
+  box-sizing:border-box!important;
+  width:172px!important;
+  min-width:172px!important;
+  max-width:172px!important;
+  height:54px!important;
+  min-height:54px!important;
+  padding:0 14px!important;
+  border:0!important;
+  border-radius:14px!important;
+  font-size:13px!important;
+  line-height:1.15!important;
+  font-weight:900!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  text-align:center!important;
+  white-space:normal!important;
+  cursor:pointer!important;
+}
+
+#screenPanel #v0252RelationshipSection .v0252-relationship-open{
+  color:#fff!important;
+  background:#6b5578!important;
+}
+
+#screenPanel #v0252RelationshipSection .v0251-dot{
+  display:inline-block!important;
+  width:8px!important;
+  height:8px!important;
+  margin-right:6px!important;
+  border-radius:50%!important;
+  vertical-align:1px!important;
+}
+
+@media(max-width:760px){
+  #screenPanel #v020ManagerEntry,
+  #screenPanel #v021StockEntry,
+  #screenPanel #v022PurchasesEntry,
+  #screenPanel #v0252RelationshipSection{
+    min-height:0!important;
+  }
+
+  #screenPanel .v020-manager-entry-head,
+  #screenPanel .v021-stock-entry-head,
+  #screenPanel #v022PurchasesEntry .v022-panel-entry-head,
+  #screenPanel #v0252RelationshipSection .v0252-relationship-entry-head{
+    min-height:0!important;
+    padding:16px!important;
+    grid-template-columns:46px minmax(0,1fr)!important;
+    gap:11px!important;
+    align-items:center!important;
+  }
+
+  #screenPanel .v020-manager-entry-head::before,
+  #screenPanel .v021-stock-entry-head::before,
+  #screenPanel #v022PurchasesEntry .v022-panel-entry-head::before,
+  #screenPanel #v0252RelationshipSection .v0252-relationship-entry-head::before{
+    width:46px;
+    height:46px;
+    border-radius:14px;
+    background-size:24px 24px;
+  }
+
+  #screenPanel .v020-manager-entry-head > div > strong,
+  #screenPanel .v021-stock-entry-head > div > strong,
+  #screenPanel #v022PurchasesEntry .v022-panel-entry-head > div > strong,
+  #screenPanel #v0252RelationshipSection .v0252-relationship-copy > strong{
+    font-size:17px!important;
+  }
+
+  #screenPanel .v020-manager-entry-head > div > small,
+  #screenPanel .v021-stock-entry-head > div > small,
+  #screenPanel #v022PurchasesEntry .v022-panel-entry-head > div > small,
+  #screenPanel #v0252RelationshipSection .v0252-relationship-copy > small{
+    font-size:13px!important;
+    line-height:1.4!important;
+  }
+
+  #screenPanel .v020-manager-open,
+  #screenPanel .v021-stock-open,
+  #screenPanel #v022PurchasesEntry .v022-panel-entry-head > button,
+  #screenPanel #v0252RelationshipSection .v0252-relationship-open{
+    grid-column:1/-1!important;
+    width:100%!important;
+    min-width:0!important;
+    max-width:none!important;
+    height:50px!important;
+    min-height:50px!important;
+    margin-top:3px!important;
+  }
+}
