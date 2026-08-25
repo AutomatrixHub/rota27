@@ -3,125 +3,157 @@
 Última revisão: 25/08/2026
 
 ## Produção
-- versão: **v0.24.0 — Custos & Margem**;
+- versão: **v0.25.0 — Clientes & Fidelização**;
 - branch: `main`;
 - GitHub Pages: `https://automatrixhub.github.io/rota27/`;
-- Service Worker: `rota27-comandas-v0.24.0-r2`;
+- Service Worker: `rota27-comandas-v0.25.0-r3`;
 - `rota27-whatsapp`: versão 23 ACTIVE (`rota27-whatsapp-v6-mini2`);
 - `rota27-sync`: **versão 7 ACTIVE** (`rota27-sync-v0.23.0`);
 - `rota27-whatsapp-inbound`: versão 1 ACTIVE;
 - `rota27-audit`: versão 1 ACTIVE, somente leitura.
 
-A v0.24.0 preserva a baseline funcional da v0.23.0 e acrescenta **Custos & Margem** sem transformar o Rota 27 em ERP, fiscal ou contabilidade.
+A v0.25.0 preserva a baseline funcional da v0.24.0 e acrescenta **Clientes & Fidelização** com inteligência derivada dos dados já existentes, sem CRM pesado e sem automação de marketing.
 
-Baseline de rollback: **v0.23.0 — Inventário & Conferência**.
+Baseline de rollback: **v0.24.0 — Custos & Margem**.
 
-## Validação da v0.24.0
-Em 25/08/2026 a candidata foi testada e aprovada em desktop, celular e em dois aparelhos com sincronização A→B.
+## Validação da v0.25.0
+Em 25/08/2026 a candidata foi testada e aprovada localmente e em dois aparelhos com sincronização A→B.
+
+Confirmações do proprietário:
+- `Perfeito. Testado e aprovado.`;
+- `Dados totalmente sincronizados. A -> B passou. Pode publicar. APROVADO.`
 
 Foram validados:
-- badge estável em `v0.24.0`;
-- Central Custos & Margem em desktop e mobile;
-- produto com custo conhecido calculando margem e valor de estoque;
-- produto sem custo mantendo custo, margem e valor como indisponíveis;
-- custo previsto opcional na reposição;
-- custo real no recebimento;
-- frete opcional e rateio proporcional;
-- custo efetivo unitário e total de aquisição;
-- histórico e CSV;
-- edição de pedido em rascunho;
-- alteração de quantidade, custo, fornecedor, produtos e observação;
-- convergência A→B do pedido editado;
-- convergência A→B de custos e histórico;
-- nenhum custo inferido do preço de venda;
-- ausência de regressão P0/P1 observada nos fluxos exercitados.
+- identidade visual v0.25.0;
+- Central `Relacionamento & Fidelização`;
+- Visão geral / Clientes / Para lembrar;
+- níveis Novo / Recorrente / Frequente / Cliente da casa;
+- sinal Sumido;
+- ritmo médio e Leitura do momento;
+- produtos e categorias preferidos;
+- marcos recentes de 5/10 visitas;
+- cadastro frequente sem WhatsApp;
+- perfil e histórico do cliente;
+- WhatsApp contextual apenas manual;
+- modo demonstração seguro `?preview=v0250`;
+- oportunidade R3 `Preferido chegou recentemente`;
+- desktop/mobile;
+- convergência A→B;
+- nenhuma regressão P0/P1 relatada no gate.
 
-O log remoto confirmou payloads de compra com:
-- `unitCostQuoted`;
-- `unitCost`;
-- `lineCost`;
-- `freightCost`;
-- `freightShare`;
-- `effectiveLineCost`;
-- `effectiveUnitCost`;
-- `totalAcquisitionCost`;
-- `costAppVersion = 0.24.0`.
+## Clientes & Fidelização
+Acesso em `Cardápio/Menu → Clientes → Relacionamento & Fidelização`.
 
-Também foi confirmado `purchase_order_upsert` remoto após edição de rascunho, com `editedAppVersion = 0.24.0`.
+Métricas derivadas por cliente:
+- visitas;
+- total identificado;
+- ticket médio;
+- itens;
+- primeira/última visita;
+- ritmo médio entre visitas;
+- produtos/categorias preferidos.
 
-## Custos & Margem
-Acesso por Compras & Reposição ou Estoque Essencial.
+Classificação automática:
+- Novo: 0–1 visita;
+- Recorrente: 2–4 visitas;
+- Frequente: 5–9 visitas;
+- Cliente da casa: 10+ visitas;
+- Sumido: 2+ visitas e 30+ dias sem retorno.
 
-Regra central:
-**sem custo real registrado, o Rota 27 não inventa valor.**
+Não há pontos, cashback, cupom automático, recompensa obrigatória ou configuração de fidelidade pelo atendente.
 
-Fórmulas:
-- margem unitária = preço de venda atual − último custo efetivo real;
-- margem bruta estimada % = margem unitária / preço de venda × 100;
-- valor estimado do estoque = estoque físico × último custo efetivo real.
+## Para lembrar
+Sinais disponíveis:
+- cliente recorrente há 30+ dias sem voltar;
+- marco recente de 5 ou 10 visitas;
+- cliente frequente ainda sem WhatsApp;
+- `Preferido chegou recentemente`.
 
-Os indicadores são gerenciais e não contábeis. Não incluem impostos, taxas de cartão, folha, perdas ou custos indiretos.
+Cada sinal deve ter motivo claro e ação simples. Nenhum deles gera envio automático.
 
-## Compras & Reposição
-Além dos recursos anteriores, a v0.24 acrescenta:
-- custo unitário previsto opcional;
-- subtotal previsto conhecido;
-- custo real no recebimento;
-- frete opcional;
-- custo efetivo;
-- edição de pedidos enquanto estiverem em `draft`.
+## Preferido chegou recentemente
+A oportunidade só aparece quando TODOS os critérios forem verdadeiros:
+1. cliente com 2+ visitas;
+2. WhatsApp cadastrado;
+3. produto é o primeiro preferido calculado;
+4. recebimento positivo nos últimos 7 dias;
+5. Estoque Essencial ativo;
+6. disponibilidade atual maior que zero;
+7. cliente ainda não voltou depois do recebimento.
 
-Pedidos enviados/recebidos/cancelados não entram no editor de rascunho.
+Proteções:
+- estoque zero remove a oportunidade;
+- nova visita após o recebimento remove a oportunidade;
+- produto sem controle de estoque não gera afirmação de disponibilidade;
+- contato sempre manual;
+- nenhum disparo em massa;
+- nenhuma promessa automática de desconto/brinde.
 
-## Estoque Essencial
-Permanece com:
-- controle opcional por produto;
-- estoque inicial e mínimo;
-- saldo por movimentos imutáveis;
-- comprometido e disponível projetado;
-- baixa de venda no fechamento;
-- Entrada, Perda, Consumo interno e Ajuste;
-- integração com Compras, Inventário e Custos & Margem.
+## WhatsApp de relacionamento
+A v0.25 usa `wa.me` apenas para abrir um rascunho contextual por ação do proprietário.
 
-## Inventário & Conferência
-Permanece validado desde a v0.23:
-- snapshot do saldo esperado;
-- contagem rápida;
-- pausar/continuar;
-- proteção contra movimentação durante a conferência;
-- ajustes somente após confirmação;
-- sincronização por `inventory_upsert`.
+O Rota 27 não envia automaticamente mensagens comerciais e não cria campanha em massa.
+
+O WhatsApp transacional existente da operação permanece preservado.
+
+## Modo demonstração seguro
+`?preview=v0250` cria apenas em memória exemplos de:
+- cliente Sumido;
+- marco de 5 visitas;
+- marco de 10 visitas;
+- cliente frequente sem WhatsApp;
+- oportunidade `Preferido chegou recentemente`.
+
+Os dados de preview não são persistidos nem sincronizados, e o WhatsApp real não é aberto para clientes fictícios.
 
 ## Backend e sincronização
-A v0.24 **não exige nova Edge Function, evento, tabela ou migration**.
+A v0.25 **não exige nova Edge Function, evento, tabela ou migration**.
 
-Reutiliza:
-- `purchase_order_upsert`;
-- `purchase_receipt`.
-
-Os campos novos são transportados dentro dos payloads JSON já existentes.
+As informações de fidelização são derivadas de fontes já existentes e sincronizadas:
+- clientes;
+- histórico de comandas;
+- catálogo/itemMeta;
+- recebimentos de Compras & Reposição;
+- estoque.
 
 A Edge Function `rota27-sync` permanece na **versão 7 ACTIVE**, `EDGE_VERSION = rota27-sync-v0.23.0`, `verify_jwt=false`, com autenticação própria por `x-rota27-device-token`.
 
 Permanece aplicada a migration:
 `20260825012842_expand_rota27_sync_event_types_v023`.
 
+## Módulos preservados
+Continuam válidos os fluxos de:
+- Comandas;
+- cadastro de Clientes;
+- WhatsApp transacional/inbound;
+- Fechamento do Turno;
+- Auditoria;
+- Visão Gerencial;
+- Estoque Essencial;
+- Compras & Reposição;
+- Inventário & Conferência;
+- Custos & Margem.
+
+A regra financeira da v0.24 permanece: **custo nunca é inferido do preço de venda**.
+
 ## Estabilidade do Painel
-A solução estabilizada desde a v0.21 continua preservada:
+Preservar:
 - sem polling visual frequente novo;
-- sem novo `MutationObserver` concorrente;
-- evitar qualquer camada que volte a competir pela renderização do Painel.
+- sem `MutationObserver` concorrente;
+- preferir eventos existentes e renderização sob demanda.
 
-A correção do badge da v0.24 também não adiciona polling nem MutationObserver.
+As novas camadas da v0.25 não adicionam `setInterval` nem `MutationObserver`.
 
-## WhatsApp
-Sem mudança funcional na v0.24:
-- templates mini2 preservados;
-- inbound ativo;
-- outbox permanece local por aparelho e nunca é sincronizada.
-
-## Ajuda v4.8
-Inclui Custos & Margem, além de Inventário, Estoque Essencial, Compras & Reposição e demais fluxos existentes.
+## Ajuda v5.1
+Inclui:
+- Clientes & Fidelização;
+- níveis e Sumido;
+- ritmo;
+- preferências;
+- marcos;
+- WhatsApp manual;
+- preview seguro;
+- `Preferido chegou recentemente`.
 
 ## Atualização da PWA
 Não reinstalar e não limpar dados:
@@ -129,20 +161,17 @@ Não reinstalar e não limpar dados:
 2. abrir a PWA por 10–20 segundos;
 3. fechar completamente;
 4. abrir novamente;
-5. confirmar `v0.24.0` e sincronização saudável.
+5. confirmar `v0.25.0` e sincronização saudável.
 
 ## Segurança
 - nenhum token/App Secret versionado;
-- nenhuma migration destrutiva na v0.24;
+- nenhuma migration nova na v0.25;
 - operação local-first preservada;
-- custo não é inferido de preço de venda;
-- outbox do WhatsApp permanece local.
+- nenhum disparo de marketing automático;
+- nenhuma campanha em massa;
+- outbox transacional do WhatsApp permanece local por aparelho.
 
 ## Próxima etapa
-O próximo escopo fica em aberto para ser escolhido pelo uso real da v0.24.
+Gestão avançada de estoque/giro permanece adiada. A próxima evolução deve nascer do uso real da v0.25 e continuar respeitando a regra de simplicidade operacional.
 
-Direções candidatas já aprovadas para avaliação futura:
-- inteligência de giro/reposição;
-- relacionamento/fidelização de clientes.
-
-Ver `docs/RELEASE-v0.24.0.md`.
+Ver `docs/RELEASE-v0.25.0.md`.
