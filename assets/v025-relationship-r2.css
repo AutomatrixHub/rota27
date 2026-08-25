@@ -1,0 +1,15 @@
+/* Rota 27 v0.25.0 — refinamentos Clientes & Fidelização R2 */
+.v025-preview{margin:14px 0;border:1px solid #C99125;background:#FFF3D8;border-radius:14px;padding:11px 12px;display:grid;gap:3px;color:#634B17;font-size:12px;line-height:1.4}
+.v025-preview strong{color:#111;font-size:13px}.v025-preview span{color:#735F32}
+.v025-action-chip{display:inline-flex;border-radius:999px;padding:4px 7px;font-size:9px;font-weight:900;white-space:nowrap;margin-left:4px}
+.v025-action-chip.good{background:#E4EFE7;color:#2F6D43}.v025-action-chip.neutral{background:#EEE7DC;color:#675C4F}
+.v025-section-count{min-width:28px;height:28px;border-radius:999px;background:#F0E2CE;display:grid;place-items:center;font-size:11px;font-weight:900;color:#5F5143}
+.v025-remember-section{margin-bottom:10px}.v025-remember-section:last-child{margin-bottom:0}
+.v025-signal{border:1px solid #D9C7A7;border-radius:16px;padding:12px 14px;margin:0 0 10px;background:#FFF9F0;display:grid;gap:3px}
+.v025-signal>span{font-size:9px;font-weight:900;letter-spacing:.09em;text-transform:uppercase;color:#806F5E}.v025-signal strong{font-size:15px}.v025-signal p{margin:1px 0 0;color:#625548;font-size:12px;line-height:1.45}
+.v025-signal.attention{border-color:#E2AAA3;background:#FFF1EF}.v025-signal.attention>span{color:#9B3E36}
+.v025-signal.good{border-color:#BBD6C3;background:#F2F8F3}.v025-signal.good>span{color:#2F6D43}
+.v025-profile-metrics{grid-template-columns:repeat(5,minmax(0,1fr))}
+@media (max-width:900px){.v025-profile-metrics{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (max-width:760px){.v025-profile-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.v025-preview{margin-top:10px}.v025-remember-section .v025-panel-head{align-items:center}}
+@media (max-width:380px){.v025-profile-metrics{grid-template-columns:1fr 1fr}.v025-section-count{min-width:26px;height:26px}}
