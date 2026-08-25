@@ -1,5 +1,10 @@
 # Rota 27 v0.25.2 — Especificação
 
+## Estado
+**CANDIDATA — NÃO PUBLICADA EM PRODUÇÃO.**
+
+Produção preservada: **v0.25.1 — Navegação & Configurações**.
+
 ## Tema
 **Mapa Rápido de Comandas**.
 
@@ -47,6 +52,30 @@ Cada bloco do Mapa exibe, de forma resumida:
 - tempo desde o último lançamento.
 
 Toque no bloco abre a mesma comanda existente usando o fluxo atual.
+
+### Correção R2 — toque nos cards
+No primeiro gate visual, o Mapa apareceu corretamente, porém foi identificado um defeito P1: tocar nos cards não abria a comanda.
+
+A R2 corrige o comportamento com uma camada de interação mais robusta:
+- cada card recebe listener direto logo após o render do Mapa;
+- o ID tocado é validado contra as comandas abertas atuais;
+- a abertura usa `window.openCommand`, preservando os wrappers operacionais existentes;
+- o handler delegado permanece como fallback;
+- todo o card é área clicável: título, valor, cliente, itens, tempo e área vazia;
+- se a comanda já tiver deixado de existir, o mapa é atualizado e o usuário recebe feedback em vez de falha silenciosa.
+
+## Seletor Lista / Mapa — R2
+O primeiro teste também mostrou que o controle merecia mais destaque visual.
+
+A R2 passa a usar:
+- fundo laranja no modo ativo;
+- texto branco;
+- borda e sombra de seleção;
+- modo inativo mais discreto;
+- foco visível para acessibilidade;
+- efeito de toque curto.
+
+A mudança é somente visual e não altera dados.
 
 ## Abertura rápida
 No topo do Mapa existem atalhos:
@@ -120,6 +149,14 @@ A atualização do Mapa ocorre:
 - ao retornar à tela/visibilidade;
 - em eventos de domínio já disponíveis.
 
+## PWA / cache da candidata
+A R2 usa:
+- `VERSION = 0.25.2`;
+- cache `rota27-comandas-v0.25.2-r2`;
+- assets `v0252-command-map.js/css?v=0252r2`.
+
+O bump força a candidata atualizada a substituir o primeiro gate sem exigir limpeza de dados do navegador.
+
 ## Ajuda
 Ajuda candidata **v5.3** com seção `Mapa rápido de comandas`.
 
@@ -135,12 +172,12 @@ Ajuda candidata **v5.3** com seção `Mapa rápido de comandas`.
 - alteração de backend.
 
 ## Critérios de aceite
-1. seletor Lista/Mapa visível na tela Comandas;
+1. seletor Lista/Mapa visível e com modo ativo claramente destacado;
 2. Lista preservada;
 3. Mapa exibe todas as comandas abertas uma única vez;
 4. Mesa/Balcão/Parklet/Cliente classificados corretamente nos testes;
 5. Outros locais nunca somem;
-6. toque em um card abre a comanda correta;
+6. **um toque em qualquer ponto do card abre a comanda correta**;
 7. atalhos de nova comanda apenas pré-preenchem o formulário atual;
 8. preferência Lista/Mapa persiste no aparelho;
 9. criação/edição/fechamento reflete no Mapa após renderização normal;
