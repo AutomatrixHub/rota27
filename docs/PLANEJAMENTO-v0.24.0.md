@@ -33,6 +33,13 @@ Adicionar visão econômica confiável aos produtos usando **custo real de aquis
 ## Regra de produto
 Não inferir custo a partir do preço de venda. Indicadores financeiros só aparecem quando houver base de custo confiável.
 
+## Gate antes de implementar
+Validar no uso real da v0.23:
+- onde o gerente obtém o custo real;
+- se o custo varia por fornecedor;
+- se frete precisa ser considerado;
+- quais indicadores realmente mudam decisões de compra/preço.
+
 ## Depois da v0.24
 A próxima direção será decidida pelo uso real entre:
 - inteligência de giro/reposição automática; ou
