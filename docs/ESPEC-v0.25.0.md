@@ -14,6 +14,7 @@ A Central deve responder rapidamente:
 - quem está voltando;
 - quem deixou de aparecer;
 - o que cada cliente costuma consumir;
+- qual é o ritmo aproximado de retorno;
 - quem merece atenção agora;
 - qual contexto pode ajudar em um contato pessoal.
 
@@ -22,7 +23,7 @@ A v0.25 deriva as informações de:
 - `state.clients` — cadastro existente;
 - `state.history` — comandas fechadas;
 - `state.catalog` — catálogo atual;
-- `itemMeta` da comanda — nome/preço preservados no histórico quando disponível.
+- `itemMeta` da comanda — nome/preço/categoria preservados no histórico quando disponível.
 
 Não existe banco paralelo de fidelização nesta candidata.
 
@@ -41,7 +42,8 @@ Para cada cliente:
 - itens = soma das quantidades positivas dessas comandas;
 - primeira visita = menor data associada;
 - última visita = maior data associada;
-- dias sem voltar = diferença em dias civis até a última visita.
+- dias sem voltar = diferença em dias civis até a última visita;
+- intervalo médio = média aproximada, em dias, entre visitas identificadas quando houver pelo menos duas.
 
 Clientes cadastrados sem compra identificada permanecem no cadastro, mas não recebem métricas inventadas.
 
@@ -53,6 +55,15 @@ Clientes cadastrados sem compra identificada permanecem no cadastro, mas não re
 - **Sumido:** pelo menos 2 visitas e 30 dias ou mais desde a última visita.
 
 `Sumido` é um sinal adicional; o cliente continua tendo seu nível de recorrência.
+
+## Ritmo de visitas
+Quando houver pelo menos duas visitas associadas, o sistema calcula o intervalo médio e traduz para uma leitura simples:
+- até 7 dias: `Quase semanal`;
+- 8 a 15 dias: `A cada 1–2 semanas`;
+- 16 a 31 dias: `Quase mensal`;
+- acima de 31 dias: `Mais espaçado`.
+
+O ritmo é apenas uma leitura do histórico. Não é previsão garantida nem agenda automática de contato.
 
 ## Preferências
 ### Produto preferido
@@ -78,6 +89,10 @@ Indicadores:
 - Clientes da casa;
 - Para lembrar.
 
+`Para lembrar` soma somente sinais de relacionamento com ação pessoal possível:
+- clientes sumidos;
+- marcos recentes de 5 ou 10 visitas.
+
 Blocos:
 - `Clientes para lembrar`;
 - `Quem mais volta`;
@@ -91,27 +106,56 @@ Blocos:
 - `WhatsApp` quando houver número cadastrado.
 
 ### Para lembrar
-Somente clientes com:
+A tela passa a separar três sinais:
+
+#### 1. Faz tempo que não vem
+Cliente com:
 - pelo menos 2 visitas;
 - 30 ou mais dias sem retorno.
 
-Cada linha deve explicar o motivo, por exemplo:
+Cada linha explica o motivo, por exemplo:
 `42 dias sem voltar • 6 visitas • prefere IPA`.
+
+#### 2. Marcos recentes
+Cliente que acabou de atingir:
+- 5 visitas; ou
+- 10 visitas;
+- e cuja última visita ocorreu há no máximo 14 dias.
+
+O objetivo é permitir reconhecimento simples da frequência. Não há recompensa automática.
+
+#### 3. Cadastro a completar
+Cliente:
+- frequente, com 5 ou mais visitas;
+- ainda sem WhatsApp cadastrado.
+
+Este bloco é conveniência, não alerta crítico. A ação abre o cadastro existente.
 
 ## Perfil do cliente
 Mostrar:
 - nome e WhatsApp;
 - nível + sinal de Sumido quando aplicável;
+- leitura do momento;
 - visitas;
 - total identificado;
 - ticket médio;
 - itens;
+- ritmo/intervalo médio;
 - produtos preferidos;
 - categorias preferidas quando conhecidas;
 - observação do cadastro existente;
 - últimas visitas e resumo de itens.
 
-O botão `Abrir cadastro do cliente` deve reutilizar o editor existente, não criar um segundo cadastro.
+### Leitura do momento
+Prioridade da mensagem exibida no perfil:
+1. cliente Sumido;
+2. marco recente de 5/10 visitas;
+3. ritmo médio quando houver base;
+4. ausência de histórico suficiente.
+
+A leitura explica o dado; não prescreve uma ação obrigatória.
+
+O botão `Abrir cadastro do cliente` reutiliza o editor existente, não cria um segundo cadastro.
 
 ## WhatsApp contextual
 A v0.25 não envia mensagem pelo backend.
@@ -141,6 +185,20 @@ Não existem nesta candidata:
 - carteira/milhas;
 - configuração de regras pelo atendente.
 
+## Modo demonstração seguro
+Para testar cenários raros sem alterar dados reais, a candidata aceita:
+`?preview=v0250`.
+
+Nesse modo:
+- a Central usa clientes e comandas fictícios apenas em memória;
+- existem exemplos de Sumido, marco de 5 visitas, marco de 10 visitas e cliente frequente sem WhatsApp;
+- nenhum dado é salvo em `localStorage`;
+- nada é sincronizado;
+- o cadastro fictício não pode ser editado;
+- tocar em WhatsApp mostra somente a mensagem sugerida e não abre número real.
+
+Sair do parâmetro de preview devolve imediatamente a base real.
+
 ## Offline e multidispositivo
 As métricas são derivadas localmente dos dados existentes. Portanto:
 - funcionam offline com a base disponível no aparelho;
@@ -150,10 +208,10 @@ As métricas são derivadas localmente dos dados existentes. Portanto:
 - não há nova versão de Edge Function.
 
 ## Ajuda
-Ajuda candidata **v4.9**, com seção `Clientes & Fidelização` e explicação de níveis, preferências, clientes sumidos e contato manual.
+Ajuda candidata **v5.0**, com seção `Clientes & Fidelização` e explicação de níveis, ritmo, preferências, clientes sumidos, marcos recentes, contato manual e preview seguro.
 
 ## Estabilidade
-A v0.25 não pode adicionar:
+A v0.25 não adiciona:
 - polling visual frequente;
 - `MutationObserver` concorrente;
 - processo automático de envio de relacionamento.
