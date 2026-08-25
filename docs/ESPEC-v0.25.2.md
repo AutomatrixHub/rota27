@@ -104,6 +104,23 @@ Após cada render legado:
 
 A R4 não adiciona `setInterval` nem novo `MutationObserver`. Usa apenas uma recomposição agendada após a escrita do próprio Painel e, se necessário, um único `requestAnimationFrame` como fallback de ordenação de microtasks.
 
+## Ícones dos cards principais — R5
+Após aprovação da estabilidade da R4, foi solicitado padronizar a linguagem visual do Painel com o card `Clientes & Fidelização`, que já possuía ícone.
+
+A R5 adiciona:
+- `📊` em **Visão Gerencial**;
+- `📦` em **Estoque Essencial**;
+- `🛒` em **Compras & Reposição**.
+
+Regras:
+- cada ícone fica dentro de um bloco arredondado claro à esquerda;
+- texto permanece no centro e o botão de ação à direita em telas largas;
+- em mobile, ícone + texto permanecem na primeira linha e o botão ocupa a largura total abaixo;
+- cores dos botões de ação continuam sendo as originais de cada módulo;
+- nenhum comportamento funcional dos três módulos é alterado.
+
+Como os três cards também podem ser redesenhados pelas camadas legadas, a mesma ponte da R4 recompõe os ícones após cada render do Painel. A R5 não adiciona polling nem `MutationObserver`.
+
 ## Lista
 O modo Lista deve continuar funcionalmente idêntico ao anterior.
 
@@ -113,7 +130,8 @@ Prioridade máxima:
 - sem rolagem horizontal;
 - alvos confortáveis para toque;
 - textos truncados quando necessário;
-- redução perceptível de rolagem em relação à Lista.
+- redução perceptível de rolagem em relação à Lista;
+- cards do Painel sem desalinhamento após a inclusão dos ícones.
 
 ## Persistência
 Chave local da preferência de visualização:
@@ -139,10 +157,10 @@ Não há:
 - estado paralelo de negócio.
 
 ## PWA / cache da candidata
-A R4 usa:
+A R5 usa:
 - `VERSION = 0.25.2`;
-- cache `rota27-comandas-v0.25.2-r4`;
-- assets v0.25.2 carregados com query `0252r4`.
+- cache `rota27-comandas-v0.25.2-r5`;
+- assets v0.25.2 carregados com query `0252r5`.
 
 ## Ajuda
 Ajuda candidata **v5.3** com seção `Mapa rápido de comandas`.
@@ -172,5 +190,8 @@ Ajuda candidata **v5.3** com seção `Mapa rápido de comandas`.
 11. botões principais do Painel padronizados mantendo cores;
 12. Relacionamento imediatamente abaixo de Compras & Reposição;
 13. Relacionamento permanece estável por pelo menos 10 segundos e após sair/voltar ao Painel;
-14. nenhuma regressão P0/P1;
-15. nenhum `setInterval` ou novo `MutationObserver` nas camadas v0.25.2.
+14. os três cards principais exibem ícones coerentes e estáveis;
+15. os ícones não desaparecem após redesenho do Painel;
+16. desktop e mobile preservam alinhamento e leitura;
+17. nenhuma regressão P0/P1;
+18. nenhum `setInterval` ou novo `MutationObserver` nas camadas v0.25.2.
