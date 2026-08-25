@@ -22,7 +22,18 @@ A causa foi confirmada: o Painel legado ainda redesenha `screenPanel` via `inner
 
 A R4 instala uma ponte específica no setter de `innerHTML` de `screenPanel` e recompõe a posição do Relacionamento logo após cada render legado. Não adiciona polling nem novo `MutationObserver`.
 
-Cache da candidata: `rota27-comandas-v0.25.2-r4`.
+### Revisão R5
+Após aprovação da R4, foi solicitado acrescentar ícones aos três cards principais do Painel, seguindo a linguagem visual de `Clientes & Fidelização`.
+
+Esperado:
+- `📊` em Visão Gerencial;
+- `📦` em Estoque Essencial;
+- `🛒` em Compras & Reposição;
+- ícones dentro de blocos arredondados claros;
+- alinhamento consistente em desktop e mobile;
+- ícones permanecem após redesenhos do Painel.
+
+Cache da candidata: `rota27-comandas-v0.25.2-r5`.
 
 ## A — versão e estabilidade
 1. Abrir a candidata.
@@ -104,7 +115,7 @@ Esperado:
 - confirmar cria apenas uma comanda;
 - WhatsApp/opções atuais continuam funcionando.
 
-## H — Painel — gate R3/R4
+## H — Painel — gate R3/R4/R5
 1. Abrir **Painel**.
 2. Confirmar a sequência inicial:
    - `Visão Gerencial`;
@@ -114,6 +125,7 @@ Esperado:
 3. Permanecer no Painel por pelo menos **10 segundos**.
 4. Ir para outra aba e voltar ao Painel.
 5. Minimizar/retomar o navegador e voltar ao Painel.
+6. Conferir os três ícones dos cards principais.
 
 Esperado:
 - `Relacionamento` permanece imediatamente abaixo de `Compras & Reposição`;
@@ -121,7 +133,14 @@ Esperado:
 - `Clientes & Fidelização` abre o fluxo existente;
 - os três botões principais têm dimensões e peso visual equivalentes;
 - cores originais dos três módulos permanecem;
-- todos continuam abrindo seus módulos corretos.
+- todos continuam abrindo seus módulos corretos;
+- Visão Gerencial exibe `📊`;
+- Estoque Essencial exibe `📦`;
+- Compras & Reposição exibe `🛒`;
+- os três ícones ficam em blocos arredondados claros e visualmente coerentes com o card de Clientes & Fidelização;
+- os ícones não desaparecem depois de 3, 6 ou 10 segundos;
+- ao sair e voltar ao Painel, os ícones continuam presentes;
+- em mobile, ícone + texto ficam alinhados e o botão de ação ocupa a largura total abaixo, sem overflow horizontal.
 
 ## I — sincronização A→B
 1. No A, criar/editar uma comanda em uma das zonas.
@@ -151,7 +170,8 @@ Esperado:
 - toque confortável;
 - sem sobreposição com FAB ou navegação inferior;
 - redução perceptível de rolagem em relação à Lista;
-- seletor Lista/Mapa claramente legível.
+- seletor Lista/Mapa claramente legível;
+- cards principais do Painel permanecem alinhados com os novos ícones.
 
 ## L — Ajuda
 Esperado:
@@ -176,6 +196,7 @@ Somente promover após:
 - **gate de toque R2 aprovado**;
 - **gate visual do Painel R3 aprovado**;
 - **gate de estabilidade do Relacionamento R4 aprovado**;
+- **gate visual dos ícones R5 aprovado**;
 - A→B coerente;
 - nenhuma regressão P0/P1;
 - autorização explícita para publicação.
