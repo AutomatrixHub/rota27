@@ -6,197 +6,96 @@
 Produção preservada: **v0.25.1 — Navegação & Configurações**.
 
 ### Revisão R2
-Após o primeiro teste visual, o Mapa foi aprovado em conceito, mas foi encontrada uma regressão P1: **tocar nos cards das comandas no Mapa não abria a comanda**.
-
-A R2 corrige esse ponto com binding direto em cada card, usando `window.openCommand` já consolidado pelas camadas operacionais. Também aumenta o contraste visual do seletor `Lista / Mapa`.
+Mapa aprovado em conceito; correção do toque nos cards e destaque de `Lista / Mapa`.
 
 ### Revisão R3
-Após revisão visual do Painel foram solicitados dois refinamentos:
-- padronizar tamanho e peso dos botões `Abrir visão gerencial`, `Abrir estoque` e ação de `Compras & Reposição`, preservando a cor de cada módulo;
-- posicionar `Relacionamento` imediatamente abaixo de `Compras & Reposição`.
+Padronização dos três botões principais do Painel e posicionamento de `Relacionamento` logo abaixo de `Compras & Reposição`.
 
 ### Revisão R4
-No reteste da R3, o bloco `Relacionamento — Clientes & Fidelização` aparecia e desaparecia logo depois.
+Correção do desaparecimento de `Relacionamento` após redesenhos legados do Painel.
 
-A causa foi confirmada: o Painel legado ainda redesenha `screenPanel` via `innerHTML`, removendo elementos adicionados posteriormente.
+### Revisão R6
+A R5 usava emojis inseridos por JavaScript. No reteste, os módulos legados removiam esses elementos e deixavam a grade CSS reservando a coluna vazia, espremendo os textos.
 
-A R4 instala uma ponte específica no setter de `innerHTML` de `screenPanel` e recompõe a posição do Relacionamento logo após cada render legado. Não adiciona polling nem novo `MutationObserver`.
-
-### Revisão R5
-Após aprovação da R4, foi solicitado acrescentar ícones aos três cards principais do Painel, seguindo a linguagem visual de `Clientes & Fidelização`.
-
-Esperado:
-- `📊` em Visão Gerencial;
-- `📦` em Estoque Essencial;
-- `🛒` em Compras & Reposição;
-- ícones dentro de blocos arredondados claros;
-- alinhamento consistente em desktop e mobile;
-- ícones permanecem após redesenhos do Painel.
-
-Cache da candidata: `rota27-comandas-v0.25.2-r5`.
+A R6:
+- remove os emojis e a reinjeção de ícones via JavaScript;
+- usa ícones lineares monocromáticos por CSS `::before`;
+- gráfico para Visão Gerencial;
+- caixa para Estoque Essencial;
+- carrinho para Compras & Reposição;
+- mantém a ponte R4 apenas para a posição de Relacionamento;
+- usa cache `rota27-comandas-v0.25.2-r6`.
 
 ## A — versão e estabilidade
 1. Abrir a candidata.
 2. Confirmar badge `v0.25.2` estável por pelo menos 15 segundos.
 3. Navegar entre Comandas, Cardápio, Painel e Histórico.
 
-Esperado:
-- sem cintilação/travamento;
-- nenhuma rolagem horizontal;
-- nenhuma perda de módulo anterior.
+Esperado: sem cintilação/travamento, rolagem horizontal ou perda de módulo.
 
 ## B — Lista preservada
-Na tela **Comandas**, manter o modo `Lista`.
-
-Esperado:
-- cards atuais continuam iguais;
-- valor, itens, tempo e ação de abrir funcionam;
-- estado vazio original continua correto;
-- abrir uma comanda leva à tela de lançamento existente.
+No modo Lista, cards, valores, itens, tempo e abertura de comanda continuam iguais.
 
 ## C — alternância Lista / Mapa
-1. Tocar em `Mapa`.
-2. Voltar para `Lista`.
-3. Voltar para `Mapa`.
-4. Fechar/reabrir a candidata.
-
-Esperado:
-- troca instantânea;
-- modo ativo com fundo laranja e texto branco, claramente diferente do inativo;
-- nenhum dado muda;
-- a preferência escolhida permanece neste aparelho;
-- não há duplicação de comandas.
+Alternar várias vezes, fechar/reabrir e confirmar modo ativo laranja, persistência local e nenhuma duplicação.
 
 ## D — classificação do Mapa
-Criar ou usar comandas de teste com exemplos:
-- `Mesa 1`;
-- `Mesa 3` + cliente;
-- `Balcão` + cliente;
-- `Parklet 1`;
-- somente nome do cliente, sem mesa/local;
-- um local diferente, ex.: `Área externa`.
+Testar Mesa, Balcão, Parklet, cliente sem local e outro local. Cada comanda deve aparecer uma única vez na zona correta.
 
-Esperado:
-- Mesa 1 e Mesa 3 em `Mesas`, ordenadas numericamente;
-- Balcão em `Balcão`;
-- Parklet 1 em `Parklet`;
-- cliente sem local em `Clientes`;
-- Área externa em `Outros locais`;
-- cada comanda aparece uma única vez.
+## E — abrir pelo Mapa
+Tocar em título, valor, nome, linha de itens/tempo e área vazia do card.
 
-## E — card compacto
-Para cada comanda, conferir identificação, valor, cliente/local, itens, tempo de abertura e último lançamento.
+Esperado: um único toque abre a comanda correta em todos os pontos.
 
-Esperado:
-- informação suficiente para reconhecer a comanda sem ocupar a altura do card completo da Lista;
-- textos longos não quebram a grade.
-
-## F — abrir pelo Mapa — gate crítico R2
-Tocar em pontos diferentes do mesmo card:
-- identificação da mesa/local;
-- valor;
-- nome do cliente;
-- linha de itens/tempo;
-- área vazia do card.
-
-Esperado:
-- **um único toque abre exatamente a comanda tocada**;
-- lançamentos existentes permanecem;
-- incluir/remover item funciona normalmente;
-- ao voltar às Comandas, o Mapa reflete os valores atualizados;
-- nenhum toque no card fica sem resposta.
-
-## G — abertura rápida
+## F — abertura rápida
 Testar `+ Mesa`, `+ Balcão`, `+ Parklet` e `+ Cliente`.
 
-Esperado:
-- todos reutilizam a mesma tela `Nova comanda`;
-- cancelar não cria nada;
-- confirmar cria apenas uma comanda;
-- WhatsApp/opções atuais continuam funcionando.
+Esperado: reutilizam `Nova comanda`, sem criar antes da confirmação.
 
-## H — Painel — gate R3/R4/R5
+## G — Painel — gate R3/R4/R6
 1. Abrir **Painel**.
-2. Confirmar a sequência inicial:
-   - `Visão Gerencial`;
-   - `Estoque Essencial`;
-   - `Compras & Reposição`;
-   - `Relacionamento`.
-3. Permanecer no Painel por pelo menos **10 segundos**.
-4. Ir para outra aba e voltar ao Painel.
-5. Minimizar/retomar o navegador e voltar ao Painel.
-6. Conferir os três ícones dos cards principais.
+2. Confirmar sequência:
+   - Visão Gerencial;
+   - Estoque Essencial;
+   - Compras & Reposição;
+   - Relacionamento.
+3. Confirmar os três ícones lineares:
+   - gráfico;
+   - caixa;
+   - carrinho.
+4. Aguardar pelo menos **15 segundos**.
+5. Ir para outra aba e voltar.
+6. Minimizar/retomar o navegador.
+7. Provocar atualização de Estoque/Compras e voltar ao Painel.
 
 Esperado:
-- `Relacionamento` permanece imediatamente abaixo de `Compras & Reposição`;
-- não desaparece, não pisca e não muda de posição;
-- `Clientes & Fidelização` abre o fluxo existente;
-- os três botões principais têm dimensões e peso visual equivalentes;
-- cores originais dos três módulos permanecem;
-- todos continuam abrindo seus módulos corretos;
-- Visão Gerencial exibe `📊`;
-- Estoque Essencial exibe `📦`;
-- Compras & Reposição exibe `🛒`;
-- os três ícones ficam em blocos arredondados claros e visualmente coerentes com o card de Clientes & Fidelização;
-- os ícones não desaparecem depois de 3, 6 ou 10 segundos;
-- ao sair e voltar ao Painel, os ícones continuam presentes;
-- em mobile, ícone + texto ficam alinhados e o botão de ação ocupa a largura total abaixo, sem overflow horizontal.
+- Relacionamento permanece no lugar;
+- os três ícones não somem;
+- nenhum texto fica comprimido em coluna estreita;
+- os três botões mantêm mesma dimensão/peso e suas cores originais;
+- todos continuam abrindo os módulos corretos;
+- sem overflow horizontal em desktop/mobile.
 
-## I — sincronização A→B
-1. No A, criar/editar uma comanda em uma das zonas.
-2. Sincronizar A.
-3. Sincronizar B.
-4. Abrir o Mapa no B.
+## H — sincronização A→B
+Criar/editar comanda no A, sincronizar A e B, abrir Mapa no B e confirmar zona/valor/itens/cliente/local convergentes.
 
-Esperado:
-- a mesma comanda aparece na mesma zona;
-- valor/itens/cliente/local convergem;
-- Lista e Mapa enxergam o mesmo conjunto de `state.commands`;
-- preferência Lista/Mapa pode ser diferente entre A e B, pois é local de interface.
+## I — fechamento
+Abrir pelo Mapa, fechar, voltar e confirmar remoção do Mapa/Lista e inclusão correta no Histórico.
 
-## J — fechamento
-Abrir uma comanda pelo Mapa, fechar normalmente e voltar para Comandas.
+## J — mobile
+Validar toque confortável, grade compacta, seletor Lista/Mapa, cards do Painel sem texto esmagado e botões sem overflow.
 
-Esperado:
-- comanda desaparece do Mapa e da Lista;
-- Histórico recebe o fechamento normalmente;
-- nenhuma comanda fantasma permanece.
+## K — Ajuda
+Rodapé `Ajuda v5.3 • Rota 27 v0.25.2` e seção `Mapa rápido de comandas`.
 
-## K — mobile
-Validar em celular real.
-
-Esperado:
-- grade compacta sem scroll horizontal;
-- toque confortável;
-- sem sobreposição com FAB ou navegação inferior;
-- redução perceptível de rolagem em relação à Lista;
-- seletor Lista/Mapa claramente legível;
-- cards principais do Painel permanecem alinhados com os novos ícones.
-
-## L — Ajuda
-Esperado:
-- rodapé `Ajuda v5.3 • Rota 27 v0.25.2`;
-- seção `Mapa rápido de comandas`;
-- explicação de Lista/Mapa e abertura rápida.
-
-## M — regressão P0/P1
-Confirmar rapidamente:
-- abrir/editar/fechar/cancelar comanda;
-- lançar e editar itens;
-- sincronizar;
-- WhatsApp transacional;
-- Cardápio;
-- Painel;
-- Histórico;
-- Clientes & Fidelização.
+## L — regressão P0/P1
+Confirmar abrir/editar/fechar/cancelar comanda, lançar itens, sync, WhatsApp, Cardápio, Painel, Histórico e Clientes & Fidelização.
 
 ## Gate
 Somente promover após:
 - teste local desktop/mobile aprovado;
-- **gate de toque R2 aprovado**;
-- **gate visual do Painel R3 aprovado**;
-- **gate de estabilidade do Relacionamento R4 aprovado**;
-- **gate visual dos ícones R5 aprovado**;
+- toque do Mapa aprovado;
+- Painel R3/R4/R6 aprovado;
 - A→B coerente;
 - nenhuma regressão P0/P1;
 - autorização explícita para publicação.
