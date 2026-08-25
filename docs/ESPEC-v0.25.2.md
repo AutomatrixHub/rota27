@@ -1,122 +1,123 @@
 # Rota 27 v0.25.2 — Especificação
 
 ## Estado
-**CANDIDATA — NÃO PUBLICADA EM PRODUÇÃO.**
+**RELEASE CANDIDATE — PUBLICAÇÃO AUTORIZADA EM 25/08/2026.**
 
-Produção preservada: **v0.25.1 — Navegação & Configurações**.
+Baseline anterior: **v0.25.1 — Navegação & Configurações**.
 
 ## Tema
-**Mapa Rápido de Comandas + refinamentos operacionais do Painel**.
+**Mapa Rápido de Comandas + refinamentos operacionais e normalização visual do Painel**.
 
 ## Objetivo
-Reduzir tempo e rolagem para localizar e abrir uma comanda já existente, principalmente no celular, sem alterar a estrutura de dados, regras de negócio, sincronização ou tela de lançamento. A candidata também consolida pequenos refinamentos de UX observados no uso real do Painel.
+Reduzir tempo e rolagem para localizar e abrir comandas, principalmente no celular, sem alterar estrutura de dados, regras de negócio, sincronização ou backend. A release também consolida refinamentos de UX observados no uso real do Painel.
 
 Classificação de produto: **P1 — velocidade operacional**.
 
-## Regra central
-A v0.25.2 não substitui a lista atual. A tela `Comandas` passa a ter dois modos:
-- **Lista** — visualização já conhecida;
-- **Mapa** — visualização compacta/esquemática das mesmas comandas abertas.
+## Mapa Rápido de Comandas
+A tela `Comandas` passa a ter dois modos:
+- **Lista** — visualização já existente;
+- **Mapa** — visualização compacta das mesmas comandas abertas.
 
-A preferência `Lista/Mapa` é local ao aparelho e não precisa sincronizar.
-
-## Mapa
-As comandas abertas são organizadas automaticamente pelas informações já existentes em `table` e `customer`.
+A preferência `Lista/Mapa` é local ao aparelho (`rota27_command_view_v0252`) e não sincroniza.
 
 ### Zonas
-1. **Mesas** — locais iniciados por `Mesa` ou abreviações reconhecíveis; ordenação numérica quando houver número.
-2. **Balcão** — `Balcão`/`Balcao` e equivalentes simples.
-3. **Parklet** — locais iniciados por `Parklet` ou abreviações reconhecíveis; ordenação numérica quando houver número.
-4. **Clientes** — comandas sem mesa/local e identificadas apenas pelo cliente.
-5. **Outros locais** — qualquer localização válida que não se encaixe nas zonas anteriores.
+- Mesas;
+- Balcão;
+- Parklet;
+- Clientes sem local;
+- Outros locais.
 
-Nenhuma comanda aberta pode desaparecer por não se encaixar em uma categoria.
+Nenhuma comanda aberta é descartada por classificação.
 
-## Card compacto
-Cada bloco do Mapa exibe identificação curta, valor, cliente/local complementar, quantidade de itens, tempo desde a abertura e último lançamento. Toque no bloco abre a mesma comanda existente usando o fluxo atual.
+### Card compacto
+Exibe identificação curta, valor, cliente/local, quantidade de itens, tempo desde abertura e último lançamento. Um toque em qualquer ponto do card abre a comanda existente.
 
-### Correção R2 — toque nos cards
-A R2 corrige a abertura dos cards do Mapa com listener direto, validação do ID atual e abertura por `window.openCommand`. Todo o card é área clicável.
+### Abertura rápida
+Atalhos `+ Mesa`, `+ Balcão`, `+ Parklet` e `+ Cliente` reutilizam a tela `Nova comanda` e apenas pré-preenchem o contexto.
 
-## Seletor Lista / Mapa — R2
-O modo ativo usa fundo laranja, texto branco, borda/sombra de seleção, foco visível e modo inativo discreto.
+## R2 — interação
+- correção do toque nos cards do Mapa;
+- todo o card virou área clicável;
+- seletor `Lista / Mapa` recebeu destaque claro do modo ativo.
 
-## Abertura rápida
-No topo do Mapa existem atalhos `+ Mesa`, `+ Balcão`, `+ Parklet` e `+ Cliente`. Eles reutilizam a tela existente `Nova comanda` e apenas pré-preenchem o contexto.
+## R3 — Painel
+- botões de Visão Gerencial, Estoque e Compras padronizados em dimensão/peso;
+- cores funcionais preservadas;
+- `Relacionamento` movido para logo após `Compras & Reposição`.
 
-## Painel — R3
-### Padronização dos botões principais
-`Abrir visão gerencial`, `Abrir estoque` / estado equivalente e a ação de `Compras & Reposição` compartilham largura, altura, tipografia, peso e alinhamento visual. As cores de cada módulo são preservadas.
+## R4 — estabilidade do Relacionamento
+O Painel legado ainda reescreve `screenPanel` via `innerHTML`. A R4 instalou uma ponte específica no setter desse elemento para recolocar `Relacionamento` após o render, sem novo polling e sem novo `MutationObserver`.
 
-### Ordem do Relacionamento
-**Relacionamento — Clientes & Fidelização** fica imediatamente após **Compras & Reposição**.
+## R6 — ícones estáveis
+A tentativa anterior com emojis inseridos por JavaScript foi descartada. Os três cards principais passaram a usar ícones lineares monocromáticos via CSS `::before`, que sobrevivem aos renders internos dos módulos legados:
+- gráfico — Visão Gerencial;
+- caixa — Estoque Essencial;
+- carrinho — Compras & Reposição.
 
-## Estabilidade do Relacionamento — R4
-O Painel legado redesenha `screenPanel` por `innerHTML`. A R4 instala uma ponte específica no setter `innerHTML` de `screenPanel` para recolocar Relacionamento imediatamente depois de Compras & Reposição após cada render, sem novo polling ou novo `MutationObserver`.
+## R7 — normalização final dos quatro cards
+Os quatro acessos principais do topo do Painel passam a compartilhar a mesma gramática visual:
+1. Visão Gerencial;
+2. Estoque Essencial;
+3. Compras & Reposição;
+4. Clientes & Fidelização.
 
-## Ícones dos cards principais — R6
-A R5 tentou usar elementos de ícone inseridos por JavaScript. No reteste, esses elementos eram removidos pelos `innerHTML` internos dos módulos legados; a grade permanecia reservando a coluna e espremia os textos.
+Padronização:
+- mesma moldura, raio, fundo e sombra;
+- mesma altura mínima e padding;
+- ícones lineares de 50 px em desktop e 46 px no mobile;
+- mesma tipografia de título e descrição;
+- mesma caixa para o botão de ação;
+- mobile com `ícone + texto` e ação em largura total abaixo;
+- Clientes & Fidelização deixa de usar o card/emoji legado e entra no mesmo padrão visual dos demais;
+- o badge visual `v0.22.0` de Compras & Reposição é ocultado definitivamente pela camada final.
 
-A R6 substitui completamente essa abordagem:
-- nenhum ícone é inserido por JavaScript;
-- os três ícones são pseudo-elementos CSS `::before` do cabeçalho de cada card;
-- os desenhos usam SVG linear monocromático embutido no CSS, sem emoji;
-- **Visão Gerencial** usa gráfico de barras;
-- **Estoque Essencial** usa caixa/volume;
-- **Compras & Reposição** usa carrinho;
-- os ícones sobrevivem aos `innerHTML` internos dos módulos legados;
-- desktop usa `ícone + texto + ação`;
-- mobile usa `ícone + texto` e ação em largura total abaixo;
-- cores dos botões continuam sendo definidas pelos próprios módulos.
-
-A ponte da R4 continua existindo somente para a posição de Relacionamento. A R6 não adiciona polling nem `MutationObserver`.
-
-## Lista
-O modo Lista continua funcionalmente idêntico ao anterior.
+A ação de Clientes continua reutilizando o fluxo existente por `data-v0251-action="clients"`; não existe segundo cadastro.
 
 ## Mobile
-Prioridade máxima:
-- grade compacta;
-- sem rolagem horizontal;
-- alvos confortáveis para toque;
+Prioridades:
+- sem overflow horizontal;
+- toque confortável;
 - textos sem esmagamento;
-- redução perceptível de rolagem em relação à Lista;
-- cards do Painel estáveis após atualizações internas.
+- redução perceptível de rolagem;
+- quatro cards principais visualmente equivalentes.
 
-## Persistência
-Chave local da preferência: `rota27_command_view_v0252` (`list` ou `map`). É apenas de interface e não integra sync.
+## Sincronização / backend
+Nenhuma alteração de backend.
 
-## Sincronização
-Nenhuma alteração de backend. A v0.25.2 consome `state.commands`, que já converge pelo mecanismo existente.
+A v0.25.2 consome `state.commands` e os domínios já sincronizados. Não há:
+- evento novo;
+- tabela;
+- migration;
+- Edge Function;
+- estado paralelo de negócio.
 
-Não há evento novo, tabela, migration, Edge Function, duplicação de comanda ou estado paralelo de negócio.
+`rota27-sync` permanece versão 7 ACTIVE (`rota27-sync-v0.23.0`).
 
-## PWA / cache da candidata
-A R6 usa:
+## PWA
 - `VERSION = 0.25.2`;
-- cache `rota27-comandas-v0.25.2-r6`;
-- assets v0.25.2 carregados com query `0252r6`.
+- cache final: `rota27-comandas-v0.25.2-r7`;
+- assets v0.25.2 carregados com query `0252r7`.
 
 ## Ajuda
-Ajuda candidata **v5.3** com seção `Mapa rápido de comandas`.
+Ajuda v5.3 com seção `Mapa rápido de comandas`.
+
+## Estabilidade
+As camadas v0.25.2 não adicionam `setInterval` nem novo `MutationObserver`. A ponte do Painel é específica ao setter `innerHTML` de `screenPanel` e só recompõe o quarto card após renders legados.
 
 ## Fora de escopo
-Mapa físico personalizável, drag-and-drop, quantidade configurável de mesas, planta baixa, heatmap, automação de fechamento, status artificiais e alteração de backend.
+Mapa físico personalizável, drag-and-drop, planta baixa, heatmap, automação de fechamento, status artificiais e alteração de backend.
 
 ## Critérios de aceite
-1. seletor Lista/Mapa com modo ativo claramente destacado;
-2. Lista preservada;
-3. Mapa exibe todas as comandas abertas uma única vez;
-4. zonas classificadas corretamente;
-5. um toque em qualquer ponto do card abre a comanda correta;
-6. atalhos de nova comanda apenas pré-preenchem o formulário atual;
-7. preferência Lista/Mapa persiste no aparelho;
-8. criação/edição/fechamento reflete no Mapa;
-9. mobile sem overflow horizontal;
-10. botões principais do Painel padronizados mantendo cores;
-11. Relacionamento imediatamente abaixo de Compras & Reposição e estável;
-12. três ícones lineares coerentes e permanentes;
-13. nenhum texto fica espremido após atualização dos cards;
-14. desktop e mobile preservam alinhamento e leitura;
-15. nenhuma regressão P0/P1;
-16. nenhum `setInterval` ou novo `MutationObserver` nas camadas v0.25.2.
+1. Lista preservada;
+2. Mapa mostra todas as comandas abertas uma única vez;
+3. zonas corretas;
+4. um toque abre a comanda certa;
+5. Lista/Mapa alternam e persistem localmente;
+6. atalhos rápidos não criam nada antes da confirmação;
+7. quatro cards principais do Painel seguem o mesmo padrão;
+8. `v0.22.0` não aparece no card de Compras;
+9. ícones lineares permanecem estáveis;
+10. Relacionamento permanece logo após Compras;
+11. mobile sem overflow/texto esmagado;
+12. nenhuma regressão P0/P1;
+13. nenhuma alteração de backend.
