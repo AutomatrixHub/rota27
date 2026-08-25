@@ -1,0 +1,91 @@
+/* Rota 27 v0.24.0 — Custos & Margem */
+.v024-sheet{width:min(1180px,calc(100vw - 28px));max-width:1180px;max-height:94vh;overflow:auto;padding:24px 24px 28px;background:#fffaf2}
+.v024-head{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;margin-bottom:14px}
+.v024-head h3{margin:4px 0 4px;font-size:28px;line-height:1.1}
+.v024-head .desc{margin:0;color:#756656}
+.v024-kicker{display:inline-flex;background:#111;color:#fff;border-radius:999px;padding:4px 8px;font-size:11px;font-weight:900}
+.v024-x{border:0;background:#111;color:#fff;width:42px;height:42px;border-radius:14px;font-size:25px;line-height:1;flex:0 0 auto}
+.v024-notice{border:1px solid #e0caa7;background:#f8eddd;color:#5f5143;border-radius:14px;padding:10px 12px;margin:8px 0 14px;font-size:13px}
+.v024-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.v024-tabs button{border:1px solid #d9c7a7;background:#fffaf2;color:#111;border-radius:12px;padding:10px 14px;font-weight:800}
+.v024-tabs button.active{background:#111;color:#fff;border-color:#111}
+.v024-toolbar{display:flex;gap:10px;margin-bottom:12px}
+.v024-toolbar input{flex:1;min-width:0;border:1px solid #d9c7a7;border-radius:12px;background:#fff;padding:11px 12px;font-size:15px}
+.v024-toolbar button{border:1px solid #d9c7a7;background:#fffaf2;border-radius:12px;padding:10px 14px;font-weight:800}
+.v024-metrics{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;margin-bottom:12px}
+.v024-metric{border:1px solid #dfccb0;background:#fffaf2;border-radius:16px;padding:13px;min-width:0}
+.v024-metric small{display:block;color:#756656;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.02em}
+.v024-metric strong{display:block;font-size:24px;line-height:1.15;margin-top:6px;word-break:break-word}
+.v024-metric span{display:block;color:#756656;font-size:12px;margin-top:5px}
+.v024-metric.warn{border-color:#ca8a1b}.v024-metric.danger{border-color:#b5483c}
+.v024-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.v024-card{border:1px solid #dfccb0;background:#fffaf2;border-radius:18px;padding:14px;min-width:0}
+.v024-card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:10px}
+.v024-card-head small{font-size:10px;letter-spacing:.08em;font-weight:900;color:#806f5e}
+.v024-card-head h4{margin:3px 0 0;font-size:17px}
+.v024-card-head button{border:1px solid #d9c7a7;background:#fff;border-radius:10px;padding:7px 10px;font-weight:800;font-size:12px}
+.v024-list-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;border-top:1px solid #eadcc8}
+.v024-list-row:first-of-type{border-top:0}
+.v024-list-row>div:first-child{min-width:0}
+.v024-list-row strong{display:block;font-size:14px}
+.v024-list-row small{display:block;color:#756656;font-size:11px;margin-top:2px}
+.v024-list-row>div:last-child,.v024-list-row>b{text-align:right;flex:0 0 auto}
+.v024-list-row .pos,.v024-product-facts .pos{color:#2f7d4a}.v024-list-row .neg,.v024-product-facts .neg{color:#b5483c}.v024-list-row .warn{color:#9a6a15}
+.v024-empty{color:#756656;font-size:13px;padding:14px 2px}.v024-empty.good{color:#2f7d4a}
+.v024-disclaimer{margin-top:12px;border:1px dashed #d9c7a7;border-radius:14px;padding:10px 12px;color:#756656;font-size:12px;line-height:1.4}
+.v024-product-list,.v024-history-list{display:grid;gap:10px}
+.v024-product-card,.v024-history-row{border:1px solid #dfccb0;background:#fffaf2;border-radius:16px;padding:13px}
+.v024-product-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.v024-product-top strong{display:block;font-size:16px}.v024-product-top small{display:block;color:#756656;margin-top:3px}
+.v024-product-top span{border-radius:999px;padding:4px 8px;font-size:10px;font-weight:900;white-space:nowrap}
+.v024-product-top .ok{background:#e5f2e9;color:#2f7d4a}.v024-product-top .muted{background:#eee7dc;color:#756656}
+.v024-product-facts{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:7px;margin-top:10px}
+.v024-product-facts span,.v024-history-facts span{background:#f4eadb;border-radius:11px;padding:8px;min-width:0}
+.v024-product-facts small,.v024-history-facts small{display:block;color:#756656;font-size:10px}
+.v024-product-facts b,.v024-history-facts b{display:block;margin-top:3px;font-size:14px}
+.v024-product-source{margin-top:9px;color:#756656;font-size:11px;line-height:1.35}
+.v024-history-row{display:grid;grid-template-columns:minmax(200px,1fr) minmax(420px,1.4fr);gap:12px;align-items:center}
+.v024-history-row>div:first-child strong{display:block}.v024-history-row>div:first-child small{display:block;color:#756656;margin-top:3px}
+.v024-history-facts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.v024-restock-cost{display:flex;flex-direction:column;gap:4px;min-width:145px}
+.v024-restock-cost small,.v024-receive-cost small{font-size:10px;color:#756656;font-weight:800}
+.v024-restock-cost input,.v024-receive-cost input,.v024-freight-label input{border:1px solid #d9c7a7;border-radius:10px;background:#fff;padding:9px 10px;font-size:15px;min-width:0}
+.v024-restock-cost>span,.v024-receive-cost>span{font-size:11px;font-weight:800;color:#756656}
+.v024-receive-cost{display:flex;flex-direction:column;gap:4px;min-width:145px}
+.v024-freight-label{display:block;margin:12px 0}
+.v024-freight-label>span{display:flex;gap:6px;align-items:baseline;font-weight:800;margin-bottom:6px}
+.v024-freight-label>span small{font-weight:500;color:#756656}
+.v024-receipt-total{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin-top:8px}
+.v024-receipt-total span{background:#f4eadb;border-radius:10px;padding:8px}
+.v024-receipt-total small{display:block;color:#756656;font-size:10px}.v024-receipt-total b{display:block;margin-top:3px;font-size:13px}
+.v024-order-costs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin:8px 0}
+.v024-order-costs span{background:#f4eadb;border-radius:10px;padding:8px}.v024-order-costs small{display:block;color:#756656;font-size:10px}.v024-order-costs b{display:block;margin-top:3px;font-size:13px}
+#v024PurchasesCostBtn span,#v024StockCostBtn span{font-weight:900}
+@media (max-width:980px){
+  .v024-metrics{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .v024-grid{grid-template-columns:1fr}
+  .v024-history-row{grid-template-columns:1fr}
+}
+@media (max-width:760px){
+  .v024-sheet{width:100vw;max-width:none;height:100dvh;max-height:100dvh;border-radius:0;padding:18px 14px 22px}
+  .v024-head h3{font-size:25px}
+  .v024-x{width:40px;height:40px}
+  .v024-tabs{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
+  .v024-tabs button{padding:9px 7px;font-size:12px}
+  .v024-metrics{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+  .v024-metric{padding:10px}.v024-metric strong{font-size:20px}.v024-metric span{font-size:11px}
+  .v024-card{padding:11px}
+  .v024-list-row{gap:8px;padding:9px 0}
+  .v024-product-facts{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+  .v024-history-facts{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .v024-toolbar{flex-direction:column}.v024-toolbar button{width:100%}
+  .v024-restock-cost{grid-column:1/-1;min-width:0;display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:end;column-gap:8px}
+  .v024-restock-cost small{grid-column:1/-1}.v024-restock-cost>span{align-self:center;min-width:90px;text-align:right}
+  .v024-receive-cost{min-width:0}
+  .v024-receipt-total{grid-template-columns:repeat(2,minmax(0,1fr))}
+  #v022Content .v022-restock-row{align-items:stretch}
+}
+@media (max-width:380px){
+  .v024-tabs{grid-template-columns:1fr}
+  .v024-history-facts,.v024-product-facts{grid-template-columns:1fr 1fr}
+}

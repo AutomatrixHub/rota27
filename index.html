@@ -4,10 +4,10 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#F5E9D5" />
-  <!-- rota27-version permanece 0.22.0 como gate de compatibilidade das camadas v0.21/v0.22; a release pública é 0.23.0. -->
+  <!-- rota27-version permanece 0.22.0 como gate de compatibilidade das camadas v0.21/v0.22; a release pública é 0.24.0. -->
   <meta name="rota27-version" content="0.22.0" />
-  <meta name="rota27-release-version" content="0.23.0" />
-  <title>Rota 27 Bodega • Comandas v0.23.0</title>
+  <meta name="rota27-release-version" content="0.24.0" />
+  <title>Rota 27 Bodega • Comandas v0.24.0</title>
   <style>
     html,body{margin:0;min-height:100%;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:#F5E9D5;color:#111111}
     .loader{min-height:100vh;display:grid;place-items:center;padding:24px;text-align:center}.card{max-width:420px;background:#FFF9F0;border:1px solid #D9C7A7;border-radius:20px;padding:24px;box-shadow:0 14px 34px rgba(17,17,17,.12)}
@@ -15,7 +15,7 @@
   </style>
 </head>
 <body>
-  <div class="loader"><div class="card"><strong>Rota 27 v0.23.0</strong><p id="status">Carregando operação, estoque, compras, inventário e visão gerencial…</p></div></div>
+  <div class="loader"><div class="card"><strong>Rota 27 v0.24.0</strong><p id="status">Carregando operação, estoque, compras, inventário, custos e visão gerencial…</p></div></div>
   <script>
     (async function(){
       const status=document.getElementById('status');
@@ -23,10 +23,10 @@
         const res=await fetch('./base-v013.html',{cache:'no-store'});
         if(!res.ok)throw new Error('Não foi possível carregar a base do aplicativo');
         let html=await res.text();
-        html=html.replace(/<title>[\s\S]*?<\/title>/i,'<title>Rota 27 Bodega • Comandas v0.23.0</title>');
+        html=html.replace(/<title>[\s\S]*?<\/title>/i,'<title>Rota 27 Bodega • Comandas v0.24.0</title>');
         html=html.replace('</head>',
           '<meta name="rota27-version" content="0.22.0" />'+
-          '<meta name="rota27-release-version" content="0.23.0" />'+
+          '<meta name="rota27-release-version" content="0.24.0" />'+
           '<link rel="stylesheet" href="./assets/v014.css" />'+
           '<link rel="stylesheet" href="./assets/v014-dev3.css" />'+
           '<link rel="stylesheet" href="./assets/v015.css" />'+
@@ -51,6 +51,9 @@
           '<link rel="stylesheet" href="./assets/v022-purchases.css?v=0220" />'+
           '<link rel="stylesheet" href="./assets/v022-manager-view.css?v=0220g2" />'+
           '<link rel="stylesheet" href="./assets/v023-inventory.css?v=0230" />'+
+          '<link rel="stylesheet" href="./assets/v024-costs.css?v=0240" />'+
+          '<link rel="stylesheet" href="./assets/v024-draft-edit.css?v=0240d1" />'+
+          '<link rel="stylesheet" href="./assets/v024-release-identity.css?v=0240r1" />'+
           '</head>');
         html=html.replace('</body>',
           '<script src="./assets/v014.js"><\/script>'+
@@ -90,11 +93,13 @@
           '<script src="./assets/v022-compat.js?v=0220"><\/script>'+
           '<script src="./assets/v022-manager-view.js?v=0220g1"><\/script>'+
           '<script src="./assets/v023-inventory.js?v=0230"><\/script>'+
+          '<script src="./assets/v024-costs.js?v=0240"><\/script>'+
+          '<script src="./assets/v024-draft-edit.js?v=0240d1"><\/script>'+
           '</body>');
         document.open();document.write(html);document.close();
       }catch(err){
         status.className='error';
-        status.textContent='Falha ao carregar o Rota 27 v0.23.0: '+(err&&err.message?err.message:'erro desconhecido')+'. Verifique a conexão e tente novamente.';
+        status.textContent='Falha ao carregar o Rota 27 v0.24.0: '+(err&&err.message?err.message:'erro desconhecido')+'. Verifique a conexão e tente novamente.';
       }
     })();
   </script>
