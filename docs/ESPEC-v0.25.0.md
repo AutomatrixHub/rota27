@@ -16,14 +16,17 @@ A Central deve responder rapidamente:
 - o que cada cliente costuma consumir;
 - qual é o ritmo aproximado de retorno;
 - quem merece atenção agora;
-- qual contexto pode ajudar em um contato pessoal.
+- quando um recebimento real cria uma boa oportunidade pessoal;
+- qual contexto pode ajudar em um contato pelo WhatsApp.
 
 ## Fonte de verdade
 A v0.25 deriva as informações de:
 - `state.clients` — cadastro existente;
 - `state.history` — comandas fechadas;
 - `state.catalog` — catálogo atual;
-- `itemMeta` da comanda — nome/preço/categoria preservados no histórico quando disponível.
+- `itemMeta` da comanda — nome/preço/categoria preservados no histórico quando disponível;
+- recebimentos existentes de Compras & Reposição;
+- disponibilidade atual do Estoque Essencial para oportunidades que afirmam produto disponível.
 
 Não existe banco paralelo de fidelização nesta candidata.
 
@@ -89,14 +92,15 @@ Indicadores:
 - Clientes da casa;
 - Para lembrar.
 
-`Para lembrar` soma somente sinais de relacionamento com ação pessoal possível:
+`Para lembrar` soma sinais de relacionamento com ação pessoal possível, como:
 - clientes sumidos;
 - marcos recentes de 5 ou 10 visitas.
 
 Blocos:
 - `Clientes para lembrar`;
 - `Quem mais volta`;
-- explicação curta dos níveis de fidelização.
+- explicação curta dos níveis;
+- `Preferido chegou recentemente`, quando houver evidência válida.
 
 ### Clientes
 - busca por nome/WhatsApp;
@@ -106,7 +110,7 @@ Blocos:
 - `WhatsApp` quando houver número cadastrado.
 
 ### Para lembrar
-A tela passa a separar três sinais:
+A tela separa sinais diferentes:
 
 #### 1. Faz tempo que não vem
 Cliente com:
@@ -131,6 +135,27 @@ Cliente:
 
 Este bloco é conveniência, não alerta crítico. A ação abre o cadastro existente.
 
+#### 4. Preferido chegou recentemente
+Oportunidade comercial derivada de dados reais de relacionamento, recebimento e estoque.
+
+## Preferido chegou recentemente — R3
+A oportunidade só aparece quando TODOS os critérios são verdadeiros:
+1. cliente possui pelo menos 2 visitas identificadas;
+2. possui WhatsApp cadastrado;
+3. o produto recebido é o primeiro produto preferido calculado do cliente;
+4. houve recebimento positivo do produto nos últimos 7 dias;
+5. o produto possui Estoque Essencial ativo;
+6. a disponibilidade atual é maior que zero;
+7. a última visita do cliente ocorreu antes do recebimento.
+
+Proteções:
+- produto sem controle de estoque não gera afirmação de disponibilidade;
+- estoque zerado remove a oportunidade;
+- cliente que voltou após o recebimento deixa de aparecer para aquele recebimento;
+- recebimento com mais de 7 dias deixa de gerar oportunidade;
+- cliente sem WhatsApp não recebe ação de mensagem R3;
+- o sistema não inventa promoção, desconto, brinde, cupom ou reserva.
+
 ## Perfil do cliente
 Mostrar:
 - nome e WhatsApp;
@@ -144,7 +169,8 @@ Mostrar:
 - produtos preferidos;
 - categorias preferidas quando conhecidas;
 - observação do cadastro existente;
-- últimas visitas e resumo de itens.
+- últimas visitas e resumo de itens;
+- `NOVIDADE RELEVANTE` quando a oportunidade R3 existir.
 
 ### Leitura do momento
 Prioridade da mensagem exibida no perfil:
@@ -162,16 +188,17 @@ A v0.25 não envia mensagem pelo backend.
 
 O botão abre `wa.me` com uma mensagem sugerida e o proprietário decide se vai editar/enviar.
 
-Contextos iniciais:
+Contextos:
 - Faz tempo que não vem;
 - Agradecer frequência;
-- Contar novidades.
+- Contar novidades;
+- Produto preferido recebido recentemente.
 
 Regras:
 - zero disparo automático;
 - zero envio em massa;
 - zero promessa automática de desconto/brinde;
-- usar somente nome e preferência que o sistema realmente conhece;
+- usar somente nome, preferência e recebimento que o sistema realmente conhece;
 - fechar o WhatsApp sem enviar não altera nenhum estado do Rota 27.
 
 ## Fidelização
@@ -192,6 +219,7 @@ Para testar cenários raros sem alterar dados reais, a candidata aceita:
 Nesse modo:
 - a Central usa clientes e comandas fictícios apenas em memória;
 - existem exemplos de Sumido, marco de 5 visitas, marco de 10 visitas e cliente frequente sem WhatsApp;
+- o R3 também gera chegadas fictícias para validar a interface;
 - nenhum dado é salvo em `localStorage`;
 - nada é sincronizado;
 - o cadastro fictício não pode ser editado;
@@ -200,15 +228,15 @@ Nesse modo:
 Sair do parâmetro de preview devolve imediatamente a base real.
 
 ## Offline e multidispositivo
-As métricas são derivadas localmente dos dados existentes. Portanto:
+As métricas e oportunidades são derivadas localmente dos dados existentes. Portanto:
 - funcionam offline com a base disponível no aparelho;
-- convergem entre aparelhos quando `clients` e `history` convergem pelo sync atual;
+- convergem entre aparelhos quando `clients`, `history`, recebimentos e estoque convergem pelo sync atual;
 - não há novo evento de sincronização;
 - não há tabela/migration nova;
 - não há nova versão de Edge Function.
 
 ## Ajuda
-Ajuda candidata **v5.0**, com seção `Clientes & Fidelização` e explicação de níveis, ritmo, preferências, clientes sumidos, marcos recentes, contato manual e preview seguro.
+Ajuda candidata **v5.1**, com seção `Clientes & Fidelização` e explicação de níveis, ritmo, preferências, clientes sumidos, marcos recentes, produto preferido recebido, contato manual e preview seguro.
 
 ## Estabilidade
 A v0.25 não adiciona:
@@ -222,6 +250,7 @@ A Central renderiza sob demanda e reage a eventos já existentes.
 - CRM/funil/pipeline;
 - campanha em massa;
 - automação/agendamento de marketing;
-- aniversário nesta primeira candidata se exigir novo dado persistente;
+- aniversário nesta candidata se exigir novo dado persistente;
 - programa de pontos/cashback;
-- aprofundamento de estoque/giro nesta etapa.
+- aprofundamento de estoque/giro nesta etapa;
+- rastreamento persistente de contatos comerciais nesta versão.
