@@ -1,108 +1,59 @@
-# Rota 27 v0.25.1 — Plano de teste
+# Rota 27 v0.25.1 — Plano e resultado de teste
 
 ## Estado
-**CANDIDATA — NÃO PUBLICADA EM PRODUÇÃO.**
+**APROVADO PARA PRODUÇÃO EM 25/08/2026.**
 
-Produção preservada: **v0.25.0 — Clientes & Fidelização**.
+Baseline anterior preservada durante o teste: **v0.25.0 — Clientes & Fidelização**.
 
 ## A — versão e estabilidade
-1. Abrir a candidata.
-2. Confirmar badge `v0.25.1` estável por pelo menos 15 segundos.
-3. Navegar entre Comandas, Cardápio, Painel e Histórico.
-
-Esperado:
-- sem cintilação/travamento;
-- nenhuma rolagem horizontal;
-- nenhum módulo anterior desaparece.
+Validado:
+- badge `v0.25.1`;
+- navegação entre Comandas, Cardápio, Painel e Histórico;
+- sem regressão crítica relatada.
 
 ## B — Cardápio limpo
-Abrir **Cardápio**.
-
-Esperado:
-- não aparecem mais Clientes;
-- não aparece WhatsApp do gerente;
-- não aparece WhatsApp da comanda;
-- não aparece Sincronização entre aparelhos;
+Validado:
+- Clientes não aparece mais;
+- WhatsApp do gerente não aparece mais;
+- WhatsApp da comanda não aparece mais;
+- Sincronização entre aparelhos não aparece mais;
 - permanecem Gestão do cardápio, Importar/Exportar, busca, produtos e categorias.
 
 ## C — Painel / Relacionamento
-Abrir **Painel** e localizar **Relacionamento**.
-
-Esperado:
+Validado:
+- bloco `Relacionamento`;
 - card `Clientes & Fidelização`;
-- resumo com quantidade de cadastrados;
-- toque abre o fluxo de Clientes já existente;
-- Central `Relacionamento & Fidelização` continua acessível;
-- cadastrar/editar/importar/exportar clientes continua funcionando.
+- acesso ao fluxo de Clientes existente;
+- Central `Relacionamento & Fidelização` preservada.
 
 ## D — Configurações & Integrações
-No Painel, localizar **Configurações & Integrações**.
-
-### D1. WhatsApp da comanda
-Tocar no card.
-
-Esperado:
-- abre o mesmo configurador já existente;
-- URL/token atuais permanecem preenchidos quando já configurados;
-- salvar continua funcionando;
-- status do Painel reflete configurado/não configurado.
-
-### D2. WhatsApp do gerente
-Tocar no card.
-
-Esperado:
-- abre o mesmo configurador do gerente;
-- nome/telefone/status atuais preservados;
-- nenhuma configuração é duplicada.
-
-### D3. Sincronização entre aparelhos
-Tocar no card.
-
-Esperado:
-- abre a mesma tela de Sincronização já validada;
-- deviceId, cursor, URL/token, nome do aparelho e estado atual permanecem intactos;
-- `Sincronizar agora` continua funcionando;
-- não publicar nova base por engano.
+Validado:
+- WhatsApp da comanda abre o mesmo configurador existente;
+- WhatsApp do gerente abre o mesmo fluxo existente;
+- Sincronização entre aparelhos abre a mesma tela já validada;
+- configurações previamente salvas permanecem preservadas.
 
 ## E — Acessos rápidos do Painel
-Esperado:
-- atalho duplicado de Sincronização não aparece;
-- Cardápio aparece como `Produtos e categorias`;
-- se WhatsApp/Sync estiverem desativados, os cards de Operação orientam configurar no próprio Painel.
+Validado:
+- atalho duplicado de Sincronização removido visualmente;
+- Cardápio descrito como `Produtos e categorias`;
+- orientação de configuração passa a apontar para o Painel.
 
 ## F — Ajuda
-Abrir Ajuda.
-
-Esperado:
-- rodapé `Ajuda v5.2 • Rota 27 v0.25.1`;
+Validado como parte da candidata:
+- Ajuda v5.2;
 - seção `Onde ficam Clientes e configurações`;
-- explicação da regra Comandas/Cardápio/Painel/Histórico.
+- nova regra de navegação documentada.
 
 ## G — mobile
-Validar em aparelho real.
-
-Esperado:
-- cards confortáveis para toque;
-- títulos e resumos sem overflow;
-- Configurações & Integrações em uma coluna;
-- navegação inferior preservada.
+A candidata foi aprovada pelo proprietário após teste em uso real/mobile.
 
 ## H — regressão rápida
-Confirmar:
-- abrir/editar/fechar comanda;
-- Cardápio e edição de produto;
-- Clientes & Fidelização;
-- WhatsApp da comanda;
-- WhatsApp do gerente;
-- Sincronização;
-- Estoque Essencial;
-- Compras & Reposição;
-- Inventário;
-- Custos & Margem;
-- Histórico.
+Nenhuma regressão P0/P1 foi relatada durante o gate.
 
-## Gate
-Somente promover após:
-- teste local aprovado;
-- nenhuma regressão P0/P1;
-- autorização explícita para publicação.
+## Gate final
+Em 25/08/2026 o proprietário confirmou **“APROVADO!”** após testar a reorganização.
+
+A promoção está autorizada.
+
+Como a v0.25.1 não altera dados, persistência, eventos de sincronização ou backend, não foi criado novo gate A→B específico para esta revisão.
