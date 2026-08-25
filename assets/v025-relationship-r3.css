@@ -1,0 +1,11 @@
+/* Rota 27 v0.25.0 — Relacionamento R3 */
+.v025-r3-panel{border-color:#D8C29F;background:linear-gradient(180deg,#FFF9F0 0%,#FCF2E4 100%)}
+.v025-r3-count{display:grid;place-items:center;min-width:28px;height:28px;border-radius:999px;background:#111;color:#fff;font-size:12px;font-weight:900;padding:0 7px}
+.v025-r3-intro{margin:-2px 0 8px;color:#6C5B49;font-size:12px;line-height:1.45;max-width:760px}
+.v025-r3-list{display:grid}.v025-r3-row{display:flex;align-items:center;gap:10px;padding:11px 0;border-top:1px solid #E5D4BB}.v025-r3-row:first-child{border-top:0}
+.v025-r3-copy{min-width:0;flex:1}.v025-r3-copy strong,.v025-r3-copy span,.v025-r3-copy small{display:block}.v025-r3-copy strong{font-size:14px}.v025-r3-copy span{font-weight:850;margin-top:2px;color:#4E4238}.v025-r3-copy small{color:#756656;margin-top:3px;font-size:11px;line-height:1.35}
+.v025-r3-actions{display:flex;gap:6px;flex:0 0 auto}.v025-r3-actions button,.v025-r3-more,.v025-r3-profile button{border:1px solid #D9C7A7;background:#fff;color:#111;border-radius:10px;padding:8px 10px;font-weight:850}.v025-r3-actions button.primary,.v025-r3-profile button{background:#111;color:#fff;border-color:#111}.v025-r3-more{margin-top:8px;width:100%;background:#F7E9D6}
+.v025-r3-foot{border-top:1px dashed #D9C7A7;margin-top:9px;padding-top:8px;color:#806F5E;font-size:10px;line-height:1.4}
+.v025-r3-profile{border:1px solid #BFA377;background:#F6E8D4;border-radius:18px;padding:14px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;gap:14px}.v025-r3-profile>div{min-width:0}.v025-r3-profile small{display:block;color:#806F5E;font-size:9px;font-weight:900;letter-spacing:.1em}.v025-r3-profile strong{display:block;margin-top:4px;font-size:17px}.v025-r3-profile p{margin:4px 0 0;color:#5F5143;font-size:12px;line-height:1.45}.v025-r3-profile button{flex:0 0 auto;min-height:42px}
+@media(max-width:760px){.v025-r3-row{align-items:flex-start;flex-wrap:wrap}.v025-r3-copy{width:calc(100% - 50px)}.v025-r3-actions{width:100%;padding-left:48px}.v025-r3-actions button{flex:1;min-height:40px}.v025-r3-profile{align-items:stretch;flex-direction:column}.v025-r3-profile button{width:100%}}
+@media(max-width:380px){.v025-r3-actions{padding-left:0;display:grid;grid-template-columns:1fr 1fr}.v025-r3-copy{width:calc(100% - 50px)}}
