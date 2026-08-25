@@ -1,4 +1,4 @@
-/* Rota 27 v0.25.2 R3 — ordem e acabamento do Painel */
+/* Rota 27 v0.25.2 R4 — ordem e acabamento do Painel */
 (function(){
   'use strict';
 
@@ -7,7 +7,7 @@
   function byId(id){return document.getElementById(id);}
   function esc(v){
     if(typeof escapeHtml==='function')return escapeHtml(String(v??''));
-    return String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[ch]));
+    return String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
   }
   function clientsCount(){
     try{return Array.isArray(state?.clients)?state.clients.length:0;}catch{return 0;}
@@ -60,7 +60,49 @@
     return true;
   }
 
+  /*
+   * O Painel legado ainda redesenha screenPanel usando innerHTML. Em vez de
+   * criar outro MutationObserver ou polling, a R4 intercepta somente a escrita
+   * de innerHTML deste elemento. Depois do render nativo, agenda uma única
+   * recomposição da posição do Relacionamento. O observer legado único da
+   * compatibilidade v0.22 restaura primeiro Visão/Estoque/Compras; se necessário,
+   * um requestAnimationFrame único cobre apenas a ordem de microtasks.
+   */
+  function scheduleRelationshipRepair(){
+    const repair=()=>{
+      if(ensureRelationshipOrder())return;
+      requestAnimationFrame(()=>ensureRelationshipOrder());
+    };
+    if(typeof queueMicrotask==='function')queueMicrotask(repair);
+    else Promise.resolve().then(repair);
+  }
+
+  function installPanelRenderBridge(){
+    const panel=byId('screenPanel');
+    if(!panel)return false;
+    if(panel.dataset.v0252RelationshipBridge==='1')return true;
+    const descriptor=Object.getOwnPropertyDescriptor(Element.prototype,'innerHTML');
+    if(!descriptor?.get||!descriptor?.set)return false;
+    try{
+      Object.defineProperty(panel,'innerHTML',{
+        configurable:true,
+        enumerable:descriptor.enumerable,
+        get:function(){return descriptor.get.call(this);},
+        set:function(value){
+          descriptor.set.call(this,value);
+          scheduleRelationshipRepair();
+        }
+      });
+      panel.dataset.v0252RelationshipBridge='1';
+      return true;
+    }catch(err){
+      console.warn('[Rota27 v0.25.2] Não foi possível instalar a ponte de render do Painel:',err);
+      return false;
+    }
+  }
+
   function refresh(){
+    installPanelRenderBridge();
     ensureRelationshipOrder();
     try{window.Rota27V0251?.refresh?.();}catch{}
     updateClientSummary();
@@ -72,6 +114,7 @@
   }
 
   function start(){
+    installPanelRenderBridge();
     setTimeout(refresh,260);
     document.addEventListener('click',handleClick);
     window.addEventListener('storage',refresh);
@@ -81,8 +124,8 @@
     window.addEventListener('rota27:v021-stock-updated',refresh);
     window.addEventListener('rota27:v022-purchases-updated',refresh);
     document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')refresh();});
-    window.Rota27V0252Panel={version:VERSION,refresh};
-    console.info('[Rota27] v0.25.2 R3 refinamento do Painel carregado.');
+    window.Rota27V0252Panel={version:VERSION,refresh,ensureRelationshipOrder};
+    console.info('[Rota27] v0.25.2 R4 refinamento estável do Painel carregado.');
   }
 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
