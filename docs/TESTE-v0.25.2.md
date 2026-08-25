@@ -5,6 +5,17 @@
 
 Produção preservada: **v0.25.1 — Navegação & Configurações**.
 
+### Revisão R2
+Após o primeiro teste visual, o Mapa foi aprovado em conceito, mas foi encontrada uma regressão P1: **tocar nos cards das comandas no Mapa não abria a comanda**.
+
+A R2 corrige esse ponto com binding direto em cada card, usando `window.openCommand` já consolidado pelas camadas operacionais. Também aumenta o contraste visual do seletor `Lista / Mapa` e muda o cache candidato para `rota27-comandas-v0.25.2-r2`.
+
+Gate obrigatório da R2:
+- tocar no corpo, título, valor e parte inferior de cada card deve abrir a mesma comanda;
+- não deve exigir toque duplo;
+- Lista continua abrindo normalmente;
+- o modo ativo em `Lista / Mapa` deve ficar visualmente inequívoco.
+
 ## A — versão e estabilidade
 1. Abrir a candidata.
 2. Confirmar badge `v0.25.2` estável por pelo menos 15 segundos.
@@ -32,6 +43,7 @@ Esperado:
 
 Esperado:
 - troca instantânea;
+- modo ativo com fundo laranja e texto branco, claramente diferente do inativo;
 - nenhum dado muda;
 - a preferência escolhida permanece neste aparelho;
 - não há duplicação de comandas.
@@ -66,14 +78,20 @@ Esperado:
 - informação suficiente para reconhecer a comanda sem ocupar a altura do card completo da Lista;
 - textos longos não quebram a grade.
 
-## F — abrir pelo Mapa
-Tocar em cada tipo de card.
+## F — abrir pelo Mapa — gate crítico R2
+Tocar em cada tipo de card e repetir o teste tocando em pontos diferentes do mesmo card:
+- identificação da mesa/local;
+- valor;
+- nome do cliente;
+- linha de itens/tempo;
+- área vazia do card.
 
 Esperado:
-- abre exatamente a comanda tocada;
+- **um único toque abre exatamente a comanda tocada**;
 - lançamentos existentes permanecem;
 - incluir/remover item funciona normalmente;
-- ao voltar às Comandas, o Mapa reflete os valores atualizados.
+- ao voltar às Comandas, o Mapa reflete os valores atualizados;
+- nenhum toque no card fica sem resposta.
 
 ## G — abertura rápida
 Testar:
@@ -119,7 +137,8 @@ Esperado:
 - sem scroll horizontal;
 - toque confortável;
 - sem sobreposição com FAB ou navegação inferior;
-- redução perceptível de rolagem em relação à Lista.
+- redução perceptível de rolagem em relação à Lista;
+- seletor Lista/Mapa claramente legível com o modo ativo destacado.
 
 ## K — Ajuda
 Abrir Ajuda.
@@ -146,6 +165,7 @@ Confirmar rapidamente:
 ## Gate
 Somente promover após:
 - teste local desktop/mobile aprovado;
+- **gate de toque R2 aprovado**;
 - A→B coerente;
 - nenhuma regressão P0/P1;
 - autorização explícita para publicação.
