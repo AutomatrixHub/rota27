@@ -3,7 +3,7 @@
 /* Cardápio fica dedicado a produtos e categorias. Os componentes antigos
  * permanecem no DOM apenas como compatibilidade para os fluxos existentes. */
 #screenMenu #v017AdminTools,
-#screenMenu > .wa-admin-card,
+#screenMenu .wa-admin-card,
 #screenMenu #v15SyncCard{
   display:none!important;
 }
