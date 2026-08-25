@@ -3,128 +3,93 @@
 Última revisão: 25/08/2026
 
 ## Produção
-- versão: **v0.25.0 — Clientes & Fidelização**;
+- versão: **v0.25.1 — Navegação & Configurações**;
 - branch: `main`;
 - GitHub Pages: `https://automatrixhub.github.io/rota27/`;
-- Service Worker: `rota27-comandas-v0.25.0-r3`;
+- Service Worker: `rota27-comandas-v0.25.1-r1`;
 - `rota27-whatsapp`: versão 23 ACTIVE (`rota27-whatsapp-v6-mini2`);
 - `rota27-sync`: **versão 7 ACTIVE** (`rota27-sync-v0.23.0`);
 - `rota27-whatsapp-inbound`: versão 1 ACTIVE;
 - `rota27-audit`: versão 1 ACTIVE, somente leitura.
 
-A v0.25.0 preserva a baseline funcional da v0.24.0 e acrescenta **Clientes & Fidelização** com inteligência derivada dos dados já existentes, sem CRM pesado e sem automação de marketing.
+A v0.25.1 preserva a baseline funcional da v0.25.0 e reorganiza a navegação para deixar cada área coerente com sua função.
 
-Baseline de rollback: **v0.24.0 — Custos & Margem**.
+Baseline de rollback: **v0.25.0 — Clientes & Fidelização**.
 
-## Validação da v0.25.0
-Em 25/08/2026 a candidata foi testada e aprovada localmente e em dois aparelhos com sincronização A→B.
+## Navegação oficial
+- **Comandas = atender**;
+- **Cardápio = o que é vendido**;
+- **Painel = administrar o negócio**;
+- **Histórico = o que aconteceu**.
 
-Confirmações do proprietário:
-- `Perfeito. Testado e aprovado.`;
-- `Dados totalmente sincronizados. A -> B passou. Pode publicar. APROVADO.`
+### Cardápio
+Exibe apenas funções ligadas ao catálogo:
+- produtos;
+- categorias;
+- preços;
+- importação/exportação;
+- busca e edição.
+
+Não exibe mais:
+- Clientes;
+- WhatsApp do gerente;
+- WhatsApp da comanda;
+- Sincronização entre aparelhos.
+
+### Painel
+Novo bloco **Relacionamento**:
+- Clientes & Fidelização.
+
+Novo bloco **Configurações & Integrações**:
+- WhatsApp da comanda;
+- WhatsApp do gerente;
+- Sincronização entre aparelhos.
+
+Os acessos reutilizam os configuradores e dados existentes. Nenhuma configuração foi duplicada.
+
+## Validação da v0.25.1
+Em 25/08/2026 a candidata foi testada e aprovada pelo proprietário com a confirmação **“APROVADO!”**.
 
 Foram validados:
-- identidade visual v0.25.0;
-- Central `Relacionamento & Fidelização`;
-- Visão geral / Clientes / Para lembrar;
-- níveis Novo / Recorrente / Frequente / Cliente da casa;
-- sinal Sumido;
-- ritmo médio e Leitura do momento;
-- produtos e categorias preferidos;
-- marcos recentes de 5/10 visitas;
-- cadastro frequente sem WhatsApp;
-- perfil e histórico do cliente;
-- WhatsApp contextual apenas manual;
-- modo demonstração seguro `?preview=v0250`;
-- oportunidade R3 `Preferido chegou recentemente`;
-- desktop/mobile;
-- convergência A→B;
-- nenhuma regressão P0/P1 relatada no gate.
+- identidade visual v0.25.1;
+- Cardápio sem os quatro blocos administrativos;
+- Painel com os novos agrupamentos;
+- Clientes & Fidelização abrindo corretamente;
+- WhatsApp da comanda abrindo o configurador existente;
+- WhatsApp do gerente abrindo o fluxo existente;
+- Sincronização entre aparelhos abrindo o configurador existente;
+- configurações previamente salvas preservadas;
+- apresentação mobile;
+- ausência de regressão P0/P1 relatada no gate.
+
+Como a v0.25.1 é apenas uma reorganização visual/navegacional e não altera dados, eventos ou backend, não foi criado novo gate A→B específico para esta correção.
 
 ## Clientes & Fidelização
-Acesso em `Cardápio/Menu → Clientes → Relacionamento & Fidelização`.
+Acesso oficial passa a ser:
+`Painel → Relacionamento → Clientes & Fidelização`.
 
-Métricas derivadas por cliente:
-- visitas;
-- total identificado;
-- ticket médio;
-- itens;
-- primeira/última visita;
-- ritmo médio entre visitas;
-- produtos/categorias preferidos.
-
-Classificação automática:
-- Novo: 0–1 visita;
-- Recorrente: 2–4 visitas;
-- Frequente: 5–9 visitas;
-- Cliente da casa: 10+ visitas;
-- Sumido: 2+ visitas e 30+ dias sem retorno.
-
-Não há pontos, cashback, cupom automático, recompensa obrigatória ou configuração de fidelidade pelo atendente.
-
-## Para lembrar
-Sinais disponíveis:
-- cliente recorrente há 30+ dias sem voltar;
-- marco recente de 5 ou 10 visitas;
-- cliente frequente ainda sem WhatsApp;
+Toda a funcionalidade da v0.25.0 permanece preservada:
+- Visão geral / Clientes / Para lembrar;
+- níveis Novo / Recorrente / Frequente / Cliente da casa;
+- Sumido;
+- ritmo médio;
+- preferências;
+- marcos de 5/10 visitas;
+- WhatsApp contextual manual;
 - `Preferido chegou recentemente`.
 
-Cada sinal deve ter motivo claro e ação simples. Nenhum deles gera envio automático.
-
-## Preferido chegou recentemente
-A oportunidade só aparece quando TODOS os critérios forem verdadeiros:
-1. cliente com 2+ visitas;
-2. WhatsApp cadastrado;
-3. produto é o primeiro preferido calculado;
-4. recebimento positivo nos últimos 7 dias;
-5. Estoque Essencial ativo;
-6. disponibilidade atual maior que zero;
-7. cliente ainda não voltou depois do recebimento.
-
-Proteções:
-- estoque zero remove a oportunidade;
-- nova visita após o recebimento remove a oportunidade;
-- produto sem controle de estoque não gera afirmação de disponibilidade;
-- contato sempre manual;
-- nenhum disparo em massa;
-- nenhuma promessa automática de desconto/brinde.
-
-## WhatsApp de relacionamento
-A v0.25 usa `wa.me` apenas para abrir um rascunho contextual por ação do proprietário.
-
-O Rota 27 não envia automaticamente mensagens comerciais e não cria campanha em massa.
-
-O WhatsApp transacional existente da operação permanece preservado.
-
-## Modo demonstração seguro
-`?preview=v0250` cria apenas em memória exemplos de:
-- cliente Sumido;
-- marco de 5 visitas;
-- marco de 10 visitas;
-- cliente frequente sem WhatsApp;
-- oportunidade `Preferido chegou recentemente`.
-
-Os dados de preview não são persistidos nem sincronizados, e o WhatsApp real não é aberto para clientes fictícios.
-
 ## Backend e sincronização
-A v0.25 **não exige nova Edge Function, evento, tabela ou migration**.
+A v0.25.1 **não exige nova Edge Function, evento, tabela ou migration**.
 
-As informações de fidelização são derivadas de fontes já existentes e sincronizadas:
-- clientes;
-- histórico de comandas;
-- catálogo/itemMeta;
-- recebimentos de Compras & Reposição;
-- estoque.
-
-A Edge Function `rota27-sync` permanece na **versão 7 ACTIVE**, `EDGE_VERSION = rota27-sync-v0.23.0`, `verify_jwt=false`, com autenticação própria por `x-rota27-device-token`.
+A Edge Function `rota27-sync` permanece na versão 7 ACTIVE, `EDGE_VERSION = rota27-sync-v0.23.0`, com autenticação própria por `x-rota27-device-token`.
 
 Permanece aplicada a migration:
 `20260825012842_expand_rota27_sync_event_types_v023`.
 
 ## Módulos preservados
-Continuam válidos os fluxos de:
+Continuam válidos:
 - Comandas;
-- cadastro de Clientes;
+- Clientes & Fidelização;
 - WhatsApp transacional/inbound;
 - Fechamento do Turno;
 - Auditoria;
@@ -134,7 +99,7 @@ Continuam válidos os fluxos de:
 - Inventário & Conferência;
 - Custos & Margem.
 
-A regra financeira da v0.24 permanece: **custo nunca é inferido do preço de venda**.
+A regra financeira permanece: **custo nunca é inferido do preço de venda**.
 
 ## Estabilidade do Painel
 Preservar:
@@ -142,18 +107,13 @@ Preservar:
 - sem `MutationObserver` concorrente;
 - preferir eventos existentes e renderização sob demanda.
 
-As novas camadas da v0.25 não adicionam `setInterval` nem `MutationObserver`.
+A camada v0.25.1 não adiciona `setInterval` nem `MutationObserver`.
 
-## Ajuda v5.1
-Inclui:
-- Clientes & Fidelização;
-- níveis e Sumido;
-- ritmo;
-- preferências;
-- marcos;
-- WhatsApp manual;
-- preview seguro;
-- `Preferido chegou recentemente`.
+## Ajuda v5.2
+Inclui a nova organização:
+- Cardápio focado em produtos;
+- Clientes & Fidelização no Painel;
+- WhatsApps e Sincronização em Configurações & Integrações.
 
 ## Atualização da PWA
 Não reinstalar e não limpar dados:
@@ -161,17 +121,12 @@ Não reinstalar e não limpar dados:
 2. abrir a PWA por 10–20 segundos;
 3. fechar completamente;
 4. abrir novamente;
-5. confirmar `v0.25.0` e sincronização saudável.
+5. confirmar `v0.25.1` e sincronização saudável.
 
 ## Segurança
 - nenhum token/App Secret versionado;
-- nenhuma migration nova na v0.25;
+- nenhuma migration nova na v0.25.1;
 - operação local-first preservada;
-- nenhum disparo de marketing automático;
-- nenhuma campanha em massa;
-- outbox transacional do WhatsApp permanece local por aparelho.
+- nenhuma alteração de regra de negócio ou backend nesta revisão.
 
-## Próxima etapa
-Gestão avançada de estoque/giro permanece adiada. A próxima evolução deve nascer do uso real da v0.25 e continuar respeitando a regra de simplicidade operacional.
-
-Ver `docs/RELEASE-v0.25.0.md`.
+Ver `docs/RELEASE-v0.25.1.md`.
