@@ -1,0 +1,93 @@
+/* Rota 27 v0.22.0 — visão gerencial ampliada de Compras & Estoque */
+.v022-sheet{width:min(calc(100% - 28px),1180px)!important;max-width:1180px!important;max-height:94vh!important;padding:12px 22px 24px!important}
+.v022-head h3{font-size:27px}.v022-head .desc{font-size:14px;max-width:760px;line-height:1.45}
+.v022-summary.v022g-summary{grid-template-columns:repeat(6,minmax(0,1fr));gap:9px;margin:16px 0 12px}
+.v022g-metric{min-width:0;padding:12px 13px;border:1px solid #dfcfb4;border-radius:16px;background:#fffaf1}.v022g-metric small{display:block;color:#756656;font-size:11px;font-weight:750}.v022g-metric strong{display:block;margin-top:5px;font-size:22px;line-height:1}.v022g-metric span{display:block;margin-top:6px;color:#756656;font-size:11px;line-height:1.25}.v022g-metric.warn{box-shadow:inset 0 3px 0 #c58a1d}.v022g-metric.danger{box-shadow:inset 0 3px 0 #b5483c}
+.v022g-overview{margin:12px 0 16px}.v022g-quick-actions{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin-bottom:10px}.v022g-quick-actions button{min-width:0;display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto auto;text-align:left;gap:1px 9px;padding:12px;border:1px solid #dfcfb4;border-radius:16px;background:#fffaf1;color:#111;cursor:pointer}.v022g-quick-actions button>span{grid-row:1/3;display:grid;place-items:center;width:38px;height:38px;border-radius:12px;background:#f0e4d2;font-weight:950;font-size:17px}.v022g-quick-actions b{font-size:13px}.v022g-quick-actions small{color:#756656;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.v022g-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:10px}.v022g-card{min-width:0;border:1px solid #dfcfb4;border-radius:18px;background:#fffaf1;padding:14px}.v022g-card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:11px}.v022g-card-head small{font-size:10px;font-weight:900;letter-spacing:.08em;color:#8a7761}.v022g-card-head h4{margin:3px 0 0;font-size:16px}.v022g-card-head button{border:1px solid #cfbea0;background:#fff;border-radius:10px;padding:7px 9px;font-size:11px;font-weight:850;cursor:pointer;white-space:nowrap}
+.v022g-healthbar{height:12px;display:flex;overflow:hidden;border-radius:999px;background:#eee5d9}.v022g-healthbar span{display:block;min-width:0}.v022g-healthbar .critical{background:#b5483c}.v022g-healthbar .attention{background:#c58a1d}.v022g-healthbar .healthy{background:#2f7a4a}.v022g-health-legend{display:flex;gap:14px;flex-wrap:wrap;margin:9px 0 13px;color:#625548;font-size:11px}.v022g-health-legend span{display:flex;align-items:center;gap:5px}.v022g-health-legend i{width:8px;height:8px;border-radius:999px}.v022g-health-legend i.critical{background:#b5483c}.v022g-health-legend i.attention{background:#c58a1d}.v022g-health-legend i.healthy{background:#2f7a4a}.v022g-stock-totals{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}.v022g-stock-totals span{padding:9px;border-radius:12px;background:#f5ecdf}.v022g-stock-totals small,.v022g-flow-grid small,.v022g-facts small,.v022g-stock-facts small,.v022g-order-progress small,.v022g-supplier-insight small{display:block;color:#7b6b5c;font-size:10px}.v022g-stock-totals b{display:block;margin-top:3px;font-size:16px}
+.v022g-flow-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.v022g-flow-grid>div{padding:11px;border-radius:13px;background:#f5ecdf}.v022g-flow-grid strong{display:block;font-size:22px;margin:3px 0}.v022g-flow-grid span{display:block;color:#756656;font-size:11px}
+.v022g-priorities{grid-column:1}.v022g-receipts{grid-column:2}.v022g-priority-list,.v022g-receipt-list{display:grid;gap:7px}.v022g-priority-row{display:grid;grid-template-columns:minmax(160px,1.1fr) 1.4fr;gap:10px;padding:9px 0;border-top:1px solid #eadfcd}.v022g-priority-row:first-child{border-top:0}.v022g-priority-main{min-width:0}.v022g-priority-main strong{display:inline;font-size:12px}.v022g-priority-main small{display:block;margin-top:3px;color:#756656;font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.v022g-pill,.v022g-row-flag{display:inline-flex;margin-left:6px;padding:3px 6px;border-radius:999px;font-size:9px;font-weight:950}.v022g-pill.critical,.v022g-row-flag.critical{background:#fae9e7;color:#9c392f}.v022g-pill.attention,.v022g-row-flag.attention{background:#fff5df;color:#815b14}.v022g-facts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px}.v022g-facts span{min-width:0}.v022g-facts b{display:block;margin-top:2px;font-size:12px}.v022g-receipt-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 0;border-top:1px solid #eadfcd}.v022g-receipt-row:first-child{border-top:0}.v022g-receipt-row strong{display:block;font-size:12px}.v022g-receipt-row small{display:block;color:#756656;font-size:10px;margin-top:2px}.v022g-receipt-row>b{font-size:13px;color:#2f7a4a}.v022g-empty-mini{padding:14px;border:1px dashed #cfbea0;border-radius:12px;color:#756656;text-align:center;font-size:11px}
+.v022-tabs{margin-top:4px;padding-top:12px;border-top:1px solid #e8dbc7}.v022-tabs button{padding:11px 16px}.v022-toolbar{margin-top:9px}
+.v022-restock-row{grid-template-columns:auto minmax(300px,1.55fr) minmax(120px,.45fr) minmax(190px,.65fr);padding:14px}.v022-restock-row.v022g-critical{box-shadow:inset 4px 0 0 #b5483c}.v022-restock-row .v022-product>small{display:none}.v022g-row-flag{margin:0 7px 5px 0;vertical-align:middle}.v022g-stock-facts{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin-top:8px}.v022g-stock-facts span{padding:7px 8px;border-radius:10px;background:#f5ecdf}.v022g-stock-facts b{display:block;margin-top:2px;font-size:13px}
+.v022-order-card{padding:15px}.v022g-order-progress{margin:10px 0;padding:10px 11px;border-radius:12px;background:#f5ecdf}.v022g-order-progress-top{display:grid;grid-template-columns:repeat(3,minmax(0,1fr)) auto;gap:8px;align-items:end}.v022g-order-progress b{display:block;margin-top:2px}.v022g-order-progress-top>strong{font-size:12px}.v022g-progress-track{height:7px;margin-top:8px;overflow:hidden;border-radius:999px;background:#ded2c1}.v022g-progress-track span{display:block;height:100%;background:#2f7a4a;border-radius:999px}
+.v022-supplier-card{display:grid;grid-template-columns:1fr auto;align-items:start}.v022g-supplier-insight{grid-column:1/-1;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin-top:10px;padding-top:10px;border-top:1px solid #eadfcd}.v022g-supplier-insight span{padding:8px;border-radius:10px;background:#f5ecdf}.v022g-supplier-insight b{display:block;margin-top:2px}.v022g-supplier-insight p{grid-column:1/-1;margin:0;color:#756656;font-size:11px;line-height:1.4}
+@media(max-width:900px){.v022-summary.v022g-summary{grid-template-columns:repeat(3,minmax(0,1fr))}.v022g-quick-actions{grid-template-columns:repeat(2,minmax(0,1fr))}.v022g-grid{grid-template-columns:1fr}.v022g-priorities,.v022g-receipts{grid-column:auto}.v022-restock-row{grid-template-columns:auto 1fr}.v022-product{grid-column:2}.v022-qty{grid-column:1/2}.v022-supplier{grid-column:2}.v022g-stock-facts{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:760px){.v022-sheet{width:100%!important;max-width:none!important;max-height:100dvh!important;padding:10px 16px calc(18px + env(safe-area-inset-bottom))!important}.v022-head h3{font-size:23px}.v022-summary.v022g-summary{grid-template-columns:repeat(2,minmax(0,1fr))}.v022g-quick-actions{grid-template-columns:1fr 1fr}.v022g-quick-actions button{grid-template-columns:auto 1fr;padding:10px}.v022g-stock-totals{grid-template-columns:repeat(2,minmax(0,1fr))}.v022g-priority-row{grid-template-columns:1fr}.v022g-facts{grid-template-columns:repeat(4,minmax(0,1fr))}.v022g-stock-facts{grid-template-columns:repeat(2,minmax(0,1fr))}.v022g-card{padding:12px}.v022g-card-head{align-items:flex-start}.v022g-card-head button{font-size:10px}.v022g-flow-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:430px){.v022g-quick-actions{grid-template-columns:1fr}.v022g-facts{grid-template-columns:repeat(2,minmax(0,1fr))}.v022g-flow-grid{grid-template-columns:1fr 1fr}.v022g-supplier-insight{grid-template-columns:1fr 1fr}.v022g-supplier-insight p{grid-column:1/-1}}
+
+/* Revisão mobile: a central continua rica, mas deixa de ser um dashboard desktop comprimido. */
+@media(max-width:760px){
+  #v022PurchasesWrap{overflow:hidden}
+  #v022PurchasesWrap .v022-sheet{box-sizing:border-box;overflow-x:hidden;overscroll-behavior:contain}
+  #v022PurchasesWrap .v022-head{gap:10px}
+  #v022PurchasesWrap .v022-head>div{min-width:0}
+  #v022PurchasesWrap .v022-head .desc{max-width:none;font-size:12px;line-height:1.35;margin-right:4px}
+  #v022PurchasesWrap .v022-x{flex:0 0 42px;width:42px;height:42px}
+  #v022PurchasesWrap .v022-summary.v022g-summary{gap:7px;margin:12px 0 10px}
+  #v022PurchasesWrap .v022g-metric{padding:10px 11px;border-radius:14px}
+  #v022PurchasesWrap .v022g-metric small{font-size:10px;line-height:1.2}
+  #v022PurchasesWrap .v022g-metric strong{font-size:20px}
+  #v022PurchasesWrap .v022g-metric span{font-size:10px;margin-top:4px;white-space:normal;overflow-wrap:anywhere}
+  #v022PurchasesWrap .v022g-quick-actions{gap:7px}
+  #v022PurchasesWrap .v022g-quick-actions button{min-height:62px;align-items:center}
+  #v022PurchasesWrap .v022g-quick-actions button>span{width:34px;height:34px}
+  #v022PurchasesWrap .v022g-quick-actions b{font-size:12px}
+  #v022PurchasesWrap .v022g-quick-actions small{font-size:10px;white-space:normal;overflow:visible;text-overflow:clip;line-height:1.2}
+  #v022PurchasesWrap .v022g-grid{gap:8px}
+  #v022PurchasesWrap .v022g-card{overflow:hidden;border-radius:16px}
+  #v022PurchasesWrap .v022g-card-head{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px}
+  #v022PurchasesWrap .v022g-card-head>div{min-width:0}
+  #v022PurchasesWrap .v022g-card-head h4{font-size:15px;line-height:1.2}
+  #v022PurchasesWrap .v022g-card-head button{align-self:start;max-width:120px;white-space:normal;line-height:1.15}
+  #v022PurchasesWrap .v022g-health-legend{gap:8px 12px}
+  #v022PurchasesWrap .v022g-stock-totals span,#v022PurchasesWrap .v022g-flow-grid>div{min-width:0;padding:9px}
+  #v022PurchasesWrap .v022g-stock-totals small,#v022PurchasesWrap .v022g-flow-grid small{white-space:normal;overflow-wrap:anywhere}
+  #v022PurchasesWrap .v022g-priority-row{gap:7px}
+  #v022PurchasesWrap .v022g-priority-main strong{font-size:13px}
+  #v022PurchasesWrap .v022g-priority-main small{white-space:normal;overflow:visible;text-overflow:clip}
+  #v022PurchasesWrap .v022g-facts{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+  #v022PurchasesWrap .v022g-facts span{padding:7px 8px;border-radius:10px;background:#f5ecdf}
+  #v022PurchasesWrap .v022g-receipt-row{align-items:flex-start}
+  #v022PurchasesWrap .v022g-receipt-row>div{min-width:0}
+  #v022PurchasesWrap .v022g-receipt-row small{white-space:normal;overflow-wrap:anywhere}
+  #v022PurchasesWrap .v022-tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;overflow:visible}
+  #v022PurchasesWrap .v022-tabs button{min-width:0;width:100%;padding:10px 6px;font-size:12px;white-space:normal}
+  #v022PurchasesWrap .v022-toolbar{display:grid;grid-template-columns:minmax(0,1fr);gap:7px}
+  #v022PurchasesWrap .v022-toolbar input,#v022PurchasesWrap .v022-toolbar select,#v022PurchasesWrap .v022-toolbar button{box-sizing:border-box;width:100%;min-width:0;min-height:44px;font-size:16px}
+  #v022PurchasesWrap .v022-restock-row{grid-template-columns:28px minmax(0,1fr);gap:8px 9px;padding:12px}
+  #v022PurchasesWrap .v022-select{grid-column:1;grid-row:1;align-self:start;padding-top:3px}
+  #v022PurchasesWrap .v022-product{grid-column:2;grid-row:1;min-width:0}
+  #v022PurchasesWrap .v022-product strong{font-size:15px;line-height:1.2;overflow-wrap:anywhere}
+  #v022PurchasesWrap .v022g-stock-facts{grid-column:1/-1;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin-top:4px}
+  #v022PurchasesWrap .v022g-stock-facts span{min-width:0;padding:7px}
+  #v022PurchasesWrap .v022-qty,#v022PurchasesWrap .v022-supplier{grid-column:1/-1;min-width:0}
+  #v022PurchasesWrap .v022-qty input,#v022PurchasesWrap .v022-supplier select{box-sizing:border-box;width:100%;min-width:0;min-height:46px;font-size:16px}
+  #v022PurchasesWrap .v022-sticky-actions{margin-top:10px}
+  #v022PurchasesWrap .v022-sticky-actions button{min-height:48px;white-space:normal}
+  #v022PurchasesWrap .v022-order-card{overflow:hidden;padding:12px}
+  #v022PurchasesWrap .v022-order-top,#v022PurchasesWrap .v022-order-foot{gap:8px}
+  #v022PurchasesWrap .v022-order-top>div,#v022PurchasesWrap .v022-order-foot>div{min-width:0}
+  #v022PurchasesWrap .v022-order-top small{white-space:normal;overflow-wrap:anywhere}
+  #v022PurchasesWrap .v022g-order-progress-top{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+  #v022PurchasesWrap .v022g-order-progress-top>strong{grid-column:1/-1}
+  #v022PurchasesWrap .v022-order-actions{width:100%;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+  #v022PurchasesWrap .v022-order-actions button{min-width:0;min-height:42px;white-space:normal}
+  #v022PurchasesWrap .v022-supplier-card{grid-template-columns:1fr;gap:8px}
+  #v022PurchasesWrap .v022-supplier-card>div{min-width:0}
+  #v022PurchasesWrap .v022g-supplier-insight{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+}
+@media(max-width:430px){
+  #v022PurchasesWrap .v022-sheet{padding-left:12px!important;padding-right:12px!important}
+  #v022PurchasesWrap .v022-head h3{font-size:21px}
+  #v022PurchasesWrap .v022-summary.v022g-summary{grid-template-columns:repeat(2,minmax(0,1fr))}
+  #v022PurchasesWrap .v022g-quick-actions{grid-template-columns:1fr}
+  #v022PurchasesWrap .v022g-quick-actions button{grid-template-columns:34px minmax(0,1fr)}
+  #v022PurchasesWrap .v022g-stock-totals,#v022PurchasesWrap .v022g-flow-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  #v022PurchasesWrap .v022g-card-head{grid-template-columns:1fr}
+  #v022PurchasesWrap .v022g-card-head button{max-width:none;width:100%;min-height:40px}
+  #v022PurchasesWrap .v022g-stock-facts{grid-template-columns:repeat(2,minmax(0,1fr))}
+  #v022PurchasesWrap .v022-tabs button{font-size:11px;padding-left:4px;padding-right:4px}
+  #v022PurchasesWrap .v022-order-actions{grid-template-columns:1fr}
+  #v022PurchasesWrap .v022g-supplier-insight{grid-template-columns:1fr 1fr}
+}
