@@ -4,161 +4,120 @@ Aplicativo mobile-first, offline-first e multidispositivo para controle rápido 
 
 ## Produção
 
-**Versão: v0.25.0 — Clientes & Fidelização**  
+**Versão: v0.25.1 — Navegação & Configurações**  
 Branch: `main`  
 GitHub Pages: `https://automatrixhub.github.io/rota27/`  
-Service Worker: `rota27-comandas-v0.25.0-r3`
+Service Worker: `rota27-comandas-v0.25.1-r1`
 
-A v0.25.0 preserva Comandas, Estoque Essencial, Compras & Reposição, Inventário & Conferência e Custos & Margem e acrescenta uma camada leve de **Relacionamento & Fidelização**, sem transformar o produto em CRM ou plataforma de marketing.
+A v0.25.1 preserva integralmente a funcionalidade da v0.25.0 e reorganiza a arquitetura de navegação para separar melhor operação, cardápio, administração e histórico.
 
-## Recursos principais
+## Arquitetura de navegação
 
-### Comandas
-- abertura rápida por balcão, mesa, parklet e cliente;
-- lançamento por toque, busca, categorias e Mais lançados;
-- edição de itens, fechamento, pagamento e cancelamento seguro;
-- proteção contra duplicidade acidental.
+Regra mental da interface:
+- **Comandas = atender**;
+- **Cardápio = o que é vendido**;
+- **Painel = administrar o negócio**;
+- **Histórico = o que aconteceu**.
 
-### Estoque Essencial
-Acesso em `Painel → Estoque Essencial`.
+### Cardápio
+Fica dedicado a:
+- produtos;
+- categorias;
+- preços;
+- importação/exportação;
+- busca e edição.
 
-- controle opcional por produto;
-- estoque inicial e mínimo;
-- Estoque, Comprometido e Disponível projetado;
-- baixa definitiva no fechamento da comanda;
-- Entrada, Perda, Consumo interno e Ajuste;
-- integração com Compras & Reposição, Inventário e Custos & Margem;
-- histórico, CSV, operação offline e multidispositivo.
+Clientes, WhatsApps e Sincronização não aparecem mais nessa tela.
 
-### Compras, Inventário e Custos
-Permanecem preservados da v0.24.0:
-- fornecedores e pedidos;
-- edição de rascunho;
+### Painel
+Passa a concentrar administração e integrações.
+
+Bloco **Relacionamento**:
+- Clientes & Fidelização.
+
+Bloco **Configurações & Integrações**:
+- WhatsApp da comanda;
+- WhatsApp do gerente;
+- Sincronização entre aparelhos.
+
+Os novos acessos reutilizam os fluxos/configuradores existentes. Nenhum cadastro, token ou configuração foi duplicado.
+
+## Clientes & Fidelização — v0.25
+Acesso em `Painel → Relacionamento → Clientes & Fidelização`.
+
+A Central possui:
+- Visão geral;
+- Clientes;
+- Para lembrar.
+
+Métricas e sinais derivados:
+- visitas, total identificado, ticket médio e itens;
+- primeira e última visita;
+- ritmo médio;
+- produtos/categorias preferidos;
+- níveis Novo / Recorrente / Frequente / Cliente da casa;
+- Sumido;
+- marcos de 5/10 visitas;
+- cadastro frequente sem WhatsApp;
+- oportunidade `Preferido chegou recentemente`.
+
+O WhatsApp de relacionamento permanece exclusivamente manual: o sistema apenas monta um rascunho contextual para o proprietário revisar e decidir se envia.
+
+## Estoque, Compras, Inventário e Custos
+Permanecem preservados:
+- Estoque Essencial;
+- Compras & Reposição;
+- edição de pedidos em rascunho;
 - recebimento parcial/total;
-- inventário com snapshot e ajuste idempotente;
-- custo previsto e real;
-- frete e custo efetivo;
-- histórico de custos;
-- margem bruta estimada;
-- valor estimado de estoque somente quando existe custo real conhecido.
+- Inventário & Conferência;
+- Custos & Margem;
+- histórico e CSVs.
 
 Regra financeira preservada: **preço de venda nunca substitui custo de aquisição**.
 
-### Clientes & Fidelização — v0.25.0
-Acesso em `Cardápio/Menu → Clientes → Relacionamento & Fidelização`.
+## Sincronização e backend
+O Rota 27 permanece local-first e multidispositivo.
 
-A Central possui:
-- `Visão geral`;
-- `Clientes`;
-- `Para lembrar`.
+A v0.25.1 não cria:
+- novo evento de sincronização;
+- tabela ou migration;
+- nova Edge Function.
 
-Para cada cliente, quando existe histórico suficiente, o sistema deriva:
-- número de visitas;
-- total identificado;
-- ticket médio;
-- itens;
-- primeira e última visita;
-- ritmo médio de retorno;
-- produtos e categorias preferidos;
-- últimas compras.
-
-Classificação automática:
-- **Novo:** 0–1 visita;
-- **Recorrente:** 2–4 visitas;
-- **Frequente:** 5–9 visitas;
-- **Cliente da casa:** 10+ visitas;
-- **Sumido:** 2+ visitas e 30+ dias sem retorno.
-
-`Para lembrar` reúne sinais com ação clara:
-- cliente recorrente há 30+ dias sem voltar;
-- marco recente de 5 ou 10 visitas;
-- cliente frequente ainda sem WhatsApp cadastrado;
-- oportunidade `Preferido chegou recentemente` quando existe evidência real.
-
-### Preferido chegou recentemente
-A v0.25 cruza dados já existentes de clientes, histórico, recebimentos e estoque.
-
-A oportunidade só aparece quando:
-1. cliente tem 2+ visitas;
-2. possui WhatsApp;
-3. o produto recebido é seu primeiro preferido calculado;
-4. houve recebimento positivo nos últimos 7 dias;
-5. o Estoque Essencial está ativo no produto;
-6. existe disponibilidade atual maior que zero;
-7. o cliente ainda não voltou depois do recebimento.
-
-Se o estoque zerar ou o cliente voltar após o recebimento, a oportunidade desaparece.
-
-### WhatsApp de relacionamento
-O Rota 27 somente monta um rascunho contextual e abre o WhatsApp por ação do proprietário.
-
-Não existe na v0.25:
-- envio automático;
-- disparo em massa;
-- campanha automática;
-- desconto/brinde inventado;
-- pontos, cashback ou milhas;
-- CRM, lead, funil ou pipeline.
-
-### Modo demonstração seguro
-Na candidata/testes pode ser usado `?preview=v0250` para visualizar cenários raros sem adulterar a base real.
-
-Os dados demonstrativos existem somente em memória, não são gravados nem sincronizados, e não abrem WhatsApp real.
-
-### Fechamento do Turno, Auditoria e Visão Gerencial
-Permanecem preservados, incluindo snapshots de fechamento, histórico, comparações, produtos, pagamentos e CSV.
-
-## Sincronização e offline
-O Rota 27 permanece local-first e continua operando sem internet.
-
-A v0.25 **não cria novo tipo de evento, tabela, migration ou Edge Function**. As métricas de relacionamento são derivadas dos dados que já sincronizam:
-- clientes;
-- histórico de comandas;
-- catálogo/itemMeta;
-- recebimentos;
-- estoque.
-
-Quando essas fontes convergem entre aparelhos, a fidelização converge por cálculo local.
-
-## Backend Supabase
-Projeto: `owkvwsiblbzlpxjwybrt`
-
-- `rota27-sync`: **versão 7 ACTIVE** (`rota27-sync-v0.23.0`);
+Backend preservado:
+- `rota27-sync`: versão 7 ACTIVE (`rota27-sync-v0.23.0`);
 - `rota27-audit`: versão 1 ACTIVE;
 - `rota27-whatsapp`: versão 23 ACTIVE (`rota27-whatsapp-v6-mini2`);
 - `rota27-whatsapp-inbound`: versão 1 ACTIVE.
 
-Permanece aplicada a migration de segurança de schema da v0.23:
-`20260825012842_expand_rota27_sync_event_types_v023`.
+## Estabilidade
+A reorganização foi implementada como camada final de UI.
 
-## Validação da v0.25.0
-A candidata foi aprovada em desktop, celular e A→B em 25/08/2026.
+Preservar a regra consolidada desde a v0.21:
+- não adicionar polling visual frequente;
+- não adicionar `MutationObserver` concorrente ao Painel.
+
+A camada v0.25.1 não adiciona `setInterval` nem `MutationObserver`.
+
+## Validação da v0.25.1
+A candidata foi testada e aprovada pelo proprietário em 25/08/2026.
 
 Foram validados:
-- Central de Relacionamento & Fidelização;
-- níveis e sinal Sumido;
-- ritmo médio e Leitura do momento;
-- preferências;
-- marcos de 5/10 visitas;
-- cadastro a completar;
-- perfil/histórico do cliente;
-- WhatsApp exclusivamente manual;
-- preview seguro;
-- `Preferido chegou recentemente`;
-- convergência dos dados A→B;
-- ausência de regressão P0/P1 relatada no gate.
+- Cardápio sem os quatro blocos administrativos;
+- Painel com Relacionamento e Configurações & Integrações;
+- Clientes & Fidelização abrindo pelo novo local;
+- WhatsApp da comanda abrindo o configurador existente;
+- WhatsApp do gerente abrindo o fluxo existente;
+- Sincronização abrindo o configurador existente;
+- configurações previamente salvas preservadas;
+- layout mobile;
+- ausência de regressão crítica relatada no teste.
 
-Baseline de rollback: **v0.24.0 — Custos & Margem**.
-
-## Estabilidade
-Preservar a regra consolidada desde a v0.21: não adicionar polling visual frequente nem `MutationObserver` concorrente ao Painel.
-
-As novas camadas da v0.25 não introduzem `setInterval` nem `MutationObserver`.
+Baseline de rollback: **v0.25.0 — Clientes & Fidelização**.
 
 ## Tema e Ajuda
 - operação em laranja, preto e creme/marfim;
 - verde/amarelo/vermelho reservados a estados funcionais;
-- Ajuda **v5.1** inclui Relacionamento & Fidelização e `Preferido chegou recentemente`.
+- Ajuda **v5.2** inclui a nova localização de Clientes e configurações.
 
 ## Atualização da PWA
 Quem já possui o Rota 27 instalado não precisa reinstalar:
@@ -166,22 +125,19 @@ Quem já possui o Rota 27 instalado não precisa reinstalar:
 2. abrir a PWA e aguardar 10–20 segundos;
 3. fechar completamente;
 4. abrir novamente;
-5. confirmar `v0.25.0` e sincronização saudável.
+5. confirmar `v0.25.1` e sincronização saudável.
 
 **Não limpar dados do navegador e não remover a PWA para atualizar.**
 
-## Próxima etapa
-Aprofundamento de estoque/giro fica deliberadamente adiado. Após uso real da v0.25, a próxima evolução de relacionamento deve ser escolhida apenas se trouxer ação simples e benefício claro ao proprietário.
-
 ## Documentos principais
-- `docs/RELEASE-v0.25.0.md`
+- `docs/RELEASE-v0.25.1.md`
 - `docs/STATUS-PRODUCAO.md`
-- `docs/VALIDACAO-v0.25.0.md`
-- `docs/TESTE-v0.25.0.md`
-- `docs/ESPEC-v0.25.0.md`
+- `docs/HANDOFF-CONTEXTO-v0.25.1.md`
+- `docs/TESTE-v0.25.1.md`
+- `docs/ESPEC-v0.25.1.md`
+- `docs/RELEASE-v0.25.0.md`
 - `docs/HANDOFF-CONTEXTO-v0.25.0.md`
-- `docs/INCREMENTO-v0.25.0-R3.md`
 - `docs/PRODUCT-PRINCIPLES.md`
 
 ## Versão
-Produção: **0.25.0**
+Produção: **0.25.1**
