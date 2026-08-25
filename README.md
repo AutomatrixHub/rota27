@@ -126,10 +126,14 @@ Projeto: `owkvwsiblbzlpxjwybrt`
 - `rota27-whatsapp`: versão 23 ACTIVE (`rota27-whatsapp-v6-mini2`);
 - `rota27-whatsapp-inbound`: versão 1 ACTIVE.
 
-A v0.23.0 não exigiu migration nem tabela nova. O inventário reutiliza `rota27_sync_events`; os ajustes físicos continuam usando `stock_movement`.
+A v0.23.0 não criou tabela nova. O inventário reutiliza `rota27_sync_events`; os ajustes físicos continuam usando `stock_movement`.
+
+Após a promoção da v0.23.0, foi aplicado o hotfix de schema `20260825012842_expand_rota27_sync_event_types_v023`, que alinha o `CHECK rota27_sync_events_type_ck` à allowlist atual da Edge Function. O constraint agora aceita também `turn_closed`, os eventos de Estoque, Compras e `inventory_upsert`, preservando todos os tipos anteriores e sem alteração destrutiva de dados.
 
 ## Validação da v0.23.0
 A candidata foi aprovada em desktop, celular e smoke multidispositivo A→B. Foram validados contagem, pausa/continuação, proteção contra estoque em movimento, finalização, idempotência, histórico, CSV e convergência entre aparelhos.
+
+Após o hotfix do constraint, um smoke transacional confirmou a aceitação dos 7 tipos adicionados desde a v0.17, com rollback ao final do teste.
 
 ## Atualização da PWA
 Quem já possui o Rota 27 instalado **não precisa reinstalar**:
