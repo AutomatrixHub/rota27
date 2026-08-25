@@ -1,0 +1,44 @@
+/* Rota 27 v0.25.3 — consistência visual Lista / Mapa */
+
+/*
+ * O Mapa mantém sua densidade compacta, mas herda a mesma gramática dos cards
+ * da Lista: superfície creme, moldura, sombra leve e faixa lateral bicolor
+ * laranja + preto. A cor deixa de variar por zona para que Lista e Mapa sejam
+ * duas visualizações do mesmo objeto operacional.
+ */
+.v0252-slot{
+  background:var(--surface,#FFF9F0)!important;
+  border:1px solid var(--line,#D9C7A7)!important;
+  border-radius:var(--radius,18px)!important;
+  padding:10px 10px 10px 14px!important;
+  box-shadow:0 5px 16px rgba(17,17,17,.05)!important;
+}
+
+.v0252-slot::before,
+.v0252-zone-tables::before,
+.v0252-zone-counter::before,
+.v0252-zone-parklet::before,
+.v0252-zone-clients::before,
+.v0252-zone-other::before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:0;
+  bottom:0;
+  width:6px!important;
+  background:linear-gradient(
+    180deg,
+    var(--brand-2,#DF6536) 0%,
+    var(--brand-2,#DF6536) 68%,
+    var(--brand,#111111) 68%,
+    var(--brand,#111111) 100%
+  )!important;
+}
+
+.v0252-slot:active{
+  border-color:#c99b78!important;
+  box-shadow:0 2px 7px rgba(17,17,17,.08)!important;
+}
+
+/* Identidade pública da revisão. */
+#v14VersionBadge::after{content:"v0.25.3"!important}
