@@ -1,4 +1,4 @@
-/* Rota 27 v0.25.2 R6 — ordem e estabilidade do Painel */
+/* Rota 27 v0.25.2 R7 — ordem, estabilidade e normalização do Painel */
 (function(){
   'use strict';
 
@@ -16,15 +16,14 @@
   function buildRelationship(){
     const section=document.createElement('section');
     section.id='v0252RelationshipSection';
-    section.className='v15d4-section v0251-section';
+    section.className='v0252-standard-entry v0252-relationship-entry';
     section.innerHTML=`
-      <div class="v15d4-section-title"><strong>Relacionamento</strong><span>Clientes, recorrência e fidelização</span></div>
-      <div class="v0251-card-list">
-        <button type="button" class="v0251-card" data-v0251-action="clients">
-          <span class="v0251-icon" aria-hidden="true">👥</span>
-          <span class="v0251-copy"><strong>Clientes & Fidelização</strong><small id="v0251-clients-summary"></small></span>
-          <span class="v0251-chevron" aria-hidden="true">›</span>
-        </button>
+      <div class="v0252-relationship-entry-head">
+        <div class="v0252-relationship-copy">
+          <strong>Clientes & Fidelização</strong>
+          <small id="v0251-clients-summary"></small>
+        </div>
+        <button type="button" class="v0252-relationship-open" data-v0251-action="clients">Abrir clientes</button>
       </div>`;
     return section;
   }
@@ -36,22 +35,28 @@
     el.innerHTML=`<span class="v0251-dot ${count?'ok':'neutral'}"></span>${esc(`${count} cadastrado${count===1?'':'s'} • relacionamento e recorrência`)}`;
   }
 
+  function removeLegacyRelationship(){
+    const extras=byId('v0251PanelExtras');
+    if(!extras)return;
+    [...extras.querySelectorAll('.v0251-section')].forEach(node=>{
+      if(node.querySelector('[data-v0251-action="clients"]'))node.remove();
+    });
+  }
+
   function ensureRelationshipOrder(){
     const panel=byId('screenPanel');
     const purchases=byId('v022PurchasesEntry');
     if(!panel||!purchases)return false;
 
+    removeLegacyRelationship();
+
     let section=byId('v0252RelationshipSection');
-    if(!section){
-      const extras=byId('v0251PanelExtras');
-      const original=[...(extras?.querySelectorAll('.v0251-section')||[])].find(node=>node.querySelector('[data-v0251-action="clients"]'));
-      if(original){
-        section=original;
-        section.id='v0252RelationshipSection';
-      }else{
-        section=buildRelationship();
-      }
+    if(section&&!section.classList.contains('v0252-standard-entry')){
+      const replacement=buildRelationship();
+      section.replaceWith(replacement);
+      section=replacement;
     }
+    if(!section)section=buildRelationship();
 
     if(section.parentElement!==panel||section.previousElementSibling!==purchases){
       purchases.insertAdjacentElement('afterend',section);
@@ -61,10 +66,9 @@
   }
 
   /*
-   * O Painel legado ainda redesenha screenPanel usando innerHTML. A R6 mantém
-   * a ponte criada na R4 apenas para restaurar Relacionamento. Os ícones dos
-   * três cards principais agora são pseudo-elementos CSS e não dependem mais
-   * de qualquer reinjeção de DOM.
+   * O Painel legado ainda redesenha screenPanel usando innerHTML. A ponte
+   * criada na R4 permanece exclusivamente para recolocar o quarto card após
+   * cada render. Os ícones dos quatro cards são CSS e não dependem de DOM extra.
    */
   function schedulePanelRepair(){
     const repair=()=>{
@@ -103,6 +107,8 @@
     installPanelRenderBridge();
     ensureRelationshipOrder();
     try{window.Rota27V0251?.refresh?.();}catch{}
+    removeLegacyRelationship();
+    ensureRelationshipOrder();
     updateClientSummary();
   }
 
@@ -123,7 +129,7 @@
     window.addEventListener('rota27:v022-purchases-updated',refresh);
     document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')refresh();});
     window.Rota27V0252Panel={version:VERSION,refresh,ensureRelationshipOrder};
-    console.info('[Rota27] v0.25.2 R6 Painel estável com ícones CSS carregado.');
+    console.info('[Rota27] v0.25.2 R7 Painel normalizado carregado.');
   }
 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
