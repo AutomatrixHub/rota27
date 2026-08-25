@@ -4,10 +4,10 @@ Aplicativo mobile-first, offline-first e multidispositivo para controle rápido 
 
 ## Produção
 
-**Versão: v0.25.5 — Mapa Refinado & Cópia Fixa de WhatsApp**  
+**Versão: v0.25.6 — Paridade Visual Lista / Mapa**  
 Branch: `main`  
 GitHub Pages: `https://automatrixhub.github.io/rota27/`  
-Service Worker: `rota27-comandas-v0.25.5-r1`
+Service Worker: `rota27-comandas-v0.25.6-r1`
 
 ## Navegação
 - **Comandas = atender**;
@@ -16,49 +16,41 @@ Service Worker: `rota27-comandas-v0.25.5-r1`
 - **Histórico = o que aconteceu**.
 
 ## Comandas — Lista + Mapa
-O Mapa continua organizando as mesmas comandas abertas em Mesas, Balcão, Parklet, Clientes e Outros locais.
+A v0.25.6 corrige o Mapa usando a própria estrutura visual da Lista.
 
-### v0.25.5 — card compacto refinado
-- Balcão: o cliente passa a ser o título principal; `Balcão` vira contexto secundário;
-- Mesas/Parklet: o identificador espacial continua em primeiro plano;
-- faixa preta pesada removida do card compacto;
-- acento lateral reduzido a um traço laranja de 3 px;
-- fundo, moldura, sombra e tipografia continuam coerentes com a Lista;
-- cards permanecem compactos e clicáveis.
+Os cards do Mapa agora reutilizam:
+- `command-card` / `v017-command-card`;
+- título, local, subtotal, rodapé e divisor da Lista;
+- faixa oficial de 6 px com laranja 68% + preto 32%;
+- mesma hierarquia cliente/local da Lista.
+
+O Mapa mantém somente uma compactação de escala e continua com o card inteiro clicável.
 
 ## WhatsApp — segunda cópia fixa
-Além do WhatsApp do gerente, os lançamentos de comanda também são enviados para o número fixo:
+Permanece ativo o envio adicional dos lançamentos para:
 
 `+55 27 99776-9279` (`5527997769279`)
 
-Regras:
-- usa o mesmo backend/template operacional já existente;
-- fila e retry próprios;
-- sem campo de configuração;
-- se o gerente estiver configurado com o mesmo número, não envia duplicado;
-- se o próprio cliente da comanda usar esse mesmo número com opt-in, também evita duplicidade.
-
-O aparelho onde o lançamento ocorre precisa continuar com a integração de WhatsApp configurada.
+A cópia usa fila própria, retry e o mesmo backend/template operacional. Há proteção contra duplicidade quando gerente ou cliente já usam o mesmo número.
 
 ## Painel e módulos preservados
 Permanecem Visão Gerencial, Estoque Essencial, Compras & Reposição, Clientes & Fidelização, Inventário & Conferência, Custos & Margem e sincronização multidispositivo.
 
 ## Backend
-A v0.25.5 não cria Edge Function, tabela, migration ou tipo de evento novo. A nova cópia reutiliza `rota27-whatsapp` já existente.
+A v0.25.6 não cria Edge Function, tabela, migration ou evento novo.
 
 ## Ajuda
-Ajuda **v5.6** identifica a release v0.25.5 e explica a cópia fixa.
+Ajuda **v5.7** identifica a release v0.25.6.
 
 ## Atualização da PWA
 Não limpar dados nem reinstalar. Abra a PWA online, aguarde 20–30 segundos, feche completamente e abra novamente.
 
 ## Documentos
-- `docs/RELEASE-v0.25.5.md`
-- `docs/HANDOFF-CONTEXTO-v0.25.5.md`
-- `docs/VALIDACAO-v0.25.5.md`
+- `docs/RELEASE-v0.25.6.md`
+- `docs/VALIDACAO-v0.25.6.md`
 - `docs/STATUS-PRODUCAO.md`
 
-Baseline de rollback: **v0.25.4**.
+Baseline de rollback: **v0.25.5**.
 
 ## Versão
-Produção: **0.25.5**
+Produção: **0.25.6**
