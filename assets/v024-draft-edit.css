@@ -1,0 +1,39 @@
+/* Rota 27 v0.24.0 — edição compacta de pedido em rascunho */
+.v024-draft-edit-sheet{max-width:900px!important}
+.v024-de-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:14px}
+.v024-de-head h3{margin:2px 0 4px;font-size:24px}
+.v024-de-head .desc{margin:0;color:#756656}
+.v024-de-kicker{display:inline-block;font-size:11px;font-weight:900;letter-spacing:.08em;color:#8a6d45}
+.v024-de-close{width:44px;height:44px;border:0;border-radius:14px;background:#111;color:#fff;font-size:25px;line-height:1;cursor:pointer}
+.v024-de-summary{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0}
+.v024-de-summary>div,.v024-de-total>span{background:#f4eadb;border-radius:14px;padding:10px 12px;display:flex;flex-direction:column;gap:3px}
+.v024-de-summary small,.v024-de-total small,.v024-de-field small,.v024-de-item label small,.v024-de-subtotal small{color:#756656;font-size:11px}
+.v024-de-summary strong,.v024-de-total b{font-size:16px}
+.v024-de-field{display:flex;flex-direction:column;gap:5px;margin:10px 0}
+.v024-de-field select,.v024-de-field textarea,.v024-de-add select,.v024-de-item input{width:100%;box-sizing:border-box;border:1px solid #d8c6a7;background:#fff;border-radius:12px;padding:11px 12px;font:inherit;color:#111}
+.v024-de-items{display:flex;flex-direction:column;gap:9px;margin:12px 0}
+.v024-de-item{display:grid;grid-template-columns:minmax(190px,1.5fr) 120px 155px 125px auto;gap:9px;align-items:end;border:1px solid #e1ceb0;border-radius:16px;padding:11px;background:#fffaf2}
+.v024-de-item-name{align-self:center;min-width:0}.v024-de-item-name strong{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.v024-de-item-name small{display:block;color:#8b7a67;margin-top:2px}
+.v024-de-item label{display:flex;flex-direction:column;gap:4px}.v024-de-subtotal{display:flex;flex-direction:column;gap:4px;padding-bottom:10px}.v024-de-subtotal b{font-size:15px}
+.v024-de-remove{min-height:42px;border:1px solid #d9b6ad;background:#fff4f1;color:#9b3e33;border-radius:11px;padding:8px 12px;font-weight:800}
+.v024-de-add{display:grid;grid-template-columns:1fr auto;gap:8px;margin:10px 0}.v024-de-add button{border:1px solid #d8c6a7;background:#fff8ed;border-radius:12px;padding:10px 14px;font-weight:800}
+.v024-de-total{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}
+.v024-de-actions{display:grid;grid-template-columns:1fr 1.4fr;gap:10px;margin-top:12px}.v024-de-actions button{min-height:46px;border:1px solid #d8c6a7;border-radius:13px;background:#fff8ed;font-weight:900;font-size:15px}.v024-de-actions .primary{background:#111;color:#fff;border-color:#111}
+.v024-de-warning{padding:14px;border:1px solid #d8c6a7;border-radius:14px;background:#fff3df;margin:10px 0 14px}
+.v022-order-actions [data-v024-action="edit-draft"]{font-weight:900}
+@media(max-width:760px){
+  .v024-draft-edit-sheet{max-width:none!important}
+  .v024-de-head h3{font-size:21px}
+  .v024-de-summary{grid-template-columns:1fr 1fr}
+  .v024-de-item{grid-template-columns:1fr 1fr;gap:7px;padding:10px}
+  .v024-de-item-name{grid-column:1/-1}
+  .v024-de-subtotal{padding:7px 9px;background:#f4eadb;border-radius:11px;justify-content:center}
+  .v024-de-remove{align-self:stretch}
+  .v024-de-add{grid-template-columns:1fr}.v024-de-add button{min-height:42px}
+  .v024-de-total{grid-template-columns:1fr 1fr}
+  .v024-de-actions{grid-template-columns:1fr 1fr}
+}
+@media(max-width:390px){
+  .v024-de-summary,.v024-de-total{grid-template-columns:1fr}
+  .v024-de-actions{grid-template-columns:1fr}
+}
