@@ -1,4 +1,4 @@
-const CACHE_NAME = 'rota27-comandas-v0.22.0';
+const CACHE_NAME = 'rota27-comandas-v0.23.0';
 const APP_SHELL = [
   './','./index.html','./base-v013.html',
   './assets/v014.css','./assets/v014.js','./assets/v014-dev3.css','./assets/v014-dev3.js','./assets/v014-rc2-category-fix.js','./assets/v014-final.js',
@@ -14,6 +14,7 @@ const APP_SHELL = [
   './assets/v020-manager-dashboard.css','./assets/v020-manager-dashboard.js','./assets/v020-demo-mode.css','./assets/v020-demo-mode.js','./assets/v020-preview-demo.js',
   './assets/v021-stock.css','./assets/v021-stock.js','./assets/v021-compat.js','./assets/v021-help-compat.js',
   './assets/v022-stock-preflight.js','./assets/v022-stock-release.js','./assets/v022-stock-manager-view.css','./assets/v022-stock-manager-view.js','./assets/v022-stock-view-bridge.js','./assets/v022-purchases.css','./assets/v022-purchases.js','./assets/v022-compat.js','./assets/v022-manager-view.css','./assets/v022-manager-view.js',
+  './assets/v023-inventory.css','./assets/v023-inventory.js',
   './assets/brand/rota27-logo-oficial.png',
   './manifest.webmanifest','./icons/apple-touch-icon.png','./icons/icon-192.png','./icons/icon-512.png','./icons/icon-192-maskable.png','./icons/icon-512-maskable.png','./icons/favicon-32.png'
 ];
