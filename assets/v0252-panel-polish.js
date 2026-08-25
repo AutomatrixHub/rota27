@@ -60,14 +60,6 @@
     return true;
   }
 
-  /*
-   * O Painel legado ainda redesenha screenPanel usando innerHTML. Em vez de
-   * criar outro MutationObserver ou polling, a R4 intercepta somente a escrita
-   * de innerHTML deste elemento. Depois do render nativo, agenda uma única
-   * recomposição da posição do Relacionamento. O observer legado único da
-   * compatibilidade v0.22 restaura primeiro Visão/Estoque/Compras; se necessário,
-   * um requestAnimationFrame único cobre apenas a ordem de microtasks.
-   */
   function scheduleRelationshipRepair(){
     const repair=()=>{
       if(ensureRelationshipOrder())return;
