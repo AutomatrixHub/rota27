@@ -1,8 +1,13 @@
-/* Rota 27 v0.25.2 R4 — ordem e acabamento do Painel */
+/* Rota 27 v0.25.2 R5 — ordem, estabilidade e acabamento do Painel */
 (function(){
   'use strict';
 
   const VERSION='0.25.2';
+  const PANEL_ICONS=[
+    {entryId:'v020ManagerEntry',head:'.v020-manager-entry-head',symbol:'📊',label:'Visão Gerencial',kind:'manager'},
+    {entryId:'v021StockEntry',head:'.v021-stock-entry-head',symbol:'📦',label:'Estoque Essencial',kind:'stock'},
+    {entryId:'v022PurchasesEntry',head:'.v022-panel-entry-head',symbol:'🛒',label:'Compras & Reposição',kind:'purchases'}
+  ];
 
   function byId(id){return document.getElementById(id);}
   function esc(v){
@@ -60,10 +65,44 @@
     return true;
   }
 
-  function scheduleRelationshipRepair(){
+  function ensurePanelIcons(){
+    let complete=true;
+    PANEL_ICONS.forEach(cfg=>{
+      const entry=byId(cfg.entryId);
+      const head=entry?.querySelector(cfg.head);
+      if(!entry||!head){complete=false;return;}
+      let icon=head.querySelector(':scope > .v0252-panel-icon');
+      if(!icon){
+        icon=document.createElement('span');
+        icon.className=`v0252-panel-icon v0252-panel-icon-${cfg.kind}`;
+        icon.setAttribute('aria-hidden','true');
+        icon.dataset.v0252PanelIcon=cfg.kind;
+        head.insertBefore(icon,head.firstElementChild||null);
+      }
+      if(icon.textContent!==cfg.symbol)icon.textContent=cfg.symbol;
+      icon.title=cfg.label;
+    });
+    return complete;
+  }
+
+  function repairPanelDecor(){
+    const relationshipOk=ensureRelationshipOrder();
+    const iconsOk=ensurePanelIcons();
+    return relationshipOk&&iconsOk;
+  }
+
+  /*
+   * O Painel legado ainda redesenha screenPanel usando innerHTML. Em vez de
+   * criar outro MutationObserver ou polling, a R4/R5 intercepta somente a
+   * escrita de innerHTML deste elemento. Depois do render nativo, recompõe a
+   * ordem do Relacionamento e os três ícones do Painel. O observer legado único
+   * da compatibilidade v0.22 restaura primeiro Visão/Estoque/Compras; se a ordem
+   * de microtasks exigir, um único requestAnimationFrame completa a decoração.
+   */
+  function schedulePanelRepair(){
     const repair=()=>{
-      if(ensureRelationshipOrder())return;
-      requestAnimationFrame(()=>ensureRelationshipOrder());
+      if(repairPanelDecor())return;
+      requestAnimationFrame(()=>repairPanelDecor());
     };
     if(typeof queueMicrotask==='function')queueMicrotask(repair);
     else Promise.resolve().then(repair);
@@ -82,7 +121,7 @@
         get:function(){return descriptor.get.call(this);},
         set:function(value){
           descriptor.set.call(this,value);
-          scheduleRelationshipRepair();
+          schedulePanelRepair();
         }
       });
       panel.dataset.v0252RelationshipBridge='1';
@@ -95,9 +134,10 @@
 
   function refresh(){
     installPanelRenderBridge();
-    ensureRelationshipOrder();
+    repairPanelDecor();
     try{window.Rota27V0251?.refresh?.();}catch{}
     updateClientSummary();
+    ensurePanelIcons();
   }
 
   function handleClick(e){
@@ -116,8 +156,8 @@
     window.addEventListener('rota27:v021-stock-updated',refresh);
     window.addEventListener('rota27:v022-purchases-updated',refresh);
     document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')refresh();});
-    window.Rota27V0252Panel={version:VERSION,refresh,ensureRelationshipOrder};
-    console.info('[Rota27] v0.25.2 R4 refinamento estável do Painel carregado.');
+    window.Rota27V0252Panel={version:VERSION,refresh,ensureRelationshipOrder,ensurePanelIcons};
+    console.info('[Rota27] v0.25.2 R5 acabamento estável do Painel carregado.');
   }
 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
