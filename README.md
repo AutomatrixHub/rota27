@@ -4,84 +4,72 @@ Aplicativo mobile-first, offline-first e multidispositivo para controle rápido 
 
 ## Produção
 
-**Versão: v0.25.1 — Navegação & Configurações**  
+**Versão: v0.25.2 — Mapa Rápido de Comandas & Painel Padronizado**  
 Branch: `main`  
 GitHub Pages: `https://automatrixhub.github.io/rota27/`  
-Service Worker: `rota27-comandas-v0.25.1-r1`
+Service Worker: `rota27-comandas-v0.25.2-r7`
 
-A v0.25.1 preserva integralmente a funcionalidade da v0.25.0 e reorganiza a arquitetura de navegação para separar melhor operação, cardápio, administração e histórico.
-
-## Arquitetura de navegação
-
-Regra mental da interface:
+## Navegação
 - **Comandas = atender**;
 - **Cardápio = o que é vendido**;
 - **Painel = administrar o negócio**;
 - **Histórico = o que aconteceu**.
 
-### Cardápio
-Fica dedicado a:
-- produtos;
-- categorias;
-- preços;
-- importação/exportação;
-- busca e edição.
+## Comandas — Lista + Mapa
+A v0.25.2 acrescenta um segundo modo de visualização sem substituir a Lista.
 
-Clientes, WhatsApps e Sincronização não aparecem mais nessa tela.
-
-### Painel
-Passa a concentrar administração e integrações.
-
-Bloco **Relacionamento**:
-- Clientes & Fidelização.
-
-Bloco **Configurações & Integrações**:
-- WhatsApp da comanda;
-- WhatsApp do gerente;
-- Sincronização entre aparelhos.
-
-Os novos acessos reutilizam os fluxos/configuradores existentes. Nenhum cadastro, token ou configuração foi duplicado.
-
-## Clientes & Fidelização — v0.25
-Acesso em `Painel → Relacionamento → Clientes & Fidelização`.
-
-A Central possui:
-- Visão geral;
+### Mapa Rápido
+Organiza as mesmas comandas abertas em:
+- Mesas;
+- Balcão;
+- Parklet;
 - Clientes;
-- Para lembrar.
+- Outros locais.
 
-Métricas e sinais derivados:
-- visitas, total identificado, ticket médio e itens;
-- primeira e última visita;
-- ritmo médio;
-- produtos/categorias preferidos;
+Cada card compacto exibe identificação, valor, cliente/local, itens e tempos. Um toque abre a comanda existente.
+
+Atalhos rápidos:
+- `+ Mesa`;
+- `+ Balcão`;
+- `+ Parklet`;
+- `+ Cliente`.
+
+A preferência Lista/Mapa é local ao aparelho.
+
+## Painel
+Os quatro acessos principais seguem o mesmo padrão visual:
+1. Visão Gerencial;
+2. Estoque Essencial;
+3. Compras & Reposição;
+4. Clientes & Fidelização.
+
+R7 normaliza moldura, altura-base, padding, tipografia, ícones e ações. O badge visual legado `v0.22.0` de Compras não aparece mais.
+
+Os ícones são lineares e monocromáticos via CSS, evitando desaparecimento nos renders legados.
+
+## Clientes & Fidelização
+A funcionalidade da v0.25 permanece preservada:
+- Visão geral / Clientes / Para lembrar;
+- visitas, ticket, preferências e ritmo;
 - níveis Novo / Recorrente / Frequente / Cliente da casa;
 - Sumido;
 - marcos de 5/10 visitas;
-- cadastro frequente sem WhatsApp;
-- oportunidade `Preferido chegou recentemente`.
-
-O WhatsApp de relacionamento permanece exclusivamente manual: o sistema apenas monta um rascunho contextual para o proprietário revisar e decidir se envia.
+- WhatsApp contextual manual;
+- `Preferido chegou recentemente`.
 
 ## Estoque, Compras, Inventário e Custos
 Permanecem preservados:
 - Estoque Essencial;
 - Compras & Reposição;
-- edição de pedidos em rascunho;
 - recebimento parcial/total;
 - Inventário & Conferência;
 - Custos & Margem;
-- histórico e CSVs.
+- históricos e CSVs.
 
-Regra financeira preservada: **preço de venda nunca substitui custo de aquisição**.
+Regra financeira: **preço de venda nunca substitui custo de aquisição**.
 
 ## Sincronização e backend
-O Rota 27 permanece local-first e multidispositivo.
-
-A v0.25.1 não cria:
-- novo evento de sincronização;
-- tabela ou migration;
-- nova Edge Function.
+A v0.25.2 não cria evento, tabela, migration ou Edge Function nova.
 
 Backend preservado:
 - `rota27-sync`: versão 7 ACTIVE (`rota27-sync-v0.23.0`);
@@ -90,34 +78,14 @@ Backend preservado:
 - `rota27-whatsapp-inbound`: versão 1 ACTIVE.
 
 ## Estabilidade
-A reorganização foi implementada como camada final de UI.
+Preservar:
+- sem polling visual frequente novo;
+- sem `MutationObserver` concorrente no Painel.
 
-Preservar a regra consolidada desde a v0.21:
-- não adicionar polling visual frequente;
-- não adicionar `MutationObserver` concorrente ao Painel.
+A v0.25.2 usa uma ponte específica do `innerHTML` de `screenPanel` apenas para restaurar o quarto card após renders legados. Os ícones são CSS e não dependem de reinjeção de DOM.
 
-A camada v0.25.1 não adiciona `setInterval` nem `MutationObserver`.
-
-## Validação da v0.25.1
-A candidata foi testada e aprovada pelo proprietário em 25/08/2026.
-
-Foram validados:
-- Cardápio sem os quatro blocos administrativos;
-- Painel com Relacionamento e Configurações & Integrações;
-- Clientes & Fidelização abrindo pelo novo local;
-- WhatsApp da comanda abrindo o configurador existente;
-- WhatsApp do gerente abrindo o fluxo existente;
-- Sincronização abrindo o configurador existente;
-- configurações previamente salvas preservadas;
-- layout mobile;
-- ausência de regressão crítica relatada no teste.
-
-Baseline de rollback: **v0.25.0 — Clientes & Fidelização**.
-
-## Tema e Ajuda
-- operação em laranja, preto e creme/marfim;
-- verde/amarelo/vermelho reservados a estados funcionais;
-- Ajuda **v5.2** inclui a nova localização de Clientes e configurações.
+## Ajuda
+Ajuda **v5.3** inclui o Mapa Rápido de Comandas.
 
 ## Atualização da PWA
 Quem já possui o Rota 27 instalado não precisa reinstalar:
@@ -125,19 +93,20 @@ Quem já possui o Rota 27 instalado não precisa reinstalar:
 2. abrir a PWA e aguardar 10–20 segundos;
 3. fechar completamente;
 4. abrir novamente;
-5. confirmar `v0.25.1` e sincronização saudável.
+5. confirmar `v0.25.2` e sincronização saudável.
 
 **Não limpar dados do navegador e não remover a PWA para atualizar.**
 
 ## Documentos principais
-- `docs/RELEASE-v0.25.1.md`
+- `docs/RELEASE-v0.25.2.md`
 - `docs/STATUS-PRODUCAO.md`
-- `docs/HANDOFF-CONTEXTO-v0.25.1.md`
-- `docs/TESTE-v0.25.1.md`
-- `docs/ESPEC-v0.25.1.md`
-- `docs/RELEASE-v0.25.0.md`
-- `docs/HANDOFF-CONTEXTO-v0.25.0.md`
+- `docs/HANDOFF-CONTEXTO-v0.25.2.md`
+- `docs/VALIDACAO-v0.25.2.md`
+- `docs/TESTE-v0.25.2.md`
+- `docs/ESPEC-v0.25.2.md`
 - `docs/PRODUCT-PRINCIPLES.md`
 
+Baseline de rollback: **v0.25.1 — Navegação & Configurações**.
+
 ## Versão
-Produção: **0.25.1**
+Produção: **0.25.2**
