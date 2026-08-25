@@ -1,29 +1,86 @@
-/* Rota 27 v0.25.2 R6 — refinamento visual estável do Painel */
+/* Rota 27 v0.25.2 R7 — normalização visual dos quatro cards principais */
 
 /*
- * R6 abandona emojis/elementos inseridos via JS. Os ícones passam a ser
- * pseudo-elementos CSS do próprio cabeçalho de cada card, portanto sobrevivem
- * aos innerHTML dos módulos legados sem depender de reinjeção no DOM.
+ * Visão Gerencial, Estoque Essencial, Compras & Reposição e
+ * Clientes & Fidelização passam a compartilhar a mesma gramática visual:
+ * card, ícone, tipografia, descrição e ação.
  */
+#screenPanel #v020ManagerEntry,
+#screenPanel #v021StockEntry,
+#screenPanel #v022PurchasesEntry,
+#screenPanel #v0252RelationshipSection{
+  box-sizing:border-box!important;
+  margin:0 0 14px!important;
+  padding:0!important;
+  min-height:112px!important;
+  border:1px solid #dcc9a9!important;
+  border-radius:22px!important;
+  background:#fffaf2!important;
+  box-shadow:0 5px 16px rgba(59,39,24,.045)!important;
+  overflow:hidden!important;
+}
+
 #screenPanel .v020-manager-entry-head,
 #screenPanel .v021-stock-entry-head,
-#screenPanel #v022PurchasesEntry .v022-panel-entry-head{
+#screenPanel #v022PurchasesEntry .v022-panel-entry-head,
+#screenPanel #v0252RelationshipSection .v0252-relationship-entry-head{
+  box-sizing:border-box!important;
+  min-height:112px!important;
+  padding:18px 18px!important;
   display:grid!important;
   grid-template-columns:50px minmax(0,1fr) 172px!important;
   gap:14px!important;
   align-items:center!important;
+  background:transparent!important;
+  border:0!important;
 }
 
 #screenPanel .v020-manager-entry-head > div,
 #screenPanel .v021-stock-entry-head > div,
-#screenPanel #v022PurchasesEntry .v022-panel-entry-head > div{
+#screenPanel #v022PurchasesEntry .v022-panel-entry-head > div,
+#screenPanel #v0252RelationshipSection .v0252-relationship-copy{
   min-width:0!important;
   width:auto!important;
+  display:flex!important;
+  flex-direction:column!important;
+  justify-content:center!important;
+  gap:4px!important;
 }
 
+/* Tipografia única para os quatro cards. */
+#screenPanel .v020-manager-entry-head > div > strong,
+#screenPanel .v021-stock-entry-head > div > strong,
+#screenPanel #v022PurchasesEntry .v022-panel-entry-head > div > strong,
+#screenPanel #v0252RelationshipSection .v0252-relationship-copy > strong{
+  margin:0!important;
+  font-size:18px!important;
+  line-height:1.2!important;
+  font-weight:850!important;
+  color:#111!important;
+}
+
+#screenPanel .v020-manager-entry-head > div > small,
+#screenPanel .v021-stock-entry-head > div > small,
+#screenPanel #v022PurchasesEntry .v022-panel-entry-head > div > small,
+#screenPanel #v0252RelationshipSection .v0252-relationship-copy > small{
+  display:block!important;
+  margin:0!important;
+  font-size:14px!important;
+  line-height:1.45!important;
+  font-weight:450!important;
+  color:#735e4d!important;
+}
+
+/* Remove qualquer rastro visual de versão legada no card de Compras. */
+#screenPanel #v022PurchasesEntry .v022-mini-label{
+  display:none!important;
+}
+
+/* Ícones lineares e monocromáticos, estáveis mesmo com innerHTML legado. */
 #screenPanel .v020-manager-entry-head::before,
 #screenPanel .v021-stock-entry-head::before,
-#screenPanel #v022PurchasesEntry .v022-panel-entry-head::before{
+#screenPanel #v022PurchasesEntry .v022-panel-entry-head::before,
+#screenPanel #v0252RelationshipSection .v0252-relationship-entry-head::before{
   content:"";
   width:50px;
   height:50px;
@@ -52,17 +109,24 @@
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23775331' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 5h2l2 10h10l2-7H6M9 19a1 1 0 1 0 0 .01M17 19a1 1 0 1 0 0 .01'/%3E%3C/svg%3E");
 }
 
-/* Três ações principais com o mesmo peso e a mesma caixa; cada módulo preserva sua cor. */
+#screenPanel #v0252RelationshipSection .v0252-relationship-entry-head::before{
+  background-color:#eee8f2;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23664f76' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M16 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2M9.5 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8M17 11a3 3 0 1 0 0-6M21 21v-2a4 4 0 0 0-3-3.87'/%3E%3C/svg%3E");
+}
+
+/* Ações principais com a mesma caixa. Cada módulo preserva sua cor. */
 #screenPanel .v020-manager-open,
 #screenPanel .v021-stock-open,
-#screenPanel #v022PurchasesEntry .v022-panel-entry-head > button{
-  box-sizing:border-box;
+#screenPanel #v022PurchasesEntry .v022-panel-entry-head > button,
+#screenPanel #v0252RelationshipSection .v0252-relationship-open{
+  box-sizing:border-box!important;
   width:172px!important;
   min-width:172px!important;
   max-width:172px!important;
   height:54px!important;
   min-height:54px!important;
   padding:0 14px!important;
+  border:0!important;
   border-radius:14px!important;
   font-size:13px!important;
   line-height:1.15!important;
@@ -72,21 +136,37 @@
   justify-content:center!important;
   text-align:center!important;
   white-space:normal!important;
-  flex:0 0 172px!important;
+  cursor:pointer!important;
 }
 
-/* Relacionamento permanece na sequência operacional do próprio Painel. */
-#v0252RelationshipSection{
-  margin:14px 0!important;
+#screenPanel #v0252RelationshipSection .v0252-relationship-open{
+  color:#fff!important;
+  background:#6b5578!important;
 }
-#v0252RelationshipSection .v0251-card{
-  box-shadow:0 4px 12px rgba(59,39,24,.05);
+
+#screenPanel #v0252RelationshipSection .v0251-dot{
+  display:inline-block!important;
+  width:8px!important;
+  height:8px!important;
+  margin-right:6px!important;
+  border-radius:50%!important;
+  vertical-align:1px!important;
 }
 
 @media(max-width:760px){
+  #screenPanel #v020ManagerEntry,
+  #screenPanel #v021StockEntry,
+  #screenPanel #v022PurchasesEntry,
+  #screenPanel #v0252RelationshipSection{
+    min-height:0!important;
+  }
+
   #screenPanel .v020-manager-entry-head,
   #screenPanel .v021-stock-entry-head,
-  #screenPanel #v022PurchasesEntry .v022-panel-entry-head{
+  #screenPanel #v022PurchasesEntry .v022-panel-entry-head,
+  #screenPanel #v0252RelationshipSection .v0252-relationship-entry-head{
+    min-height:0!important;
+    padding:16px!important;
     grid-template-columns:46px minmax(0,1fr)!important;
     gap:11px!important;
     align-items:center!important;
@@ -94,22 +174,39 @@
 
   #screenPanel .v020-manager-entry-head::before,
   #screenPanel .v021-stock-entry-head::before,
-  #screenPanel #v022PurchasesEntry .v022-panel-entry-head::before{
+  #screenPanel #v022PurchasesEntry .v022-panel-entry-head::before,
+  #screenPanel #v0252RelationshipSection .v0252-relationship-entry-head::before{
     width:46px;
     height:46px;
     border-radius:14px;
     background-size:24px 24px;
   }
 
+  #screenPanel .v020-manager-entry-head > div > strong,
+  #screenPanel .v021-stock-entry-head > div > strong,
+  #screenPanel #v022PurchasesEntry .v022-panel-entry-head > div > strong,
+  #screenPanel #v0252RelationshipSection .v0252-relationship-copy > strong{
+    font-size:17px!important;
+  }
+
+  #screenPanel .v020-manager-entry-head > div > small,
+  #screenPanel .v021-stock-entry-head > div > small,
+  #screenPanel #v022PurchasesEntry .v022-panel-entry-head > div > small,
+  #screenPanel #v0252RelationshipSection .v0252-relationship-copy > small{
+    font-size:13px!important;
+    line-height:1.4!important;
+  }
+
   #screenPanel .v020-manager-open,
   #screenPanel .v021-stock-open,
-  #screenPanel #v022PurchasesEntry .v022-panel-entry-head > button{
+  #screenPanel #v022PurchasesEntry .v022-panel-entry-head > button,
+  #screenPanel #v0252RelationshipSection .v0252-relationship-open{
     grid-column:1/-1!important;
     width:100%!important;
     min-width:0!important;
     max-width:none!important;
     height:50px!important;
     min-height:50px!important;
-    flex:1 1 auto!important;
+    margin-top:3px!important;
   }
 }
