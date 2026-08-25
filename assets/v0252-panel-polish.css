@@ -1,10 +1,9 @@
-/* Rota 27 v0.25.2 R5 — refinamento visual do Painel */
+/* Rota 27 v0.25.2 R6 — refinamento visual estável do Painel */
 
 /*
- * Visão Gerencial, Estoque Essencial e Compras & Reposição passam a usar a
- * mesma gramática visual do acesso Clientes & Fidelização: ícone à esquerda,
- * conteúdo no centro e ação à direita. As cores dos botões continuam sendo
- * definidas pelos próprios módulos.
+ * R6 abandona emojis/elementos inseridos via JS. Os ícones passam a ser
+ * pseudo-elementos CSS do próprio cabeçalho de cada card, portanto sobrevivem
+ * aos innerHTML dos módulos legados sem depender de reinjeção no DOM.
  */
 #screenPanel .v020-manager-entry-head,
 #screenPanel .v021-stock-entry-head,
@@ -18,26 +17,40 @@
 #screenPanel .v020-manager-entry-head > div,
 #screenPanel .v021-stock-entry-head > div,
 #screenPanel #v022PurchasesEntry .v022-panel-entry-head > div{
-  min-width:0;
+  min-width:0!important;
+  width:auto!important;
 }
 
-.v0252-panel-icon{
+#screenPanel .v020-manager-entry-head::before,
+#screenPanel .v021-stock-entry-head::before,
+#screenPanel #v022PurchasesEntry .v022-panel-entry-head::before{
+  content:"";
   width:50px;
   height:50px;
   box-sizing:border-box;
-  display:grid;
-  place-items:center;
+  display:block;
   border-radius:15px;
-  background:var(--surface-2,#f1e4d2);
-  border:1px solid rgba(143,68,33,.06);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.5);
-  font-size:25px;
-  line-height:1;
-  user-select:none;
+  border:1px solid rgba(143,68,33,.08);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.55);
+  background-position:center;
+  background-repeat:no-repeat;
+  background-size:26px 26px;
 }
-.v0252-panel-icon-manager{background:#f1e4d2}
-.v0252-panel-icon-stock{background:#edf1df}
-.v0252-panel-icon-purchases{background:#eee5d5}
+
+#screenPanel .v020-manager-entry-head::before{
+  background-color:#f1e4d2;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236f4935' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 19V10M10 19V5M16 19v-7M3 19h18'/%3E%3C/svg%3E");
+}
+
+#screenPanel .v021-stock-entry-head::before{
+  background-color:#edf1df;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23576b3f' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 7.5 12 3l8 4.5v9L12 21l-8-4.5zM4 7.5 12 12l8-4.5M12 12v9'/%3E%3C/svg%3E");
+}
+
+#screenPanel #v022PurchasesEntry .v022-panel-entry-head::before{
+  background-color:#eee5d5;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23775331' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 5h2l2 10h10l2-7H6M9 19a1 1 0 1 0 0 .01M17 19a1 1 0 1 0 0 .01'/%3E%3C/svg%3E");
+}
 
 /* Três ações principais com o mesmo peso e a mesma caixa; cada módulo preserva sua cor. */
 #screenPanel .v020-manager-open,
@@ -79,11 +92,13 @@
     align-items:center!important;
   }
 
-  .v0252-panel-icon{
+  #screenPanel .v020-manager-entry-head::before,
+  #screenPanel .v021-stock-entry-head::before,
+  #screenPanel #v022PurchasesEntry .v022-panel-entry-head::before{
     width:46px;
     height:46px;
     border-radius:14px;
-    font-size:23px;
+    background-size:24px 24px;
   }
 
   #screenPanel .v020-manager-open,
