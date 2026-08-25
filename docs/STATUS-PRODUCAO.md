@@ -3,18 +3,16 @@
 Última revisão: 25/08/2026
 
 ## Produção
-- versão: **v0.25.1 — Navegação & Configurações**;
+- versão: **v0.25.2 — Mapa Rápido de Comandas & Painel Padronizado**;
 - branch: `main`;
 - GitHub Pages: `https://automatrixhub.github.io/rota27/`;
-- Service Worker: `rota27-comandas-v0.25.1-r1`;
+- Service Worker: `rota27-comandas-v0.25.2-r7`;
 - `rota27-whatsapp`: versão 23 ACTIVE (`rota27-whatsapp-v6-mini2`);
-- `rota27-sync`: **versão 7 ACTIVE** (`rota27-sync-v0.23.0`);
+- `rota27-sync`: versão 7 ACTIVE (`rota27-sync-v0.23.0`);
 - `rota27-whatsapp-inbound`: versão 1 ACTIVE;
 - `rota27-audit`: versão 1 ACTIVE, somente leitura.
 
-A v0.25.1 preserva a baseline funcional da v0.25.0 e reorganiza a navegação para deixar cada área coerente com sua função.
-
-Baseline de rollback: **v0.25.0 — Clientes & Fidelização**.
+Baseline de rollback: **v0.25.1 — Navegação & Configurações**.
 
 ## Navegação oficial
 - **Comandas = atender**;
@@ -22,72 +20,51 @@ Baseline de rollback: **v0.25.0 — Clientes & Fidelização**.
 - **Painel = administrar o negócio**;
 - **Histórico = o que aconteceu**.
 
-### Cardápio
-Exibe apenas funções ligadas ao catálogo:
-- produtos;
-- categorias;
-- preços;
-- importação/exportação;
-- busca e edição.
+## v0.25.2 — Comandas
+A tela de Comandas agora possui:
+- modo Lista;
+- modo Mapa;
+- zonas Mesas, Balcão, Parklet, Clientes e Outros locais;
+- cards compactos clicáveis;
+- atalhos `+ Mesa`, `+ Balcão`, `+ Parklet`, `+ Cliente`;
+- preferência Lista/Mapa local por aparelho.
 
-Não exibe mais:
-- Clientes;
-- WhatsApp do gerente;
-- WhatsApp da comanda;
-- Sincronização entre aparelhos.
+Lista e Mapa usam o mesmo `state.commands`.
 
-### Painel
-Novo bloco **Relacionamento**:
-- Clientes & Fidelização.
+## v0.25.2 — Painel
+Os quatro acessos iniciais estão normalizados no mesmo padrão visual:
+1. Visão Gerencial;
+2. Estoque Essencial;
+3. Compras & Reposição;
+4. Clientes & Fidelização.
 
-Novo bloco **Configurações & Integrações**:
-- WhatsApp da comanda;
-- WhatsApp do gerente;
-- Sincronização entre aparelhos.
+Padronização R7:
+- mesma moldura e altura-base;
+- mesma tipografia de título/descrição;
+- ícones lineares monocromáticos;
+- ações com a mesma caixa;
+- mobile com ação em largura total;
+- badge visual `v0.22.0` removido de Compras.
 
-Os acessos reutilizam os configuradores e dados existentes. Nenhuma configuração foi duplicada.
+Clientes & Fidelização reutiliza o mesmo fluxo já existente; não existe segundo cadastro.
 
-## Validação da v0.25.1
-Em 25/08/2026 a candidata foi testada e aprovada pelo proprietário com a confirmação **“APROVADO!”**.
+## Estabilidade do Painel
+Preservar:
+- sem polling visual frequente novo;
+- sem `MutationObserver` concorrente;
+- ícones via CSS, não reinjetados por JavaScript.
 
-Foram validados:
-- identidade visual v0.25.1;
-- Cardápio sem os quatro blocos administrativos;
-- Painel com os novos agrupamentos;
-- Clientes & Fidelização abrindo corretamente;
-- WhatsApp da comanda abrindo o configurador existente;
-- WhatsApp do gerente abrindo o fluxo existente;
-- Sincronização entre aparelhos abrindo o configurador existente;
-- configurações previamente salvas preservadas;
-- apresentação mobile;
-- ausência de regressão P0/P1 relatada no gate.
-
-Como a v0.25.1 é apenas uma reorganização visual/navegacional e não altera dados, eventos ou backend, não foi criado novo gate A→B específico para esta correção.
-
-## Clientes & Fidelização
-Acesso oficial passa a ser:
-`Painel → Relacionamento → Clientes & Fidelização`.
-
-Toda a funcionalidade da v0.25.0 permanece preservada:
-- Visão geral / Clientes / Para lembrar;
-- níveis Novo / Recorrente / Frequente / Cliente da casa;
-- Sumido;
-- ritmo médio;
-- preferências;
-- marcos de 5/10 visitas;
-- WhatsApp contextual manual;
-- `Preferido chegou recentemente`.
+A ponte específica em `v0252-panel-polish.js` existe apenas para restaurar o quarto card após o `innerHTML` legado de `screenPanel`.
 
 ## Backend e sincronização
-A v0.25.1 **não exige nova Edge Function, evento, tabela ou migration**.
+A v0.25.2 não exige nova Edge Function, evento, tabela ou migration.
 
-A Edge Function `rota27-sync` permanece na versão 7 ACTIVE, `EDGE_VERSION = rota27-sync-v0.23.0`, com autenticação própria por `x-rota27-device-token`.
-
-Permanece aplicada a migration:
-`20260825012842_expand_rota27_sync_event_types_v023`.
+Permanece:
+- `rota27-sync` versão 7 ACTIVE;
+- `EDGE_VERSION = rota27-sync-v0.23.0`;
+- migration `20260825012842_expand_rota27_sync_event_types_v023` aplicada.
 
 ## Módulos preservados
-Continuam válidos:
 - Comandas;
 - Clientes & Fidelização;
 - WhatsApp transacional/inbound;
@@ -99,21 +76,10 @@ Continuam válidos:
 - Inventário & Conferência;
 - Custos & Margem.
 
-A regra financeira permanece: **custo nunca é inferido do preço de venda**.
+Regra financeira preservada: **custo nunca é inferido do preço de venda**.
 
-## Estabilidade do Painel
-Preservar:
-- sem polling visual frequente novo;
-- sem `MutationObserver` concorrente;
-- preferir eventos existentes e renderização sob demanda.
-
-A camada v0.25.1 não adiciona `setInterval` nem `MutationObserver`.
-
-## Ajuda v5.2
-Inclui a nova organização:
-- Cardápio focado em produtos;
-- Clientes & Fidelização no Painel;
-- WhatsApps e Sincronização em Configurações & Integrações.
+## Ajuda
+Ajuda **v5.3**, incluindo Mapa Rápido de Comandas.
 
 ## Atualização da PWA
 Não reinstalar e não limpar dados:
@@ -121,12 +87,12 @@ Não reinstalar e não limpar dados:
 2. abrir a PWA por 10–20 segundos;
 3. fechar completamente;
 4. abrir novamente;
-5. confirmar `v0.25.1` e sincronização saudável.
+5. confirmar `v0.25.2` e sincronização saudável.
 
 ## Segurança
 - nenhum token/App Secret versionado;
-- nenhuma migration nova na v0.25.1;
+- nenhuma migration nova na v0.25.2;
 - operação local-first preservada;
-- nenhuma alteração de regra de negócio ou backend nesta revisão.
+- nenhuma alteração de backend nesta release.
 
-Ver `docs/RELEASE-v0.25.1.md`.
+Ver `docs/RELEASE-v0.25.2.md`.
