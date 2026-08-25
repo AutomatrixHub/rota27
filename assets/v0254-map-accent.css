@@ -1,0 +1,46 @@
+/* Rota 27 v0.25.4 — acabamento refinado do acento lateral do Mapa */
+
+/*
+ * A v0.25.3 copiou literalmente a faixa 6px/68-32 da Lista para um card muito
+ * menor. No Mapa isso ficou pesado e com um corte visual abrupto. A v0.25.4
+ * preserva a mesma linguagem (laranja + preto), mas adapta a proporção à
+ * densidade compacta: traço mais fino, respiro nas extremidades e transição
+ * progressiva entre as duas cores.
+ */
+.v0252-slot{
+  border-radius:18px!important;
+  padding-left:13px!important;
+  overflow:hidden!important;
+}
+
+.v0252-slot::before,
+.v0252-zone-tables::before,
+.v0252-zone-counter::before,
+.v0252-zone-parklet::before,
+.v0252-zone-clients::before,
+.v0252-zone-other::before{
+  content:""!important;
+  position:absolute!important;
+  left:0!important;
+  top:7px!important;
+  bottom:7px!important;
+  width:4px!important;
+  border-radius:0 4px 4px 0!important;
+  background:linear-gradient(
+    180deg,
+    var(--brand-2,#DF6536) 0%,
+    var(--brand-2,#DF6536) 74%,
+    #b55431 79%,
+    #5f2d22 84%,
+    var(--brand,#111111) 90%,
+    var(--brand,#111111) 100%
+  )!important;
+  box-shadow:1px 0 0 rgba(255,255,255,.28)!important;
+}
+
+.v0252-slot:active::before{
+  transform:scaleY(.97);
+}
+
+/* Identidade pública da revisão. */
+#v14VersionBadge::after{content:"v0.25.4"!important}
