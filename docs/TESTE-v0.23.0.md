@@ -1,237 +1,78 @@
-# Rota 27 v0.23.0 — Plano de teste da candidata
+# Rota 27 v0.23.0 — Validação da release
 
 ## Estado
-**CANDIDATA EM DESENVOLVIMENTO — NÃO PUBLICADA EM PRODUÇÃO.**
-
-Produção preservada: **v0.22.0 — Compras & Reposição**.
+**APROVADA PARA PRODUÇÃO.**
 
 PR: **#28 — Rota 27 v0.23.0 — Inventário & Conferência**.
 
-## Objetivo
-Validar uma conferência física segura e rápida, principalmente no celular, garantindo que nenhum saldo mude antes da confirmação final e que cada divergência produza no máximo um ajuste.
+Em 24/08/2026 a candidata foi validada em desktop, celular e em dois aparelhos com sincronização A→B.
 
----
+## Objetivo validado
+Conferência física rápida e segura, garantindo que:
+- nenhum saldo mude durante a contagem;
+- o sistema compare esperado x contado em tempo real;
+- divergências só alterem estoque após confirmação final;
+- cada divergência gere no máximo um ajuste idempotente;
+- sessões e ajustes converjam entre aparelhos.
 
-## A — carregamento e regressão visual
-
-### A1. Abrir candidata
-Esperado:
-- versão visível `v0.23.0`;
-- Painel estável;
-- Visão Gerencial, Estoque Essencial e Compras & Reposição preservados;
-- nenhuma cintilação/travamento.
-
-### A2. Estoque Essencial
-Esperado:
-- Central gerencial v0.22 preservada;
-- botão `Inventário` disponível no Estoque;
-- bloco de situação da última conferência/andamento;
-- layout mobile compacto preservado.
-
----
-
-## B — início da conferência
-
-### B1. Sem produto controlado
-Esperado:
-- inventário não inicia;
-- orientação para ativar controle de estoque.
-
-### B2. Com produtos controlados
-Esperado:
-- cria uma única conferência em estado `open`;
-- lista somente produtos com controle ativo;
-- captura saldo físico do sistema como `Esperado`;
-- estoque não muda.
-
-### B3. Segunda conferência simultânea
-Esperado:
-- não cria outra;
-- direciona para continuar a existente.
-
----
-
-## C — contagem
-
-### C1. Digitar quantidade igual ao esperado
-Esperado:
-- diferença `0` / `OK`;
-- progresso aumenta;
-- saldo do Estoque Essencial continua inalterado.
-
-### C2. Quantidade menor
-Esperado:
-- diferença negativa destacada como falta.
-
-### C3. Quantidade maior
-Esperado:
-- diferença positiva destacada como sobra.
-
-### C4. Atalhos
-Testar:
-- `Igual ao sistema`;
-- `Sem unidade`;
-- Anterior;
-- Salvar e próximo.
-
-Esperado:
-- navegação rápida no celular;
-- cada valor persiste ao voltar ao produto.
-
-### C5. Busca/filtros
-Validar:
-- busca por produto;
-- categoria;
-- Todos;
-- Pendentes;
-- Divergentes.
-
----
-
-## D — pausar e continuar
-
-### D1. Pausar
-Esperado:
-- conferência continua salva;
-- nenhum ajuste de estoque é criado.
-
-### D2. Fechar/reabrir candidata
-Esperado:
-- botão `Continuar conferência`;
-- progresso e quantidades já contadas permanecem.
-
----
-
-## E — proteção contra estoque em movimento
-
-### E1. Iniciar inventário e depois registrar movimento no Estoque
-Pode ser Entrada, Perda, venda por fechamento de comanda ou recebimento de compra.
-
-Esperado:
-- revisão detecta movimento posterior ao início;
-- finalização fica bloqueada;
-- orientação para cancelar/reiniciar a conferência em período sem movimentações.
-
-Essa regra existe para impedir que uma contagem antiga produza ajuste incorreto.
-
----
-
-## F — revisão e finalização
-
-### F1. Produtos pendentes
-Esperado:
-- revisão mostra quantidade não conferida;
-- botão de finalização desabilitado.
-
-### F2. Todos conferidos, sem movimento conflitante
-Esperado:
-- resumo mostra corretos, faltas, sobras e unidades divergentes;
-- confirmação explícita antes de aplicar ajustes.
-
-### F3. Finalizar sem divergência
-Esperado:
-- inventário é finalizado;
-- nenhum movimento de estoque desnecessário é criado.
-
-### F4. Finalizar com divergência
-Para cada item divergente, esperado:
-- um movimento de tipo `adjust`;
-- motivo `Ajuste de inventário <código>`;
+## Gate local — APROVADO
+Foram validados:
+- carregamento estável da candidata v0.23.0;
+- Estoque Essencial e Compras & Reposição preservados;
+- acesso ao Inventário dentro do Estoque Essencial;
+- início de uma única conferência por vez;
+- snapshot do saldo esperado dos produtos controlados;
+- contagem igual, menor e maior que o esperado;
+- diferença em tempo real;
+- atalhos `Igual ao sistema` e `Sem unidade`;
+- navegação Anterior / Salvar e próximo;
+- busca, categoria, Pendentes e Divergentes;
+- pausar e continuar;
+- persistência após fechar/reabrir;
+- nenhuma alteração de saldo antes da finalização;
+- revisão de corretos, faltas e sobras;
+- bloqueio com item não contado;
+- bloqueio se o estoque se movimentar depois do início da conferência;
+- finalização sem divergência sem movimento desnecessário;
+- finalização com divergência gerando `adjust`;
 - ID determinístico `inventory_adjust_<inventoryId>_<productId>`;
-- saldo passa exatamente para a quantidade física contada.
+- histórico e CSV;
+- operação offline local;
+- layout mobile sem problema relevante de rolagem horizontal.
 
-### F5. Idempotência
-Esperado:
-- reprocessar/receber novamente a mesma finalização não duplica ajuste;
-- existe no máximo um movimento daquele inventário/produto.
+## Backend v0.23 — APROVADO
+`rota27-sync` foi promovido aditivamente para:
+- versão **7 ACTIVE**;
+- `EDGE_VERSION = rota27-sync-v0.23.0`;
+- novo evento permitido: `inventory_upsert`;
+- ajustes físicos continuam usando `stock_movement`;
+- todos os contratos anteriores preservados;
+- `verify_jwt=false` preservado por usar autenticação própria via `x-rota27-device-token`;
+- nenhuma migration e nenhuma tabela nova.
 
----
+## Smoke multidispositivo A→B — APROVADO
+O teste real entre dois aparelhos passou.
 
-## G — histórico e CSV
+Foram confirmados:
+- sessão iniciada no aparelho A disponível no B;
+- contagens realizadas em um aparelho convergindo no outro;
+- pausar/continuar entre aparelhos;
+- finalização da sessão convergindo;
+- saldo final consistente;
+- ajuste de inventário sem duplicidade relevante;
+- reconexão/sincronização mantendo a idempotência.
 
-Esperado:
-- conferências abertas, finalizadas e canceladas aparecem no histórico;
-- detalhes preservam esperado, contado e diferença;
-- CSV contém inventário, status, data, produto, categoria, esperado, contado e diferença.
-
----
-
-## H — mobile
-
-Validar em aparelho real:
-- sem rolagem horizontal;
-- campo `Quantidade contada` confortável com teclado numérico;
-- Esperado e Diferença legíveis sem girar a tela;
-- atalhos acessíveis ao polegar;
-- Anterior / Próximo não exigem rolagens exageradas;
-- lista de itens permite salto rápido para um produto;
-- resumo final legível.
-
----
-
-## I — offline local
-
-### I1. Iniciar e contar offline
-Esperado:
-- funciona normalmente;
-- persiste localmente.
-
-### I2. Finalizar offline
-Esperado:
-- ajustes entram localmente uma única vez;
-- eventos de estoque ficam na outbox já existente quando sync estiver configurado;
-- sessão de inventário permanece salva.
-
----
-
-## J — multidispositivo
-
-**Executar somente depois de ampliar o backend para v0.23.**
-
-Novo evento:
-- `inventory_upsert`.
-
-Ajustes físicos continuam sincronizando por:
-- `stock_movement`.
-
-### J1. Pausar no aparelho A e continuar no B
-Esperado:
-- sessão e contagens convergem.
-
-### J2. Finalizar no A
-Esperado:
-- B recebe sessão finalizada;
-- movimentos de ajuste convergem uma única vez;
-- saldo final igual nos dois aparelhos.
-
-### J3. Offline → online
-Esperado:
-- outbox converge sem duplicar sessões ou ajustes.
-
----
-
-## K — regressão crítica
-
-Validar:
-- abrir/editar/fechar/cancelar comandas;
-- pagamento e totais;
-- baixa de venda no estoque;
-- Entrada/Perda/Consumo/Ajuste manual;
-- Compras & Reposição e recebimentos;
+## Regressão crítica
+Durante o ciclo não foi identificado P0/P1 em:
+- Comandas;
+- Estoque Essencial;
+- Compras & Reposição;
 - Fechamento do Turno;
 - Visão Gerencial;
 - Modo demonstração;
-- WhatsApp e inbound;
-- atualização PWA sem limpar dados.
-
-## Gate do backend
-Antes de ampliar a allowlist do `rota27-sync`, aprovar pelo menos A–I.
+- operação mobile.
 
 ## Gate de produção
-Somente promover após:
-- desktop aprovado;
-- celular aprovado;
-- finalização/idempotência aprovadas;
-- backend v0.23 e teste A→B aprovados;
-- regressões críticas sem P0/P1;
-- autorização explícita para merge.
+**APROVADO em 24/08/2026.**
+
+A release pode ser marcada ready e mesclada na `main`.
