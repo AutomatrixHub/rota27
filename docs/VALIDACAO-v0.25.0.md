@@ -1,16 +1,16 @@
 # Rota 27 v0.25.0 — Registro de validação
 
 ## Estado
-**CANDIDATA — gate local aprovado; convergência A→B ainda pendente.**
+**APROVADA PARA PRODUÇÃO em 25/08/2026.**
 
-Produção preservada: **v0.24.0 — Custos & Margem**.
+Produção anterior preservada durante todo o desenvolvimento: **v0.24.0 — Custos & Margem**.
 
 PR: **#31 — Rota 27 v0.25.0 — Clientes & Fidelização**.
 
 ## Gate local
-Em 25/08/2026, o proprietário testou a candidata v0.25.0, incluindo os lotes de Relacionamento & Fidelização, o modo demonstração seguro e o incremento R3 `Preferido chegou recentemente`, e informou: **“Perfeito. Testado e aprovado.”**
+Em 25/08/2026, o proprietário testou a candidata v0.25.0, incluindo Relacionamento & Fidelização, modo demonstração seguro e o incremento R3 `Preferido chegou recentemente`, e informou: **“Perfeito. Testado e aprovado.”**
 
-Considerar aprovados no gate local:
+Foram aprovados:
 - acesso e identidade visual v0.25.0;
 - Visão geral, Clientes e Para lembrar;
 - níveis Novo / Recorrente / Frequente / Cliente da casa;
@@ -23,11 +23,27 @@ Considerar aprovados no gate local:
 - WhatsApp contextual sob ação humana;
 - modo demonstração `?preview=v0250` sem persistência;
 - R3 `Preferido chegou recentemente`;
-- apresentação desktop/mobile observada no teste local;
-- ausência de regressão crítica relatada pelo usuário durante o gate.
+- apresentação desktop/mobile;
+- ausência de regressão P0/P1 relatada no gate.
+
+## Gate A→B
+Em 25/08/2026, após sincronização entre os aparelhos A e B, o proprietário confirmou:
+
+**“Dados totalmente sincronizados. A -> B passou. Pode publicar. APROVADO.”**
+
+A convergência foi aceita para:
+- cadastro e histórico dos clientes;
+- visitas e totais identificados;
+- níveis de recorrência;
+- ritmo médio;
+- preferências;
+- sinais derivados de relacionamento;
+- dados de recebimento/estoque já transportados pelo sync atual, base necessária para as oportunidades R3.
+
+A v0.25 não cria dado persistente de fidelização separado. Portanto, quando as fontes existentes convergem entre aparelhos, as métricas e oportunidades convergem por cálculo local.
 
 ## R3 — regra aprovada
-A oportunidade `Preferido chegou recentemente` permanece estritamente derivada e só existe quando todos os critérios forem verdadeiros:
+A oportunidade `Preferido chegou recentemente` só existe quando todos os critérios forem verdadeiros:
 1. cliente com 2+ visitas;
 2. WhatsApp cadastrado;
 3. produto é o primeiro preferido calculado;
@@ -36,10 +52,16 @@ A oportunidade `Preferido chegou recentemente` permanece estritamente derivada e
 6. disponibilidade atual maior que zero;
 7. cliente ainda não voltou depois do recebimento.
 
-Nenhum envio é automático.
+Proteções aprovadas:
+- estoque zero remove a oportunidade;
+- nova visita após o recebimento remove a oportunidade;
+- produto sem controle de estoque não gera afirmação de disponibilidade;
+- nenhum envio automático;
+- nenhum disparo em massa;
+- nenhuma promessa automática de desconto/brinde.
 
 ## Arquitetura confirmada
-A v0.25.0 continua sem:
+A v0.25.0 permanece sem:
 - novo tipo de evento de sincronização;
 - tabela nova;
 - migration nova;
@@ -47,19 +69,16 @@ A v0.25.0 continua sem:
 - disparo em massa;
 - rotina automática de marketing.
 
-As métricas e oportunidades são derivadas dos dados existentes de clientes, histórico, catálogo/itemMeta, recebimentos e estoque.
+As métricas e oportunidades são derivadas de:
+- `state.clients`;
+- `state.history`;
+- `state.catalog` / `itemMeta`;
+- recebimentos de Compras & Reposição;
+- disponibilidade do Estoque Essencial.
 
-## Gate restante antes de produção
-Ainda é obrigatório validar a convergência **A→B**:
-- mesmos clientes/histórico → mesmas visitas, totais, níveis, ritmo e preferências;
-- recebimentos/estoque convergentes → mesma oportunidade R3 nos dois aparelhos;
-- nova comanda do cliente após o recebimento remove a oportunidade nos dois aparelhos depois do sync;
-- nenhum novo evento específico de fidelização deve aparecer no backend.
+As camadas novas não introduzem `setInterval` nem `MutationObserver`.
 
-## Promoção
-Não promover para `main` apenas com este gate local.
+## Autorização
+O proprietário autorizou explicitamente a publicação da v0.25.0 em 25/08/2026.
 
-A promoção exige:
-1. A→B aprovado;
-2. documentação final/release/handoff atualizada;
-3. autorização explícita de merge/publicação.
+A release pode ser marcada como ready e mesclada na `main`, preservando a v0.24.0 como baseline de rollback.
