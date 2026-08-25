@@ -1,142 +1,127 @@
 # Rota 27 — Status de produção
 
-Última revisão: 24/08/2026
+Última revisão: 25/08/2026
 
 ## Produção
-- versão: **v0.23.0 — Inventário & Conferência**;
+- versão: **v0.24.0 — Custos & Margem**;
 - branch: `main`;
 - GitHub Pages: `https://automatrixhub.github.io/rota27/`;
-- Service Worker: `rota27-comandas-v0.23.0`;
+- Service Worker: `rota27-comandas-v0.24.0-r2`;
 - `rota27-whatsapp`: versão 23 ACTIVE (`rota27-whatsapp-v6-mini2`);
 - `rota27-sync`: **versão 7 ACTIVE** (`rota27-sync-v0.23.0`);
 - `rota27-whatsapp-inbound`: versão 1 ACTIVE;
 - `rota27-audit`: versão 1 ACTIVE, somente leitura.
 
-A v0.23.0 preserva a operação validada da v0.22.0 e acrescenta **Inventário & Conferência** ao Estoque Essencial.
+A v0.24.0 preserva a baseline funcional da v0.23.0 e acrescenta **Custos & Margem** sem transformar o Rota 27 em ERP, fiscal ou contabilidade.
 
-## Validação da v0.23.0
-Em 24/08/2026 a candidata foi testada e aprovada em desktop, celular e em dois aparelhos com sincronização A→B.
+Baseline de rollback: **v0.23.0 — Inventário & Conferência**.
+
+## Validação da v0.24.0
+Em 25/08/2026 a candidata foi testada e aprovada em desktop, celular e em dois aparelhos com sincronização A→B.
 
 Foram validados:
-- estabilidade de Painel, Estoque e Compras;
-- início de uma única conferência por vez;
-- snapshot do saldo esperado dos produtos controlados;
-- contagem rápida mobile;
-- diferença em tempo real;
-- atalhos Igual ao sistema / Sem unidade;
-- busca, categoria, Pendentes e Divergentes;
-- pausar/continuar;
-- nenhuma alteração de saldo durante a contagem;
-- revisão de corretos, faltas e sobras;
-- bloqueio se houver item não contado;
-- bloqueio se o estoque se movimentar durante a conferência;
-- finalização sem divergência sem movimento desnecessário;
-- finalização com divergência gerando ajuste correto;
-- idempotência por `inventory_adjust_<inventoryId>_<productId>`;
+- badge estável em `v0.24.0`;
+- Central Custos & Margem em desktop e mobile;
+- produto com custo conhecido calculando margem e valor de estoque;
+- produto sem custo mantendo custo, margem e valor como indisponíveis;
+- custo previsto opcional na reposição;
+- custo real no recebimento;
+- frete opcional e rateio proporcional;
+- custo efetivo unitário e total de aquisição;
 - histórico e CSV;
-- offline local;
-- sincronização da sessão por `inventory_upsert`;
-- convergência A→B das contagens e da finalização;
-- saldo final igual entre aparelhos e sem duplicidade relevante de ajustes.
+- edição de pedido em rascunho;
+- alteração de quantidade, custo, fornecedor, produtos e observação;
+- convergência A→B do pedido editado;
+- convergência A→B de custos e histórico;
+- nenhum custo inferido do preço de venda;
+- ausência de regressão P0/P1 observada nos fluxos exercitados.
 
-Baseline anterior de rollback: **v0.22.0**.
+O log remoto confirmou payloads de compra com:
+- `unitCostQuoted`;
+- `unitCost`;
+- `lineCost`;
+- `freightCost`;
+- `freightShare`;
+- `effectiveLineCost`;
+- `effectiveUnitCost`;
+- `totalAcquisitionCost`;
+- `costAppVersion = 0.24.0`.
 
-## Inventário & Conferência
-Disponível dentro de `Painel → Estoque Essencial`.
+Também foi confirmado `purchase_order_upsert` remoto após edição de rascunho, com `editedAppVersion = 0.24.0`.
 
-Regras principais:
-- somente produtos com controle de estoque ativo entram;
-- uma única conferência aberta por vez;
-- o saldo esperado é congelado no início da sessão;
-- o estoque não muda enquanto a contagem está em andamento;
-- quantidade contada pode ser registrada produto a produto;
-- diferença = `contado - esperado`;
-- faltas são negativas; sobras são positivas;
-- a finalização exige todos os produtos conferidos;
-- se houver movimentação de estoque posterior ao início, a finalização é bloqueada;
-- somente divergências confirmadas geram movimentos de tipo `adjust`;
-- movimento usa ID determinístico `inventory_adjust_<inventoryId>_<productId>`;
-- histórico preserva esperado, contado e diferença;
-- CSV disponível;
-- sessão funciona offline e sincroniza depois.
+## Custos & Margem
+Acesso por Compras & Reposição ou Estoque Essencial.
 
-## Backend e sincronização
-A v0.23.0 reutiliza `rota27_sync_events`; não foi criada tabela nova.
+Regra central:
+**sem custo real registrado, o Rota 27 não inventa valor.**
 
-Novo evento:
-- `inventory_upsert`.
+Fórmulas:
+- margem unitária = preço de venda atual − último custo efetivo real;
+- margem bruta estimada % = margem unitária / preço de venda × 100;
+- valor estimado do estoque = estoque físico × último custo efetivo real.
 
-Ajustes físicos continuam usando:
-- `stock_movement`.
+Os indicadores são gerenciais e não contábeis. Não incluem impostos, taxas de cartão, folha, perdas ou custos indiretos.
 
-A Edge Function `rota27-sync` está na **versão 7 ACTIVE** com `EDGE_VERSION = rota27-sync-v0.23.0` e `verify_jwt=false`, preservando a autenticação própria por `x-rota27-device-token`.
+## Compras & Reposição
+Além dos recursos anteriores, a v0.24 acrescenta:
+- custo unitário previsto opcional;
+- subtotal previsto conhecido;
+- custo real no recebimento;
+- frete opcional;
+- custo efetivo;
+- edição de pedidos enquanto estiverem em `draft`.
 
-Todos os contratos anteriores permanecem ativos, incluindo Comandas, Clientes, Fechamento do Turno, Estoque e Compras.
-
-### Hotfix pós-release do constraint
-Após a publicação da v0.23.0, um aparelho exibiu o erro:
-`new row for relation "rota27_sync_events" violates check constraint "rota27_sync_events_type_ck"`.
-
-A inspeção confirmou que o `CHECK` do PostgreSQL ainda refletia apenas os tipos antigos até `manager_config_replace`, apesar de a Edge Function já aceitar os eventos mais novos.
-
-Foi aplicada a migration de produção:
-`20260825012842_expand_rota27_sync_event_types_v023`.
-
-O constraint agora aceita, além dos tipos anteriores:
-- `turn_closed`;
-- `stock_config_upsert`;
-- `stock_movement`;
-- `supplier_upsert`;
-- `purchase_order_upsert`;
-- `purchase_receipt`;
-- `inventory_upsert`.
-
-A correção é aditiva, não cria tabela, não remove eventos e não altera dados existentes. Um smoke transacional inseriu temporariamente os 7 tipos e confirmou aceitação; a transação foi revertida ao final.
+Pedidos enviados/recebidos/cancelados não entram no editor de rascunho.
 
 ## Estoque Essencial
 Permanece com:
 - controle opcional por produto;
 - estoque inicial e mínimo;
-- saldo = estoque inicial + movimentos imutáveis;
-- comprometido em comandas abertas;
-- disponível projetado = estoque - comprometido;
+- saldo por movimentos imutáveis;
+- comprometido e disponível projetado;
 - baixa de venda no fechamento;
 - Entrada, Perda, Consumo interno e Ajuste;
-- integração com Compras & Reposição;
-- Central gerencial e layout mobile compacto.
+- integração com Compras, Inventário e Custos & Margem.
 
-A v0.23 acrescenta:
-- acesso direto ao Inventário;
-- indicador de última conferência / conferência em andamento.
+## Inventário & Conferência
+Permanece validado desde a v0.23:
+- snapshot do saldo esperado;
+- contagem rápida;
+- pausar/continuar;
+- proteção contra movimentação durante a conferência;
+- ajustes somente após confirmação;
+- sincronização por `inventory_upsert`.
 
-## Compras & Reposição
-Permanece validado:
-- fila automática de reposição;
-- fornecedor opcional/padrão;
-- pedidos Rascunho/Enviado/Recebido/Cancelado;
-- recebimento parcial/total;
-- Entrada automática idempotente no estoque;
-- histórico, copiar pedido e CSV;
-- visão gerencial e mobile.
+## Backend e sincronização
+A v0.24 **não exige nova Edge Function, evento, tabela ou migration**.
+
+Reutiliza:
+- `purchase_order_upsert`;
+- `purchase_receipt`.
+
+Os campos novos são transportados dentro dos payloads JSON já existentes.
+
+A Edge Function `rota27-sync` permanece na **versão 7 ACTIVE**, `EDGE_VERSION = rota27-sync-v0.23.0`, `verify_jwt=false`, com autenticação própria por `x-rota27-device-token`.
+
+Permanece aplicada a migration:
+`20260825012842_expand_rota27_sync_event_types_v023`.
 
 ## Estabilidade do Painel
-A solução estabilizada na v0.21.0 continua preservada:
-- sem polling visual novo;
+A solução estabilizada desde a v0.21 continua preservada:
+- sem polling visual frequente novo;
 - sem novo `MutationObserver` concorrente;
-- compatibilidade limitada aos filhos diretos de `screenPanel`;
-- Inventário não adiciona observer visual.
+- evitar qualquer camada que volte a competir pela renderização do Painel.
 
-## Fechamento do Turno, Visão Gerencial e Modo demonstração
-Permanecem ativos e sem mudança funcional na v0.23.0.
+A correção do badge da v0.24 também não adiciona polling nem MutationObserver.
 
 ## WhatsApp
-Sem mudança funcional na v0.23.0:
+Sem mudança funcional na v0.24:
 - templates mini2 preservados;
 - inbound ativo;
 - outbox permanece local por aparelho e nunca é sincronizada.
 
-## Ajuda v4.7
-Inclui Inventário & Conferência, além de Estoque Essencial, Compras & Reposição e demais fluxos já existentes.
+## Ajuda v4.8
+Inclui Custos & Margem, além de Inventário, Estoque Essencial, Compras & Reposição e demais fluxos existentes.
 
 ## Atualização da PWA
 Não reinstalar e não limpar dados:
@@ -144,18 +129,20 @@ Não reinstalar e não limpar dados:
 2. abrir a PWA por 10–20 segundos;
 3. fechar completamente;
 4. abrir novamente;
-5. confirmar `v0.23.0` e sincronização saudável.
+5. confirmar `v0.24.0` e sincronização saudável.
 
 ## Segurança
 - nenhum token/App Secret versionado;
-- nenhuma migration destrutiva;
+- nenhuma migration destrutiva na v0.24;
 - operação local-first preservada;
-- ajustes de inventário somente após confirmação;
+- custo não é inferido de preço de venda;
 - outbox do WhatsApp permanece local.
 
 ## Próxima etapa
-Direção aprovada: **v0.24.0 — Custos & Margem**.
+O próximo escopo fica em aberto para ser escolhido pelo uso real da v0.24.
 
-O escopo detalhado da v0.24 deve ser fechado a partir do uso real da v0.23 e deve evitar confundir preço de venda com custo de aquisição.
+Direções candidatas já aprovadas para avaliação futura:
+- inteligência de giro/reposição;
+- relacionamento/fidelização de clientes.
 
-Ver `docs/RELEASE-v0.23.0.md`.
+Ver `docs/RELEASE-v0.24.0.md`.
