@@ -15,7 +15,14 @@ Após revisão visual do Painel foram solicitados dois refinamentos:
 - padronizar tamanho e peso dos botões `Abrir visão gerencial`, `Abrir estoque` e ação de `Compras & Reposição`, preservando a cor de cada módulo;
 - posicionar `Relacionamento` imediatamente abaixo de `Compras & Reposição`.
 
-A R3 mantém a lógica existente e usa cache `rota27-comandas-v0.25.2-r3`.
+### Revisão R4
+No reteste da R3, o bloco `Relacionamento — Clientes & Fidelização` aparecia e desaparecia logo depois.
+
+A causa foi confirmada: o Painel legado ainda redesenha `screenPanel` via `innerHTML`, removendo elementos adicionados posteriormente.
+
+A R4 instala uma ponte específica no setter de `innerHTML` de `screenPanel` e recompõe a posição do Relacionamento logo após cada render legado. Não adiciona polling nem novo `MutationObserver`.
+
+Cache da candidata: `rota27-comandas-v0.25.2-r4`.
 
 ## A — versão e estabilidade
 1. Abrir a candidata.
@@ -97,7 +104,26 @@ Esperado:
 - confirmar cria apenas uma comanda;
 - WhatsApp/opções atuais continuam funcionando.
 
-## H — sincronização A→B
+## H — Painel — gate R3/R4
+1. Abrir **Painel**.
+2. Confirmar a sequência inicial:
+   - `Visão Gerencial`;
+   - `Estoque Essencial`;
+   - `Compras & Reposição`;
+   - `Relacionamento`.
+3. Permanecer no Painel por pelo menos **10 segundos**.
+4. Ir para outra aba e voltar ao Painel.
+5. Minimizar/retomar o navegador e voltar ao Painel.
+
+Esperado:
+- `Relacionamento` permanece imediatamente abaixo de `Compras & Reposição`;
+- não desaparece, não pisca e não muda de posição;
+- `Clientes & Fidelização` abre o fluxo existente;
+- os três botões principais têm dimensões e peso visual equivalentes;
+- cores originais dos três módulos permanecem;
+- todos continuam abrindo seus módulos corretos.
+
+## I — sincronização A→B
 1. No A, criar/editar uma comanda em uma das zonas.
 2. Sincronizar A.
 3. Sincronizar B.
@@ -109,7 +135,7 @@ Esperado:
 - Lista e Mapa enxergam o mesmo conjunto de `state.commands`;
 - preferência Lista/Mapa pode ser diferente entre A e B, pois é local de interface.
 
-## I — fechamento
+## J — fechamento
 Abrir uma comanda pelo Mapa, fechar normalmente e voltar para Comandas.
 
 Esperado:
@@ -117,7 +143,7 @@ Esperado:
 - Histórico recebe o fechamento normalmente;
 - nenhuma comanda fantasma permanece.
 
-## J — mobile
+## K — mobile
 Validar em celular real.
 
 Esperado:
@@ -127,32 +153,11 @@ Esperado:
 - redução perceptível de rolagem em relação à Lista;
 - seletor Lista/Mapa claramente legível.
 
-## K — Ajuda
+## L — Ajuda
 Esperado:
 - rodapé `Ajuda v5.3 • Rota 27 v0.25.2`;
 - seção `Mapa rápido de comandas`;
 - explicação de Lista/Mapa e abertura rápida.
-
-## L — Painel — gate visual R3
-Abrir **Painel** e conferir a sequência inicial.
-
-Esperado:
-1. `Visão Gerencial`;
-2. `Estoque Essencial`;
-3. `Compras & Reposição`;
-4. **Relacionamento** imediatamente abaixo de Compras & Reposição.
-
-Conferir os três botões principais:
-- `Abrir visão gerencial`;
-- `Abrir estoque` ou seu texto de alerta;
-- `Ver N pedido(s)` / `Repor N` / `Abrir compras`.
-
-Esperado:
-- mesma largura e altura em telas largas;
-- mesma tipografia, peso e alinhamento;
-- cores originais preservadas: preto, verde/estado do estoque e azul/amarelo/verde conforme Compras;
-- no celular, os três ocupam largura completa com a mesma altura;
-- todos continuam abrindo seus módulos corretos.
 
 ## M — regressão P0/P1
 Confirmar rapidamente:
@@ -170,6 +175,7 @@ Somente promover após:
 - teste local desktop/mobile aprovado;
 - **gate de toque R2 aprovado**;
 - **gate visual do Painel R3 aprovado**;
+- **gate de estabilidade do Relacionamento R4 aprovado**;
 - A→B coerente;
 - nenhuma regressão P0/P1;
 - autorização explícita para publicação.
