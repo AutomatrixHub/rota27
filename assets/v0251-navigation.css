@@ -1,0 +1,146 @@
+/* Rota 27 v0.25.1 — Navegação & Configurações */
+
+/* Cardápio fica dedicado a produtos e categorias. Os componentes antigos
+ * permanecem no DOM apenas como compatibilidade para os fluxos existentes. */
+#screenMenu #v017AdminTools,
+#screenMenu .wa-admin-card,
+#screenMenu #v15SyncCard{
+  display:none!important;
+}
+
+/* O atalho de Sync deixa de aparecer duplicado em Acessos rápidos: agora há
+ * um bloco próprio em Configurações & Integrações. */
+#screenPanel .v15d4-actions button[data-go="sync"]{
+  display:none!important;
+}
+
+/* Cardápio agora descreve somente produtos/categorias. */
+#screenPanel .v15d4-actions button[data-go="menu"] small{
+  font-size:0!important;
+}
+#screenPanel .v15d4-actions button[data-go="menu"] small::after{
+  content:"Produtos e categorias";
+  font-size:11px;
+  line-height:1.25;
+}
+
+/* Quando uma integração ainda não foi configurada, o Painel deixa de mandar
+ * o usuário de volta ao Cardápio. */
+#screenPanel .v15d4-status-grid .v15d4-status.off:nth-child(2) span,
+#screenPanel .v15d4-status-grid .v15d4-status.off:nth-child(3) span{
+  font-size:0!important;
+}
+#screenPanel .v15d4-status-grid .v15d4-status.off:nth-child(2) span::after,
+#screenPanel .v15d4-status-grid .v15d4-status.off:nth-child(3) span::after{
+  content:"Configure abaixo no Painel";
+  font-size:11px;
+  line-height:1.25;
+}
+
+/* Extras ficam como irmão do screenPanel. Assim sobrevivem ao render legado
+ * do Painel sem polling ou MutationObserver. */
+#v0251PanelExtras{
+  display:none;
+}
+#screenPanel.active + #v0251PanelExtras{
+  display:grid;
+  gap:14px;
+  margin-top:14px;
+}
+
+.v0251-section{
+  margin:0;
+}
+.v0251-card-list{
+  display:grid;
+  gap:10px;
+}
+.v0251-card{
+  width:100%;
+  border:1px solid var(--line,#dccbb8);
+  background:var(--surface,#fbf6ee);
+  color:var(--ink,#1b1816);
+  border-radius:16px;
+  padding:13px 14px;
+  display:grid;
+  grid-template-columns:44px minmax(0,1fr) auto;
+  align-items:center;
+  gap:12px;
+  text-align:left;
+  box-shadow:0 4px 12px rgba(59,39,24,.05);
+}
+.v0251-card:active{
+  transform:scale(.992);
+}
+.v0251-icon{
+  width:44px;
+  height:44px;
+  display:grid;
+  place-items:center;
+  border-radius:14px;
+  background:var(--surface-2,#f1e4d2);
+  font-size:23px;
+  font-weight:900;
+}
+.v0251-copy{
+  min-width:0;
+}
+.v0251-copy strong{
+  display:block;
+  font-size:14px;
+  line-height:1.25;
+}
+.v0251-copy small{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  margin-top:4px;
+  color:var(--muted,#6f6257);
+  font-size:11px;
+  line-height:1.35;
+}
+.v0251-chevron{
+  font-size:24px;
+  line-height:1;
+  color:var(--muted,#6f6257);
+}
+.v0251-dot{
+  display:inline-block;
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:#a69b8c;
+  flex:0 0 auto;
+}
+.v0251-dot.ok{background:#2e8a5d}
+.v0251-dot.warn{background:#c58a20}
+
+/* Identidade pública da candidata. Carregada por último para prevalecer sobre
+ * camadas legadas que ainda escrevem suas próprias versões no badge. */
+#v14VersionBadge{
+  font-size:0!important;
+  color:transparent!important;
+  white-space:nowrap;
+}
+#v14VersionBadge::after{
+  content:"v0.25.1";
+  display:inline-block;
+  font-size:12px;
+  line-height:1;
+  font-weight:900;
+  color:#8F4421;
+}
+
+@media (max-width:520px){
+  .v0251-card{
+    grid-template-columns:42px minmax(0,1fr) auto;
+    padding:12px 13px;
+    gap:10px;
+  }
+  .v0251-icon{
+    width:42px;
+    height:42px;
+    border-radius:13px;
+    font-size:21px;
+  }
+}
