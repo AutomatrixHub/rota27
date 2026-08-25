@@ -1,0 +1,45 @@
+/* Rota 27 v0.25.2 R3 — refinamento do Painel */
+
+/* Três ações principais com o mesmo peso e a mesma caixa; cada módulo preserva sua cor. */
+#screenPanel .v020-manager-open,
+#screenPanel .v021-stock-open,
+#screenPanel #v022PurchasesEntry .v022-panel-entry-head > button{
+  box-sizing:border-box;
+  width:172px!important;
+  min-width:172px!important;
+  max-width:172px!important;
+  height:54px!important;
+  min-height:54px!important;
+  padding:0 14px!important;
+  border-radius:14px!important;
+  font-size:13px!important;
+  line-height:1.15!important;
+  font-weight:900!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  text-align:center!important;
+  white-space:normal!important;
+  flex:0 0 172px!important;
+}
+
+/* Relacionamento passa a fazer parte da sequência operacional do próprio Painel. */
+#v0252RelationshipSection{
+  margin:14px 0!important;
+}
+#v0252RelationshipSection .v0251-card{
+  box-shadow:0 4px 12px rgba(59,39,24,.05);
+}
+
+@media(max-width:760px){
+  #screenPanel .v020-manager-open,
+  #screenPanel .v021-stock-open,
+  #screenPanel #v022PurchasesEntry .v022-panel-entry-head > button{
+    width:100%!important;
+    min-width:0!important;
+    max-width:none!important;
+    height:50px!important;
+    min-height:50px!important;
+    flex:1 1 auto!important;
+  }
+}
