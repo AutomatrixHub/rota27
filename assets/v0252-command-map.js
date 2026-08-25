@@ -33,6 +33,7 @@
   function elapsedValue(ts){
     try{return typeof elapsed==='function'?elapsed(Number(ts||0)):'';}catch{return '';}
   }
+  function toast(message){try{if(typeof window.showToast==='function')window.showToast(message,false);}catch{}}
   function commands(){
     try{return Array.isArray(state?.commands)?state.commands.filter(c=>c?.cancelled!==true):[];}catch{return [];}
   }
@@ -92,6 +93,7 @@
       const wrap=document.createElement('div');
       wrap.id='v0252ViewSwitch';
       wrap.className='v0252-view-switch';
+      wrap.setAttribute('aria-label','Modo de visualização das comandas');
       wrap.innerHTML='<button type="button" data-v0252-view="list" aria-pressed="false"><span>☷</span> Lista</button><button type="button" data-v0252-view="map" aria-pressed="false"><span>▦</span> Mapa</button>';
       if(quick)quick.insertAdjacentElement('afterend',wrap);else screen.prepend(wrap);
     }
@@ -148,6 +150,45 @@
     </section>`;
   }
 
+  function openCommandById(id){
+    const wanted=clean(id,180);
+    if(!wanted)return false;
+    const exists=commands().some(c=>String(c?.id)===String(wanted));
+    if(!exists){
+      toast('Esta comanda não está mais aberta. Atualizei o mapa.');
+      renderMap();
+      return false;
+    }
+    try{
+      if(typeof window.openCommand==='function'){
+        window.openCommand(wanted);
+        return true;
+      }
+    }catch(err){
+      console.error('[Rota27 v0.25.2] Falha ao abrir comanda pelo mapa:',err);
+    }
+    toast('Não foi possível abrir esta comanda. Tente pela Lista.');
+    return false;
+  }
+
+  function bindMapButtons(host){
+    if(!host)return;
+    host.querySelectorAll('[data-v0252-command]').forEach(btn=>{
+      btn.addEventListener('click',event=>{
+        event.preventDefault();
+        event.stopPropagation();
+        openCommandById(btn.dataset.v0252Command||'');
+      });
+    });
+    host.querySelectorAll('[data-v0252-new-zone]').forEach(btn=>{
+      btn.addEventListener('click',event=>{
+        event.preventDefault();
+        event.stopPropagation();
+        openNewFor(btn.dataset.v0252NewZone||'');
+      });
+    });
+  }
+
   function renderMap(){
     if(!ensureUi())return;
     const host=byId('v0252CommandMap');if(!host)return;
@@ -159,10 +200,11 @@
       <div class="v0252-map-intro"><div><strong>Mapa rápido</strong><small>Encontre a comanda pela mesa, balcão, parklet ou cliente.</small></div><span>${rows.length} aberta${rows.length===1?'':'s'}</span></div>
       ${quickNewHtml()}
       ${rows.length?zones:'<div class="v0252-map-empty"><strong>Nenhuma comanda aberta</strong><span>Use um dos atalhos acima para abrir a primeira.</span></div>'}`;
+    bindMapButtons(host);
   }
 
   function openNewFor(zone){
-    try{if(typeof openNewCommandSheet!=='function')return;openNewCommandSheet();}catch{return;}
+    try{if(typeof window.openNewCommandSheet!=='function')return;window.openNewCommandSheet();}catch{return;}
     setTimeout(()=>{
       const table=byId('newTable'),customer=byId('newCustomer');
       if(!table||!customer)return;
@@ -206,7 +248,7 @@
     const view=e.target.closest?.('[data-v0252-view]');
     if(view){setView(view.dataset.v0252View);return;}
     const command=e.target.closest?.('[data-v0252-command]');
-    if(command){try{openCommand(command.dataset.v0252Command);}catch{}return;}
+    if(command){openCommandById(command.dataset.v0252Command||'');return;}
     const add=e.target.closest?.('[data-v0252-new-zone]');
     if(add){openNewFor(add.dataset.v0252NewZone);return;}
     if(e.target.closest?.('#navCommands'))setTimeout(()=>{ensureUi();renderMap();applyView(getView());},0);
@@ -222,8 +264,8 @@
     document.addEventListener('click',handleClick);
     window.addEventListener('rota27:v017-domain-updated',()=>{renderMap();});
     document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){renderMap();injectHelp();}});
-    window.Rota27V0252={version:VERSION,renderMap,setView,getView};
-    console.info('[Rota27] v0.25.2 Mapa Rápido de Comandas carregado.');
+    window.Rota27V0252={version:VERSION,renderMap,setView,getView,openCommandById};
+    console.info('[Rota27] v0.25.2 Mapa Rápido de Comandas carregado (r2).');
   }
 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
