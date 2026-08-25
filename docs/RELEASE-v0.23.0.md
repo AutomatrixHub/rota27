@@ -30,7 +30,9 @@ A v0.23.0 fecha o ciclo operacional do Estoque Essencial permitindo comparar o s
 - `stock_movement` continua responsável pelos ajustes físicos;
 - nenhum contrato anterior removido;
 - `verify_jwt=false` preservado devido à autenticação própria por `x-rota27-device-token`;
-- nenhuma migration/tabela nova.
+- nenhuma tabela nova.
+
+O inventário reutiliza `rota27_sync_events`.
 
 ## Validação
 A release foi aprovada em:
@@ -43,6 +45,28 @@ A release foi aprovada em:
 - smoke multidispositivo A→B.
 
 O teste A→B confirmou sessão, contagens, pausa/continuação, finalização e saldo convergentes sem duplicidade relevante de ajuste.
+
+## Hotfix pós-release — constraint de eventos
+Após a promoção para produção, o Estoque Essencial exibiu:
+`new row for relation "rota27_sync_events" violates check constraint "rota27_sync_events_type_ck"`.
+
+A causa foi um desalinhamento entre a allowlist da Edge Function e o `CHECK` do PostgreSQL. A Edge já aceitava os contratos novos, mas o constraint ainda parava em `manager_config_replace`.
+
+Foi aplicada em produção a migration:
+`20260825012842_expand_rota27_sync_event_types_v023`.
+
+Ela preserva todos os tipos anteriores e acrescenta ao `CHECK`:
+- `turn_closed`;
+- `stock_config_upsert`;
+- `stock_movement`;
+- `supplier_upsert`;
+- `purchase_order_upsert`;
+- `purchase_receipt`;
+- `inventory_upsert`.
+
+A alteração é aditiva e não destrutiva. Não cria tabela, não remove eventos e não modifica dados existentes.
+
+Após a migration, um smoke transacional inseriu temporariamente todos os 7 tipos novos e confirmou aceitação. A transação foi revertida ao final, sem deixar eventos de teste na produção.
 
 ## Compatibilidade
 A v0.23 preserva as camadas funcionais anteriores. Por compatibilidade interna, `meta[name=rota27-version]` permanece em `0.22.0` como gate das camadas v0.21/v0.22; a release pública é identificada por `VERSION = 0.23.0`, `rota27-release-version = 0.23.0`, badge/título v0.23.0 e Service Worker `rota27-comandas-v0.23.0`.

@@ -61,7 +61,7 @@ Regras principais:
 - sessão funciona offline e sincroniza depois.
 
 ## Backend e sincronização
-A v0.23.0 reutiliza `rota27_sync_events`; não há migration nem tabela nova.
+A v0.23.0 reutiliza `rota27_sync_events`; não foi criada tabela nova.
 
 Novo evento:
 - `inventory_upsert`.
@@ -72,6 +72,26 @@ Ajustes físicos continuam usando:
 A Edge Function `rota27-sync` está na **versão 7 ACTIVE** com `EDGE_VERSION = rota27-sync-v0.23.0` e `verify_jwt=false`, preservando a autenticação própria por `x-rota27-device-token`.
 
 Todos os contratos anteriores permanecem ativos, incluindo Comandas, Clientes, Fechamento do Turno, Estoque e Compras.
+
+### Hotfix pós-release do constraint
+Após a publicação da v0.23.0, um aparelho exibiu o erro:
+`new row for relation "rota27_sync_events" violates check constraint "rota27_sync_events_type_ck"`.
+
+A inspeção confirmou que o `CHECK` do PostgreSQL ainda refletia apenas os tipos antigos até `manager_config_replace`, apesar de a Edge Function já aceitar os eventos mais novos.
+
+Foi aplicada a migration de produção:
+`20260825012842_expand_rota27_sync_event_types_v023`.
+
+O constraint agora aceita, além dos tipos anteriores:
+- `turn_closed`;
+- `stock_config_upsert`;
+- `stock_movement`;
+- `supplier_upsert`;
+- `purchase_order_upsert`;
+- `purchase_receipt`;
+- `inventory_upsert`.
+
+A correção é aditiva, não cria tabela, não remove eventos e não altera dados existentes. Um smoke transacional inseriu temporariamente os 7 tipos e confirmou aceitação; a transação foi revertida ao final.
 
 ## Estoque Essencial
 Permanece com:
@@ -129,7 +149,7 @@ Não reinstalar e não limpar dados:
 ## Segurança
 - nenhum token/App Secret versionado;
 - nenhuma migration destrutiva;
-- local-first preservado;
+- operação local-first preservada;
 - ajustes de inventário somente após confirmação;
 - outbox do WhatsApp permanece local.
 
