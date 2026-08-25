@@ -1,4 +1,43 @@
-/* Rota 27 v0.25.2 R3 — refinamento do Painel */
+/* Rota 27 v0.25.2 R5 — refinamento visual do Painel */
+
+/*
+ * Visão Gerencial, Estoque Essencial e Compras & Reposição passam a usar a
+ * mesma gramática visual do acesso Clientes & Fidelização: ícone à esquerda,
+ * conteúdo no centro e ação à direita. As cores dos botões continuam sendo
+ * definidas pelos próprios módulos.
+ */
+#screenPanel .v020-manager-entry-head,
+#screenPanel .v021-stock-entry-head,
+#screenPanel #v022PurchasesEntry .v022-panel-entry-head{
+  display:grid!important;
+  grid-template-columns:50px minmax(0,1fr) 172px!important;
+  gap:14px!important;
+  align-items:center!important;
+}
+
+#screenPanel .v020-manager-entry-head > div,
+#screenPanel .v021-stock-entry-head > div,
+#screenPanel #v022PurchasesEntry .v022-panel-entry-head > div{
+  min-width:0;
+}
+
+.v0252-panel-icon{
+  width:50px;
+  height:50px;
+  box-sizing:border-box;
+  display:grid;
+  place-items:center;
+  border-radius:15px;
+  background:var(--surface-2,#f1e4d2);
+  border:1px solid rgba(143,68,33,.06);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.5);
+  font-size:25px;
+  line-height:1;
+  user-select:none;
+}
+.v0252-panel-icon-manager{background:#f1e4d2}
+.v0252-panel-icon-stock{background:#edf1df}
+.v0252-panel-icon-purchases{background:#eee5d5}
 
 /* Três ações principais com o mesmo peso e a mesma caixa; cada módulo preserva sua cor. */
 #screenPanel .v020-manager-open,
@@ -23,7 +62,7 @@
   flex:0 0 172px!important;
 }
 
-/* Relacionamento passa a fazer parte da sequência operacional do próprio Painel. */
+/* Relacionamento permanece na sequência operacional do próprio Painel. */
 #v0252RelationshipSection{
   margin:14px 0!important;
 }
@@ -32,9 +71,25 @@
 }
 
 @media(max-width:760px){
+  #screenPanel .v020-manager-entry-head,
+  #screenPanel .v021-stock-entry-head,
+  #screenPanel #v022PurchasesEntry .v022-panel-entry-head{
+    grid-template-columns:46px minmax(0,1fr)!important;
+    gap:11px!important;
+    align-items:center!important;
+  }
+
+  .v0252-panel-icon{
+    width:46px;
+    height:46px;
+    border-radius:14px;
+    font-size:23px;
+  }
+
   #screenPanel .v020-manager-open,
   #screenPanel .v021-stock-open,
   #screenPanel #v022PurchasesEntry .v022-panel-entry-head > button{
+    grid-column:1/-1!important;
     width:100%!important;
     min-width:0!important;
     max-width:none!important;
