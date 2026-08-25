@@ -8,13 +8,14 @@ Produção preservada: **v0.25.1 — Navegação & Configurações**.
 ### Revisão R2
 Após o primeiro teste visual, o Mapa foi aprovado em conceito, mas foi encontrada uma regressão P1: **tocar nos cards das comandas no Mapa não abria a comanda**.
 
-A R2 corrige esse ponto com binding direto em cada card, usando `window.openCommand` já consolidado pelas camadas operacionais. Também aumenta o contraste visual do seletor `Lista / Mapa` e muda o cache candidato para `rota27-comandas-v0.25.2-r2`.
+A R2 corrige esse ponto com binding direto em cada card, usando `window.openCommand` já consolidado pelas camadas operacionais. Também aumenta o contraste visual do seletor `Lista / Mapa`.
 
-Gate obrigatório da R2:
-- tocar no corpo, título, valor e parte inferior de cada card deve abrir a mesma comanda;
-- não deve exigir toque duplo;
-- Lista continua abrindo normalmente;
-- o modo ativo em `Lista / Mapa` deve ficar visualmente inequívoco.
+### Revisão R3
+Após revisão visual do Painel foram solicitados dois refinamentos:
+- padronizar tamanho e peso dos botões `Abrir visão gerencial`, `Abrir estoque` e ação de `Compras & Reposição`, preservando a cor de cada módulo;
+- posicionar `Relacionamento` imediatamente abaixo de `Compras & Reposição`.
+
+A R3 mantém a lógica existente e usa cache `rota27-comandas-v0.25.2-r3`.
 
 ## A — versão e estabilidade
 1. Abrir a candidata.
@@ -31,7 +32,7 @@ Na tela **Comandas**, manter o modo `Lista`.
 
 Esperado:
 - cards atuais continuam iguais;
-- valor, itens, tempo e botão/ação de abrir funcionam;
+- valor, itens, tempo e ação de abrir funcionam;
 - estado vazio original continua correto;
 - abrir uma comanda leva à tela de lançamento existente.
 
@@ -66,20 +67,14 @@ Esperado:
 - cada comanda aparece uma única vez.
 
 ## E — card compacto
-Para cada comanda, conferir:
-- identificação curta/local;
-- valor;
-- cliente/local complementar quando existir;
-- quantidade de itens;
-- tempo de abertura;
-- último lançamento.
+Para cada comanda, conferir identificação, valor, cliente/local, itens, tempo de abertura e último lançamento.
 
 Esperado:
 - informação suficiente para reconhecer a comanda sem ocupar a altura do card completo da Lista;
 - textos longos não quebram a grade.
 
 ## F — abrir pelo Mapa — gate crítico R2
-Tocar em cada tipo de card e repetir o teste tocando em pontos diferentes do mesmo card:
+Tocar em pontos diferentes do mesmo card:
 - identificação da mesa/local;
 - valor;
 - nome do cliente;
@@ -94,17 +89,13 @@ Esperado:
 - nenhum toque no card fica sem resposta.
 
 ## G — abertura rápida
-Testar:
-- `+ Mesa` → campo deve começar com `Mesa `;
-- `+ Balcão` → campo deve vir `Balcão` e foco ir para cliente;
-- `+ Parklet` → campo deve começar com `Parklet `;
-- `+ Cliente` → mesa/local vazio e foco no cliente.
+Testar `+ Mesa`, `+ Balcão`, `+ Parklet` e `+ Cliente`.
 
 Esperado:
 - todos reutilizam a mesma tela `Nova comanda`;
 - cancelar não cria nada;
 - confirmar cria apenas uma comanda;
-- WhatsApp/opções atuais da nova comanda continuam funcionando.
+- WhatsApp/opções atuais continuam funcionando.
 
 ## H — sincronização A→B
 1. No A, criar/editar uma comanda em uma das zonas.
@@ -119,9 +110,7 @@ Esperado:
 - preferência Lista/Mapa pode ser diferente entre A e B, pois é local de interface.
 
 ## I — fechamento
-1. Abrir uma comanda pelo Mapa.
-2. Fechar normalmente.
-3. Voltar para Comandas.
+Abrir uma comanda pelo Mapa, fechar normalmente e voltar para Comandas.
 
 Esperado:
 - comanda desaparece do Mapa e da Lista;
@@ -132,40 +121,55 @@ Esperado:
 Validar em celular real.
 
 Esperado:
-- 3 colunas em largura comum;
-- 2 colunas em tela muito estreita;
-- sem scroll horizontal;
+- grade compacta sem scroll horizontal;
 - toque confortável;
 - sem sobreposição com FAB ou navegação inferior;
 - redução perceptível de rolagem em relação à Lista;
-- seletor Lista/Mapa claramente legível com o modo ativo destacado.
+- seletor Lista/Mapa claramente legível.
 
 ## K — Ajuda
-Abrir Ajuda.
-
 Esperado:
 - rodapé `Ajuda v5.3 • Rota 27 v0.25.2`;
 - seção `Mapa rápido de comandas`;
 - explicação de Lista/Mapa e abertura rápida.
 
-## L — regressão P0/P1
+## L — Painel — gate visual R3
+Abrir **Painel** e conferir a sequência inicial.
+
+Esperado:
+1. `Visão Gerencial`;
+2. `Estoque Essencial`;
+3. `Compras & Reposição`;
+4. **Relacionamento** imediatamente abaixo de Compras & Reposição.
+
+Conferir os três botões principais:
+- `Abrir visão gerencial`;
+- `Abrir estoque` ou seu texto de alerta;
+- `Ver N pedido(s)` / `Repor N` / `Abrir compras`.
+
+Esperado:
+- mesma largura e altura em telas largas;
+- mesma tipografia, peso e alinhamento;
+- cores originais preservadas: preto, verde/estado do estoque e azul/amarelo/verde conforme Compras;
+- no celular, os três ocupam largura completa com a mesma altura;
+- todos continuam abrindo seus módulos corretos.
+
+## M — regressão P0/P1
 Confirmar rapidamente:
-- abrir comanda;
-- editar nome/mesa;
-- lançar itens;
-- editar itens;
-- fechar;
-- cancelar conforme fluxo existente;
+- abrir/editar/fechar/cancelar comanda;
+- lançar e editar itens;
 - sincronizar;
 - WhatsApp transacional;
 - Cardápio;
 - Painel;
-- Histórico.
+- Histórico;
+- Clientes & Fidelização.
 
 ## Gate
 Somente promover após:
 - teste local desktop/mobile aprovado;
 - **gate de toque R2 aprovado**;
+- **gate visual do Painel R3 aprovado**;
 - A→B coerente;
 - nenhuma regressão P0/P1;
 - autorização explícita para publicação.
