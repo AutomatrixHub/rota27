@@ -1,4 +1,4 @@
-const CACHE_NAME = 'rota27-comandas-v0.25.9-r1';
+const CACHE_NAME = 'rota27-comandas-v0.25.10-r1';
 const APP_SHELL = [
   './','./index.html','./base-v013.html',
   './assets/v014.css','./assets/v014.js','./assets/v014-dev3.css','./assets/v014-dev3.js','./assets/v014-rc2-category-fix.js','./assets/v014-final.js',
@@ -24,6 +24,7 @@ const APP_SHELL = [
   './assets/v0255-map-card.css','./assets/v0255-map-card.js','./assets/v0255-fixed-whatsapp-copy.js','./assets/v0255-release.js',
   './assets/v0256-map-list-parity.css','./assets/v0256-map-list-parity.js','./assets/v0256-release.js',
   './assets/v0259-category-reference.css','./assets/v0259-category-reference.js','./assets/v0259-production-cleanup.js',
+  './assets/v02510-turn-summary-current-name.js',
   './assets/brand/rota27-logo-oficial.png',
   './manifest.webmanifest','./icons/apple-touch-icon.png','./icons/icon-192.png','./icons/icon-512.png','./icons/icon-192-maskable.png','./icons/icon-512-maskable.png','./icons/favicon-32.png'
 ];
