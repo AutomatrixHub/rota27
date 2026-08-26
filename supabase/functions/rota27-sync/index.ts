@@ -1,7 +1,7 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
 
-const EDGE_VERSION = "rota27-sync-v0.23.0";
+const EDGE_VERSION = "rota27-sync-v0.25.12";
 const ALLOWED_TYPES = new Set([
   "state_snapshot",
   "command_opened",
@@ -22,6 +22,8 @@ const ALLOWED_TYPES = new Set([
   "purchase_order_upsert",
   "purchase_receipt",
   "inventory_upsert",
+  "receivable_upsert",
+  "receivable_payment",
 ]);
 
 const corsHeaders = {
