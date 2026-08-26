@@ -4,10 +4,10 @@ Aplicativo mobile-first, offline-first e multidispositivo para controle rápido 
 
 ## Produção
 
-**Versão: v0.25.11 — Rankings por Produto Atual**  
+**Versão: v0.25.12 — Pendências / A Receber**  
 Branch: `main`  
 GitHub Pages: `https://automatrixhub.github.io/rota27/`  
-Service Worker: `rota27-comandas-v0.25.11-r1`
+Service Worker: `rota27-comandas-v0.25.12-r1`
 
 ## Navegação
 - **Comandas = atender**;
@@ -15,38 +15,45 @@ Service Worker: `rota27-comandas-v0.25.11-r1`
 - **Painel = administrar o negócio**;
 - **Histórico = o que aconteceu**.
 
-## v0.25.11 — Produtos mais vendidos
-Além do **Mais vendidos hoje**, o quadro **Histórico & resultados → Produtos mais vendidos** passa a agrupar vendas pelo **ID/código do produto** e exibir o **nome atual do cadastro**.
+## v0.25.12 — Pendências / A Receber
+Ao fechar uma comanda, a forma **A receber / Paga depois** permite registrar a venda sem inventar um pagamento recebido.
 
 Regras:
-- nome exibido: cadastro atual;
-- quantidade: histórico real;
-- receita: preços históricos gravados em cada comanda;
-- fallback: nome histórico se o produto não existir mais no catálogo;
-- comandas fechadas não são reescritas.
+- a comanda sai das abertas e deixa de bloquear o fechamento do turno;
+- a venda entra normalmente no Histórico e no faturamento;
+- o valor vira uma pendência vinculada ao cliente e à comanda;
+- pagamentos posteriores podem ser parciais ou totais;
+- a baixa posterior não gera nova venda, não duplica itens nem faturamento;
+- o Painel mostra o total em **A receber** e permite registrar a baixa;
+- o fechamento do turno distingue **Recebido no turno** de **A receber** quando houver pendência;
+- pendências e baixas sincronizam entre aparelhos.
 
-Assim, correções de nome refletem automaticamente nos rankings sem alterar valores históricos.
+## Sincronização
+Novos tipos de evento:
+- `receivable_upsert`
+- `receivable_payment`
+
+A Edge Function `rota27-sync` e o CHECK de `rota27_sync_events.event_type` foram atualizados em conjunto.
 
 ## Preservado
+- rankings por ID/código com nome atual do produto;
 - referência somente leitura de produtos ao editar categorias;
 - paridade Lista + Mapa;
 - cópia fixa de WhatsApp para `+55 27 99776-9279` (`5527997769279`);
 - replay histórico hibernado.
 
-## Backend
-A v0.25.11 não altera Supabase, Edge Functions, migrations ou tipos de evento.
-
 ## Ajuda
-Ajuda **v6.2** identifica a release v0.25.11.
+Ajuda **v6.3** identifica a release v0.25.12.
 
 ## Atualização da PWA
 Não limpar dados nem reinstalar. Abra a PWA online, aguarde 20–30 segundos, feche completamente e abra novamente em cada aparelho.
 
 ## Documentos
-- `docs/RELEASE-v0.25.11.md`
+- `docs/RELEASE-v0.25.12.md`
+- `docs/PLANEJAMENTO-v0.25.12.md`
 - `docs/STATUS-PRODUCAO.md`
 
-Baseline de rollback: **v0.25.10**.
+Baseline de rollback do código: **v0.25.11**.
 
 ## Versão
-Produção: **0.25.11**
+Produção: **0.25.12**
