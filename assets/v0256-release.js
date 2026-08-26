@@ -29,7 +29,7 @@
   }
 
   function loadCss(id,href){
-    if(document.getElementById(id))return;
+    if(document.getElementById(id)||document.querySelector(`link[href*="${href.split('?')[0].split('/').pop()}"]`))return;
     const link=document.createElement('link');link.id=id;link.rel='stylesheet';link.href=href;document.head.appendChild(link);
   }
   function loadReleaseAssets(){
@@ -40,11 +40,12 @@
       ['v0259ProductionCleanupJs','./assets/v0259-production-cleanup.js?v=0259r1'],
       ['v02510TurnSummaryCurrentNameJs','./assets/v02510-turn-summary-current-name.js?v=02510r1'],
       ['v02511HistoryRankCurrentNameJs','./assets/v02511-history-rank-current-name.js?v=02511r1'],
-      ['v02512ReceivablesJs','./assets/v02512-receivables.js?v=02512r1']
+      ['v02512ReceivablesJs','./assets/v02512-receivables.js?v=02512r1'],
+      ['v02512OverdueTurnJs','./assets/v02512-overdue-turn.js?v=02512r1']
     ];
     scripts.forEach(([id,src])=>{
       if(document.getElementById(id))return;
-      const script=document.createElement('script');script.id=id;script.src=src;script.defer=true;document.body.appendChild(script);
+      const script=document.createElement('script');script.id=id;script.src=src;script.async=false;document.body.appendChild(script);
     });
   }
 
