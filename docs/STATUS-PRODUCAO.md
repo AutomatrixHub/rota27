@@ -49,4 +49,7 @@ Não reinstalar e não limpar dados. Em cada aparelho:
 4. abrir novamente;
 5. confirmar `v0.25.13`.
 
+## Deploy
+- 26/08/2026: novo disparo do GitHub Pages realizado após a fila automática permanecer em `queued` por tempo anormal.
+
 Ver `docs/RELEASE-v0.25.13.md`.
