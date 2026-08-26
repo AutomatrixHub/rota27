@@ -6,7 +6,7 @@
   let baseOpenCategorySheet=null;
 
   function byId(id){return document.getElementById(id);}
-  function esc(v){try{return typeof escapeHtml==='function'?escapeHtml(String(v??'')):String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[ch]));}catch{return String(v??'');}}
+  function esc(v){try{return typeof escapeHtml==='function'?escapeHtml(String(v??'')):String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));}catch{return String(v??'');}}
   function moneyValue(v){try{return typeof money==='function'?money(Number(v||0)):Number(v||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});}catch{return 'R$ 0,00';}}
   function catalog(){try{return typeof state!=='undefined'&&Array.isArray(state?.catalog)?state.catalog:[];}catch{return [];}}
 
