@@ -4,10 +4,10 @@ Aplicativo mobile-first, offline-first e multidispositivo para controle rápido 
 
 ## Produção
 
-**Versão: v0.25.9 — Limpeza de Produção & Referência de Categoria**  
+**Versão: v0.25.10 — Resumo por Produto Atual**  
 Branch: `main`  
 GitHub Pages: `https://automatrixhub.github.io/rota27/`  
-Service Worker: `rota27-comandas-v0.25.9-r1`
+Service Worker: `rota27-comandas-v0.25.10-r1`
 
 ## Navegação
 - **Comandas = atender**;
@@ -15,50 +15,40 @@ Service Worker: `rota27-comandas-v0.25.9-r1`
 - **Painel = administrar o negócio**;
 - **Histórico = o que aconteceu**.
 
-## v0.25.9 — limpeza controlada de produção
-Foi removida da base remota e dos aparelhos a comanda de teste específica:
+## v0.25.10 — Mais vendidos hoje
+O quadro **Mais vendidos hoje** passa a agrupar vendas pelo **ID/código do produto**, e não pelo texto histórico do nome.
 
-`c1787598217117` — **Mamute / Mesa 1 / R$ 22,00 / 24/08/2026**.
+Regras:
+- nome exibido: cadastro atual do produto;
+- quantidade: comandas fechadas do dia;
+- receita: preços históricos gravados em cada comanda;
+- fallback: se o produto não existir mais no catálogo, usa o nome histórico da comanda.
 
-A limpeza:
-- remove a comanda do histórico e de qualquer lista local;
-- limpa outboxes relacionadas;
-- corrige `lastSeenAt` local do cliente sem apagar o cadastro;
-- corrige o fechamento de 24/08 retirando a venda de R$ 22,00 e preservando o fechamento do turno;
-- mantém proteção local contra reaparecimento dessa comanda em aparelhos ainda desatualizados.
+Isso faz correções de nome refletirem automaticamente no resumo sem reescrever comandas fechadas nem alterar valores históricos.
 
-No Supabase foram removidos os eventos da comanda, os logs técnicos de WhatsApp vinculados e os dois `client_upsert` contaminados pelo teste; o evento `turn_closed_2026-08-24` foi corrigido para faturamento/quantidade zerados naquele resumo.
-
-## Categorias — referência de produtos
-Ao tocar em **Editar** numa categoria, a folha de edição passa a mostrar uma lista somente leitura dos produtos daquela categoria, com:
-- nome;
-- preço;
-- status ativo/inativo.
-
-A lista é apenas referência. A edição de produto continua sendo feita pelo fluxo normal do Cardápio.
+## v0.25.9 preservado
+Permanece a limpeza controlada da comanda de teste e a lista somente leitura de produtos ao editar categorias.
 
 ## Comandas — Lista + Mapa
-Permanece a paridade visual da v0.25.6, com o Mapa reutilizando a estrutura visual da Lista e mantendo o card inteiro clicável.
+Permanece a paridade visual da v0.25.6.
 
-## WhatsApp — cópia fixa contínua
-Novos lançamentos continuam sendo enviados adicionalmente para `+55 27 99776-9279` (`5527997769279`).
-
-O replay histórico de 25/08 permanece hibernado.
+## WhatsApp
+Permanece ativa a cópia fixa de novos lançamentos para `+55 27 99776-9279` (`5527997769279`). O replay histórico segue hibernado.
 
 ## Backend
-A v0.25.9 não cria nova Edge Function, tabela, migration ou tipo de evento. Houve somente limpeza/correção de dados existentes no Supabase.
+A v0.25.10 não altera Supabase, Edge Functions, migrations ou tipos de evento.
 
 ## Ajuda
-Ajuda **v6.0** identifica a release v0.25.9.
+Ajuda **v6.1** identifica a release v0.25.10.
 
 ## Atualização da PWA
 Não limpar dados nem reinstalar. Abra a PWA online, aguarde 20–30 segundos, feche completamente e abra novamente em cada aparelho.
 
 ## Documentos
-- `docs/RELEASE-v0.25.9.md`
+- `docs/RELEASE-v0.25.10.md`
 - `docs/STATUS-PRODUCAO.md`
 
-Baseline de rollback: **v0.25.8**.
+Baseline de rollback: **v0.25.9**.
 
 ## Versão
-Produção: **0.25.9**
+Produção: **0.25.10**
