@@ -1,17 +1,17 @@
-/* Rota 27 v0.25.12 — identidade operacional e Pendências / A Receber */
+/* Rota 27 v0.25.13 — identidade operacional e seleção de cliente */
 (function(){
   'use strict';
-  const VERSION='0.25.12';
+  const VERSION='0.25.13';
 
   function updateIdentity(){
-    document.title='Rota 27 Bodega • Comandas v0.25.12';
+    document.title='Rota 27 Bodega • Comandas v0.25.13';
     const meta=document.querySelector('meta[name="rota27-release-version"]');
     if(meta)meta.content=VERSION;
-    let style=document.getElementById('v02512ReleaseIdentity');
+    let style=document.getElementById('v02513ReleaseIdentity');
     if(!style){
       style=document.createElement('style');
-      style.id='v02512ReleaseIdentity';
-      style.textContent='#v14VersionBadge::after{content:"v0.25.12"!important}';
+      style.id='v02513ReleaseIdentity';
+      style.textContent='#v14VersionBadge::after{content:"v0.25.13"!important}';
       document.head.appendChild(style);
     }
   }
@@ -19,7 +19,7 @@
   function updateHelpIdentity(){
     const overlay=document.getElementById('r27HelpOverlay');
     const footer=overlay?.querySelector('.r27-help-footer span');
-    if(footer)footer.textContent='Ajuda v6.3 • Rota 27 v0.25.12';
+    if(footer)footer.textContent='Ajuda v6.4 • Rota 27 v0.25.13';
   }
 
   function removeReplayUi(){
@@ -35,6 +35,7 @@
   function loadReleaseAssets(){
     loadCss('v0259CategoryReferenceCss','./assets/v0259-category-reference.css?v=0259r1');
     loadCss('v02512ReceivablesCss','./assets/v02512-receivables.css?v=02512r1');
+    loadCss('v02513ClientPickerCss','./assets/v02513-client-picker.css?v=02513r1');
     const scripts=[
       ['v0259CategoryReferenceJs','./assets/v0259-category-reference.js?v=0259r1'],
       ['v0259ProductionCleanupJs','./assets/v0259-production-cleanup.js?v=0259r1'],
@@ -42,7 +43,8 @@
       ['v02511HistoryRankCurrentNameJs','./assets/v02511-history-rank-current-name.js?v=02511r1'],
       ['v02512ReceivablesJs','./assets/v02512-receivables.js?v=02512r1'],
       ['v02512OverdueTurnJs','./assets/v02512-overdue-turn.js?v=02512r1'],
-      ['v02512ReceivablesSafetyJs','./assets/v02512-receivables-safety.js?v=02512r1']
+      ['v02512ReceivablesSafetyJs','./assets/v02512-receivables-safety.js?v=02512r1'],
+      ['v02513ClientPickerJs','./assets/v02513-client-picker.js?v=02513r1']
     ];
     scripts.forEach(([id,src])=>{
       if(document.getElementById(id))return;
@@ -68,8 +70,8 @@
         loadReleaseAssets();
       }
     });
-    window.Rota27V02512Release={version:VERSION,updateIdentity,updateHelpIdentity,removeReplayUi,loadReleaseAssets,replayHibernated:true};
-    console.info('[Rota27] v0.25.12 — Pendências / A Receber carregado.');
+    window.Rota27V02513Release={version:VERSION,updateIdentity,updateHelpIdentity,removeReplayUi,loadReleaseAssets,replayHibernated:true};
+    console.info('[Rota27] v0.25.13 — seleção pesquisável de cliente carregada.');
   }
 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();

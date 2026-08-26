@@ -1,0 +1,14 @@
+/* Rota 27 v0.25.13 — seletor de cliente na nova comanda */
+.v02513-client-field{position:relative;z-index:4}
+.v02513-client-picker{display:none;position:absolute;left:0;right:0;top:calc(100% - 5px);z-index:90;background:#fff9f0;border:1px solid #d9c7a7;border-radius:14px;box-shadow:0 16px 34px rgba(30,22,15,.18);max-height:300px;overflow:auto;padding:6px}
+.v02513-client-picker.open{display:block}
+.v02513-client-option{width:100%;border:0;background:transparent;color:#171310;text-align:left;border-radius:11px;padding:11px 10px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.v02513-client-option+ .v02513-client-option{border-top:1px solid #eee1cf}
+.v02513-client-option:active,.v02513-client-option.selected{background:#f4e7d6}
+.v02513-client-option strong{display:block;font-size:15px;line-height:1.2}
+.v02513-client-option small{display:block;margin-top:4px;color:#756656;font-size:12px}
+.v02513-client-badge{flex:0 0 auto;border-radius:999px;background:#efe1cc;color:#8f4b2b;font-size:11px;font-weight:850;padding:6px 8px}
+.v02513-client-empty{padding:11px 10px;color:#756656;font-size:13px}
+.v02513-client-hint{display:none;margin:6px 2px 0;color:#3e7c59;font-size:12px;font-weight:750}
+.v02513-client-hint.show{display:block}
+@media(max-width:520px){.v02513-client-picker{max-height:250px}.v02513-client-option{padding:12px 10px}}
