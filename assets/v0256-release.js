@@ -41,7 +41,8 @@
       ['v02510TurnSummaryCurrentNameJs','./assets/v02510-turn-summary-current-name.js?v=02510r1'],
       ['v02511HistoryRankCurrentNameJs','./assets/v02511-history-rank-current-name.js?v=02511r1'],
       ['v02512ReceivablesJs','./assets/v02512-receivables.js?v=02512r1'],
-      ['v02512OverdueTurnJs','./assets/v02512-overdue-turn.js?v=02512r1']
+      ['v02512OverdueTurnJs','./assets/v02512-overdue-turn.js?v=02512r1'],
+      ['v02512ReceivablesSafetyJs','./assets/v02512-receivables-safety.js?v=02512r1']
     ];
     scripts.forEach(([id,src])=>{
       if(document.getElementById(id))return;
