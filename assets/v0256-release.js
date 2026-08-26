@@ -1,17 +1,17 @@
-/* Rota 27 v0.25.9 — identidade operacional, replay hibernado, limpeza controlada e referência de categoria */
+/* Rota 27 v0.25.10 — identidade operacional e resumo por produto atual */
 (function(){
   'use strict';
-  const VERSION='0.25.9';
+  const VERSION='0.25.10';
 
   function updateIdentity(){
-    document.title='Rota 27 Bodega • Comandas v0.25.9';
+    document.title='Rota 27 Bodega • Comandas v0.25.10';
     const meta=document.querySelector('meta[name="rota27-release-version"]');
     if(meta)meta.content=VERSION;
-    let style=document.getElementById('v0259ReleaseIdentity');
+    let style=document.getElementById('v02510ReleaseIdentity');
     if(!style){
       style=document.createElement('style');
-      style.id='v0259ReleaseIdentity';
-      style.textContent='#v14VersionBadge::after{content:"v0.25.9"!important}';
+      style.id='v02510ReleaseIdentity';
+      style.textContent='#v14VersionBadge::after{content:"v0.25.10"!important}';
       document.head.appendChild(style);
     }
   }
@@ -19,7 +19,7 @@
   function updateHelpIdentity(){
     const overlay=document.getElementById('r27HelpOverlay');
     const footer=overlay?.querySelector('.r27-help-footer span');
-    if(footer)footer.textContent='Ajuda v6.0 • Rota 27 v0.25.9';
+    if(footer)footer.textContent='Ajuda v6.1 • Rota 27 v0.25.10';
   }
 
   function removeReplayUi(){
@@ -28,7 +28,7 @@
     document.getElementById('v0257ReplayJs')?.remove();
   }
 
-  function loadV0259Assets(){
+  function loadReleaseAssets(){
     if(!document.getElementById('v0259CategoryReferenceCss')){
       const link=document.createElement('link');
       link.id='v0259CategoryReferenceCss';link.rel='stylesheet';link.href='./assets/v0259-category-reference.css?v=0259r1';
@@ -36,7 +36,8 @@
     }
     const scripts=[
       ['v0259CategoryReferenceJs','./assets/v0259-category-reference.js?v=0259r1'],
-      ['v0259ProductionCleanupJs','./assets/v0259-production-cleanup.js?v=0259r1']
+      ['v0259ProductionCleanupJs','./assets/v0259-production-cleanup.js?v=0259r1'],
+      ['v02510TurnSummaryCurrentNameJs','./assets/v02510-turn-summary-current-name.js?v=02510r1']
     ];
     scripts.forEach(([id,src])=>{
       if(document.getElementById(id))return;
@@ -52,18 +53,18 @@
     updateIdentity();
     updateHelpIdentity();
     removeReplayUi();
-    loadV0259Assets();
+    loadReleaseAssets();
     document.addEventListener('click',handleClick);
     document.addEventListener('visibilitychange',()=>{
       if(document.visibilityState==='visible'){
         updateIdentity();
         updateHelpIdentity();
         removeReplayUi();
-        loadV0259Assets();
+        loadReleaseAssets();
       }
     });
-    window.Rota27V0259={version:VERSION,updateIdentity,updateHelpIdentity,removeReplayUi,loadV0259Assets,replayHibernated:true};
-    console.info('[Rota27] v0.25.9 — limpeza controlada e referência de produtos por categoria ativas.');
+    window.Rota27V02510Release={version:VERSION,updateIdentity,updateHelpIdentity,removeReplayUi,loadReleaseAssets,replayHibernated:true};
+    console.info('[Rota27] v0.25.10 — resumo por ID do produto com nome atual e receita histórica.');
   }
 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
