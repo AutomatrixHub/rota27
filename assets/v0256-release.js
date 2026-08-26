@@ -1,17 +1,17 @@
-/* Rota 27 v0.25.13 — identidade operacional e seleção de cliente */
+/* Rota 27 v0.25.14 — identidade operacional, novo turno no mesmo dia e seleção de cliente */
 (function(){
   'use strict';
-  const VERSION='0.25.13';
+  const VERSION='0.25.14';
 
   function updateIdentity(){
-    document.title='Rota 27 Bodega • Comandas v0.25.13';
+    document.title='Rota 27 Bodega • Comandas v0.25.14';
     const meta=document.querySelector('meta[name="rota27-release-version"]');
     if(meta)meta.content=VERSION;
-    let style=document.getElementById('v02513ReleaseIdentity');
+    let style=document.getElementById('v02514ReleaseIdentity');
     if(!style){
       style=document.createElement('style');
-      style.id='v02513ReleaseIdentity';
-      style.textContent='#v14VersionBadge::after{content:"v0.25.13"!important}';
+      style.id='v02514ReleaseIdentity';
+      style.textContent='#v14VersionBadge::after{content:"v0.25.14"!important}';
       document.head.appendChild(style);
     }
   }
@@ -19,7 +19,7 @@
   function updateHelpIdentity(){
     const overlay=document.getElementById('r27HelpOverlay');
     const footer=overlay?.querySelector('.r27-help-footer span');
-    if(footer)footer.textContent='Ajuda v6.4 • Rota 27 v0.25.13';
+    if(footer)footer.textContent='Ajuda v6.5 • Rota 27 v0.25.14';
   }
 
   function removeReplayUi(){
@@ -70,8 +70,8 @@
         loadReleaseAssets();
       }
     });
-    window.Rota27V02513Release={version:VERSION,updateIdentity,updateHelpIdentity,removeReplayUi,loadReleaseAssets,replayHibernated:true};
-    console.info('[Rota27] v0.25.13 — seleção pesquisável de cliente carregada.');
+    window.Rota27V02514Release={version:VERSION,updateIdentity,updateHelpIdentity,removeReplayUi,loadReleaseAssets,replayHibernated:true};
+    console.info('[Rota27] v0.25.14 — novo turno no mesmo dia e seleção pesquisável de cliente carregados.');
   }
 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
