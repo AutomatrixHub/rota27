@@ -8,6 +8,7 @@
   const META_KEY='rota27_v019_turn_meta_v1';
   const CANCEL_OUTBOX_KEY='rota27_cancel_outbox_v0151';
   const SYNC_CONFIG_KEY='rota27_sync_config_v1';
+  const RECENT_WINDOW_MS=36*60*60*1000;
   let syncing=false,renderTimer=null;
 
   const byId=id=>document.getElementById(id);
@@ -40,6 +41,7 @@
     const fallback=Number(c?.closedAt||c?.updatedAt||0);
     return Number.isFinite(fallback)&&fallback>0?fallback:0;
   }
+  function activityAt(c){return Math.max(Number(c?.closedAt||0),Number(c?.updatedAt||0),openedAt(c));}
   function commandBusinessDate(c){
     const explicit=String(c?.businessDate||c?.operationalDate||'').trim();
     if(validDateKey(explicit))return explicit;
@@ -92,15 +94,25 @@
       shiftStart:firstOpenedAt||Math.max(startOfDay(key),shiftCutoff(key)+1),firstOpenedAt
     };
   }
-  function movementDates(){
+  function openMovementDates(){
     const set=new Set();
-    [...(Array.isArray(state?.commands)?state.commands:[]),...(Array.isArray(state?.history)?state.history:[])].forEach(c=>set.add(commandBusinessDate(c)));
+    (Array.isArray(state?.commands)?state.commands:[]).filter(c=>c?.cancelled!==true).forEach(c=>set.add(commandBusinessDate(c)));
+    return [...set].filter(validDateKey).sort();
+  }
+  function recentMovementDates(){
+    const limit=Date.now()-RECENT_WINDOW_MS,set=new Set();
+    (Array.isArray(state?.history)?state.history:[]).forEach(c=>{if(activityAt(c)>=limit)set.add(commandBusinessDate(c));});
+    set.add(localDateKey());
     return [...set].filter(validDateKey).sort();
   }
   function currentBusinessDate(){
-    for(const key of movementDates()){
+    for(const key of openMovementDates()){
       const s=buildSummaryForDate(key);
-      if(s.openCount>0||s.closedCount>0)return key;
+      if(s.openCount>0)return key;
+    }
+    for(const key of recentMovementDates()){
+      const s=buildSummaryForDate(key);
+      if(s.closedCount>0)return key;
     }
     return localDateKey();
   }
@@ -178,7 +190,7 @@
     if(syncing){status.className='v019-gate';status.textContent='Sincronizando fechamentos…';}
     else if(outbox.length){status.className='v019-gate warn';status.textContent=`${outbox.length} fechamento${outbox.length===1?'':'s'} aguardando sincronização.`;}
     else{status.className='v019-gate ok';status.textContent=Number(meta.lastSyncAt||0)?`Fechamentos sincronizados. Última conferência ${new Date(Number(meta.lastSyncAt)).toLocaleString('pt-BR')}.`:'Fechamentos armazenados neste aparelho.';}
-    list.innerHTML=rows.length?rows.map(c=>{const s=c.summary||{};return `<div class="v019-history-row"><div class="v019-history-row-head"><strong>${esc(dateLabel(c.businessDate))}</strong><span>${esc(new Date(Number(c.closedAt||0)).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}))}</span></div><div class="v019-history-row-metrics"><div class="v019-history-mini"><small>Faturamento</small><b>${esc(moneyValue(s.revenue))}</b></div><div class="v019-history-mini"><small>Fechadas</small><b>${esc(String(s.closedCount||0))}</b></div><div class="v019-history-mini"><small>Canceladas</small><b>${esc(String(s.cancelled||0))}</b></div><div class="v019-history-mini"><small>Ticket médio</small><b>${esc(moneyValue(s.avgTicket))}</b></div><div class="v019-history-mini"><small>Itens</small><b>${esc(String(s.units||0))}</b></div><div class="v019-history-mini"><small>Formas pgto.</small><b>${esc(String(Array.isArray(s.payments)?s.payments.length:0))}</b></div></div><div class="v019-history-meta">Data operacional pela abertura • fechado em ${esc(c.deviceName||'Aparelho')} • ${esc(c.id)}</div></div>`;}).join(''):'<div class="v019-preview-empty">Nenhum turno fechado ainda.</div>';
+    list.innerHTML=rows.length?rows.map(c=>{const s=c.summary||{};return `<div class="v019-history-row"><div class="v019-history-row-head"><strong>${esc(dateLabel(c.businessDate))}</strong><span>${esc(new Date(Number(c.closedAt||0)).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}))}</span></div><div class="v019-history-row-metrics"><div class="v019-history-mini"><small>Faturamento</small><b>${esc(moneyValue(s.revenue))}</b></div><div class="v019-history-mini"><small>Fechadas</small><b>${esc(String(s.closedCount||0))}</b></div><div class="v019-history-mini"><small>Canceladas</small><b>${esc(String(s.cancelled||0))}</b></div><div class="v019-history-mini"><small>Ticket médio</small><b>${esc(moneyValue(s.avgTicket))}</b></div><div class="v019-history-mini"><small>Itens</small><b>${esc(String(s.units||0))}</b></div><div class="v019-history-mini"><small>Formas pgto.</small><b>${esc(String(Array.isArray(s.payments)?s.payments.length:0))}</b></div></div><div class="v019-history-meta">Data operacional pela abertura • fechado em ${esc(c.deviceName||'Aparelho')} • ${esc(c.id)}</div></div>`;}).join(''):'<div class="v019-preview-empty">Nenhum turno fechado ainda.</div>`;
   }
   function openHistorySheet(){ensureHistorySheet();renderHistorySheet();byId('v019HistoryWrap').classList.add('open');if(navigator.onLine&&syncReady())syncTurnNow();}
   function renderOpenSheets(){if(byId('v019CloseWrap')?.classList.contains('open'))renderCloseSheet();if(byId('v019HistoryWrap')?.classList.contains('open'))renderHistorySheet();}
