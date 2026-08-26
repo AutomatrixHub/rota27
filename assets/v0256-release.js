@@ -1,17 +1,17 @@
-/* Rota 27 v0.25.14 — identidade operacional, novo turno no mesmo dia e seleção de cliente */
+/* Rota 27 v0.25.15 — identidade operacional, data do turno pela abertura e seleção de cliente */
 (function(){
   'use strict';
-  const VERSION='0.25.14';
+  const VERSION='0.25.15';
 
   function updateIdentity(){
-    document.title='Rota 27 Bodega • Comandas v0.25.14';
+    document.title='Rota 27 Bodega • Comandas v0.25.15';
     const meta=document.querySelector('meta[name="rota27-release-version"]');
     if(meta)meta.content=VERSION;
-    let style=document.getElementById('v02514ReleaseIdentity');
+    let style=document.getElementById('v02515ReleaseIdentity');
     if(!style){
       style=document.createElement('style');
-      style.id='v02514ReleaseIdentity';
-      style.textContent='#v14VersionBadge::after{content:"v0.25.14"!important}';
+      style.id='v02515ReleaseIdentity';
+      style.textContent='#v14VersionBadge::after{content:"v0.25.15"!important}';
       document.head.appendChild(style);
     }
   }
@@ -19,7 +19,7 @@
   function updateHelpIdentity(){
     const overlay=document.getElementById('r27HelpOverlay');
     const footer=overlay?.querySelector('.r27-help-footer span');
-    if(footer)footer.textContent='Ajuda v6.5 • Rota 27 v0.25.14';
+    if(footer)footer.textContent='Ajuda v6.6 • Rota 27 v0.25.15';
   }
 
   function removeReplayUi(){
@@ -42,7 +42,7 @@
       ['v02510TurnSummaryCurrentNameJs','./assets/v02510-turn-summary-current-name.js?v=02510r1'],
       ['v02511HistoryRankCurrentNameJs','./assets/v02511-history-rank-current-name.js?v=02511r1'],
       ['v02512ReceivablesJs','./assets/v02512-receivables.js?v=02512r1'],
-      ['v02512OverdueTurnJs','./assets/v02512-overdue-turn.js?v=02512r1'],
+      ['v02512OverdueTurnJs','./assets/v02512-overdue-turn.js?v=02515r1'],
       ['v02512ReceivablesSafetyJs','./assets/v02512-receivables-safety.js?v=02512r1'],
       ['v02513ClientPickerJs','./assets/v02513-client-picker.js?v=02513r1']
     ];
@@ -70,8 +70,8 @@
         loadReleaseAssets();
       }
     });
-    window.Rota27V02514Release={version:VERSION,updateIdentity,updateHelpIdentity,removeReplayUi,loadReleaseAssets,replayHibernated:true};
-    console.info('[Rota27] v0.25.14 — novo turno no mesmo dia e seleção pesquisável de cliente carregados.');
+    window.Rota27V02515Release={version:VERSION,updateIdentity,updateHelpIdentity,removeReplayUi,loadReleaseAssets,replayHibernated:true};
+    console.info('[Rota27] v0.25.15 — data operacional pela abertura e seleção pesquisável de cliente carregadas.');
   }
 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
