@@ -1,4 +1,4 @@
-const CACHE_NAME = 'rota27-comandas-v0.25.14-r1';
+const CACHE_NAME = 'rota27-comandas-v0.25.15-r1';
 const APP_SHELL = [
   './','./index.html','./base-v013.html',
   './assets/v014.css','./assets/v014.js','./assets/v014-dev3.css','./assets/v014-dev3.js','./assets/v014-rc2-category-fix.js','./assets/v014-final.js',
@@ -8,9 +8,8 @@ const APP_SHELL = [
   './assets/v017.css','./assets/v017-core.js','./assets/v017-client-ids.js','./assets/v017-manager.js','./assets/v017-whatsapp-polish.js','./assets/v017-layout.js',
   './assets/v018.css','./assets/v018-turn-summary.js','./assets/v018-help.js',
   './assets/v0181.css','./assets/v0181-audit.js','./assets/v0181-help.js',
-  './assets/v0182-brand-theme.css',
-  './assets/v0183-capixaba-help.css','./assets/v0183-final.js',
-  './assets/v019-turn-close.css','./assets/v019-turn-close.js','./assets/v02514-turn-close.js',
+  './assets/v0182-brand-theme.css','./assets/v0183-capixaba-help.css','./assets/v0183-final.js',
+  './assets/v019-turn-close.css','./assets/v019-turn-close.js','./assets/v02515-turn-close.js',
   './assets/v020-manager-dashboard.css','./assets/v020-manager-dashboard.js','./assets/v020-demo-mode.css','./assets/v020-demo-mode.js','./assets/v020-preview-demo.js',
   './assets/v021-stock.css','./assets/v021-stock.js','./assets/v021-compat.js','./assets/v021-help-compat.js',
   './assets/v022-stock-preflight.js','./assets/v022-stock-release.js','./assets/v022-stock-manager-view.css','./assets/v022-stock-manager-view.js','./assets/v022-stock-view-bridge.js','./assets/v022-purchases.css','./assets/v022-purchases.js','./assets/v022-compat.js','./assets/v022-manager-view.css','./assets/v022-manager-view.js',
@@ -19,8 +18,7 @@ const APP_SHELL = [
   './assets/v025-relationship.css','./assets/v025-relationship-r2.css','./assets/v025-relationship-r3.css','./assets/v025-relationship.js','./assets/v025-relationship-r3.js','./assets/v025-release-identity.css',
   './assets/v0251-navigation.css','./assets/v0251-navigation.js',
   './assets/v0252-command-map.css','./assets/v0252-command-map.js','./assets/v0252-panel-polish.css','./assets/v0252-panel-polish.js',
-  './assets/v0253-map-visual.css','./assets/v0253-release.js',
-  './assets/v0254-map-accent.css','./assets/v0254-release.js',
+  './assets/v0253-map-visual.css','./assets/v0253-release.js','./assets/v0254-map-accent.css','./assets/v0254-release.js',
   './assets/v0255-map-card.css','./assets/v0255-map-card.js','./assets/v0255-fixed-whatsapp-copy.js','./assets/v0255-release.js',
   './assets/v0256-map-list-parity.css','./assets/v0256-map-list-parity.js','./assets/v0256-release.js',
   './assets/v0259-category-reference.css','./assets/v0259-category-reference.js','./assets/v0259-production-cleanup.js',
