@@ -11,10 +11,10 @@
 
   function read(key,fallback){try{const v=JSON.parse(localStorage.getItem(key)||'null');return v==null?fallback:v;}catch{return fallback;}}
   function write(key,v){localStorage.setItem(key,JSON.stringify(v));}
+  function clone(v){return JSON.parse(JSON.stringify(v==null?null:v));}
   function dateKey(ts){const d=new Date(Number(ts||Date.now()));return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
   function today(){return dateKey(Date.now());}
   function notify(msg){try{typeof showToast==='function'?showToast(msg,false):console.info('[Rota27]',msg);}catch{}}
-  function recordTotal(c){if(Number.isFinite(Number(c?.total)))return Number(c.total);try{return Number(commandTotal(c)||0);}catch{return Object.entries(c?.items||{}).reduce((s,[id,q])=>s+Number(q||0)*Number(c?.itemMeta?.[id]?.price||0),0);}}
   function cfg(){const c=read(SYNC_CONFIG,{});return c&&typeof c==='object'?c:{};}
 
   function patchReceivable(commandId,operationalAt,adminAt){
@@ -27,10 +27,22 @@
     }
   }
 
+  function queueHistoryCorrection(commandId,historyRecord,adminAt){
+    if(!historyRecord)return;
+    const c=cfg();if(!c||typeof c!=='object')return;
+    const out=Array.isArray(c.outbox)?c.outbox:[];const eventId=`history_upsert_operational_${commandId}`;
+    if(!out.some(x=>String(x.eventId)===eventId)){
+      out.push({eventId,eventType:'history_upsert',entityId:String(commandId),payload:{command:clone(historyRecord)},deviceId:c.deviceId||'local',createdAt:new Date(adminAt).toISOString(),appVersion:VERSION});
+      c.outbox=out.slice(-1200);write(SYNC_CONFIG,c);
+    }
+    setTimeout(()=>{try{window.v15SyncNow?.();}catch{}},0);
+  }
+
   function patchHistory(commandId,operationalAt,adminAt){
-    const idx=(state.history||[]).findIndex(h=>String(h.id)===String(commandId));if(idx<0)return false;
+    const idx=(state.history||[]).findIndex(h=>String(h.id)===String(commandId));if(idx<0)return null;
     state.history[idx]={...state.history[idx],closedAt:operationalAt,businessDate:dateKey(operationalAt),administrativeClosedAt:adminAt};
-    try{save();}catch{}return true;
+    try{save();}catch{}
+    const corrected=clone(state.history[idx]);queueHistoryCorrection(commandId,corrected,adminAt);return corrected;
   }
 
   function openCommandsFor(key){return (state.commands||[]).filter(c=>dateKey(Number(c.updatedAt||c.createdAt||0))===key);}
@@ -56,7 +68,7 @@
       setTimeout(()=>{try{window.Rota27V02512?.sync?.();}catch{}},0);
       setTimeout(()=>{
         if(!openCommandsFor(key).length&&window.confirm(`Esta comanda pertence ao turno de ${key.split('-').reverse().join('/')}, que ficou pendente.\n\nRegistrar agora o fechamento desse turno?`))queuePriorTurnClosure(key);
-      },180);
+      },220);
       return result;
     };
     try{window.finalizeCommand=wrapped;finalizeCommand=wrapped;}catch{}
