@@ -16,6 +16,13 @@ Ao usar:
 - nasce uma pendência vinculada à comanda/cliente;
 - o turno deixa de ficar bloqueado.
 
+## Turno anterior pendente
+Se a comanda pertence a um dia anterior e só está sendo regularizada depois da meia-noite:
+- a venda é mantida na data operacional da última atividade da comanda;
+- o momento administrativo da regularização é preservado separadamente;
+- se não restar outra comanda aberta daquele dia, o sistema oferece registrar o fechamento do turno anterior;
+- esse fechamento não bloqueia a abertura de comandas do dia atual.
+
 ## Painel — A receber
 Mostra:
 - quantidade de pendências abertas;
@@ -43,7 +50,7 @@ A forma `A receber` também aparece na composição do fechamento imutável.
 
 ## Sincronização
 Novos eventos append-only/idempotentes:
-- `receivable_upsert` — abertura da pendência;
+- `receivable_upsert` — abertura/estado-base da pendência;
 - `receivable_payment` — baixa total/parcial.
 
 Backend:
