@@ -3,19 +3,61 @@
 Última revisão: 26/08/2026
 
 ## Produção
-- versão: **v0.25.15 — Data operacional do turno**;
+- versão: **v0.25.16 — Reparo histórico de fechamento**;
 - branch: `main`;
 - GitHub Pages: `https://automatrixhub.github.io/rota27/`;
-- Service Worker: `rota27-comandas-v0.25.15-r1`;
+- Service Worker: `rota27-comandas-v0.25.16-r1`;
 - `rota27-whatsapp`: versão 23 ACTIVE (`rota27-whatsapp-v6-mini2`);
-- `rota27-sync`: versão 8 ACTIVE (`rota27-sync-v0.25.12`);
+- `rota27-sync`: versão **9 ACTIVE** (`rota27-sync-v0.25.16`);
 - `rota27-whatsapp-inbound`: versão 1 ACTIVE;
 - `rota27-audit`: versão 1 ACTIVE, somente leitura.
 
-Baseline de rollback do código: **v0.25.14 — Novo turno no mesmo dia**.
+Baseline de rollback do código: **v0.25.15 — Data operacional do turno**.
 
-## v0.25.15 — Data operacional do turno
-A data operacional passa a ser determinada pela **abertura da comanda**, não pelo instante do fechamento.
+## v0.25.16 — Reparo histórico de fechamento
+A release corrige de forma explícita, idempotente e rastreável o fechamento histórico relacionado à comanda real `c1787690191876`:
+- cliente/local: Fred / Balcão;
+- valor: R$ 145,00;
+- abertura: 25/08/2026 17:36:31 BRT;
+- fechamento administrativo: 26/08/2026 09:19:42 BRT;
+- forma: A receber;
+- recebível: `recv_c1787690191876`.
+
+O `turn_closed` seq 539 (`turn_closed_2026-08-26` / `turn_2026-08-26`) permanece no event log para auditoria e passa a ser **supersedido operacionalmente**, não apagado.
+
+A reconstrução canônica do movimento aberto em 25/08 resulta em:
+- faturamento: **R$ 448,00**;
+- 8 comandas fechadas;
+- 33 unidades;
+- A receber: R$ 145,00;
+- Pix: R$ 132,00;
+- Débito: R$ 104,00;
+- Crédito: R$ 67,00.
+
+O fechamento efetivo reparado usa `businessDate = 2026-08-25`, preserva o horário real de encerramento administrativo e mantém Fred em A receber até baixa real.
+
+## Proteção multidispositivo
+`assets/v02516-repair.js` aplica uma migração local one-shot/idempotente:
+- mantém cópia auditável local do fechamento supersedido;
+- remove apenas sua participação na visão operacional efetiva;
+- instala o fechamento canônico reparado de 25/08;
+- não limpa `localStorage`;
+- não reinstala a PWA;
+- usa cursor próprio para `turn_closure_repair`;
+- reaplica a regra em eventos de ciclo de vida, sem polling visual frequente e sem `MutationObserver`.
+
+Assim, um aparelho antigo que volte a sincronizar não deve reintroduzir o fechamento de 26/08 como verdade operacional.
+
+## Backend v0.25.16
+- migration `expand_rota27_sync_event_types_v02516` aplicada;
+- novo tipo `turn_closure_repair` aceito no CHECK PostgreSQL;
+- `rota27-sync` versão 9 ACTIVE;
+- `EDGE_VERSION = rota27-sync-v0.25.16`;
+- `ALLOWED_TYPES` inclui `turn_closure_repair`;
+- `receivable_upsert` e `receivable_payment` permanecem aceitos.
+
+## Regra operacional preservada da v0.25.15
+A data operacional é determinada pela **abertura da comanda**, não pelo instante do fechamento.
 
 Regras:
 - aberta em 26/08 e fechada em 27/08 às 01h/02h → pertence a 26/08;
@@ -26,24 +68,21 @@ Regras:
 - históricos antigos sem movimento recente não assumem o turno corrente.
 
 ## A receber
-`A receber / Paga depois` segue a mesma regra de data operacional. A pendência e o histórico recebem `businessDate`/`operationalDate` pela abertura, sem reescrever o horário real de fechamento.
+`A receber / Paga depois` segue a regra de data operacional pela abertura. A baixa total ou parcial posterior não cria nova venda e não duplica faturamento/itens.
 
 ## Cliente cadastrado
 Permanece ativo o seletor pesquisável da v0.25.13 na nova comanda, compatível com iPhone/PWA, com busca por nome/WhatsApp e digitação livre para cliente novo.
 
-## Backend
-Sem nova migration, Edge Function, tabela ou tipo de evento. Permanecem os eventos e o `rota27-sync` versão 8 já existentes.
-
 ## Preservado
-- A receber e recebimentos parciais/totais;
 - rankings por ID/código com nome atual;
 - referência de produtos ao editar categorias;
 - cópia fixa de WhatsApp para `+55 27 99776-9279` (`5527997769279`);
 - replay histórico hibernado;
+- Lista + Mapa;
 - estoque, compras, inventário, custos e relacionamento.
 
 ## Ajuda
-Ajuda **v6.6**, identificando Rota 27 v0.25.15.
+Ajuda **v6.7**, identificando Rota 27 v0.25.16.
 
 ## Atualização da PWA
 Não reinstalar e não limpar dados. Em cada aparelho:
@@ -51,6 +90,6 @@ Não reinstalar e não limpar dados. Em cada aparelho:
 2. abrir a PWA por 20–30 segundos;
 3. fechar completamente;
 4. abrir novamente;
-5. confirmar `v0.25.15`.
+5. confirmar `v0.25.16`.
 
-Ver `docs/RELEASE-v0.25.15.md`.
+Ver `docs/RELEASE-v0.25.16.md`.
