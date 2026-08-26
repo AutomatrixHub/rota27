@@ -1,0 +1,21 @@
+/* Rota 27 v0.25.12 — Pendências / A Receber */
+.v02512-receivables-entry{margin-top:18px}
+.v02512-receivables-entry .v02512-entry-head{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px;align-items:center}
+.v02512-receivables-entry .v02512-entry-copy{display:flex;flex-direction:column;gap:5px;min-width:0}
+.v02512-receivables-entry .v02512-entry-copy strong{font-size:20px;line-height:1.15}
+.v02512-receivables-entry .v02512-entry-copy small{font-size:14px;color:var(--muted,#756656);line-height:1.4}
+.v02512-receivables-entry .v02512-open{min-width:180px;border:0;border-radius:16px;padding:14px 18px;background:#7b5f43;color:#fff;font-weight:900}
+.v02512-receivables-entry.has-open .v02512-open{background:#b56b35}
+.v02512-dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:#8b8175;margin-right:7px;vertical-align:1px}.v02512-dot.warn{background:#cf7a3d}.v02512-dot.ok{background:#3e7c59}
+.v02512-sheet .desc{max-width:620px}
+.v02512-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:12px 0 16px}
+.v02512-summary>div{background:#f3e5cf;border:1px solid #ddc9a8;border-radius:16px;padding:13px}.v02512-summary small{display:block;color:#766657;font-size:12px}.v02512-summary strong{display:block;margin-top:4px;font-size:20px}
+.v02512-list{display:grid;gap:10px}.v02512-row{border:1px solid #ddc9a8;background:#fff9f0;border-radius:17px;padding:13px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center}.v02512-row-copy{min-width:0}.v02512-row-copy strong{font-size:16px;display:block}.v02512-row-copy span{display:block;color:#6f6257;font-size:13px;margin-top:3px}.v02512-row-copy small{display:block;color:#8b7766;font-size:12px;margin-top:5px}.v02512-row-balance{text-align:right}.v02512-row-balance b{display:block;font-size:18px}.v02512-row-balance button{margin-top:8px;border:0;background:#b56b35;color:#fff;border-radius:12px;padding:9px 12px;font-weight:850}.v02512-row.paid{opacity:.78}.v02512-row.paid .v02512-row-balance button{display:none}
+.v02512-empty{border:1px dashed #d8c4a4;border-radius:16px;padding:18px;text-align:center;color:#766657;background:#fffaf3}
+.v02512-section-title{display:flex;justify-content:space-between;gap:12px;align-items:end;margin:18px 0 9px}.v02512-section-title h4{margin:0;font-size:16px}.v02512-section-title small{color:#7b6b5c}
+.v02512-payment-box{background:#f3e5cf;border:1px solid #ddc9a8;border-radius:16px;padding:14px;margin-bottom:14px}.v02512-payment-box small{display:block;color:#756656}.v02512-payment-box strong{font-size:22px;display:block;margin-top:4px}
+.v02512-payment-field{margin-bottom:12px}.v02512-payment-field label{display:block;font-size:12px;font-weight:800;color:#756656;margin-bottom:6px}.v02512-payment-field input,.v02512-payment-field select{width:100%;height:50px;border:1px solid #d8c5a7;background:#fff;border-radius:14px;padding:0 13px;font-size:16px}
+.v02512-turn-money{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}.v02512-turn-money>div{border:1px solid #ddc9a8;background:#fff9f0;border-radius:16px;padding:12px}.v02512-turn-money small{display:block;color:#766657;font-size:12px}.v02512-turn-money strong{display:block;margin-top:4px;font-size:19px}.v02512-turn-money .due strong{color:#9b5528}.v02512-turn-money .received strong{color:#356f50}
+#closeWrap.v02512-on-account #paymentConfirmBtn{opacity:.6;pointer-events:none}#closeWrap.v02512-on-account .closed-note{color:#8f552e;font-weight:700}
+.v02512-help{margin-top:10px;padding:12px;border-radius:14px;background:#f8ead7;border:1px solid #e4cbaa;color:#685747;font-size:13px;line-height:1.45}
+@media(max-width:620px){.v02512-receivables-entry .v02512-entry-head{grid-template-columns:1fr}.v02512-receivables-entry .v02512-open{width:100%}.v02512-summary{grid-template-columns:1fr 1fr}.v02512-summary>div:last-child{grid-column:1/-1}.v02512-row{grid-template-columns:1fr}.v02512-row-balance{text-align:left;display:flex;align-items:center;justify-content:space-between;gap:12px}.v02512-row-balance button{margin-top:0}.v02512-turn-money{grid-template-columns:1fr 1fr}}
