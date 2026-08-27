@@ -1,4 +1,4 @@
-const CACHE_NAME = 'rota27-comandas-v0.25.24-r1';
+const CACHE_NAME = 'rota27-comandas-v0.25.25-r1';
 const APP_SHELL = [
   './','./index.html','./base-v013.html',
   './assets/v014.css','./assets/v014.js','./assets/v014-dev3.css','./assets/v014-dev3.js','./assets/v014-rc2-category-fix.js','./assets/v014-final.js',
@@ -28,7 +28,7 @@ const APP_SHELL = [
   './assets/v02517-client-birthday.js','./assets/v02518-client-birthday-on-open.js','./assets/v02519-command-cards.css',
   './assets/v02520-birthday-campaign.css','./assets/v02520-birthday-campaign.js',
   './assets/v02521-history-ux.css','./assets/v02521-history-ux.js','./assets/v02521-history-search-bridge.js',
-  './assets/v02522-closure-polish.css','./assets/v02522r3-closure-render.js','./assets/v02524-history-finish.css',
+  './assets/v02522-closure-polish.css','./assets/v02522r3-closure-render.js','./assets/v02524-history-finish.css','./assets/v02525-panel-finish.css',
   './assets/brand/rota27-logo-oficial.png',
   './manifest.webmanifest','./icons/apple-touch-icon.png','./icons/icon-192.png','./icons/icon-512.png','./icons/icon-192-maskable.png','./icons/icon-512-maskable.png','./icons/favicon-32.png'
 ];
