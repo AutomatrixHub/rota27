@@ -3,17 +3,41 @@
 Última revisão: 27/08/2026
 
 ## Produção
-- versão: **v0.25.24 — Acabamento visual do Histórico & resultados**;
+- versão: **v0.25.25 — Acabamento visual do Painel**;
 - branch: `main`;
 - GitHub Pages: `https://automatrixhub.github.io/rota27/`;
-- Service Worker: `rota27-comandas-v0.25.24-r1`;
+- Service Worker: `rota27-comandas-v0.25.25-r1`;
 - `rota27-whatsapp`: versão **23 ACTIVE** (`rota27-whatsapp-v6-mini2`);
 - `rota27-sync`: versão **9 ACTIVE** (`rota27-sync-v0.25.16`);
 - `rota27-whatsapp-inbound`: versão **2 ACTIVE** (`rota27-whatsapp-inbound-v2-birthday`);
 - `rota27-birthday-campaign`: versão **2 ACTIVE** (`rota27-birthday-campaign-v2`);
 - `rota27-audit`: versão 1 ACTIVE, somente leitura.
 
-Baseline de rollback do código: **v0.25.23**, HEAD `167d7d3029a9fa58dcac2cfed1446e18547eb012`.
+Baseline de rollback do código: **v0.25.24**, HEAD `b163235f2ab3e6900fa805ca571581df90313307`.
+
+## v0.25.25 — Acabamento visual do Painel
+Refinamento exclusivamente visual da aba **Painel**, seguindo o mesmo padrão aprovado nas telas **Fechamentos** e **Histórico & resultados**.
+
+### Acabamento
+- cabeçalho do Painel mais compacto e hierárquico;
+- bloco **A receber** com menor altura, mantendo o destaque da pendência e a área de toque do botão;
+- seções **Agora**, **Hoje** e **Operação** com menos área ociosa;
+- valores dos indicadores mais destacados e rótulos mais suaves;
+- **Comandas** no bloco Hoje é apresentado visualmente como **Comandas fechadas**;
+- cards de Internet, Sincronização, WhatsApp e Conflitos ficam mais compactos e legíveis;
+- **Acessos rápidos** ganha menor peso visual sem perder usabilidade;
+- cards **Visão Gerencial**, **Estoque Essencial**, **Compras & Reposição** e **Clientes & Fidelização** ficam mais densos e consistentes;
+- espaçamentos verticais e sombras foram suavizados para mostrar mais informação por tela.
+
+### Estabilidade
+- novo asset apenas visual: `assets/v02525-panel-finish.css`;
+- sem alteração dos cálculos do Painel;
+- sem novo JavaScript de domínio;
+- sem `MutationObserver` novo;
+- sem polling visual adicional;
+- sem alteração de Supabase, Edge Functions, event log ou sincronização.
+
+Ver `docs/RELEASE-v0.25.25.md`.
 
 ## v0.25.24 — Acabamento visual do Histórico & resultados
 Refinamento exclusivamente visual da tela principal **Histórico & resultados**, seguindo o padrão aprovado na tela **Fechamentos**.
@@ -78,7 +102,7 @@ A tela **Histórico** possui **Hoje / Ontem / 7 dias / 30 dias / Todos**. A aba 
 O reparo administrativo relacionado à comanda `c1787690191876` permanece ativo e rastreável. O fechamento canônico de 25/08 permanece em **R$ 448,00 / 8 comandas / 33 unidades**.
 
 ## Backend
-Nenhuma alteração na v0.25.24. Permanecem:
+Nenhuma alteração na v0.25.25. Permanecem:
 - `rota27-sync` v9 ACTIVE;
 - `rota27-whatsapp` v23 ACTIVE;
 - `rota27-whatsapp-inbound` v2 ACTIVE;
@@ -86,7 +110,7 @@ Nenhuma alteração na v0.25.24. Permanecem:
 - sem novo tipo de evento de sync e sem alteração de `rota27_sync_events_type_ck`.
 
 ## Ajuda
-Ajuda **v7.0**, identificando Rota 27 v0.25.24.
+Ajuda **v7.0**, identificando Rota 27 v0.25.25.
 
 ## Atualização da PWA
 Não reinstalar e não limpar dados. Em cada aparelho:
@@ -94,9 +118,10 @@ Não reinstalar e não limpar dados. Em cada aparelho:
 2. abrir a PWA por 20–30 segundos;
 3. fechar completamente;
 4. abrir novamente;
-5. confirmar `v0.25.24`.
+5. confirmar `v0.25.25`.
 
 ## Releases recentes
+- `docs/RELEASE-v0.25.25.md`
 - `docs/RELEASE-v0.25.24.md`
 - `docs/RELEASE-v0.25.23.md`
 - `docs/RELEASE-v0.25.22.md`

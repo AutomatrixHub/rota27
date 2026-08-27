@@ -1,0 +1,105 @@
+/* Rota 27 v0.25.25 — acabamento visual do Painel */
+
+#screenPanel{padding-bottom:10px}
+
+/* Cabeçalho: menos altura, mais hierarquia. */
+#screenPanel .v15d4-head{align-items:flex-end;margin:0 0 10px}
+#screenPanel .v15d4-head h2{font-size:24px;line-height:1.05;letter-spacing:-.025em}
+#screenPanel .v15d4-head p{margin-top:3px;font-size:12px;line-height:1.35;color:var(--muted)}
+#screenPanel .v15d4-head .badge{height:26px;min-width:26px;padding:0 9px;font-size:11px}
+
+/* A receber: mantém destaque, mas ocupa menos espaço vertical. */
+#screenPanel .v02512-receivables-entry{margin:8px 0 11px!important}
+#screenPanel .v02512-receivables-entry .v02512-entry-head{gap:10px!important}
+#screenPanel .v02512-receivables-entry .v02512-entry-copy{gap:3px!important}
+#screenPanel .v02512-receivables-entry .v02512-entry-copy strong{font-size:19px!important;line-height:1.1!important;letter-spacing:-.015em}
+#screenPanel .v02512-receivables-entry .v02512-entry-copy small{font-size:12.5px!important;line-height:1.35!important;color:#79695b!important}
+#screenPanel .v02512-receivables-entry .v02512-open{min-height:46px!important;padding:0 16px!important;border-radius:14px!important;font-size:13px!important;box-shadow:0 7px 16px rgba(181,107,53,.13)}
+
+/* Seções principais: mesma gramática visual de Fechamentos/Histórico. */
+#screenPanel .v15d4-section{margin:0 0 10px;padding:11px 12px;border-radius:18px;box-shadow:0 4px 13px rgba(42,36,26,.04)}
+#screenPanel .v15d4-section-title{align-items:center;margin:0 0 8px;gap:10px}
+#screenPanel .v15d4-section-title strong{font-size:18px;line-height:1.1;font-weight:900;letter-spacing:-.015em}
+#screenPanel .v15d4-section-title span{font-size:11px;line-height:1.25;color:#817264}
+
+/* Agora / Hoje: valor primeiro, rótulo secundário. */
+#screenPanel .v15d4-metrics{gap:8px}
+#screenPanel .v15d4-metric{min-height:80px;padding:9px 10px;border-radius:14px;display:flex;flex-direction:column;justify-content:center;background:linear-gradient(160deg,var(--surface-2),#f3e5d0)}
+#screenPanel .v15d4-metric small{font-size:10.5px;line-height:1.15;font-weight:750;color:#77695d}
+#screenPanel .v15d4-metric strong{font-size:22px;line-height:1;margin:4px 0 3px;font-weight:950;letter-spacing:-.018em;color:var(--ink)}
+#screenPanel .v15d4-metric span{font-size:10.5px;line-height:1.2;color:#88796b}
+#screenPanel .v15d4-metrics-four .v15d4-metric:nth-child(3)>small{font-size:0}
+#screenPanel .v15d4-metrics-four .v15d4-metric:nth-child(3)>small::after{content:"Comandas fechadas";font-size:10.5px;line-height:1.15;font-weight:750;color:#77695d}
+
+/* Operação: mais leitura, menos área ociosa. */
+#screenPanel .v15d4-status-grid{gap:8px}
+#screenPanel .v15d4-status{min-height:72px;padding:9px 10px;grid-template-columns:9px minmax(0,1fr);gap:8px;border-radius:14px;align-items:start}
+#screenPanel .v15d4-status-dot{width:8px;height:8px;margin-top:4px}
+#screenPanel .v15d4-status small{font-size:10.5px;line-height:1.15;font-weight:750;color:#77695d}
+#screenPanel .v15d4-status strong{font-size:14.5px;line-height:1.15;margin:2px 0 3px;font-weight:900}
+#screenPanel .v15d4-status span{font-size:10px;line-height:1.22;color:#88796b}
+
+/* Acessos rápidos: aparência mais leve, área de toque preservada. */
+#screenPanel .v15d4-actions{gap:7px}
+#screenPanel .v15d4-actions button{min-height:52px;padding:8px 10px;border-radius:13px;grid-template-columns:32px minmax(0,1fr) auto;gap:9px;background:#f4e8d7}
+#screenPanel .v15d4-actions button>span{width:32px;height:32px;border-radius:10px;font-size:16px}
+#screenPanel .v15d4-actions button strong{font-size:13.5px;line-height:1.15}
+#screenPanel .v15d4-actions button small{margin-top:2px;font-size:10px;line-height:1.2}
+#screenPanel .v15d4-actions button>b{font-size:20px}
+
+/* Cards de gestão: mesma densidade dos blocos operacionais. */
+#screenPanel #v020ManagerEntry,
+#screenPanel #v021StockEntry,
+#screenPanel #v022PurchasesEntry,
+#screenPanel #v0252RelationshipSection{margin:0 0 10px!important;min-height:0!important;border-radius:18px!important;box-shadow:0 4px 13px rgba(42,36,26,.04)!important}
+
+#screenPanel .v020-manager-entry-head,
+#screenPanel .v021-stock-entry-head,
+#screenPanel #v022PurchasesEntry .v022-panel-entry-head,
+#screenPanel #v0252RelationshipSection .v0252-relationship-entry-head{min-height:88px!important;padding:12px 13px!important;grid-template-columns:42px minmax(0,1fr) 148px!important;gap:10px!important}
+
+#screenPanel .v020-manager-entry-head::before,
+#screenPanel .v021-stock-entry-head::before,
+#screenPanel #v022PurchasesEntry .v022-panel-entry-head::before,
+#screenPanel #v0252RelationshipSection .v0252-relationship-entry-head::before{width:42px!important;height:42px!important;border-radius:13px!important;background-size:22px 22px!important}
+
+#screenPanel .v020-manager-entry-head > div > strong,
+#screenPanel .v021-stock-entry-head > div > strong,
+#screenPanel #v022PurchasesEntry .v022-panel-entry-head > div > strong,
+#screenPanel #v0252RelationshipSection .v0252-relationship-copy > strong{font-size:16px!important;line-height:1.15!important;font-weight:900!important}
+
+#screenPanel .v020-manager-entry-head > div > small,
+#screenPanel .v021-stock-entry-head > div > small,
+#screenPanel #v022PurchasesEntry .v022-panel-entry-head > div > small,
+#screenPanel #v0252RelationshipSection .v0252-relationship-copy > small{font-size:12px!important;line-height:1.32!important;color:#7b6959!important}
+
+#screenPanel .v020-manager-open,
+#screenPanel .v021-stock-open,
+#screenPanel #v022PurchasesEntry .v022-panel-entry-head > button,
+#screenPanel #v0252RelationshipSection .v0252-relationship-open{width:148px!important;min-width:148px!important;max-width:148px!important;height:44px!important;min-height:44px!important;padding:0 11px!important;border-radius:12px!important;font-size:12.5px!important}
+
+@media(max-width:760px){
+  #screenPanel .v02512-receivables-entry .v02512-entry-head{grid-template-columns:1fr!important}
+  #screenPanel .v02512-receivables-entry .v02512-open{width:100%!important;min-width:0!important}
+
+  #screenPanel .v020-manager-entry-head,
+  #screenPanel .v021-stock-entry-head,
+  #screenPanel #v022PurchasesEntry .v022-panel-entry-head,
+  #screenPanel #v0252RelationshipSection .v0252-relationship-entry-head{min-height:0!important;padding:11px 12px!important;grid-template-columns:40px minmax(0,1fr)!important;gap:9px!important}
+
+  #screenPanel .v020-manager-entry-head::before,
+  #screenPanel .v021-stock-entry-head::before,
+  #screenPanel #v022PurchasesEntry .v022-panel-entry-head::before,
+  #screenPanel #v0252RelationshipSection .v0252-relationship-entry-head::before{width:40px!important;height:40px!important;background-size:21px 21px!important}
+
+  #screenPanel .v020-manager-open,
+  #screenPanel .v021-stock-open,
+  #screenPanel #v022PurchasesEntry .v022-panel-entry-head > button,
+  #screenPanel #v0252RelationshipSection .v0252-relationship-open{grid-column:1/-1!important;width:100%!important;min-width:0!important;max-width:none!important;height:44px!important;min-height:44px!important;margin-top:1px!important}
+}
+
+@media(max-width:380px){
+  #screenPanel .v15d4-metric strong{font-size:20px}
+  #screenPanel .v15d4-section-title strong{font-size:17px}
+  #screenPanel .v15d4-status-grid{grid-template-columns:1fr}
+}
