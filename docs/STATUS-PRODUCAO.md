@@ -3,16 +3,34 @@
 Última revisão: 26/08/2026
 
 ## Produção
-- versão: **v0.25.16 — Reparo histórico de fechamento**;
+- versão: **v0.25.17 — Aniversário no cadastro de clientes**;
 - branch: `main`;
 - GitHub Pages: `https://automatrixhub.github.io/rota27/`;
-- Service Worker: `rota27-comandas-v0.25.16-r1`;
+- Service Worker: `rota27-comandas-v0.25.17-r1`;
 - `rota27-whatsapp`: versão 23 ACTIVE (`rota27-whatsapp-v6-mini2`);
 - `rota27-sync`: versão **9 ACTIVE** (`rota27-sync-v0.25.16`);
 - `rota27-whatsapp-inbound`: versão 1 ACTIVE;
 - `rota27-audit`: versão 1 ACTIVE, somente leitura.
 
-Baseline de rollback do código: **v0.25.15 — Data operacional do turno**.
+Baseline de rollback do código: **v0.25.16 — Reparo histórico de fechamento**.
+
+## v0.25.17 — Aniversário no cadastro de clientes
+A release inclui **Data de nascimento** opcional no cadastro compartilhado de clientes.
+
+Regras:
+- formato canônico: `AAAA-MM-DD`;
+- exibição no perfil de Relacionamento & Fidelização: `DD/MM/AAAA`;
+- datas futuras e datas inválidas são rejeitadas;
+- o campo é opcional e pode ser removido explicitamente;
+- a sincronização reutiliza `client_upsert`, sem novo tipo de evento;
+- `birthDateUpdatedAt` acompanha o dado no evento mais recente;
+- eventos antigos de `client_upsert` sem `birthDate` não apagam uma data já cadastrada;
+- o complemento usa cursor próprio para convergir entre aparelhos;
+- o CSV de clientes inclui `data_nascimento`;
+- importação reconhece `data_nascimento`, `nascimento`, `aniversario`, `birthdate` e `birthday`;
+- não foi introduzido `MutationObserver` nem polling visual frequente.
+
+Nenhuma migration PostgreSQL nem alteração de Edge Function foi necessária nesta release. `ALLOWED_TYPES` e `rota27_sync_events_type_ck` permanecem inalterados e alinhados.
 
 ## v0.25.16 — Reparo histórico de fechamento
 A release corrige de forma explícita, idempotente e rastreável o fechamento histórico relacionado à comanda real `c1787690191876`:
@@ -71,7 +89,7 @@ Regras:
 `A receber / Paga depois` segue a regra de data operacional pela abertura. A baixa total ou parcial posterior não cria nova venda e não duplica faturamento/itens.
 
 ## Cliente cadastrado
-Permanece ativo o seletor pesquisável da v0.25.13 na nova comanda, compatível com iPhone/PWA, com busca por nome/WhatsApp e digitação livre para cliente novo.
+Permanece ativo o seletor pesquisável da v0.25.13 na nova comanda, compatível com iPhone/PWA, com busca por nome/WhatsApp e digitação livre para cliente novo. A v0.25.17 acrescenta a data de nascimento opcional ao cadastro compartilhado.
 
 ## Preservado
 - rankings por ID/código com nome atual;
@@ -82,7 +100,7 @@ Permanece ativo o seletor pesquisável da v0.25.13 na nova comanda, compatível 
 - estoque, compras, inventário, custos e relacionamento.
 
 ## Ajuda
-Ajuda **v6.7**, identificando Rota 27 v0.25.16.
+Ajuda **v6.8**, identificando Rota 27 v0.25.17 e incluindo o novo campo de data de nascimento.
 
 ## Atualização da PWA
 Não reinstalar e não limpar dados. Em cada aparelho:
@@ -90,6 +108,6 @@ Não reinstalar e não limpar dados. Em cada aparelho:
 2. abrir a PWA por 20–30 segundos;
 3. fechar completamente;
 4. abrir novamente;
-5. confirmar `v0.25.16`.
+5. confirmar `v0.25.17`.
 
-Ver `docs/RELEASE-v0.25.16.md`.
+Ver `docs/RELEASE-v0.25.17.md`.
