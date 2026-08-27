@@ -159,9 +159,20 @@
     if(!raw||!Object.prototype.hasOwnProperty.call(raw,'birthDate'))return false;
     const birthDate=normalizeBirthDate(raw.birthDate);
     if(birthDate===null)return false;
+    const seq=Math.max(0,Number(event?.seq||0));
+    const updatedAt=Number(raw.birthDateUpdatedAt||0)||Date.parse(event?.created_at||event?.createdAt||'')||Date.now();
     const client=findClient(raw.id||event?.entity_id||event?.entityId,raw.whatsappPhone||raw.phone,raw.name);
-    if(!client)return false;
-    return writeClientRecord(client,birthDate,{seq:Number(event?.seq||0),updatedAt:Number(raw.birthDateUpdatedAt||0)||Date.parse(event?.created_at||event?.createdAt||'')||Date.now()});
+    if(client)return writeClientRecord(client,birthDate,{seq,updatedAt});
+
+    // O evento pode chegar antes do cadastro base neste aparelho. Preserve o dado
+    // por ID/telefone e deixe applyBirthdaysToClients() reidratá-lo quando o cliente aparecer.
+    const store=readStore();
+    const record={clientId:clean(raw.id||event?.entity_id||event?.entityId,160),whatsappPhone:phone(raw.whatsappPhone||raw.phone||''),birthDate,updatedAt,seq};
+    const keys=[];if(record.clientId)keys.push(`i:${record.clientId}`);if(record.whatsappPhone)keys.push(`p:${record.whatsappPhone}`);
+    let changed=false;
+    keys.forEach(k=>{const old=store.records[k];if(!old||seq>Number(old.seq||0)||(seq===Number(old.seq||0)&&updatedAt>=Number(old.updatedAt||0))){store.records[k]=record;changed=true;}});
+    if(changed)writeStore(store);
+    return changed;
   }
 
   async function syncBirthdays(){
