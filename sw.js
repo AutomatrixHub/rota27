@@ -27,7 +27,7 @@ const APP_SHELL = [
   './assets/v02513-client-picker.css','./assets/v02513-client-picker.js',
   './assets/v02517-client-birthday.js','./assets/v02518-client-birthday-on-open.js','./assets/v02519-command-cards.css',
   './assets/v02520-birthday-campaign.css','./assets/v02520-birthday-campaign.js',
-  './assets/v02521-history-ux.css','./assets/v02521-history-ux.js',
+  './assets/v02521-history-ux.css','./assets/v02521-history-ux.js','./assets/v02521-history-search-bridge.js',
   './assets/brand/rota27-logo-oficial.png',
   './manifest.webmanifest','./icons/apple-touch-icon.png','./icons/icon-192.png','./icons/icon-512.png','./icons/icon-192-maskable.png','./icons/icon-512-maskable.png','./icons/favicon-32.png'
 ];
