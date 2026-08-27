@@ -1,0 +1,52 @@
+/* Rota 27 v0.25.27 — ícones profissionais dos produtos no Cardápio */
+
+/* Mantém a caixa visual consolidada na v0.25.26 e troca o caráter de emoji
+ * por uma linguagem vetorial monocromática, mais sóbria e consistente. */
+#screenMenu .menu-emoji.v02527-product-icon{
+  font-size:0!important;
+  color:#8f4421;
+  background:linear-gradient(160deg,#f6ead8,#efe0cc);
+  border:1px solid #e2ccb2;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.72),0 3px 9px rgba(79,49,26,.055);
+}
+
+#screenMenu .menu-emoji.v02527-product-icon svg{
+  width:23px;
+  height:23px;
+  display:block;
+  stroke:currentColor;
+  fill:none;
+  stroke-width:1.9;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+  vector-effect:non-scaling-stroke;
+}
+
+/* Pequenas distinções por família, mantendo a mesma paleta e o mesmo peso. */
+#screenMenu .menu-emoji.v02527-product-icon[data-r27-icon="beer"],
+#screenMenu .menu-emoji.v02527-product-icon[data-r27-icon="wine"],
+#screenMenu .menu-emoji.v02527-product-icon[data-r27-icon="drink"],
+#screenMenu .menu-emoji.v02527-product-icon[data-r27-icon="coffee"]{color:#86501f}
+
+#screenMenu .menu-emoji.v02527-product-icon[data-r27-icon="cheese"],
+#screenMenu .menu-emoji.v02527-product-icon[data-r27-icon="bread"],
+#screenMenu .menu-emoji.v02527-product-icon[data-r27-icon="cookie"]{color:#9b5f2f}
+
+#screenMenu .menu-emoji.v02527-product-icon[data-r27-icon="sauce"],
+#screenMenu .menu-emoji.v02527-product-icon[data-r27-icon="charcuterie"]{color:#8d3f2b}
+
+#screenMenu .menu-emoji.v02527-product-icon[data-r27-icon="nuts"],
+#screenMenu .menu-emoji.v02527-product-icon[data-r27-icon="snack"]{color:#7b5b2c}
+
+#screenMenu .menu-emoji.v02527-product-icon[data-r27-icon="sweet"]{color:#97513c}
+
+#screenMenu .menu-item.inactive .menu-emoji.v02527-product-icon{
+  color:#7c746b;
+  background:#ebe5dc;
+  border-color:#ddd4c9;
+  box-shadow:none;
+}
+
+@media(max-width:360px){
+  #screenMenu .menu-emoji.v02527-product-icon svg{width:21px;height:21px}
+}

@@ -3,17 +3,39 @@
 Última revisão: 27/08/2026
 
 ## Produção
-- versão: **v0.25.26 — Acabamento visual do Cardápio**;
+- versão: **v0.25.27 — Ícones profissionais no Cardápio**;
 - branch: `main`;
 - GitHub Pages: `https://automatrixhub.github.io/rota27/`;
-- Service Worker: `rota27-comandas-v0.25.26-r1`;
+- Service Worker: `rota27-comandas-v0.25.27-r1`;
 - `rota27-whatsapp`: versão **23 ACTIVE** (`rota27-whatsapp-v6-mini2`);
 - `rota27-sync`: versão **9 ACTIVE** (`rota27-sync-v0.25.16`);
 - `rota27-whatsapp-inbound`: versão **2 ACTIVE** (`rota27-whatsapp-inbound-v2-birthday`);
 - `rota27-birthday-campaign`: versão **2 ACTIVE** (`rota27-birthday-campaign-v2`);
 - `rota27-audit`: versão 1 ACTIVE, somente leitura.
 
-Baseline de rollback do código: **v0.25.25**, HEAD `bd18e982e599d3b6581715c927dde622ad361e4d`.
+Baseline de rollback do código: **v0.25.26**, HEAD `ff64c3f8003d326e71ce3225ff3c66469ccebe51`.
+
+## v0.25.27 — Ícones profissionais no Cardápio
+Refinamento visual da apresentação dos produtos na aba **Cardápio**.
+
+### Acabamento
+- emojis dos produtos substituídos visualmente por ícones SVG monocromáticos;
+- conjunto único de traço, tamanho, alinhamento e contraste;
+- seleção do ícone considera categoria e nome do produto;
+- famílias específicas para cerveja, vinho, bebidas, café, queijo, frios/embutidos, molhos/temperos, castanhas, biscoitos, doces, pães e petiscos;
+- fallback neutro de produto para casos sem correspondência;
+- produtos inativos usam o mesmo desenho em acabamento neutro;
+- o dado `emoji` original do catálogo não é removido nem alterado.
+
+### Estabilidade
+- novos assets `assets/v02527-product-icons.css` e `assets/v02527-product-icons.js`;
+- decoração aplicada sobre a saída existente de `renderMenu()`;
+- reaplicações somente em interações finitas relevantes;
+- sem `MutationObserver`;
+- sem polling contínuo;
+- sem alteração de catálogo, categorias, preços, histórico de preço, Supabase, Edge Functions, event log ou sincronização.
+
+Ver `docs/RELEASE-v0.25.27.md`.
 
 ## v0.25.26 — Acabamento visual do Cardápio
 Refinamento exclusivamente visual da aba **Cardápio**, seguindo o mesmo padrão aprovado em **Fechamentos**, **Histórico & resultados** e **Painel**.
@@ -126,7 +148,7 @@ A tela **Histórico** possui **Hoje / Ontem / 7 dias / 30 dias / Todos**. A aba 
 O reparo administrativo relacionado à comanda `c1787690191876` permanece ativo e rastreável. O fechamento canônico de 25/08 permanece em **R$ 448,00 / 8 comandas / 33 unidades**.
 
 ## Backend
-Nenhuma alteração na v0.25.26. Permanecem:
+Nenhuma alteração na v0.25.27. Permanecem:
 - `rota27-sync` v9 ACTIVE;
 - `rota27-whatsapp` v23 ACTIVE;
 - `rota27-whatsapp-inbound` v2 ACTIVE;
@@ -134,7 +156,7 @@ Nenhuma alteração na v0.25.26. Permanecem:
 - sem novo tipo de evento de sync e sem alteração de `rota27_sync_events_type_ck`.
 
 ## Ajuda
-Ajuda **v7.0**, identificando Rota 27 v0.25.26.
+Ajuda **v7.0**, identificando Rota 27 v0.25.27.
 
 ## Atualização da PWA
 Não reinstalar e não limpar dados. Em cada aparelho:
@@ -142,9 +164,10 @@ Não reinstalar e não limpar dados. Em cada aparelho:
 2. abrir a PWA por 20–30 segundos;
 3. fechar completamente;
 4. abrir novamente;
-5. confirmar `v0.25.26`.
+5. confirmar `v0.25.27`.
 
 ## Releases recentes
+- `docs/RELEASE-v0.25.27.md`
 - `docs/RELEASE-v0.25.26.md`
 - `docs/RELEASE-v0.25.25.md`
 - `docs/RELEASE-v0.25.24.md`
