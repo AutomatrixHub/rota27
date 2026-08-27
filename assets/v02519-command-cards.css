@@ -1,0 +1,101 @@
+/* Rota 27 v0.25.19 — cards de comandas mais compactos no mobile */
+
+/* LISTA: reduzir altura sem perder hierarquia nem área de toque. */
+#screenCommands[data-v0252-view="list"] #commandList{
+  gap:9px!important;
+}
+#screenCommands[data-v0252-view="list"] #commandList .command-card.v017-command-card{
+  min-height:0!important;
+  padding:10px 13px 9px 16px!important;
+  border-radius:16px!important;
+}
+#screenCommands[data-v0252-view="list"] #commandList .v017-command-primary .command-title{
+  font-size:18px!important;
+  line-height:1.08!important;
+}
+#screenCommands[data-v0252-view="list"] #commandList .v017-command-info{
+  margin-top:5px!important;
+  gap:8px!important;
+  align-items:center!important;
+}
+#screenCommands[data-v0252-view="list"] #commandList .v017-command-location{
+  margin:0 0 2px!important;
+  font-size:12px!important;
+  line-height:1.12!important;
+}
+#screenCommands[data-v0252-view="list"] #commandList .command-sub{
+  margin:0!important;
+  font-size:11.5px!important;
+  line-height:1.18!important;
+}
+#screenCommands[data-v0252-view="list"] #commandList .money{
+  font-size:18px!important;
+  line-height:1!important;
+}
+#screenCommands[data-v0252-view="list"] #commandList .command-bottom{
+  margin-top:7px!important;
+  padding-top:7px!important;
+  gap:8px!important;
+}
+#screenCommands[data-v0252-view="list"] #commandList .meta{
+  font-size:10.5px!important;
+  line-height:1.15!important;
+}
+#screenCommands[data-v0252-view="list"] #commandList .open-btn{
+  min-height:34px!important;
+  padding:7px 10px!important;
+  border-radius:10px!important;
+  font-size:12.5px!important;
+  line-height:1!important;
+}
+
+/* MAPA: duas colunas no celular e cards mais baixos/legíveis. */
+@media (max-width:520px){
+  #screenCommands[data-v0252-view="map"] .v0252-zone-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:8px!important;
+  }
+  #screenCommands[data-v0252-view="map"] .v0256-map-command-card{
+    min-height:0!important;
+    padding:9px 9px 8px 13px!important;
+    border-radius:15px!important;
+  }
+  #screenCommands[data-v0252-view="map"] .v0256-map-command-card .command-title{
+    font-size:15px!important;
+    line-height:1.08!important;
+  }
+  #screenCommands[data-v0252-view="map"] .v0256-map-command-card .v017-command-info{
+    margin-top:5px!important;
+    gap:6px!important;
+    align-items:center!important;
+  }
+  #screenCommands[data-v0252-view="map"] .v0256-map-command-card .v017-command-location{
+    margin:0 0 2px!important;
+    font-size:10.5px!important;
+    line-height:1.1!important;
+  }
+  #screenCommands[data-v0252-view="map"] .v0256-map-command-card .command-sub{
+    font-size:9.5px!important;
+    line-height:1.15!important;
+  }
+  #screenCommands[data-v0252-view="map"] .v0256-map-command-card .money{
+    font-size:12.5px!important;
+    line-height:1!important;
+  }
+  #screenCommands[data-v0252-view="map"] .v0256-map-command-card .command-bottom{
+    margin-top:7px!important;
+    padding-top:6px!important;
+    gap:6px!important;
+  }
+  #screenCommands[data-v0252-view="map"] .v0256-map-command-card .meta{
+    font-size:9px!important;
+    line-height:1.12!important;
+  }
+}
+
+/* Segurança para telas excepcionalmente estreitas. */
+@media (max-width:310px){
+  #screenCommands[data-v0252-view="map"] .v0252-zone-grid{
+    grid-template-columns:1fr!important;
+  }
+}
