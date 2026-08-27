@@ -31,7 +31,8 @@
       ['v02517ClientBirthdayJs','./assets/v02517-client-birthday.js?v=02517r1'],
       ['v02518ClientBirthdayOnOpenJs','./assets/v02518-client-birthday-on-open.js?v=02518r1'],
       ['v02520BirthdayCampaignJs','./assets/v02520-birthday-campaign.js?v=02520r1'],
-      ['v02521HistoryUxJs','./assets/v02521-history-ux.js?v=02521r1']
+      ['v02521HistoryUxJs','./assets/v02521-history-ux.js?v=02521r1'],
+      ['v02521HistorySearchBridgeJs','./assets/v02521-history-search-bridge.js?v=02521r1']
     ];
     scripts.forEach(([id,src])=>{if(document.getElementById(id))return;const script=document.createElement('script');script.id=id;script.src=src;script.async=false;document.body.appendChild(script);});
   }
