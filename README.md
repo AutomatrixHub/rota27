@@ -4,16 +4,29 @@ Aplicativo mobile-first, offline-first e multidispositivo para controle rápido 
 
 ## Produção
 
-**Versão: v0.25.25 — Acabamento visual do Painel**  
+**Versão: v0.25.26 — Acabamento visual do Cardápio**  
 Branch: `main`  
 GitHub Pages: `https://automatrixhub.github.io/rota27/`  
-Service Worker: `rota27-comandas-v0.25.25-r1`
+Service Worker: `rota27-comandas-v0.25.26-r1`
 
 ## Navegação
 - **Comandas = atender**;
 - **Cardápio = o que é vendido**;
 - **Painel = administrar o negócio**;
 - **Histórico = o que aconteceu**.
+
+## v0.25.26 — Acabamento visual do Cardápio
+A aba **Cardápio** recebeu o mesmo padrão de refinamento visual já validado em **Fechamentos**, **Histórico & resultados** e **Painel**.
+
+Refinamentos:
+- cabeçalho mais compacto, preservando contador, **Categorias** e **+ Produto**;
+- aviso de histórico de preço e busca com menor altura ociosa;
+- cards de produtos mais densos, com maior destaque para nome e preço;
+- categoria, status do produto e status da categoria ficam mais suaves;
+- botão **Editar** mantém área de toque com menor peso visual;
+- produtos inativos continuam diferenciados sem perder legibilidade;
+- tela **Gerenciar categorias** também foi compactada, incluindo cabeçalho, avisos, cards e ações;
+- nenhuma lógica de catálogo, categorias, preços, sincronização ou backend foi alterada.
 
 ## v0.25.25 — Acabamento visual do Painel
 A aba **Painel** recebeu o mesmo padrão de refinamento visual já validado em **Fechamentos** e **Histórico & resultados**.
@@ -137,15 +150,16 @@ A data de abertura da comanda define a qual turno a venda pertence. Múltiplos t
 - `rota27-whatsapp`: versão **23 ACTIVE**;
 - `rota27-birthday-campaign`: versão **2 ACTIVE**;
 - `rota27-whatsapp-inbound`: versão **2 ACTIVE**;
-- sem novo tipo de evento de sync e sem alteração de `rota27_sync_events_type_ck` na v0.25.25.
+- sem novo tipo de evento de sync e sem alteração de `rota27_sync_events_type_ck` na v0.25.26.
 
 ## Ajuda
-Ajuda **v7.0** permanece ativa, identificando a release v0.25.25.
+Ajuda **v7.0** permanece ativa, identificando a release v0.25.26.
 
 ## Atualização da PWA
 Não limpar dados nem reinstalar. Abra a PWA online, aguarde 20–30 segundos, feche completamente e abra novamente em cada aparelho.
 
 ## Documentos
+- `docs/RELEASE-v0.25.26.md`
 - `docs/RELEASE-v0.25.25.md`
 - `docs/RELEASE-v0.25.24.md`
 - `docs/RELEASE-v0.25.23.md`
@@ -158,7 +172,7 @@ Não limpar dados nem reinstalar. Abra a PWA online, aguarde 20–30 segundos, f
 - `docs/RELEASE-v0.25.16.md`
 - `docs/STATUS-PRODUCAO.md`
 
-Baseline de rollback do código: **v0.25.24**.
+Baseline de rollback do código: **v0.25.25**.
 
 ## Versão
-Produção: **0.25.25**
+Produção: **0.25.26**
