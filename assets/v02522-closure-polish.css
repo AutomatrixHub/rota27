@@ -1,4 +1,4 @@
-/* Rota 27 v0.25.22-r4 — refinamento visual determinístico dos Fechamentos */
+/* Rota 27 v0.25.23 — acabamento visual dos Fechamentos */
 
 /* Hierarquia: financeiro primeiro, contagem operacional depois. */
 #v019HistoryWrap .v019-history-row-metrics .v019-history-mini:nth-child(1){order:1}
@@ -8,48 +8,58 @@
 #v019HistoryWrap .v019-history-row-metrics .v019-history-mini:nth-child(5){order:5}
 #v019HistoryWrap .v019-history-row-metrics .v019-history-mini:nth-child(6){order:6}
 
-/* Rótulos completos permanecem corretos mesmo se o renderer-base redesenhar o modal. */
-#v019HistoryWrap .v019-history-mini small{font-size:0!important;line-height:1.12;min-height:13px}
-#v019HistoryWrap .v019-history-mini small::after{font-size:11px;font-weight:700;line-height:1.12}
+/* Cabeçalho: data operacional dominante, instante físico do fechamento secundário. */
+#v019HistoryWrap .v019-history-row-head{position:relative;align-items:flex-start;min-height:25px}
+#v019HistoryWrap .v019-history-row-head strong{font-size:18px;line-height:1.08;font-weight:900;letter-spacing:-.01em}
+#v019HistoryWrap .v019-history-row-head span{font-size:10.75px;font-weight:750;color:var(--muted);opacity:.88;line-height:1.2;padding-top:2px}
+#v019HistoryWrap .v019-history-row-head span::before{content:'Fechado: '}
+
+/* Marcador discreto no fechamento mais recente. */
+#v019HistoryWrap .v019-history-list .v019-history-row:first-child .v019-history-row-head{padding-bottom:19px}
+#v019HistoryWrap .v019-history-list .v019-history-row:first-child .v019-history-row-head strong::after{
+  content:'Último fechamento';position:absolute;left:0;bottom:0;display:inline-flex;align-items:center;
+  padding:3px 7px;border-radius:999px;border:1px solid rgba(220,99,50,.25);background:#FFF1E8;color:#A64D2B;
+  font-size:9.5px;font-weight:850;line-height:1;letter-spacing:0;
+}
+
+/* Rótulos mais suaves; valores com leitura prioritária. */
+#v019HistoryWrap .v019-history-mini small{font-size:0!important;line-height:1.1;min-height:12px}
+#v019HistoryWrap .v019-history-mini small::after{font-size:10.5px;font-weight:650;line-height:1.1;color:var(--muted);opacity:.9}
 #v019HistoryWrap .v019-history-mini:nth-child(1) small::after{content:'Faturamento'}
 #v019HistoryWrap .v019-history-mini:nth-child(2) small::after{content:'Comandas fechadas'}
 #v019HistoryWrap .v019-history-mini:nth-child(3) small::after{content:'Comandas canceladas'}
 #v019HistoryWrap .v019-history-mini:nth-child(4) small::after{content:'Ticket médio'}
 #v019HistoryWrap .v019-history-mini:nth-child(5) small::after{content:'Itens vendidos'}
 #v019HistoryWrap .v019-history-mini:nth-child(6) small::after{content:'Formas de pagamento'}
+#v019HistoryWrap .v019-history-mini b{font-size:17px;line-height:1.05;font-weight:900;color:var(--ink);letter-spacing:-.01em}
 
 /* Mais densidade sem sacrificar toque/leitura. */
-#v019HistoryWrap .v019-history-row{padding:11px 10px}
-#v019HistoryWrap .v019-history-row-metrics{gap:7px;margin-top:9px}
-#v019HistoryWrap .v019-history-mini{min-height:53px;padding:8px 9px}
-#v019HistoryWrap .v019-history-mini b{font-size:16px;line-height:1.08}
+#v019HistoryWrap .v019-history-list{gap:7px;padding-bottom:calc(104px + env(safe-area-inset-bottom));scroll-padding-bottom:calc(104px + env(safe-area-inset-bottom))}
+#v019HistoryWrap .v019-history-row{padding:10px 10px 9px}
+#v019HistoryWrap .v019-history-row-metrics{gap:6px;margin-top:8px}
+#v019HistoryWrap .v019-history-mini{min-height:50px;padding:7px 9px}
 
 /*
  * Rodapé protegido contra a disputa de renderização do módulo-base.
  * O texto original fica invisível; assim, mesmo que o legado reinsira o ID turn_...,
- * ele nunca volta a aparecer. O nome do aparelho é acrescentado quando o renderer
- * canônico consegue fornecer data-r27-device; no pior caso fica apenas a regra operacional.
+ * ele nunca volta a aparecer. O nome do aparelho vem de data-r27-device.
  */
-#v019HistoryWrap .v019-history-meta{margin-top:8px;font-size:0!important;line-height:1.3;min-height:14px}
-#v019HistoryWrap .v019-history-meta::before{content:'Data operacional pela abertura';font-size:11px;color:var(--muted)}
-#v019HistoryWrap .v019-history-meta[data-r27-device]::after{content:' • fechado em ' attr(data-r27-device);font-size:11px;color:var(--muted)}
-
-/* O canto direito deixa explícito que se trata do horário físico do fechamento. */
-#v019HistoryWrap .v019-history-row-head span{font-size:11.5px;font-weight:800;color:var(--muted)}
-#v019HistoryWrap .v019-history-row-head span::before{content:'Fechado: '}
+#v019HistoryWrap .v019-history-meta{margin-top:7px;font-size:0!important;line-height:1.25;min-height:13px;opacity:.82}
+#v019HistoryWrap .v019-history-meta::before{content:'Data operacional pela abertura';font-size:10.25px;color:var(--muted)}
+#v019HistoryWrap .v019-history-meta[data-r27-device]::after{content:' • fechado em ' attr(data-r27-device);font-size:10.25px;color:var(--muted)}
+#v019HistoryWrap .v019-history-meta[data-r27-device="Ajuste administrativo"]::after{content:' • ajuste administrativo'}
 
 /* Status de sincronização compacto e persistente mesmo se o legado trocar textContent. */
-#v019HistoryWrap .v019-gate{padding:9px 10px;font-size:12px;line-height:1.3;margin:10px 0}
+#v019HistoryWrap .v019-gate{padding:7px 10px;font-size:11.5px;line-height:1.25;margin:8px 0 9px}
 #v019HistoryWrap .v019-gate.ok[data-r27-sync-text]{font-size:0!important}
-#v019HistoryWrap .v019-gate.ok[data-r27-sync-text]::after{content:attr(data-r27-sync-text);font-size:12px;line-height:1.3}
-
-/* Permite que o último fechamento suba completamente acima das ações fixas. */
-#v019HistoryWrap .v019-history-list{padding-bottom:calc(104px + env(safe-area-inset-bottom));scroll-padding-bottom:calc(104px + env(safe-area-inset-bottom))}
+#v019HistoryWrap .v019-gate.ok[data-r27-sync-text]::after{content:attr(data-r27-sync-text);font-size:11.5px;line-height:1.25}
 
 @media(max-width:380px){
-  #v019HistoryWrap .v019-history-mini small::after{font-size:10.5px}
-  #v019HistoryWrap .v019-history-mini b{font-size:15px}
-  #v019HistoryWrap .v019-history-row-head span{font-size:10.5px}
+  #v019HistoryWrap .v019-history-row-head strong{font-size:17px}
+  #v019HistoryWrap .v019-history-row-head span{font-size:10px}
+  #v019HistoryWrap .v019-history-mini small::after{font-size:10px}
+  #v019HistoryWrap .v019-history-mini b{font-size:16px}
   #v019HistoryWrap .v019-history-meta::before,
-  #v019HistoryWrap .v019-history-meta[data-r27-device]::after{font-size:10.5px}
+  #v019HistoryWrap .v019-history-meta[data-r27-device]::after{font-size:9.75px}
+  #v019HistoryWrap .v019-history-list .v019-history-row:first-child .v019-history-row-head strong::after{font-size:9px}
 }
