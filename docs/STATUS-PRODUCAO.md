@@ -3,17 +3,41 @@
 Última revisão: 27/08/2026
 
 ## Produção
-- versão: **v0.25.22 — Refinamento dos Fechamentos**;
+- versão: **v0.25.23 — Acabamento visual dos Fechamentos**;
 - branch: `main`;
 - GitHub Pages: `https://automatrixhub.github.io/rota27/`;
-- Service Worker: `rota27-comandas-v0.25.22-r4`;
+- Service Worker: `rota27-comandas-v0.25.23-r1`;
 - `rota27-whatsapp`: versão **23 ACTIVE** (`rota27-whatsapp-v6-mini2`);
 - `rota27-sync`: versão **9 ACTIVE** (`rota27-sync-v0.25.16`);
 - `rota27-whatsapp-inbound`: versão **2 ACTIVE** (`rota27-whatsapp-inbound-v2-birthday`);
 - `rota27-birthday-campaign`: versão **2 ACTIVE** (`rota27-birthday-campaign-v2`);
 - `rota27-audit`: versão 1 ACTIVE, somente leitura.
 
-Baseline de rollback do código: **v0.25.22-r3**.
+Baseline de rollback do código: **v0.25.22-r4**.
+
+## v0.25.23 — Acabamento visual dos Fechamentos
+Refinamento final da tela **Fechamentos**, validada em aparelho real após a correção da disputa de renderização da v0.25.22-r4.
+
+### Acabamento
+- data operacional permanece como informação dominante;
+- **Fechado: DD/MM HH:MM** passa a ter menor peso visual;
+- valores dos indicadores ficam mais destacados;
+- rótulos ficam mais suaves;
+- cards internos, status verde e espaçamentos verticais ficam ligeiramente mais compactos;
+- rodapé operacional fica menor e mais discreto;
+- o fechamento mais recente recebe o marcador **Último fechamento**;
+- o fechamento histórico reparado passa a ser apresentado como **ajuste administrativo** na interface, sem modificar o registro técnico original.
+
+### Preservado
+- ordem: **Faturamento | Ticket médio** / **Comandas fechadas | Comandas canceladas** / **Itens vendidos | Formas de pagamento**;
+- proteção visual contra reaparecimento do ID técnico `turn_...`;
+- status `Sincronizado • data/hora`;
+- botões **Sincronizar** e **Concluir**;
+- estabilização curta e finita do renderer;
+- sem `MutationObserver` e sem polling contínuo;
+- sem alteração de Supabase, Edge Functions, event log ou cálculo do turno.
+
+Ver `docs/RELEASE-v0.25.23.md`.
 
 ## v0.25.22 — Refinamento dos Fechamentos
 Mudança exclusivamente visual na tela **Fechamentos**, sem alteração de domínio, sincronização, banco ou Edge Functions.
@@ -176,7 +200,7 @@ O seletor pesquisável permanece ativo. A abertura da comanda também pode cadas
 - estoque, compras, inventário, custos e relacionamento/fidelização.
 
 ## Ajuda
-Ajuda **v7.0**, identificando Rota 27 v0.25.22.
+Ajuda **v7.0**, identificando Rota 27 v0.25.23.
 
 ## Atualização da PWA
 Não reinstalar e não limpar dados. Em cada aparelho:
@@ -184,6 +208,6 @@ Não reinstalar e não limpar dados. Em cada aparelho:
 2. abrir a PWA por 20–30 segundos;
 3. fechar completamente;
 4. abrir novamente;
-5. confirmar `v0.25.22`.
+5. confirmar `v0.25.23`.
 
-Ver `docs/RELEASE-v0.25.22.md`.
+Ver `docs/RELEASE-v0.25.23.md`.
