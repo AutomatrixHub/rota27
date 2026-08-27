@@ -3,17 +3,41 @@
 Última revisão: 27/08/2026
 
 ## Produção
-- versão: **v0.25.25 — Acabamento visual do Painel**;
+- versão: **v0.25.26 — Acabamento visual do Cardápio**;
 - branch: `main`;
 - GitHub Pages: `https://automatrixhub.github.io/rota27/`;
-- Service Worker: `rota27-comandas-v0.25.25-r1`;
+- Service Worker: `rota27-comandas-v0.25.26-r1`;
 - `rota27-whatsapp`: versão **23 ACTIVE** (`rota27-whatsapp-v6-mini2`);
 - `rota27-sync`: versão **9 ACTIVE** (`rota27-sync-v0.25.16`);
 - `rota27-whatsapp-inbound`: versão **2 ACTIVE** (`rota27-whatsapp-inbound-v2-birthday`);
 - `rota27-birthday-campaign`: versão **2 ACTIVE** (`rota27-birthday-campaign-v2`);
 - `rota27-audit`: versão 1 ACTIVE, somente leitura.
 
-Baseline de rollback do código: **v0.25.24**, HEAD `b163235f2ab3e6900fa805ca571581df90313307`.
+Baseline de rollback do código: **v0.25.25**, HEAD `bd18e982e599d3b6581715c927dde622ad361e4d`.
+
+## v0.25.26 — Acabamento visual do Cardápio
+Refinamento exclusivamente visual da aba **Cardápio**, seguindo o mesmo padrão aprovado em **Fechamentos**, **Histórico & resultados** e **Painel**.
+
+### Acabamento
+- cabeçalho do Cardápio mais compacto, mantendo contador, **Categorias** e **+ Produto**;
+- aviso sobre histórico de preços e campo de busca com menor altura;
+- cards de produtos mais densos, com nome e preço em maior destaque;
+- categoria e status operacionais mais suaves;
+- botão **Editar** preserva área de toque com menor peso visual;
+- produtos inativos continuam claramente diferenciados;
+- estado vazio foi compactado;
+- a tela **Gerenciar categorias** recebeu o mesmo tratamento em cabeçalho, avisos, cards e ações;
+- botões **Editar** e **Ativar/Desativar** continuam confortáveis no mobile.
+
+### Estabilidade
+- novo asset apenas visual: `assets/v02526-menu-finish.css`;
+- sem alteração em `renderMenu`, catálogo, categorias, preços ou histórico de preço;
+- sem novo JavaScript de domínio;
+- sem `MutationObserver` novo;
+- sem polling visual adicional;
+- sem alteração de Supabase, Edge Functions, event log ou sincronização.
+
+Ver `docs/RELEASE-v0.25.26.md`.
 
 ## v0.25.25 — Acabamento visual do Painel
 Refinamento exclusivamente visual da aba **Painel**, seguindo o mesmo padrão aprovado nas telas **Fechamentos** e **Histórico & resultados**.
@@ -102,7 +126,7 @@ A tela **Histórico** possui **Hoje / Ontem / 7 dias / 30 dias / Todos**. A aba 
 O reparo administrativo relacionado à comanda `c1787690191876` permanece ativo e rastreável. O fechamento canônico de 25/08 permanece em **R$ 448,00 / 8 comandas / 33 unidades**.
 
 ## Backend
-Nenhuma alteração na v0.25.25. Permanecem:
+Nenhuma alteração na v0.25.26. Permanecem:
 - `rota27-sync` v9 ACTIVE;
 - `rota27-whatsapp` v23 ACTIVE;
 - `rota27-whatsapp-inbound` v2 ACTIVE;
@@ -110,7 +134,7 @@ Nenhuma alteração na v0.25.25. Permanecem:
 - sem novo tipo de evento de sync e sem alteração de `rota27_sync_events_type_ck`.
 
 ## Ajuda
-Ajuda **v7.0**, identificando Rota 27 v0.25.25.
+Ajuda **v7.0**, identificando Rota 27 v0.25.26.
 
 ## Atualização da PWA
 Não reinstalar e não limpar dados. Em cada aparelho:
@@ -118,9 +142,10 @@ Não reinstalar e não limpar dados. Em cada aparelho:
 2. abrir a PWA por 20–30 segundos;
 3. fechar completamente;
 4. abrir novamente;
-5. confirmar `v0.25.25`.
+5. confirmar `v0.25.26`.
 
 ## Releases recentes
+- `docs/RELEASE-v0.25.26.md`
 - `docs/RELEASE-v0.25.25.md`
 - `docs/RELEASE-v0.25.24.md`
 - `docs/RELEASE-v0.25.23.md`
