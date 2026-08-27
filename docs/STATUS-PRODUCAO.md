@@ -6,7 +6,7 @@
 - versão: **v0.25.22 — Refinamento dos Fechamentos**;
 - branch: `main`;
 - GitHub Pages: `https://automatrixhub.github.io/rota27/`;
-- Service Worker: `rota27-comandas-v0.25.22-r1`;
+- Service Worker: `rota27-comandas-v0.25.22-r2`;
 - `rota27-whatsapp`: versão **23 ACTIVE** (`rota27-whatsapp-v6-mini2`);
 - `rota27-sync`: versão **9 ACTIVE** (`rota27-sync-v0.25.16`);
 - `rota27-whatsapp-inbound`: versão **2 ACTIVE** (`rota27-whatsapp-inbound-v2-birthday`);
@@ -37,6 +37,18 @@ Os rótulos abreviados foram substituídos por textos completos para reduzir amb
 - o status verde passa a usar **Sincronizado • DD/MM/AAAA HH:MM:SS**;
 - estados de sincronização em andamento ou pendente permanecem inalterados;
 - a lista recebeu espaço inferior adicional para o último fechamento poder subir totalmente acima dos botões fixos **Sincronizar / Concluir**.
+
+### Hotfix r2
+A validação por captura real mostrou que a primeira publicação da v0.25.22 mantinha a nova ordem dos cards, porém o renderer-base podia restaurar textos antigos ao terminar a sincronização assíncrona.
+
+O r2 passa a renderizar a sheet de Fechamentos de forma determinística:
+- intercepta a abertura pelo botão `v019ViewAll` antes do handler legado;
+- reaproveita a mesma sheet e os mesmos dados imutáveis de fechamento;
+- executa `Rota27V019.syncTurnClosures()` normalmente e redesenha uma única vez após a conclusão;
+- o botão **Sincronizar** segue o mesmo fluxo;
+- CSS garante rótulos completos e o prefixo **Fechado:** mesmo durante redesenhos internos;
+- não usa `MutationObserver` nem polling visual frequente;
+- não altera `turn_closed`, Supabase, event log, localStorage de domínio ou cálculo do turno.
 
 ### Estabilidade
 - sem `MutationObserver`;

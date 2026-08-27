@@ -7,7 +7,7 @@ Aplicativo mobile-first, offline-first e multidispositivo para controle rápido 
 **Versão: v0.25.22 — Refinamento dos Fechamentos**  
 Branch: `main`  
 GitHub Pages: `https://automatrixhub.github.io/rota27/`  
-Service Worker: `rota27-comandas-v0.25.22-r1`
+Service Worker: `rota27-comandas-v0.25.22-r2`
 
 ## Navegação
 - **Comandas = atender**;
@@ -29,6 +29,9 @@ Também foram aplicados:
 - remoção do ID técnico `turn_...` da visão operacional, sem apagar o identificador do armazenamento/event log;
 - status verde reduzido para **Sincronizado • data/hora**;
 - espaço inferior adicional para o último card não ficar escondido pelos botões fixos.
+
+### Hotfix r2
+A primeira publicação da v0.25.22 aplicou corretamente a ordem visual dos cards via CSS, mas o renderer-base podia redesenhar a tela após a sincronização e restaurar textos antigos. O hotfix **r2** passa a controlar a abertura e a sincronização da tela de Fechamentos de forma determinística, sem `MutationObserver` e sem polling visual frequente. Os rótulos completos também possuem fallback CSS para permanecerem corretos mesmo durante redesenhos internos.
 
 Nenhuma regra de domínio, sincronização ou Supabase foi alterada.
 
