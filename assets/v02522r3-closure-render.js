@@ -1,7 +1,7 @@
-/* Rota 27 v0.25.22-r4 — render canônico resiliente da tela Fechamentos */
+/* Rota 27 v0.25.23 — render canônico resiliente da tela Fechamentos */
 (function(){
   'use strict';
-  const VERSION='0.25.22-r4';
+  const VERSION='0.25.23';
   const CLOSURE_KEY='rota27_v019_turn_closures_v1';
   const META_KEY='rota27_v019_turn_meta_v1';
   const OUTBOX_KEY='rota27_v019_turn_outbox_v1';
@@ -14,6 +14,12 @@
   function dateLabel(key){const [y,m,d]=String(key||'').split('-');return y&&m&&d?`${d}/${m}/${y}`:String(key||'');}
   function shortDateTime(ts){const d=new Date(Number(ts||0));if(Number.isNaN(d.getTime()))return '—';return `${d.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'})} ${d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}`;}
   function fullDateTime(ts){const d=new Date(Number(ts||0));if(Number.isNaN(d.getTime()))return '—';return `${d.toLocaleDateString('pt-BR')} ${d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit',second:'2-digit'})}`;}
+  function friendlyDeviceName(value){
+    const raw=String(value||'Aparelho').trim()||'Aparelho';
+    const key=raw.toLocaleLowerCase('pt-BR');
+    if(key==='reparo administrativo'||key==='reparo administrativo '||key.includes('reparo administrativo'))return 'Ajuste administrativo';
+    return raw;
+  }
 
   function closures(){
     try{const rows=window.Rota27V019?.getClosures?.();if(Array.isArray(rows))return rows.slice().sort((a,b)=>Number(b?.closedAt||0)-Number(a?.closedAt||0));}catch{}
@@ -40,7 +46,7 @@
     const list=byId('v019HistoryList');if(!list)return;
     const rows=closures();
     list.innerHTML=rows.length?rows.map(c=>{
-      const s=c?.summary||{},payments=Array.isArray(s.payments)?s.payments:[],device=String(c.deviceName||'Aparelho');
+      const s=c?.summary||{},payments=Array.isArray(s.payments)?s.payments:[],device=friendlyDeviceName(c.deviceName);
       return `<div class="v019-history-row"><div class="v019-history-row-head"><strong>${esc(dateLabel(c.businessDate))}</strong><span>${esc(shortDateTime(c.closedAt))}</span></div><div class="v019-history-row-metrics">${metric('Faturamento',moneyValue(s.revenue))}${metric('Comandas fechadas',String(s.closedCount||0))}${metric('Comandas canceladas',String(s.cancelled||0))}${metric('Ticket médio',moneyValue(s.avgTicket))}${metric('Itens vendidos',String(s.units||0))}${metric('Formas de pagamento',String(payments.length))}</div><div class="v019-history-meta" data-r27-device="${esc(device)}">Data operacional pela abertura • fechado em ${esc(device)}</div></div>`;
     }).join(''):'<div class="v019-preview-empty">Nenhum turno fechado ainda.</div>';
   }
@@ -89,8 +95,10 @@
     window.addEventListener('online',refreshAfterCurrentEvent);
     document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')refreshAfterCurrentEvent();});
     refreshIfOpen();
-    window.Rota27V02522R3ClosureRender={version:VERSION,render:renderCanonical,openHistory,syncAndRender,settle:settleAfterLegacy};
-    console.info('[Rota27] v0.25.22-r4 — render resiliente de Fechamentos carregado.');
+    const api={version:VERSION,render:renderCanonical,openHistory,syncAndRender,settle:settleAfterLegacy};
+    window.Rota27V02523ClosureRender=api;
+    window.Rota27V02522R3ClosureRender=api;
+    console.info('[Rota27] v0.25.23 — acabamento visual resiliente de Fechamentos carregado.');
   }
 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
