@@ -4,10 +4,10 @@ Aplicativo mobile-first, offline-first e multidispositivo para controle rápido 
 
 ## Produção
 
-**Versão: v0.25.19 — Cards compactos de comandas**  
+**Versão: v0.25.20 — Campanha de aniversários**  
 Branch: `main`  
 GitHub Pages: `https://automatrixhub.github.io/rota27/`  
-Service Worker: `rota27-comandas-v0.25.19-r1`
+Service Worker: `rota27-comandas-v0.25.20-r1`
 
 ## Navegação
 - **Comandas = atender**;
@@ -15,16 +15,28 @@ Service Worker: `rota27-comandas-v0.25.19-r1`
 - **Painel = administrar o negócio**;
 - **Histórico = o que aconteceu**.
 
-## v0.25.19 — Cards compactos de comandas
-A tela **Comandas** foi refinada para ganhar densidade sem perder legibilidade ou área de toque.
+## v0.25.20 — Campanha de aniversários
+A área de clientes passa a ter uma campanha controlada para solicitar **Data de nascimento** por WhatsApp usando template oficial da Meta.
 
-Ajustes:
-- visualização **Lista** com cards aproximadamente 20–30% mais baixos;
-- paddings, espaçamentos, rodapé, valor e botão **Abrir** compactados;
-- visualização **Mapa** limitada a **2 cards por linha no celular**;
-- cards do Mapa também compactados verticalmente, aproveitando melhor a largura disponível;
-- fallback para 1 coluna apenas em telas excepcionalmente estreitas;
-- nenhuma alteração na lógica de comandas, sincronização ou backend.
+Fluxo:
+- identifica clientes com WhatsApp e sem `birthDate`;
+- por segurança, o disparo padrão considera somente telefones com evidência anterior de mensagem transacional autorizada no Rota 27;
+- template: `solicitar_aniversario_rota27_v1`;
+- o painel mostra status do template, quantidade elegível, já solicitados e prontos para envio;
+- mensagens usam `whatsapp_message_log` com `event_id` determinístico, evitando duplicidade;
+- respostas em `DD/MM/AAAA` ou `AAAA-MM-DD` são reconhecidas automaticamente;
+- resposta válida gera `client_upsert` com `birthDate` e `birthDateUpdatedAt`, convergindo para os aparelhos;
+- o cliente recebe confirmação após gravação;
+- resposta inválida recebe orientação para reenviar no formato correto;
+- não foi criado novo tipo de evento de sincronização.
+
+Backend:
+- nova Edge Function `rota27-birthday-campaign`;
+- `rota27-whatsapp-inbound` evolui para processar respostas da campanha antes do encaminhamento comum ao gerente;
+- `rota27-sync` permanece inalterado.
+
+## v0.25.19 — Cards compactos de comandas
+A tela **Comandas** ganhou cards mais baixos na Lista e duas colunas no Mapa mobile, sem alterar lógica operacional.
 
 ## v0.25.18 — Cadastro completo na abertura da comanda
 A nova comanda aceita **Data de nascimento** opcional junto com Cliente e WhatsApp. Cliente cadastrado preenche WhatsApp/nascimento quando disponíveis; cliente novo pode ter o nascimento salvo já na abertura. O campo vazio nunca apaga nascimento existente.
@@ -50,24 +62,27 @@ A data de abertura da comanda define a qual turno a venda pertence. Múltiplos t
 - estoque, compras, inventário, custos e relacionamento/fidelização.
 
 ## Backend
-- `rota27-sync`: versão **9 ACTIVE**;
-- `EDGE_VERSION = rota27-sync-v0.25.16`;
-- nenhuma migration nem alteração de Edge Function na v0.25.19.
+- `rota27-sync`: versão **9 ACTIVE** (`rota27-sync-v0.25.16`);
+- `rota27-whatsapp`: versão 23 antes desta release, preservada para atualizações de comanda;
+- `rota27-birthday-campaign`: campanha cadastral por template;
+- `rota27-whatsapp-inbound`: respostas de aniversário integradas ao cadastro;
+- sem novo tipo de evento de sync e sem alteração de `rota27_sync_events_type_ck`.
 
 ## Ajuda
-Ajuda **v6.9** permanece ativa, agora identificando a release v0.25.19.
+Ajuda **v7.0** identifica a release v0.25.20.
 
 ## Atualização da PWA
 Não limpar dados nem reinstalar. Abra a PWA online, aguarde 20–30 segundos, feche completamente e abra novamente em cada aparelho.
 
 ## Documentos
+- `docs/RELEASE-v0.25.20.md`
 - `docs/RELEASE-v0.25.19.md`
 - `docs/RELEASE-v0.25.18.md`
 - `docs/RELEASE-v0.25.17.md`
 - `docs/RELEASE-v0.25.16.md`
 - `docs/STATUS-PRODUCAO.md`
 
-Baseline de rollback do código: **v0.25.18**.
+Baseline de rollback do código: **v0.25.19**.
 
 ## Versão
-Produção: **0.25.19**
+Produção: **0.25.20**
