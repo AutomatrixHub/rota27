@@ -3,17 +3,38 @@
 Última revisão: 27/08/2026
 
 ## Produção
-- versão: **v0.25.27 — Ícones profissionais no Cardápio**;
+- versão: **v0.25.28 — Novo estilo dos ícones do Cardápio**;
 - branch: `main`;
 - GitHub Pages: `https://automatrixhub.github.io/rota27/`;
-- Service Worker: `rota27-comandas-v0.25.27-r1`;
+- Service Worker: `rota27-comandas-v0.25.28-r1`;
 - `rota27-whatsapp`: versão **23 ACTIVE** (`rota27-whatsapp-v6-mini2`);
 - `rota27-sync`: versão **9 ACTIVE** (`rota27-sync-v0.25.16`);
 - `rota27-whatsapp-inbound`: versão **2 ACTIVE** (`rota27-whatsapp-inbound-v2-birthday`);
 - `rota27-birthday-campaign`: versão **2 ACTIVE** (`rota27-birthday-campaign-v2`);
 - `rota27-audit`: versão 1 ACTIVE, somente leitura.
 
-Baseline de rollback do código: **v0.25.26**, HEAD `ff64c3f8003d326e71ce3225ff3c66469ccebe51`.
+Baseline de rollback do código: **v0.25.27**, HEAD `d9bfbc0283b6f798d85b46579af3212643162710`.
+
+## v0.25.28 — Novo estilo dos ícones do Cardápio
+Refinamento exclusivamente visual em resposta ao feedback sobre o acabamento da v0.25.27.
+
+### Acabamento
+- badges circulares substituem as caixas bege/monocromáticas;
+- famílias de produtos recebem cores terrosas suaves e consistentes;
+- pictogramas ficam brancos, com traço mais firme e leitura rápida;
+- produtos inativos usam acabamento neutro/desaturado;
+- espaçamento entre ícone e conteúdo foi refinado;
+- o mapeamento por categoria/nome da v0.25.27 permanece intacto;
+- o dado `emoji` original continua preservado no catálogo.
+
+### Estabilidade
+- novo asset visual `assets/v02528-product-icons-soft.css`;
+- sem novo JavaScript de domínio;
+- sem `MutationObserver`;
+- sem polling contínuo;
+- sem alteração em catálogo, categorias, preços, histórico de preço, Supabase, Edge Functions, event log ou sincronização.
+
+Ver `docs/RELEASE-v0.25.28.md`.
 
 ## v0.25.27 — Ícones profissionais no Cardápio
 Refinamento visual da apresentação dos produtos na aba **Cardápio**.
@@ -28,7 +49,7 @@ Refinamento visual da apresentação dos produtos na aba **Cardápio**.
 - o dado `emoji` original do catálogo não é removido nem alterado.
 
 ### Estabilidade
-- novos assets `assets/v02527-product-icons.css` e `assets/v02527-product-icons.js`;
+- assets `assets/v02527-product-icons.css` e `assets/v02527-product-icons.js`;
 - decoração aplicada sobre a saída existente de `renderMenu()`;
 - reaplicações somente em interações finitas relevantes;
 - sem `MutationObserver`;
@@ -148,7 +169,7 @@ A tela **Histórico** possui **Hoje / Ontem / 7 dias / 30 dias / Todos**. A aba 
 O reparo administrativo relacionado à comanda `c1787690191876` permanece ativo e rastreável. O fechamento canônico de 25/08 permanece em **R$ 448,00 / 8 comandas / 33 unidades**.
 
 ## Backend
-Nenhuma alteração na v0.25.27. Permanecem:
+Nenhuma alteração na v0.25.28. Permanecem:
 - `rota27-sync` v9 ACTIVE;
 - `rota27-whatsapp` v23 ACTIVE;
 - `rota27-whatsapp-inbound` v2 ACTIVE;
@@ -156,7 +177,7 @@ Nenhuma alteração na v0.25.27. Permanecem:
 - sem novo tipo de evento de sync e sem alteração de `rota27_sync_events_type_ck`.
 
 ## Ajuda
-Ajuda **v7.0**, identificando Rota 27 v0.25.27.
+Ajuda **v7.0**, identificando Rota 27 v0.25.28.
 
 ## Atualização da PWA
 Não reinstalar e não limpar dados. Em cada aparelho:
@@ -164,9 +185,10 @@ Não reinstalar e não limpar dados. Em cada aparelho:
 2. abrir a PWA por 20–30 segundos;
 3. fechar completamente;
 4. abrir novamente;
-5. confirmar `v0.25.27`.
+5. confirmar `v0.25.28`.
 
 ## Releases recentes
+- `docs/RELEASE-v0.25.28.md`
 - `docs/RELEASE-v0.25.27.md`
 - `docs/RELEASE-v0.25.26.md`
 - `docs/RELEASE-v0.25.25.md`
