@@ -21,7 +21,7 @@
     if(note){
       note.classList.add('v02533-price-note');
       if(note.dataset.v02533Copy!=='1'){
-        note.innerHTML='<span class="v02533-price-primary">Preços alterados valem só para novos lançamentos.</span><span class="v02533-price-secondary">Itens já lançados mantêm nome e valor registrados no lançamento.</span>';
+        note.innerHTML='<span class="v02533-price-primary">Preços alterados valem só para novos lançamentos.</span><span class="v02533-price-secondary">Itens já lançados em comandas mantêm nome e valor registrados no lançamento.</span>';
         note.dataset.v02533Copy='1';
       }
     }
