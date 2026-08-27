@@ -7,7 +7,7 @@ Aplicativo mobile-first, offline-first e multidispositivo para controle rápido 
 **Versão: v0.25.22 — Refinamento dos Fechamentos**  
 Branch: `main`  
 GitHub Pages: `https://automatrixhub.github.io/rota27/`  
-Service Worker: `rota27-comandas-v0.25.22-r2`
+Service Worker: `rota27-comandas-v0.25.22-r3`
 
 ## Navegação
 - **Comandas = atender**;
@@ -31,7 +31,14 @@ Também foram aplicados:
 - espaço inferior adicional para o último card não ficar escondido pelos botões fixos.
 
 ### Hotfix r2
-A primeira publicação da v0.25.22 aplicou corretamente a ordem visual dos cards via CSS, mas o renderer-base podia redesenhar a tela após a sincronização e restaurar textos antigos. O hotfix **r2** passa a controlar a abertura e a sincronização da tela de Fechamentos de forma determinística, sem `MutationObserver` e sem polling visual frequente. Os rótulos completos também possuem fallback CSS para permanecerem corretos mesmo durante redesenhos internos.
+A primeira publicação da v0.25.22 aplicou corretamente a ordem visual dos cards via CSS, mas o renderer-base podia redesenhar a tela após a sincronização e restaurar textos antigos. O hotfix **r2** passou a controlar a abertura e a sincronização da tela de Fechamentos de forma determinística, sem `MutationObserver` e sem polling visual frequente.
+
+### Hotfix r3
+A captura seguinte mostrou que o rodapé e o status ainda podiam permanecer no HTML legado. O **r3** carrega um renderer por novo caminho de asset e garante, após abertura e sincronização:
+- rodapé **Data operacional pela abertura • fechado em <aparelho>**;
+- nenhum `turn_...` visível na tela operacional;
+- status **Sincronizado • data/hora**;
+- mesma fonte de dados e mesma sincronização de fechamentos.
 
 Nenhuma regra de domínio, sincronização ou Supabase foi alterada.
 
@@ -109,7 +116,7 @@ Não limpar dados nem reinstalar. Abra a PWA online, aguarde 20–30 segundos, f
 - `docs/RELEASE-v0.25.16.md`
 - `docs/STATUS-PRODUCAO.md`
 
-Baseline de rollback do código: **v0.25.21**.
+Baseline de rollback do código: **v0.25.22-r2**.
 
 ## Versão
 Produção: **0.25.22**
