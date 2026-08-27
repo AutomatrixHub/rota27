@@ -1,4 +1,4 @@
-const CACHE_NAME = 'rota27-comandas-v0.25.17-r1';
+const CACHE_NAME = 'rota27-comandas-v0.25.18-r1';
 const APP_SHELL = [
   './','./index.html','./base-v013.html',
   './assets/v014.css','./assets/v014.js','./assets/v014-dev3.css','./assets/v014-dev3.js','./assets/v014-rc2-category-fix.js','./assets/v014-final.js',
@@ -25,7 +25,7 @@ const APP_SHELL = [
   './assets/v02510-turn-summary-current-name.js','./assets/v02511-history-rank-current-name.js',
   './assets/v02512-receivables.css','./assets/v02512-receivables.js','./assets/v02512-overdue-turn.js','./assets/v02512-receivables-safety.js',
   './assets/v02513-client-picker.css','./assets/v02513-client-picker.js',
-  './assets/v02517-client-birthday.js',
+  './assets/v02517-client-birthday.js','./assets/v02518-client-birthday-on-open.js',
   './assets/brand/rota27-logo-oficial.png',
   './manifest.webmanifest','./icons/apple-touch-icon.png','./icons/icon-192.png','./icons/icon-512.png','./icons/icon-192-maskable.png','./icons/icon-512-maskable.png','./icons/favicon-32.png'
 ];
