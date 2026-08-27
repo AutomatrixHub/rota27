@@ -4,16 +4,30 @@ Aplicativo mobile-first, offline-first e multidispositivo para controle rápido 
 
 ## Produção
 
-**Versão: v0.25.22 — Refinamento dos Fechamentos**  
+**Versão: v0.25.23 — Acabamento visual dos Fechamentos**  
 Branch: `main`  
 GitHub Pages: `https://automatrixhub.github.io/rota27/`  
-Service Worker: `rota27-comandas-v0.25.22-r3`
+Service Worker: `rota27-comandas-v0.25.23-r1`
 
 ## Navegação
 - **Comandas = atender**;
 - **Cardápio = o que é vendido**;
 - **Painel = administrar o negócio**;
 - **Histórico = o que aconteceu**.
+
+## v0.25.23 — Acabamento visual dos Fechamentos
+A tela **Fechamentos** recebeu o acabamento final depois da validação real da v0.25.22-r4 no celular.
+
+Refinamentos:
+- data operacional continua como informação dominante;
+- **Fechado: DD/MM HH:MM** ficou mais discreto;
+- valores ganharam maior destaque e rótulos ficaram mais suaves;
+- cards, status verde, rodapé e espaçamentos verticais foram levemente compactados;
+- o fechamento mais recente ganhou o marcador **Último fechamento**;
+- o fechamento histórico reparado aparece como **ajuste administrativo** na interface, mantendo a trilha técnica original na auditoria;
+- botões **Sincronizar** e **Concluir** permanecem inalterados.
+
+Nenhuma regra de domínio, sincronização ou Supabase foi alterada.
 
 ## v0.25.22 — Refinamento dos Fechamentos
 A tela **Fechamentos** foi reorganizada para melhorar a hierarquia e a leitura no celular.
@@ -33,14 +47,13 @@ Também foram aplicados:
 ### Hotfix r2
 A primeira publicação da v0.25.22 aplicou corretamente a ordem visual dos cards via CSS, mas o renderer-base podia redesenhar a tela após a sincronização e restaurar textos antigos. O hotfix **r2** passou a controlar a abertura e a sincronização da tela de Fechamentos de forma determinística, sem `MutationObserver` e sem polling visual frequente.
 
-### Hotfix r3
-A captura seguinte mostrou que o rodapé e o status ainda podiam permanecer no HTML legado. O **r3** carrega um renderer por novo caminho de asset e garante, após abertura e sincronização:
+### Hotfix r3/r4
+As capturas reais mostraram que o rodapé/status ainda podiam ser redesenhados pelo módulo-base após o renderer novo. O r4 eliminou essa regressão visual com proteção de CSS e estabilização curta e finita, mantendo:
 - rodapé **Data operacional pela abertura • fechado em <aparelho>**;
 - nenhum `turn_...` visível na tela operacional;
 - status **Sincronizado • data/hora**;
-- mesma fonte de dados e mesma sincronização de fechamentos.
-
-Nenhuma regra de domínio, sincronização ou Supabase foi alterada.
+- mesma fonte de dados e mesma sincronização de fechamentos;
+- sem `MutationObserver` e sem polling contínuo.
 
 ## v0.25.21 — Ontem no Histórico + leitura dos fechamentos
 A tela **Histórico** passa a ter cinco períodos: **Hoje, Ontem, 7 dias, 30 dias e Todos**.
@@ -98,15 +111,16 @@ A data de abertura da comanda define a qual turno a venda pertence. Múltiplos t
 - `rota27-whatsapp`: versão **23 ACTIVE**;
 - `rota27-birthday-campaign`: versão **2 ACTIVE**;
 - `rota27-whatsapp-inbound`: versão **2 ACTIVE**;
-- sem novo tipo de evento de sync e sem alteração de `rota27_sync_events_type_ck` na v0.25.22.
+- sem novo tipo de evento de sync e sem alteração de `rota27_sync_events_type_ck` na v0.25.23.
 
 ## Ajuda
-Ajuda **v7.0** permanece ativa, identificando a release v0.25.22.
+Ajuda **v7.0** permanece ativa, identificando a release v0.25.23.
 
 ## Atualização da PWA
 Não limpar dados nem reinstalar. Abra a PWA online, aguarde 20–30 segundos, feche completamente e abra novamente em cada aparelho.
 
 ## Documentos
+- `docs/RELEASE-v0.25.23.md`
 - `docs/RELEASE-v0.25.22.md`
 - `docs/RELEASE-v0.25.21.md`
 - `docs/RELEASE-v0.25.20.md`
@@ -116,7 +130,7 @@ Não limpar dados nem reinstalar. Abra a PWA online, aguarde 20–30 segundos, f
 - `docs/RELEASE-v0.25.16.md`
 - `docs/STATUS-PRODUCAO.md`
 
-Baseline de rollback do código: **v0.25.22-r2**.
+Baseline de rollback do código: **v0.25.22-r4**.
 
 ## Versão
-Produção: **0.25.22**
+Produção: **0.25.23**
