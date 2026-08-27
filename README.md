@@ -4,10 +4,10 @@ Aplicativo mobile-first, offline-first e multidispositivo para controle rápido 
 
 ## Produção
 
-**Versão: v0.25.21 — Ontem no Histórico + leitura dos fechamentos**  
+**Versão: v0.25.22 — Refinamento dos Fechamentos**  
 Branch: `main`  
 GitHub Pages: `https://automatrixhub.github.io/rota27/`  
-Service Worker: `rota27-comandas-v0.25.21-r1`
+Service Worker: `rota27-comandas-v0.25.22-r1`
 
 ## Navegação
 - **Comandas = atender**;
@@ -15,18 +15,27 @@ Service Worker: `rota27-comandas-v0.25.21-r1`
 - **Painel = administrar o negócio**;
 - **Histórico = o que aconteceu**.
 
+## v0.25.22 — Refinamento dos Fechamentos
+A tela **Fechamentos** foi reorganizada para melhorar a hierarquia e a leitura no celular.
+
+Nova ordem dos indicadores:
+- **Faturamento | Ticket médio**;
+- **Comandas fechadas | Comandas canceladas**;
+- **Itens vendidos | Formas de pagamento**.
+
+Também foram aplicados:
+- rótulos operacionais completos;
+- horário explícito como **Fechado: DD/MM HH:MM**;
+- remoção do ID técnico `turn_...` da visão operacional, sem apagar o identificador do armazenamento/event log;
+- status verde reduzido para **Sincronizado • data/hora**;
+- espaço inferior adicional para o último card não ficar escondido pelos botões fixos.
+
+Nenhuma regra de domínio, sincronização ou Supabase foi alterada.
+
 ## v0.25.21 — Ontem no Histórico + leitura dos fechamentos
 A tela **Histórico** passa a ter cinco períodos: **Hoje, Ontem, 7 dias, 30 dias e Todos**.
 
 A aba **Ontem** usa o fechamento imutável do dia operacional anterior como referência. Quando houver mais de um turno no mesmo dia, detalha o **último fechamento de ontem**, respeitando o corte do fechamento anterior. Exibe faturamento, comandas, ticket médio, itens vendidos, produtos/categorias e as comandas pertencentes àquele fechamento.
-
-A tela **Fechamentos** também foi refinada para uso no celular:
-- data do turno e horário mais legíveis;
-- rótulos e valores maiores;
-- menos espaço ocioso dentro dos quadros;
-- cartões continuam em 2 colunas no mobile para preservar leitura.
-
-Nenhuma regra de domínio, sincronização ou Supabase foi alterada.
 
 ## v0.25.20 — Campanha de aniversários
 A área de clientes passa a ter uma campanha controlada para solicitar **Data de nascimento** por WhatsApp usando template oficial da Meta.
@@ -79,15 +88,16 @@ A data de abertura da comanda define a qual turno a venda pertence. Múltiplos t
 - `rota27-whatsapp`: versão **23 ACTIVE**;
 - `rota27-birthday-campaign`: versão **2 ACTIVE**;
 - `rota27-whatsapp-inbound`: versão **2 ACTIVE**;
-- sem novo tipo de evento de sync e sem alteração de `rota27_sync_events_type_ck` na v0.25.21.
+- sem novo tipo de evento de sync e sem alteração de `rota27_sync_events_type_ck` na v0.25.22.
 
 ## Ajuda
-Ajuda **v7.0** permanece ativa, identificando a release v0.25.21.
+Ajuda **v7.0** permanece ativa, identificando a release v0.25.22.
 
 ## Atualização da PWA
 Não limpar dados nem reinstalar. Abra a PWA online, aguarde 20–30 segundos, feche completamente e abra novamente em cada aparelho.
 
 ## Documentos
+- `docs/RELEASE-v0.25.22.md`
 - `docs/RELEASE-v0.25.21.md`
 - `docs/RELEASE-v0.25.20.md`
 - `docs/RELEASE-v0.25.19.md`
@@ -96,7 +106,7 @@ Não limpar dados nem reinstalar. Abra a PWA online, aguarde 20–30 segundos, f
 - `docs/RELEASE-v0.25.16.md`
 - `docs/STATUS-PRODUCAO.md`
 
-Baseline de rollback do código: **v0.25.20**.
+Baseline de rollback do código: **v0.25.21**.
 
 ## Versão
-Produção: **0.25.21**
+Produção: **0.25.22**

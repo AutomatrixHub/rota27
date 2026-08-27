@@ -3,17 +3,46 @@
 Última revisão: 27/08/2026
 
 ## Produção
-- versão: **v0.25.21 — Ontem no Histórico + leitura dos fechamentos**;
+- versão: **v0.25.22 — Refinamento dos Fechamentos**;
 - branch: `main`;
 - GitHub Pages: `https://automatrixhub.github.io/rota27/`;
-- Service Worker: `rota27-comandas-v0.25.21-r1`;
+- Service Worker: `rota27-comandas-v0.25.22-r1`;
 - `rota27-whatsapp`: versão **23 ACTIVE** (`rota27-whatsapp-v6-mini2`);
 - `rota27-sync`: versão **9 ACTIVE** (`rota27-sync-v0.25.16`);
 - `rota27-whatsapp-inbound`: versão **2 ACTIVE** (`rota27-whatsapp-inbound-v2-birthday`);
 - `rota27-birthday-campaign`: versão **2 ACTIVE** (`rota27-birthday-campaign-v2`);
 - `rota27-audit`: versão 1 ACTIVE, somente leitura.
 
-Baseline de rollback do código: **v0.25.20 — Campanha de aniversários**.
+Baseline de rollback do código: **v0.25.21 — Ontem no Histórico + leitura dos fechamentos**.
+
+## v0.25.22 — Refinamento dos Fechamentos
+Mudança exclusivamente visual na tela **Fechamentos**, sem alteração de domínio, sincronização, banco ou Edge Functions.
+
+### Hierarquia dos indicadores
+A grade passa a ser exibida na ordem:
+- **Faturamento | Ticket médio**;
+- **Comandas fechadas | Comandas canceladas**;
+- **Itens vendidos | Formas de pagamento**.
+
+Os rótulos abreviados foram substituídos por textos completos para reduzir ambiguidade operacional.
+
+### Cabeçalho e metadados
+- o horário no canto superior direito passa a aparecer como **Fechado: DD/MM HH:MM**;
+- a data grande à esquerda continua sendo a **data operacional** do turno;
+- o ID técnico `turn_...` deixa de ser mostrado na visão operacional;
+- o identificador permanece preservado no armazenamento/event log;
+- a linha inferior fica em **Data operacional pela abertura • fechado em <aparelho>**.
+
+### Sincronização e rolagem
+- o status verde passa a usar **Sincronizado • DD/MM/AAAA HH:MM:SS**;
+- estados de sincronização em andamento ou pendente permanecem inalterados;
+- a lista recebeu espaço inferior adicional para o último fechamento poder subir totalmente acima dos botões fixos **Sincronizar / Concluir**.
+
+### Estabilidade
+- sem `MutationObserver`;
+- sem polling visual frequente;
+- sem limpeza de `localStorage`;
+- sem reinstalação da PWA.
 
 ## v0.25.21 — Ontem no Histórico + leitura dos fechamentos
 Mudança exclusivamente de interface/leitura, sem alteração de regras operacionais, event log, Edge Function ou banco.
@@ -28,13 +57,6 @@ Mudança exclusivamente de interface/leitura, sem alteração de regras operacio
 - pesquisa por cliente/mesa/produto continua funcionando dentro do recorte de Ontem;
 - nenhum `MutationObserver` ou polling visual frequente foi introduzido.
 
-### Fechamentos — densidade e legibilidade
-- data do turno e horário de fechamento com tipografia maior;
-- rótulos e valores dos mini-cards ampliados;
-- padding ajustado para reduzir áreas vazias;
-- grade mobile permanece em 2 colunas para preservar leitura;
-- metadados de fechamento continuam visíveis.
-
 ### Backend
 Nenhuma alteração. Permanecem:
 - `rota27-sync` v9 ACTIVE;
@@ -48,7 +70,7 @@ Foi adicionada uma campanha administrativa para solicitar **Data de nascimento**
 ### Estado da base no momento da release
 - clientes sincronizados: **17**;
 - clientes com WhatsApp e sem data de nascimento: **13**;
-- desses, com evidência de mensagem transacional anterior enviada pelo Rota 27: **12**;
+- desses, com evidência anterior de mensagem transacional enviada pelo Rota 27: **12**;
 - sem evidência anterior no sistema: **1**;
 - solicitações da campanha enviadas durante a implantação: **0**.
 
@@ -119,7 +141,7 @@ O seletor pesquisável permanece ativo. A abertura da comanda também pode cadas
 - estoque, compras, inventário, custos e relacionamento/fidelização.
 
 ## Ajuda
-Ajuda **v7.0**, identificando Rota 27 v0.25.21.
+Ajuda **v7.0**, identificando Rota 27 v0.25.22.
 
 ## Atualização da PWA
 Não reinstalar e não limpar dados. Em cada aparelho:
@@ -127,6 +149,6 @@ Não reinstalar e não limpar dados. Em cada aparelho:
 2. abrir a PWA por 20–30 segundos;
 3. fechar completamente;
 4. abrir novamente;
-5. confirmar `v0.25.21`.
+5. confirmar `v0.25.22`.
 
-Ver `docs/RELEASE-v0.25.21.md`.
+Ver `docs/RELEASE-v0.25.22.md`.
