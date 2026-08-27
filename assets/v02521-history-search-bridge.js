@@ -4,6 +4,8 @@
   function syncSearchToBaseHistory(){
     const input=document.getElementById('v14HistorySearch');
     if(!input)return;
+    const empty=document.querySelector('#historyEmpty p');
+    if(empty)empty.textContent='Altere o período ou a busca para ver outros resultados.';
     input.dispatchEvent(new Event('input',{bubbles:true}));
   }
   document.addEventListener('click',e=>{
