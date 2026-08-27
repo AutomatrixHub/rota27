@@ -4,16 +4,29 @@ Aplicativo mobile-first, offline-first e multidispositivo para controle rápido 
 
 ## Produção
 
-**Versão: v0.25.20 — Campanha de aniversários**  
+**Versão: v0.25.21 — Ontem no Histórico + leitura dos fechamentos**  
 Branch: `main`  
 GitHub Pages: `https://automatrixhub.github.io/rota27/`  
-Service Worker: `rota27-comandas-v0.25.20-r1`
+Service Worker: `rota27-comandas-v0.25.21-r1`
 
 ## Navegação
 - **Comandas = atender**;
 - **Cardápio = o que é vendido**;
 - **Painel = administrar o negócio**;
 - **Histórico = o que aconteceu**.
+
+## v0.25.21 — Ontem no Histórico + leitura dos fechamentos
+A tela **Histórico** passa a ter cinco períodos: **Hoje, Ontem, 7 dias, 30 dias e Todos**.
+
+A aba **Ontem** usa o fechamento imutável do dia operacional anterior como referência. Quando houver mais de um turno no mesmo dia, detalha o **último fechamento de ontem**, respeitando o corte do fechamento anterior. Exibe faturamento, comandas, ticket médio, itens vendidos, produtos/categorias e as comandas pertencentes àquele fechamento.
+
+A tela **Fechamentos** também foi refinada para uso no celular:
+- data do turno e horário mais legíveis;
+- rótulos e valores maiores;
+- menos espaço ocioso dentro dos quadros;
+- cartões continuam em 2 colunas no mobile para preservar leitura.
+
+Nenhuma regra de domínio, sincronização ou Supabase foi alterada.
 
 ## v0.25.20 — Campanha de aniversários
 A área de clientes passa a ter uma campanha controlada para solicitar **Data de nascimento** por WhatsApp usando template oficial da Meta.
@@ -32,7 +45,7 @@ Fluxo:
 
 Backend:
 - nova Edge Function `rota27-birthday-campaign`;
-- `rota27-whatsapp-inbound` evolui para processar respostas da campanha antes do encaminhamento comum ao gerente;
+- `rota27-whatsapp-inbound` processa respostas da campanha antes do encaminhamento comum ao gerente;
 - `rota27-sync` permanece inalterado.
 
 ## v0.25.19 — Cards compactos de comandas
@@ -63,18 +76,19 @@ A data de abertura da comanda define a qual turno a venda pertence. Múltiplos t
 
 ## Backend
 - `rota27-sync`: versão **9 ACTIVE** (`rota27-sync-v0.25.16`);
-- `rota27-whatsapp`: versão 23 antes desta release, preservada para atualizações de comanda;
-- `rota27-birthday-campaign`: campanha cadastral por template;
-- `rota27-whatsapp-inbound`: respostas de aniversário integradas ao cadastro;
-- sem novo tipo de evento de sync e sem alteração de `rota27_sync_events_type_ck`.
+- `rota27-whatsapp`: versão **23 ACTIVE**;
+- `rota27-birthday-campaign`: versão **2 ACTIVE**;
+- `rota27-whatsapp-inbound`: versão **2 ACTIVE**;
+- sem novo tipo de evento de sync e sem alteração de `rota27_sync_events_type_ck` na v0.25.21.
 
 ## Ajuda
-Ajuda **v7.0** identifica a release v0.25.20.
+Ajuda **v7.0** permanece ativa, identificando a release v0.25.21.
 
 ## Atualização da PWA
 Não limpar dados nem reinstalar. Abra a PWA online, aguarde 20–30 segundos, feche completamente e abra novamente em cada aparelho.
 
 ## Documentos
+- `docs/RELEASE-v0.25.21.md`
 - `docs/RELEASE-v0.25.20.md`
 - `docs/RELEASE-v0.25.19.md`
 - `docs/RELEASE-v0.25.18.md`
@@ -82,7 +96,7 @@ Não limpar dados nem reinstalar. Abra a PWA online, aguarde 20–30 segundos, f
 - `docs/RELEASE-v0.25.16.md`
 - `docs/STATUS-PRODUCAO.md`
 
-Baseline de rollback do código: **v0.25.19**.
+Baseline de rollback do código: **v0.25.20**.
 
 ## Versão
-Produção: **0.25.20**
+Produção: **0.25.21**
