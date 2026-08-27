@@ -1,4 +1,4 @@
-/* Rota 27 v0.25.22-r2 — refinamento visual determinístico dos Fechamentos */
+/* Rota 27 v0.25.22-r4 — refinamento visual determinístico dos Fechamentos */
 
 /* Hierarquia: financeiro primeiro, contagem operacional depois. */
 #v019HistoryWrap .v019-history-row-metrics .v019-history-mini:nth-child(1){order:1}
@@ -23,14 +23,25 @@
 #v019HistoryWrap .v019-history-row-metrics{gap:7px;margin-top:9px}
 #v019HistoryWrap .v019-history-mini{min-height:53px;padding:8px 9px}
 #v019HistoryWrap .v019-history-mini b{font-size:16px;line-height:1.08}
-#v019HistoryWrap .v019-history-meta{margin-top:8px;font-size:11px;line-height:1.3}
+
+/*
+ * Rodapé protegido contra a disputa de renderização do módulo-base.
+ * O texto original fica invisível; assim, mesmo que o legado reinsira o ID turn_...,
+ * ele nunca volta a aparecer. O nome do aparelho é acrescentado quando o renderer
+ * canônico consegue fornecer data-r27-device; no pior caso fica apenas a regra operacional.
+ */
+#v019HistoryWrap .v019-history-meta{margin-top:8px;font-size:0!important;line-height:1.3;min-height:14px}
+#v019HistoryWrap .v019-history-meta::before{content:'Data operacional pela abertura';font-size:11px;color:var(--muted)}
+#v019HistoryWrap .v019-history-meta[data-r27-device]::after{content:' • fechado em ' attr(data-r27-device);font-size:11px;color:var(--muted)}
 
 /* O canto direito deixa explícito que se trata do horário físico do fechamento. */
 #v019HistoryWrap .v019-history-row-head span{font-size:11.5px;font-weight:800;color:var(--muted)}
 #v019HistoryWrap .v019-history-row-head span::before{content:'Fechado: '}
 
-/* Status de sincronização mais compacto. */
+/* Status de sincronização compacto e persistente mesmo se o legado trocar textContent. */
 #v019HistoryWrap .v019-gate{padding:9px 10px;font-size:12px;line-height:1.3;margin:10px 0}
+#v019HistoryWrap .v019-gate.ok[data-r27-sync-text]{font-size:0!important}
+#v019HistoryWrap .v019-gate.ok[data-r27-sync-text]::after{content:attr(data-r27-sync-text);font-size:12px;line-height:1.3}
 
 /* Permite que o último fechamento suba completamente acima das ações fixas. */
 #v019HistoryWrap .v019-history-list{padding-bottom:calc(104px + env(safe-area-inset-bottom));scroll-padding-bottom:calc(104px + env(safe-area-inset-bottom))}
@@ -39,4 +50,6 @@
   #v019HistoryWrap .v019-history-mini small::after{font-size:10.5px}
   #v019HistoryWrap .v019-history-mini b{font-size:15px}
   #v019HistoryWrap .v019-history-row-head span{font-size:10.5px}
+  #v019HistoryWrap .v019-history-meta::before,
+  #v019HistoryWrap .v019-history-meta[data-r27-device]::after{font-size:10.5px}
 }
