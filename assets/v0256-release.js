@@ -1,14 +1,14 @@
-/* Rota 27 v0.25.29 — categorias mais legíveis no Cardápio */
+/* Rota 27 v0.25.30 — Clientes & Fidelização na posição 2 do Painel */
 (function(){
   'use strict';
-  const VERSION='0.25.29';
+  const VERSION='0.25.30';
   function updateIdentity(){
-    document.title='Rota 27 Bodega • Comandas v0.25.29';
+    document.title='Rota 27 Bodega • Comandas v0.25.30';
     const meta=document.querySelector('meta[name="rota27-release-version"]');if(meta)meta.content=VERSION;
-    let style=document.getElementById('v02529ReleaseIdentity');
-    if(!style){style=document.createElement('style');style.id='v02529ReleaseIdentity';style.textContent='#v14VersionBadge::after{content:"v0.25.29"!important}';document.head.appendChild(style);}
+    let style=document.getElementById('v02530ReleaseIdentity');
+    if(!style){style=document.createElement('style');style.id='v02530ReleaseIdentity';style.textContent='#v14VersionBadge::after{content:"v0.25.30"!important}';document.head.appendChild(style);}
   }
-  function updateHelpIdentity(){const overlay=document.getElementById('r27HelpOverlay');const footer=overlay?.querySelector('.r27-help-footer span');if(footer)footer.textContent='Ajuda v7.0 • Rota 27 v0.25.29';}
+  function updateHelpIdentity(){const overlay=document.getElementById('r27HelpOverlay');const footer=overlay?.querySelector('.r27-help-footer span');if(footer)footer.textContent='Ajuda v7.0 • Rota 27 v0.25.30';}
   function removeReplayUi(){document.getElementById('v0257ReplayCard')?.remove();document.getElementById('v0257ReplayCss')?.remove();document.getElementById('v0257ReplayJs')?.remove();}
   function loadCss(id,href){if(document.getElementById(id)||document.querySelector(`link[href*="${href.split('?')[0].split('/').pop()}"]`))return;const link=document.createElement('link');link.id=id;link.rel='stylesheet';link.href=href;document.head.appendChild(link);}
   function loadReleaseAssets(){
@@ -50,8 +50,8 @@
     updateIdentity();updateHelpIdentity();removeReplayUi();loadReleaseAssets();document.addEventListener('click',handleClick);
     document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){updateIdentity();updateHelpIdentity();removeReplayUi();loadReleaseAssets();}});
     const api={version:VERSION,updateIdentity,updateHelpIdentity,removeReplayUi,loadReleaseAssets,replayHibernated:true};
-    window.Rota27V02529Release=api;window.Rota27V02528Release=api;window.Rota27V02527Release=api;window.Rota27V02526Release=api;window.Rota27V02525Release=api;window.Rota27V02524Release=api;window.Rota27V02523Release=api;window.Rota27V02522Release=api;window.Rota27V02521Release=api;window.Rota27V02520Release=api;window.Rota27V02519Release=api;window.Rota27V02518Release=api;window.Rota27V02517Release=api;window.Rota27V02516Release=api;window.Rota27V02515Release=api;
-    console.info('[Rota27] v0.25.29 — categorias do Cardápio mais legíveis.');
+    window.Rota27V02530Release=api;window.Rota27V02529Release=api;window.Rota27V02528Release=api;window.Rota27V02527Release=api;window.Rota27V02526Release=api;window.Rota27V02525Release=api;window.Rota27V02524Release=api;window.Rota27V02523Release=api;window.Rota27V02522Release=api;window.Rota27V02521Release=api;window.Rota27V02520Release=api;window.Rota27V02519Release=api;window.Rota27V02518Release=api;window.Rota27V02517Release=api;window.Rota27V02516Release=api;window.Rota27V02515Release=api;
+    console.info('[Rota27] v0.25.30 — Clientes & Fidelização na posição 2 do Painel.');
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
 })();

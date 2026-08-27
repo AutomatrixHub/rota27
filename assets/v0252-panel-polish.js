@@ -1,8 +1,8 @@
-/* Rota 27 v0.25.2 R7 — ordem, estabilidade e normalização do Painel */
+/* Rota 27 v0.25.30 — ordem, estabilidade e normalização do Painel */
 (function(){
   'use strict';
 
-  const VERSION='0.25.2';
+  const VERSION='0.25.30';
 
   function byId(id){return document.getElementById(id);}
   function esc(v){
@@ -45,8 +45,8 @@
 
   function ensureRelationshipOrder(){
     const panel=byId('screenPanel');
-    const purchases=byId('v022PurchasesEntry');
-    if(!panel||!purchases)return false;
+    const manager=byId('v020ManagerEntry');
+    if(!panel||!manager)return false;
 
     removeLegacyRelationship();
 
@@ -58,8 +58,15 @@
     }
     if(!section)section=buildRelationship();
 
-    if(section.parentElement!==panel||section.previousElementSibling!==purchases){
-      purchases.insertAdjacentElement('afterend',section);
+    /*
+     * Ordem aprovada no Painel:
+     * 1. Visão Gerencial
+     * 2. Clientes & Fidelização
+     * 3. Estoque Essencial
+     * 4. Compras & Reposição
+     */
+    if(section.parentElement!==panel||section.previousElementSibling!==manager){
+      manager.insertAdjacentElement('afterend',section);
     }
     updateClientSummary();
     return true;
@@ -67,8 +74,9 @@
 
   /*
    * O Painel legado ainda redesenha screenPanel usando innerHTML. A ponte
-   * criada na R4 permanece exclusivamente para recolocar o quarto card após
-   * cada render. Os ícones dos quatro cards são CSS e não dependem de DOM extra.
+   * permanece exclusivamente para recolocar Clientes & Fidelização na segunda
+   * posição após cada render. Os ícones dos quatro cards são CSS e não dependem
+   * de DOM extra.
    */
   function schedulePanelRepair(){
     const repair=()=>{
@@ -98,7 +106,7 @@
       panel.dataset.v0252RelationshipBridge='1';
       return true;
     }catch(err){
-      console.warn('[Rota27 v0.25.2] Não foi possível instalar a ponte de render do Painel:',err);
+      console.warn('[Rota27 v0.25.30] Não foi possível instalar a ponte de render do Painel:',err);
       return false;
     }
   }
@@ -129,7 +137,7 @@
     window.addEventListener('rota27:v022-purchases-updated',refresh);
     document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')refresh();});
     window.Rota27V0252Panel={version:VERSION,refresh,ensureRelationshipOrder};
-    console.info('[Rota27] v0.25.2 R7 Painel normalizado carregado.');
+    console.info('[Rota27] v0.25.30 Painel: Clientes & Fidelização na posição 2.');
   }
 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
