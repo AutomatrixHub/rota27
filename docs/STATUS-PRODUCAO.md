@@ -6,14 +6,14 @@
 - versão: **v0.25.22 — Refinamento dos Fechamentos**;
 - branch: `main`;
 - GitHub Pages: `https://automatrixhub.github.io/rota27/`;
-- Service Worker: `rota27-comandas-v0.25.22-r3`;
+- Service Worker: `rota27-comandas-v0.25.22-r4`;
 - `rota27-whatsapp`: versão **23 ACTIVE** (`rota27-whatsapp-v6-mini2`);
 - `rota27-sync`: versão **9 ACTIVE** (`rota27-sync-v0.25.16`);
 - `rota27-whatsapp-inbound`: versão **2 ACTIVE** (`rota27-whatsapp-inbound-v2-birthday`);
 - `rota27-birthday-campaign`: versão **2 ACTIVE** (`rota27-birthday-campaign-v2`);
 - `rota27-audit`: versão 1 ACTIVE, somente leitura.
 
-Baseline de rollback do código: **v0.25.22-r2**.
+Baseline de rollback do código: **v0.25.22-r3**.
 
 ## v0.25.22 — Refinamento dos Fechamentos
 Mudança exclusivamente visual na tela **Fechamentos**, sem alteração de domínio, sincronização, banco ou Edge Functions.
@@ -54,11 +54,24 @@ O r2 passa a renderizar a sheet de Fechamentos de forma determinística:
 A captura seguinte confirmou que os rótulos e o cabeçalho estavam corretos, mas o **rodapé** e o **status de sincronização** ainda podiam permanecer no formato legado.
 
 O r3 usa um novo asset (`assets/v02522r3-closure-render.js`) e assume de forma canônica a abertura/sincronização dessa sheet:
-- rodapé sempre em **Data operacional pela abertura • fechado em <aparelho>**;
-- ID técnico `turn_...` não aparece na visão operacional;
-- status ao fim da sincronização sempre em **Sincronizado • DD/MM/AAAA HH:MM:SS**;
+- rodapé em **Data operacional pela abertura • fechado em <aparelho>**;
+- ID técnico `turn_...` não deveria aparecer na visão operacional;
+- status ao fim da sincronização em **Sincronizado • DD/MM/AAAA HH:MM:SS**;
 - mesma lógica de dados e mesma API `Rota27V019.syncTurnClosures()`;
 - sem `MutationObserver`, sem polling visual frequente e sem alteração do backend.
+
+### Hotfix r4
+A validação real mostrou a causa residual: listeners internos do módulo-base ainda podiam chamar `refresh()` / `renderOpenSheets()` **depois** do renderer r3, restaurando o HTML legado aproximadamente 0,1 s depois.
+
+O r4 elimina essa corrida na camada visual:
+- o conteúdo bruto do rodapé é ocultado por CSS; assim, mesmo que o legado reinsira `turn_...`, o ID técnico não volta a aparecer;
+- quando disponível, o nome do aparelho é mostrado por `data-r27-device`;
+- o texto de status sincronizado fica protegido em `data-r27-sync-text`, portanto um `textContent` legado posterior não altera o que o usuário vê;
+- o renderer faz uma estabilização curta e finita após abertura/sincronização (0/90/220 ms), sem polling contínuo;
+- eventos que também são tratados pelo módulo-base são reprocessados no ciclo seguinte, garantindo o render canônico por último;
+- nenhum `MutationObserver` foi introduzido.
+
+Ver `docs/HOTFIX-v0.25.22-r4.md`.
 
 ### Estabilidade
 - sem `MutationObserver`;
