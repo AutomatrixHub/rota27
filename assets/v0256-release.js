@@ -1,14 +1,14 @@
-/* Rota 27 v0.25.28 — novo estilo dos ícones no Cardápio */
+/* Rota 27 v0.25.29 — categorias mais legíveis no Cardápio */
 (function(){
   'use strict';
-  const VERSION='0.25.28';
+  const VERSION='0.25.29';
   function updateIdentity(){
-    document.title='Rota 27 Bodega • Comandas v0.25.28';
+    document.title='Rota 27 Bodega • Comandas v0.25.29';
     const meta=document.querySelector('meta[name="rota27-release-version"]');if(meta)meta.content=VERSION;
-    let style=document.getElementById('v02528ReleaseIdentity');
-    if(!style){style=document.createElement('style');style.id='v02528ReleaseIdentity';style.textContent='#v14VersionBadge::after{content:"v0.25.28"!important}';document.head.appendChild(style);}
+    let style=document.getElementById('v02529ReleaseIdentity');
+    if(!style){style=document.createElement('style');style.id='v02529ReleaseIdentity';style.textContent='#v14VersionBadge::after{content:"v0.25.29"!important}';document.head.appendChild(style);}
   }
-  function updateHelpIdentity(){const overlay=document.getElementById('r27HelpOverlay');const footer=overlay?.querySelector('.r27-help-footer span');if(footer)footer.textContent='Ajuda v7.0 • Rota 27 v0.25.28';}
+  function updateHelpIdentity(){const overlay=document.getElementById('r27HelpOverlay');const footer=overlay?.querySelector('.r27-help-footer span');if(footer)footer.textContent='Ajuda v7.0 • Rota 27 v0.25.29';}
   function removeReplayUi(){document.getElementById('v0257ReplayCard')?.remove();document.getElementById('v0257ReplayCss')?.remove();document.getElementById('v0257ReplayJs')?.remove();}
   function loadCss(id,href){if(document.getElementById(id)||document.querySelector(`link[href*="${href.split('?')[0].split('/').pop()}"]`))return;const link=document.createElement('link');link.id=id;link.rel='stylesheet';link.href=href;document.head.appendChild(link);}
   function loadReleaseAssets(){
@@ -24,6 +24,7 @@
     loadCss('v02526MenuFinishCss','./assets/v02526-menu-finish.css?v=02526r1');
     loadCss('v02527ProductIconsCss','./assets/v02527-product-icons.css?v=02527r1');
     loadCss('v02528ProductIconsSoftCss','./assets/v02528-product-icons-soft.css?v=02528r1');
+    loadCss('v02529MenuCategoryLegibilityCss','./assets/v02529-menu-category-legibility.css?v=02529r1');
     const scripts=[
       ['v0259CategoryReferenceJs','./assets/v0259-category-reference.js?v=0259r1'],
       ['v0259ProductionCleanupJs','./assets/v0259-production-cleanup.js?v=0259r1'],
@@ -49,8 +50,8 @@
     updateIdentity();updateHelpIdentity();removeReplayUi();loadReleaseAssets();document.addEventListener('click',handleClick);
     document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){updateIdentity();updateHelpIdentity();removeReplayUi();loadReleaseAssets();}});
     const api={version:VERSION,updateIdentity,updateHelpIdentity,removeReplayUi,loadReleaseAssets,replayHibernated:true};
-    window.Rota27V02528Release=api;window.Rota27V02527Release=api;window.Rota27V02526Release=api;window.Rota27V02525Release=api;window.Rota27V02524Release=api;window.Rota27V02523Release=api;window.Rota27V02522Release=api;window.Rota27V02521Release=api;window.Rota27V02520Release=api;window.Rota27V02519Release=api;window.Rota27V02518Release=api;window.Rota27V02517Release=api;window.Rota27V02516Release=api;window.Rota27V02515Release=api;
-    console.info('[Rota27] v0.25.28 — novo estilo dos ícones do Cardápio carregado.');
+    window.Rota27V02529Release=api;window.Rota27V02528Release=api;window.Rota27V02527Release=api;window.Rota27V02526Release=api;window.Rota27V02525Release=api;window.Rota27V02524Release=api;window.Rota27V02523Release=api;window.Rota27V02522Release=api;window.Rota27V02521Release=api;window.Rota27V02520Release=api;window.Rota27V02519Release=api;window.Rota27V02518Release=api;window.Rota27V02517Release=api;window.Rota27V02516Release=api;window.Rota27V02515Release=api;
+    console.info('[Rota27] v0.25.29 — categorias do Cardápio mais legíveis.');
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
 })();
