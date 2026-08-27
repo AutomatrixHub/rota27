@@ -1,0 +1,68 @@
+/* Rota 27 v0.25.24 — acabamento visual do Histórico & resultados */
+
+/* Cabeçalho: título dominante, subtítulo e contador mais discretos. */
+#screenHistory .v14-history-head{margin-bottom:10px}
+#screenHistory .v14-history-head h2{font-size:20px;line-height:1.12;margin-bottom:3px}
+#screenHistory .v14-history-head p{font-size:11px;line-height:1.35;color:var(--muted)}
+#screenHistory .v14-history-head .badge{min-width:30px;height:30px;padding:0 9px;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:900}
+
+/* Períodos e busca: mesma informação, menos altura ociosa. */
+#screenHistory .v14-history-toolbar{gap:8px;margin-bottom:10px}
+#screenHistory .v14-periods{padding:4px;gap:4px;border-radius:13px}
+#screenHistory .v14-periods button{min-height:35px;border-radius:9px;font-size:10.5px!important}
+#screenHistory .v14-search{padding:0 11px;border-radius:13px}
+#screenHistory .v14-search span{font-size:18px}
+#screenHistory .v14-search input{height:42px;font-size:14px}
+
+/* Ontem: marcador de último fechamento mais limpo e hierárquico. */
+#screenHistory .v02521-last-close-note{margin:0 0 9px;padding:9px 11px;border-radius:13px;gap:9px;font-size:10.5px;line-height:1.3}
+#screenHistory .v02521-last-close-note strong{display:inline-flex;width:max-content;align-items:center;margin:0 0 4px;padding:3px 7px;border-radius:999px;background:rgba(200,109,60,.12);border:1px solid rgba(200,109,60,.20);color:var(--brand-2);font-size:9.5px;font-weight:900;line-height:1.15}
+#screenHistory .v02521-last-close-note>span:last-child{font-size:11px;font-weight:900}
+
+/* Métricas: valor em primeiro plano, rótulo/hint como apoio. */
+#screenHistory .v14-metrics{gap:7px;margin-bottom:9px}
+#screenHistory .v14-metric{padding:10px 11px;border-radius:14px;min-height:76px;display:flex;flex-direction:column;justify-content:center;box-shadow:0 3px 10px rgba(59,39,24,.035)}
+#screenHistory .v14-metric small{font-size:10.5px;font-weight:700;line-height:1.15;color:var(--muted)}
+#screenHistory .v14-metric strong{margin-top:3px;font-size:22px;line-height:1.04;color:var(--ink);font-weight:900}
+#screenHistory .v14-metric span{margin-top:4px;font-size:9.5px;line-height:1.2;color:#8b7868}
+/* Consistência com a tela Fechamentos. */
+#screenHistory #v14Metrics .v14-metric:nth-child(2)>small{font-size:0}
+#screenHistory #v14Metrics .v14-metric:nth-child(2)>small::after{content:'Comandas fechadas';font-size:10.5px;font-weight:700;line-height:1.15;color:var(--muted)}
+
+/* Ações: preserva toque confortável, reduzindo somente o excesso visual. */
+#screenHistory .v14-actions{gap:7px;margin-bottom:10px}
+#screenHistory .v14-actions button{min-height:42px;font-size:11.5px;border-radius:13px}
+
+/* Rankings: painéis mais densos e números mais fáceis de escanear. */
+#screenHistory .v14-panels{gap:8px;margin-bottom:11px}
+#screenHistory .v14-panel{padding:11px;border-radius:15px;box-shadow:0 4px 13px rgba(60,41,26,.035)}
+#screenHistory .v14-panel-head{margin-bottom:7px}
+#screenHistory .v14-panel-head strong{font-size:13.5px;line-height:1.2}
+#screenHistory .v14-panel-head small{margin-top:2px;font-size:9.5px}
+#screenHistory .v14-rank-row{margin:8px 0}
+#screenHistory .v14-rank-line{gap:8px;font-size:10.5px}
+#screenHistory .v14-rank-line strong{font-size:11.5px;line-height:1.2}
+#screenHistory .v14-rank-line span{font-size:10.5px;font-weight:700}
+#screenHistory .v14-bar{height:4px;margin-top:4px}
+
+/* Lista de comandas fechadas: menos área perdida, mesma legibilidade. */
+#screenHistory .v14-list-head{margin:10px 2px 7px}
+#screenHistory .v14-list-head strong{font-size:13.5px}
+#screenHistory .v14-list-head small{font-size:9.5px}
+#screenHistory #historyList{display:grid;gap:7px}
+#screenHistory .v14-history-item{border-radius:14px;padding:10px 11px}
+#screenHistory .v14-history-item .history-top{gap:10px}
+#screenHistory .v14-history-item .history-top h4{font-size:13px;line-height:1.2}
+#screenHistory .v14-history-item .history-top p{margin-top:3px;font-size:10px;line-height:1.3;color:var(--muted)}
+#screenHistory .v14-history-item .history-top .money{font-size:15px;font-weight:900;white-space:nowrap}
+#screenHistory .v14-history-open{margin-top:7px;padding-top:6px;font-size:10.5px}
+
+@media(max-width:380px){
+  #screenHistory .v14-history-head h2{font-size:19px}
+  #screenHistory .v14-periods button{font-size:10px!important;padding:0 2px}
+  #screenHistory .v14-metric{padding:9px 10px;min-height:72px}
+  #screenHistory .v14-metric strong{font-size:20px}
+  #screenHistory #v14Metrics .v14-metric:nth-child(2)>small::after{font-size:10px}
+  #screenHistory .v14-rank-line strong{font-size:11px}
+  #screenHistory .v14-rank-line span{font-size:10px}
+}

@@ -1,14 +1,14 @@
-/* Rota 27 v0.25.23 — acabamento visual dos Fechamentos */
+/* Rota 27 v0.25.24 — acabamento visual do Histórico & resultados */
 (function(){
   'use strict';
-  const VERSION='0.25.23';
+  const VERSION='0.25.24';
   function updateIdentity(){
-    document.title='Rota 27 Bodega • Comandas v0.25.23';
+    document.title='Rota 27 Bodega • Comandas v0.25.24';
     const meta=document.querySelector('meta[name="rota27-release-version"]');if(meta)meta.content=VERSION;
-    let style=document.getElementById('v02523ReleaseIdentity');
-    if(!style){style=document.createElement('style');style.id='v02523ReleaseIdentity';style.textContent='#v14VersionBadge::after{content:"v0.25.23"!important}';document.head.appendChild(style);}
+    let style=document.getElementById('v02524ReleaseIdentity');
+    if(!style){style=document.createElement('style');style.id='v02524ReleaseIdentity';style.textContent='#v14VersionBadge::after{content:"v0.25.24"!important}';document.head.appendChild(style);}
   }
-  function updateHelpIdentity(){const overlay=document.getElementById('r27HelpOverlay');const footer=overlay?.querySelector('.r27-help-footer span');if(footer)footer.textContent='Ajuda v7.0 • Rota 27 v0.25.23';}
+  function updateHelpIdentity(){const overlay=document.getElementById('r27HelpOverlay');const footer=overlay?.querySelector('.r27-help-footer span');if(footer)footer.textContent='Ajuda v7.0 • Rota 27 v0.25.24';}
   function removeReplayUi(){document.getElementById('v0257ReplayCard')?.remove();document.getElementById('v0257ReplayCss')?.remove();document.getElementById('v0257ReplayJs')?.remove();}
   function loadCss(id,href){if(document.getElementById(id)||document.querySelector(`link[href*="${href.split('?')[0].split('/').pop()}"]`))return;const link=document.createElement('link');link.id=id;link.rel='stylesheet';link.href=href;document.head.appendChild(link);}
   function loadReleaseAssets(){
@@ -19,6 +19,7 @@
     loadCss('v02520BirthdayCampaignCss','./assets/v02520-birthday-campaign.css?v=02520r1');
     loadCss('v02521HistoryUxCss','./assets/v02521-history-ux.css?v=02521r1');
     loadCss('v02522ClosurePolishCss','./assets/v02522-closure-polish.css?v=02523r1');
+    loadCss('v02524HistoryFinishCss','./assets/v02524-history-finish.css?v=02524r1');
     const scripts=[
       ['v0259CategoryReferenceJs','./assets/v0259-category-reference.js?v=0259r1'],
       ['v0259ProductionCleanupJs','./assets/v0259-production-cleanup.js?v=0259r1'],
@@ -43,8 +44,8 @@
     updateIdentity();updateHelpIdentity();removeReplayUi();loadReleaseAssets();document.addEventListener('click',handleClick);
     document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){updateIdentity();updateHelpIdentity();removeReplayUi();loadReleaseAssets();}});
     const api={version:VERSION,updateIdentity,updateHelpIdentity,removeReplayUi,loadReleaseAssets,replayHibernated:true};
-    window.Rota27V02523Release=api;window.Rota27V02522Release=api;window.Rota27V02521Release=api;window.Rota27V02520Release=api;window.Rota27V02519Release=api;window.Rota27V02518Release=api;window.Rota27V02517Release=api;window.Rota27V02516Release=api;window.Rota27V02515Release=api;
-    console.info('[Rota27] v0.25.23 — acabamento visual dos Fechamentos carregado.');
+    window.Rota27V02524Release=api;window.Rota27V02523Release=api;window.Rota27V02522Release=api;window.Rota27V02521Release=api;window.Rota27V02520Release=api;window.Rota27V02519Release=api;window.Rota27V02518Release=api;window.Rota27V02517Release=api;window.Rota27V02516Release=api;window.Rota27V02515Release=api;
+    console.info('[Rota27] v0.25.24 — acabamento visual do Histórico & resultados carregado.');
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
 })();
