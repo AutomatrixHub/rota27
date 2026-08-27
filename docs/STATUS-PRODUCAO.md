@@ -1,19 +1,46 @@
 # Rota 27 — Status de produção
 
-Última revisão: 26/08/2026
+Última revisão: 27/08/2026
 
 ## Produção
-- versão: **v0.25.20 — Campanha de aniversários**;
+- versão: **v0.25.21 — Ontem no Histórico + leitura dos fechamentos**;
 - branch: `main`;
 - GitHub Pages: `https://automatrixhub.github.io/rota27/`;
-- Service Worker: `rota27-comandas-v0.25.20-r1`;
+- Service Worker: `rota27-comandas-v0.25.21-r1`;
 - `rota27-whatsapp`: versão **23 ACTIVE** (`rota27-whatsapp-v6-mini2`);
 - `rota27-sync`: versão **9 ACTIVE** (`rota27-sync-v0.25.16`);
 - `rota27-whatsapp-inbound`: versão **2 ACTIVE** (`rota27-whatsapp-inbound-v2-birthday`);
 - `rota27-birthday-campaign`: versão **2 ACTIVE** (`rota27-birthday-campaign-v2`);
 - `rota27-audit`: versão 1 ACTIVE, somente leitura.
 
-Baseline de rollback do código: **v0.25.19 — Cards compactos de comandas**.
+Baseline de rollback do código: **v0.25.20 — Campanha de aniversários**.
+
+## v0.25.21 — Ontem no Histórico + leitura dos fechamentos
+Mudança exclusivamente de interface/leitura, sem alteração de regras operacionais, event log, Edge Function ou banco.
+
+### Histórico — novo período Ontem
+- barra de períodos passa a ter **Hoje / Ontem / 7 dias / 30 dias / Todos**;
+- **Ontem** usa como referência a data operacional do dia anterior;
+- quando houver mais de um fechamento no mesmo dia, a aba detalha o **último fechamento daquele dia**, respeitando o fechamento anterior como corte;
+- métricas exibidas: faturamento, comandas, ticket médio e itens vendidos;
+- produtos e categorias são calculados sobre as comandas pertencentes ao fechamento selecionado;
+- lista de comandas continua permitindo abrir o detalhe individual;
+- pesquisa por cliente/mesa/produto continua funcionando dentro do recorte de Ontem;
+- nenhum `MutationObserver` ou polling visual frequente foi introduzido.
+
+### Fechamentos — densidade e legibilidade
+- data do turno e horário de fechamento com tipografia maior;
+- rótulos e valores dos mini-cards ampliados;
+- padding ajustado para reduzir áreas vazias;
+- grade mobile permanece em 2 colunas para preservar leitura;
+- metadados de fechamento continuam visíveis.
+
+### Backend
+Nenhuma alteração. Permanecem:
+- `rota27-sync` v9 ACTIVE;
+- `rota27-whatsapp` v23 ACTIVE;
+- `rota27-whatsapp-inbound` v2 ACTIVE;
+- `rota27-birthday-campaign` v2 ACTIVE.
 
 ## v0.25.20 — Campanha de aniversários
 Foi adicionada uma campanha administrativa para solicitar **Data de nascimento** dos clientes via WhatsApp Cloud API.
@@ -92,7 +119,7 @@ O seletor pesquisável permanece ativo. A abertura da comanda também pode cadas
 - estoque, compras, inventário, custos e relacionamento/fidelização.
 
 ## Ajuda
-Ajuda **v7.0**, identificando Rota 27 v0.25.20.
+Ajuda **v7.0**, identificando Rota 27 v0.25.21.
 
 ## Atualização da PWA
 Não reinstalar e não limpar dados. Em cada aparelho:
@@ -100,6 +127,6 @@ Não reinstalar e não limpar dados. Em cada aparelho:
 2. abrir a PWA por 20–30 segundos;
 3. fechar completamente;
 4. abrir novamente;
-5. confirmar `v0.25.20`.
+5. confirmar `v0.25.21`.
 
-Ver `docs/RELEASE-v0.25.20.md`.
+Ver `docs/RELEASE-v0.25.21.md`.
