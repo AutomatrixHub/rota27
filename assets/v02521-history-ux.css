@@ -1,0 +1,30 @@
+/* Rota 27 v0.25.21 — Ontem no Histórico + leitura dos fechamentos */
+
+/* Cinco períodos continuam cabendo sem rolagem horizontal no mobile. */
+.v14-periods{grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:5px!important}
+.v14-periods button{min-width:0;padding:0 4px;font-size:11px!important}
+.v14-periods button.v02521-yesterday.active{background:var(--surface);color:var(--brand);box-shadow:0 4px 10px rgba(60,41,26,.08)}
+
+.v02521-last-close-note{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin:-2px 0 11px;padding:10px 12px;border:1px solid var(--line);border-radius:14px;background:linear-gradient(135deg,#fff8ee,#f5ead9);color:var(--muted);font-size:11px;line-height:1.35}
+.v02521-last-close-note strong{display:block;color:var(--ink);font-size:12px;margin-bottom:2px}
+.v02521-last-close-note span:last-child{white-space:nowrap;color:var(--brand-2);font-weight:900}
+
+/* Fechamentos: menos área ociosa e tipografia mais legível. */
+#v019HistoryWrap .v019-history-list{gap:12px;padding-right:1px}
+#v019HistoryWrap .v019-history-row{padding:12px 11px;border-radius:16px}
+#v019HistoryWrap .v019-history-row-head{gap:12px}
+#v019HistoryWrap .v019-history-row-head strong{font-size:17px;line-height:1.15}
+#v019HistoryWrap .v019-history-row-head span{font-size:12px;font-weight:700}
+#v019HistoryWrap .v019-history-row-metrics{gap:7px;margin-top:10px}
+#v019HistoryWrap .v019-history-mini{padding:8px 9px;min-height:55px;border-radius:12px;display:flex;flex-direction:column;justify-content:center}
+#v019HistoryWrap .v019-history-mini small{font-size:11px;line-height:1.15;font-weight:700}
+#v019HistoryWrap .v019-history-mini b{margin-top:4px;font-size:16px;line-height:1.1}
+#v019HistoryWrap .v019-history-meta{margin-top:9px;font-size:11px;line-height:1.35}
+#v019HistoryWrap .v019-gate{font-size:13px;line-height:1.4;padding:11px 12px}
+
+@media(max-width:380px){
+  .v14-periods button{font-size:10px!important;padding:0 2px}
+  .v02521-last-close-note{font-size:10px}
+  #v019HistoryWrap .v019-history-row-head strong{font-size:16px}
+  #v019HistoryWrap .v019-history-mini b{font-size:15px}
+}
