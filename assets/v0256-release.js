@@ -1,14 +1,14 @@
-/* Rota 27 v0.25.16 — identidade operacional e reparo histórico rastreável */
+/* Rota 27 v0.25.17 — identidade operacional, reparo histórico e aniversário de clientes */
 (function(){
   'use strict';
-  const VERSION='0.25.16';
+  const VERSION='0.25.17';
   function updateIdentity(){
-    document.title='Rota 27 Bodega • Comandas v0.25.16';
+    document.title='Rota 27 Bodega • Comandas v0.25.17';
     const meta=document.querySelector('meta[name="rota27-release-version"]');if(meta)meta.content=VERSION;
-    let style=document.getElementById('v02516ReleaseIdentity');
-    if(!style){style=document.createElement('style');style.id='v02516ReleaseIdentity';style.textContent='#v14VersionBadge::after{content:"v0.25.16"!important}';document.head.appendChild(style);}
+    let style=document.getElementById('v02517ReleaseIdentity');
+    if(!style){style=document.createElement('style');style.id='v02517ReleaseIdentity';style.textContent='#v14VersionBadge::after{content:"v0.25.17"!important}';document.head.appendChild(style);}
   }
-  function updateHelpIdentity(){const overlay=document.getElementById('r27HelpOverlay');const footer=overlay?.querySelector('.r27-help-footer span');if(footer)footer.textContent='Ajuda v6.7 • Rota 27 v0.25.16';}
+  function updateHelpIdentity(){const overlay=document.getElementById('r27HelpOverlay');const footer=overlay?.querySelector('.r27-help-footer span');if(footer)footer.textContent='Ajuda v6.8 • Rota 27 v0.25.17';}
   function removeReplayUi(){document.getElementById('v0257ReplayCard')?.remove();document.getElementById('v0257ReplayCss')?.remove();document.getElementById('v0257ReplayJs')?.remove();}
   function loadCss(id,href){if(document.getElementById(id)||document.querySelector(`link[href*="${href.split('?')[0].split('/').pop()}"]`))return;const link=document.createElement('link');link.id=id;link.rel='stylesheet';link.href=href;document.head.appendChild(link);}
   function loadReleaseAssets(){
@@ -24,7 +24,8 @@
       ['v02512OverdueTurnJs','./assets/v02512-overdue-turn.js?v=02516r1'],
       ['v02512ReceivablesSafetyJs','./assets/v02512-receivables-safety.js?v=02512r1'],
       ['v02513ClientPickerJs','./assets/v02513-client-picker.js?v=02513r1'],
-      ['v02516RepairJs','./assets/v02516-repair.js?v=02516r1']
+      ['v02516RepairJs','./assets/v02516-repair.js?v=02516r1'],
+      ['v02517ClientBirthdayJs','./assets/v02517-client-birthday.js?v=02517r1']
     ];
     scripts.forEach(([id,src])=>{if(document.getElementById(id))return;const script=document.createElement('script');script.id=id;script.src=src;script.async=false;document.body.appendChild(script);});
   }
@@ -33,8 +34,8 @@
     updateIdentity();updateHelpIdentity();removeReplayUi();loadReleaseAssets();document.addEventListener('click',handleClick);
     document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){updateIdentity();updateHelpIdentity();removeReplayUi();loadReleaseAssets();}});
     const api={version:VERSION,updateIdentity,updateHelpIdentity,removeReplayUi,loadReleaseAssets,replayHibernated:true};
-    window.Rota27V02516Release=api;window.Rota27V02515Release=api;
-    console.info('[Rota27] v0.25.16 — reparo histórico rastreável e data operacional pela abertura carregados.');
+    window.Rota27V02517Release=api;window.Rota27V02516Release=api;window.Rota27V02515Release=api;
+    console.info('[Rota27] v0.25.17 — data de nascimento de clientes, reparo histórico e data operacional carregados.');
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
 })();
