@@ -4,16 +4,27 @@ Aplicativo mobile-first, offline-first e multidispositivo para controle rápido 
 
 ## Produção
 
-**Versão: v0.25.27 — Ícones profissionais no Cardápio**  
+**Versão: v0.25.28 — Novo estilo dos ícones do Cardápio**  
 Branch: `main`  
 GitHub Pages: `https://automatrixhub.github.io/rota27/`  
-Service Worker: `rota27-comandas-v0.25.27-r1`
+Service Worker: `rota27-comandas-v0.25.28-r1`
 
 ## Navegação
 - **Comandas = atender**;
 - **Cardápio = o que é vendido**;
 - **Painel = administrar o negócio**;
 - **Histórico = o que aconteceu**.
+
+## v0.25.28 — Novo estilo dos ícones do Cardápio
+A apresentação dos ícones dos produtos foi refeita após feedback visual da v0.25.27.
+
+Refinamentos:
+- caixas bege/monocromáticas foram substituídas por badges circulares mais leves e modernos;
+- famílias de produtos recebem cores terrosas suaves e consistentes;
+- pictogramas ficam brancos, com traço um pouco mais firme e leitura mais rápida no celular;
+- cervejas, vinhos, bebidas, café, queijos, frios/embutidos, molhos/temperos, castanhas, biscoitos, doces, pães, petiscos e fallback genérico permanecem diferenciados;
+- produtos inativos usam acabamento neutro/desaturado;
+- nenhum dado do catálogo foi alterado; a mudança é exclusivamente visual.
 
 ## v0.25.27 — Ícones profissionais no Cardápio
 Os emojis exibidos nos cards de produtos da aba **Cardápio** foram substituídos por um conjunto de ícones vetoriais mais sóbrio e consistente.
@@ -161,15 +172,16 @@ A data de abertura da comanda define a qual turno a venda pertence. Múltiplos t
 - `rota27-whatsapp`: versão **23 ACTIVE**;
 - `rota27-birthday-campaign`: versão **2 ACTIVE**;
 - `rota27-whatsapp-inbound`: versão **2 ACTIVE**;
-- sem novo tipo de evento de sync e sem alteração de `rota27_sync_events_type_ck` na v0.25.27.
+- sem novo tipo de evento de sync e sem alteração de `rota27_sync_events_type_ck` na v0.25.28.
 
 ## Ajuda
-Ajuda **v7.0** permanece ativa, identificando a release v0.25.27.
+Ajuda **v7.0** permanece ativa, identificando a release v0.25.28.
 
 ## Atualização da PWA
 Não limpar dados nem reinstalar. Abra a PWA online, aguarde 20–30 segundos, feche completamente e abra novamente em cada aparelho.
 
 ## Documentos
+- `docs/RELEASE-v0.25.28.md`
 - `docs/RELEASE-v0.25.27.md`
 - `docs/RELEASE-v0.25.26.md`
 - `docs/RELEASE-v0.25.25.md`
@@ -184,7 +196,7 @@ Não limpar dados nem reinstalar. Abra a PWA online, aguarde 20–30 segundos, f
 - `docs/RELEASE-v0.25.16.md`
 - `docs/STATUS-PRODUCAO.md`
 
-Baseline de rollback do código: **v0.25.26**.
+Baseline de rollback do código: **v0.25.27**.
 
 ## Versão
-Produção: **0.25.27**
+Produção: **0.25.28**
