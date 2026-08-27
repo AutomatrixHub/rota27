@@ -33,7 +33,7 @@ A aba mostra:
 - vendas por categoria;
 - comandas do fechamento, com acesso ao detalhe individual.
 
-A busca por cliente, mesa ou produto permanece disponível dentro do recorte de Ontem.
+A busca por cliente, mesa ou produto permanece disponível dentro do recorte de Ontem. Ao sair da aba Ontem, a busca é sincronizada novamente com o filtro base do Histórico para evitar divergência visual.
 
 ## Fechamentos — refinamento visual
 Os cards da tela **Fechamentos** foram mantidos em duas colunas no mobile, mas ganharam:
@@ -48,6 +48,7 @@ Os cards da tela **Fechamentos** foram mantidos em duas colunas no mobile, mas g
 ## Arquivos
 - `assets/v02521-history-ux.js`
 - `assets/v02521-history-ux.css`
+- `assets/v02521-history-search-bridge.js`
 - `assets/v0256-release.js`
 - `sw.js`
 - `VERSION`
