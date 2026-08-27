@@ -1,0 +1,81 @@
+/* Rota 27 v0.25.33 — refino do cabeçalho do Cardápio */
+
+/* A faixa principal fica mais enxuta para levar o foco à lista de produtos. */
+#screenMenu .menu-section-head{margin-bottom:7px!important}
+#screenMenu .menu-head-actions{gap:6px!important}
+#screenMenu #menuCount{height:24px!important;min-width:24px!important;padding:0 7px!important;font-size:10.5px!important}
+#screenMenu .menu-categories,
+#screenMenu .menu-add{min-height:40px!important;border-radius:12px!important}
+
+/* Gestão do cardápio: preserva todas as ações, mas assume caráter utilitário. */
+#screenMenu .v14-catalog-tools{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) auto;
+  align-items:center!important;
+  gap:9px!important;
+  margin:-1px 0 7px!important;
+  padding:8px 9px!important;
+  border-radius:13px!important;
+  background:linear-gradient(145deg,#f7edde,#f8f1e7)!important;
+  border-color:#e1cdaa!important;
+  box-shadow:0 3px 10px rgba(61,43,24,.025)!important;
+}
+#screenMenu .v14-catalog-tools strong{font-size:12.5px!important;line-height:1.15!important}
+#screenMenu .v14-catalog-tools small{margin-top:2px!important;font-size:9.75px!important;line-height:1.25!important;color:#7e6d5e!important}
+#screenMenu .v14-catalog-tool-actions{gap:6px!important}
+#screenMenu .v14-catalog-tool-actions button{
+  min-height:35px!important;
+  padding:0 10px!important;
+  border-radius:10px!important;
+  font-size:10.75px!important;
+  box-shadow:none!important;
+}
+
+/* Aviso de preço vira uma nota curta, legível e secundária. */
+#screenMenu .menu-note.v02533-price-note{
+  display:block!important;
+  margin:0 0 7px!important;
+  padding:7px 9px 7px 10px!important;
+  border:1px solid #e4cfaa!important;
+  border-left:3px solid #d6ad56!important;
+  border-radius:11px!important;
+  background:rgba(247,236,216,.76)!important;
+  color:#6f5d4c!important;
+  line-height:1.25!important;
+  box-shadow:none!important;
+}
+#screenMenu .menu-note.v02533-price-note .v02533-price-primary{
+  display:block;
+  font-size:10.75px;
+  font-weight:800;
+  color:#5f4f42;
+}
+#screenMenu .menu-note.v02533-price-note .v02533-price-secondary{
+  display:block;
+  margin-top:2px;
+  font-size:9.75px;
+  line-height:1.25;
+  color:#817062;
+}
+
+#screenMenu .search{margin-bottom:8px!important}
+
+@media(max-width:480px){
+  #screenMenu .menu-section-head{gap:7px!important}
+  #screenMenu .menu-head-actions{grid-template-columns:auto minmax(0,1fr) minmax(0,1.08fr)!important}
+  #screenMenu .v14-catalog-tools{
+    grid-template-columns:1fr!important;
+    gap:6px!important;
+    padding:8px 9px!important;
+  }
+  #screenMenu .v14-catalog-tool-actions{width:100%!important;display:grid!important;grid-template-columns:1fr 1fr!important}
+  #screenMenu .v14-catalog-tool-actions button{width:100%!important;min-height:34px!important}
+}
+
+@media(max-width:360px){
+  #screenMenu .menu-categories,
+  #screenMenu .menu-add{min-height:38px!important;font-size:12px!important}
+  #screenMenu .v14-catalog-tools strong{font-size:12px!important}
+  #screenMenu .menu-note.v02533-price-note .v02533-price-primary{font-size:10.25px}
+  #screenMenu .menu-note.v02533-price-note .v02533-price-secondary{font-size:9.5px}
+}
