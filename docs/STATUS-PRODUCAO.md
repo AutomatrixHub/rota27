@@ -6,14 +6,14 @@
 - versão: **v0.25.22 — Refinamento dos Fechamentos**;
 - branch: `main`;
 - GitHub Pages: `https://automatrixhub.github.io/rota27/`;
-- Service Worker: `rota27-comandas-v0.25.22-r2`;
+- Service Worker: `rota27-comandas-v0.25.22-r3`;
 - `rota27-whatsapp`: versão **23 ACTIVE** (`rota27-whatsapp-v6-mini2`);
 - `rota27-sync`: versão **9 ACTIVE** (`rota27-sync-v0.25.16`);
 - `rota27-whatsapp-inbound`: versão **2 ACTIVE** (`rota27-whatsapp-inbound-v2-birthday`);
 - `rota27-birthday-campaign`: versão **2 ACTIVE** (`rota27-birthday-campaign-v2`);
 - `rota27-audit`: versão 1 ACTIVE, somente leitura.
 
-Baseline de rollback do código: **v0.25.21 — Ontem no Histórico + leitura dos fechamentos**.
+Baseline de rollback do código: **v0.25.22-r2**.
 
 ## v0.25.22 — Refinamento dos Fechamentos
 Mudança exclusivamente visual na tela **Fechamentos**, sem alteração de domínio, sincronização, banco ou Edge Functions.
@@ -49,6 +49,16 @@ O r2 passa a renderizar a sheet de Fechamentos de forma determinística:
 - CSS garante rótulos completos e o prefixo **Fechado:** mesmo durante redesenhos internos;
 - não usa `MutationObserver` nem polling visual frequente;
 - não altera `turn_closed`, Supabase, event log, localStorage de domínio ou cálculo do turno.
+
+### Hotfix r3
+A captura seguinte confirmou que os rótulos e o cabeçalho estavam corretos, mas o **rodapé** e o **status de sincronização** ainda podiam permanecer no formato legado.
+
+O r3 usa um novo asset (`assets/v02522r3-closure-render.js`) e assume de forma canônica a abertura/sincronização dessa sheet:
+- rodapé sempre em **Data operacional pela abertura • fechado em <aparelho>**;
+- ID técnico `turn_...` não aparece na visão operacional;
+- status ao fim da sincronização sempre em **Sincronizado • DD/MM/AAAA HH:MM:SS**;
+- mesma lógica de dados e mesma API `Rota27V019.syncTurnClosures()`;
+- sem `MutationObserver`, sem polling visual frequente e sem alteração do backend.
 
 ### Estabilidade
 - sem `MutationObserver`;
