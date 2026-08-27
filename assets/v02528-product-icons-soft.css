@@ -1,0 +1,66 @@
+/* Rota 27 v0.25.28 — novo estilo dos ícones do Cardápio */
+
+/*
+ * Substitui o acabamento monocromático/bege da v0.25.27 por uma linguagem
+ * mais leve, moderna e "app-like": badges circulares, cores terrosas suaves
+ * por família e pictogramas brancos com traço mais firme.
+ * A lógica/mapeamento dos ícones permanece intacta.
+ */
+#screenMenu .menu-emoji.v02527-product-icon{
+  width:40px!important;
+  height:40px!important;
+  min-width:40px!important;
+  border-radius:50%!important;
+  border:0!important;
+  background:#66766d!important;
+  color:#fff!important;
+  box-shadow:0 3px 8px rgba(45,55,48,.12)!important;
+}
+
+#screenMenu .menu-emoji.v02527-product-icon svg{
+  width:20px!important;
+  height:20px!important;
+  stroke:currentColor!important;
+  fill:none!important;
+  stroke-width:2.25!important;
+  stroke-linecap:round!important;
+  stroke-linejoin:round!important;
+  opacity:.98;
+}
+
+/* Paleta categorial propositalmente suave e terrosa, sem aparência de emoji. */
+#screenMenu .menu-emoji.v02527-product-icon[data-r27-icon="beer"]{background:#b46f32!important}
+#screenMenu .menu-emoji.v02527-product-icon[data-r27-icon="wine"]{background:#875063!important}
+#screenMenu .menu-emoji.v02527-product-icon[data-r27-icon="drink"]{background:#4f7d83!important}
+#screenMenu .menu-emoji.v02527-product-icon[data-r27-icon="coffee"]{background:#725848!important}
+#screenMenu .menu-emoji.v02527-product-icon[data-r27-icon="cheese"]{background:#bd8b35!important}
+#screenMenu .menu-emoji.v02527-product-icon[data-r27-icon="charcuterie"]{background:#a45e56!important}
+#screenMenu .menu-emoji.v02527-product-icon[data-r27-icon="sauce"]{background:#ad634c!important}
+#screenMenu .menu-emoji.v02527-product-icon[data-r27-icon="nuts"]{background:#778052!important}
+#screenMenu .menu-emoji.v02527-product-icon[data-r27-icon="cookie"]{background:#9a734f!important}
+#screenMenu .menu-emoji.v02527-product-icon[data-r27-icon="sweet"]{background:#aa6d82!important}
+#screenMenu .menu-emoji.v02527-product-icon[data-r27-icon="bread"]{background:#9a724f!important}
+#screenMenu .menu-emoji.v02527-product-icon[data-r27-icon="snack"]{background:#6f7b57!important}
+#screenMenu .menu-emoji.v02527-product-icon[data-r27-icon="product"]{background:#66766d!important}
+
+/* O card inativo continua claramente distinguível sem perder consistência. */
+#screenMenu .menu-item.inactive .menu-emoji.v02527-product-icon{
+  background:#aaa59d!important;
+  color:#f8f6f2!important;
+  box-shadow:none!important;
+}
+
+/* Pequeno ganho de respiro visual entre o badge e o conteúdo. */
+#screenMenu .menu-item{column-gap:11px!important}
+
+@media(max-width:360px){
+  #screenMenu .menu-emoji.v02527-product-icon{
+    width:36px!important;
+    height:36px!important;
+    min-width:36px!important;
+  }
+  #screenMenu .menu-emoji.v02527-product-icon svg{
+    width:18px!important;
+    height:18px!important;
+  }
+}
