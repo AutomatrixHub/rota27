@@ -44,6 +44,17 @@ Estados de sincronização em andamento, pendência ou erro continuam usando as 
 ## Área rolável
 Foi acrescentado espaço inferior na lista de fechamentos para permitir que o último card suba completamente acima dos botões **Sincronizar** e **Concluir**.
 
+## Hotfix r2
+A captura real em produção mostrou que a primeira publicação da v0.25.22 aplicava corretamente a nova ordem dos cards, mas parte dos textos voltava ao formato antigo depois que o renderer-base concluía uma sincronização assíncrona.
+
+O hotfix **r2** corrige essa disputa sem `MutationObserver` e sem polling visual frequente:
+- o botão **Fechamentos** é tratado em captura e abre a mesma sheet existente com render determinístico;
+- a sincronização continua sendo executada por `Rota27V019.syncTurnClosures()`;
+- após a sincronização, a tela é redesenhada uma única vez no formato v0.25.22;
+- o botão **Sincronizar** usa o mesmo fluxo determinístico;
+- rótulos completos e o prefixo **Fechado:** possuem fallback CSS, evitando regressão visual durante redesenhos internos;
+- nenhum dado de fechamento é recalculado ou regravado por esse renderer.
+
 ## Arquivos
 - `assets/v02522-closure-polish.css`
 - `assets/v02522-closure-polish.js`
@@ -73,7 +84,7 @@ Nenhum novo tipo de evento foi criado.
 - reparos históricos da v0.25.16 continuam preservados.
 
 ## Service Worker
-`rota27-comandas-v0.25.22-r1`
+`rota27-comandas-v0.25.22-r2`
 
 ## Rollback
 Baseline anterior: **v0.25.21 — Ontem no Histórico + leitura dos fechamentos**.
