@@ -55,9 +55,20 @@ O hotfix **r2** corrige essa disputa sem `MutationObserver` e sem polling visual
 - rótulos completos e o prefixo **Fechado:** possuem fallback CSS, evitando regressão visual durante redesenhos internos;
 - nenhum dado de fechamento é recalculado ou regravado por esse renderer.
 
+## Hotfix r3
+Uma segunda captura real confirmou que os rótulos e o cabeçalho já estavam corretos, porém o **rodapé** e o **status de sincronização** ainda podiam permanecer no HTML legado.
+
+O r3 passa a carregar um renderer por **novo caminho de asset**, evitando reaproveitamento de uma instância JavaScript anterior no PWA:
+- asset novo: `assets/v02522r3-closure-render.js`;
+- o rodapé fica sempre em **Data operacional pela abertura • fechado em <aparelho>**;
+- o ID técnico `turn_...` não é exibido na visão operacional;
+- o status, ao fim da sincronização, fica em **Sincronizado • DD/MM/AAAA HH:MM:SS**;
+- abertura e botão **Sincronizar** usam o mesmo renderer canônico;
+- sem `MutationObserver` e sem polling visual frequente.
+
 ## Arquivos
 - `assets/v02522-closure-polish.css`
-- `assets/v02522-closure-polish.js`
+- `assets/v02522r3-closure-render.js`
 - `assets/v0256-release.js`
 - `sw.js`
 - `VERSION`
@@ -84,7 +95,7 @@ Nenhum novo tipo de evento foi criado.
 - reparos históricos da v0.25.16 continuam preservados.
 
 ## Service Worker
-`rota27-comandas-v0.25.22-r2`
+`rota27-comandas-v0.25.22-r3`
 
 ## Rollback
-Baseline anterior: **v0.25.21 — Ontem no Histórico + leitura dos fechamentos**.
+Baseline anterior: **v0.25.22-r2**.
