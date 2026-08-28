@@ -76,6 +76,14 @@
   color:#6e5425!important;
 }
 
+.v02544-wa-badge>span{
+  display:inline!important;
+  margin:0!important;
+  color:inherit!important;
+  font-size:inherit!important;
+  line-height:inherit!important;
+}
+
 .v02544-wa-badge svg{
   width:14px;
   height:14px;
