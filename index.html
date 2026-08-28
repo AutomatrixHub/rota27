@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#F5E9D5" />
   <!-- rota27-version permanece 0.22.0 como gate de compatibilidade das camadas v0.21/v0.22. -->
   <meta name="rota27-version" content="0.22.0" />
-  <meta name="rota27-release-version" content="0.25.50" />
+  <meta name="rota27-release-version" content="0.25.51" />
   <meta name="rota27-fixed-copy-whatsapp" content="5527997769279" />
   <title>Rota 27 Bodega • Comandas</title>
   <style>
@@ -28,7 +28,7 @@
         html=html.replace(/<title>[\s\S]*?<\/title>/i,'<title>Rota 27 Bodega • Comandas</title>');
         html=html.replace('</head>',
           '<meta name="rota27-version" content="0.22.0" />'+
-          '<meta name="rota27-release-version" content="0.25.50" />'+
+          '<meta name="rota27-release-version" content="0.25.51" />'+
           '<meta name="rota27-fixed-copy-whatsapp" content="5527997769279" />'+
           '<link rel="stylesheet" href="./assets/v014.css" />'+
           '<link rel="stylesheet" href="./assets/v014-dev3.css" />'+
@@ -69,6 +69,7 @@
           '<link rel="stylesheet" href="./assets/v0255-map-card.css?v=02512r1" />'+
           '<link rel="stylesheet" href="./assets/v0256-map-list-parity.css?v=02512r1" />'+
           '<link rel="stylesheet" href="./assets/v02512-receivables.css?v=02512r1" />'+
+          '<link id="v02551UxHotfixCss" rel="stylesheet" href="./assets/v02551-ux-hotfix.css?v=02551r1" />'+
           '</head>');
         html=html.replace('</body>',
           '<script src="./assets/v014.js"><\/script>'+
@@ -80,7 +81,7 @@
           '<script src="./assets/v015-dev3.js"><\/script>'+
           '<script src="./assets/v015-dev4.js"><\/script>'+
           '<script src="./assets/v015-rc2-ops.js"><\/script>'+
-          '<script src="./assets/v015-rc3-items.js"><\/script>'+
+          '<script src="./assets/v015-rc3-items.js?v=02551r1"><\/script>'+
           '<script src="./assets/v0151-hotfix.js?v=0151"><\/script>'+
           '<script src="./assets/v0151-help.js?v=0220-help"><\/script>'+
           '<script src="./assets/v0171-help-update.js?v=0220"><\/script>'+
@@ -114,16 +115,16 @@
           '<script src="./assets/v025-relationship-r3.js?v=0250r3"><\/script>'+
           '<script src="./assets/v0251-navigation.js?v=0251r1"><\/script>'+
           '<script src="./assets/v0252-command-map.js?v=02512r1"><\/script>'+
-          '<script src="./assets/v0252-panel-polish.js?v=02512r1"><\/script>'+
+          '<script src="./assets/v0252-panel-polish.js?v=02551r1"><\/script>'+
           '<script src="./assets/v0253-release.js?v=02512r1"><\/script>'+
           '<script src="./assets/v0254-release.js?v=02512r1"><\/script>'+
           '<script src="./assets/v0255-map-card.js?v=02512r1"><\/script>'+
           '<script src="./assets/v0255-fixed-whatsapp-copy.js?v=02512r1"><\/script>'+
           '<script src="./assets/v0255-release.js?v=02512r1"><\/script>'+
           '<script src="./assets/v0256-map-list-parity.js?v=02512r1"><\/script>'+
-          '<script src="./assets/v0256-release.js?v=02550r1"><\/script>'+
-          '<script id="v02550UiStabilityJs" src="./assets/v02550-ui-stability.js?v=02550r1"><\/script>'+
-          '<script src="./assets/roadmap-loader.js?v=02550r1"><\/script>'+
+          '<script src="./assets/v0256-release.js?v=02551r1"><\/script>'+
+          '<script id="v02551UxHotfixJs" src="./assets/v02551-ux-hotfix.js?v=02551r1"><\/script>'+
+          '<script src="./assets/roadmap-loader.js?v=02551r1"><\/script>'+
           '</body>');
         document.open();document.write(html);document.close();
       }catch(err){
