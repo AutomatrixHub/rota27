@@ -1,0 +1,57 @@
+/* Rota 27 v0.25.45 — lista de comandas mais compacta */
+
+/*
+ * Escopo deliberadamente restrito à visualização Lista.
+ * Preserva desenho do card, faixa lateral preto/vermelho, preço, metadados e botão Abrir.
+ */
+#screenCommands[data-v0252-view="list"] #commandList .command-card.v017-command-card{
+  min-height:0!important;
+  padding-top:9px!important;
+  padding-bottom:8px!important;
+}
+
+#screenCommands[data-v0252-view="list"] #commandList .v017-command-primary{
+  display:flex!important;
+  align-items:baseline!important;
+  gap:8px!important;
+  min-width:0!important;
+  padding-right:2px!important;
+}
+
+#screenCommands[data-v0252-view="list"] #commandList .v017-command-primary .command-title{
+  margin:0!important;
+  min-width:0!important;
+  flex:0 1 auto!important;
+}
+
+#screenCommands[data-v0252-view="list"] #commandList .v017-command-primary .v017-command-location{
+  margin:0!important;
+  flex:0 0 auto!important;
+  font-size:12px!important;
+  line-height:1.1!important;
+  font-weight:900!important;
+  color:var(--brand)!important;
+  white-space:nowrap!important;
+}
+
+#screenCommands[data-v0252-view="list"] #commandList .v017-command-info{
+  margin-top:3px!important;
+}
+
+#screenCommands[data-v0252-view="list"] #commandList .command-bottom{
+  margin-top:5px!important;
+  padding-top:6px!important;
+}
+
+/*
+ * Em nomes excepcionalmente longos, o local continua visível sem esmagar o preço.
+ * A quebra acontece apenas no bloco superior e não altera a estrutura do card.
+ */
+@media (max-width:390px){
+  #screenCommands[data-v0252-view="list"] #commandList .v017-command-primary{
+    gap:6px!important;
+  }
+  #screenCommands[data-v0252-view="list"] #commandList .v017-command-primary .v017-command-location{
+    font-size:11px!important;
+  }
+}
