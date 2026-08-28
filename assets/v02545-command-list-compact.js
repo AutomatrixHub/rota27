@@ -33,10 +33,16 @@
     try{renderCommands=patched;}catch{}
   }
 
+  function handleClick(event){
+    if(event.target.closest?.('[data-v0252-view="list"]'))setTimeout(compactListCards,0);
+    if(event.target.closest?.('#navCommands'))setTimeout(compactListCards,0);
+  }
+
   function start(){
     patchRenderCommands();
     compactListCards();
-    window.addEventListener('rota27:v0252-view-change',compactListCards);
+    document.addEventListener('click',handleClick);
+    document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')compactListCards();});
     window.Rota27V02545CommandList={version:VERSION,compactListCards,patchRenderCommands};
     console.info('[Rota27] v0.25.45 — lista de comandas mais compacta.');
   }
