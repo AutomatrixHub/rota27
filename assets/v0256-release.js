@@ -51,7 +51,8 @@
       ['v02534MenuActionsPolishJs','./assets/v02534-menu-actions-polish.js?v=02534r1'],
       ['v02535EditCommandBirthdayJs','./assets/v02535-edit-command-birthday.js?v=02535r1'],
       ['v02537InternalConsumptionJs','./assets/v02537-internal-consumption.js?v=02537r1'],
-      ['v02537InternalSyncGuardJs','./assets/v02537-internal-sync-guard.js?v=02537r1']
+      ['v02537InternalSyncGuardJs','./assets/v02537-internal-sync-guard.js?v=02537r1'],
+      ['v02537HistoryFinancialGuardJs','./assets/v02537-history-financial-guard.js?v=02537r1']
     ];
     scripts.forEach(([id,src])=>{if(document.getElementById(id))return;const script=document.createElement('script');script.id=id;script.src=src;script.async=false;document.body.appendChild(script);});
   }
