@@ -1,4 +1,4 @@
-const CACHE_NAME = 'rota27-comandas-v0.25.38-r1';
+const CACHE_NAME = 'rota27-comandas-v0.25.39-r1';
 const APP_SHELL = [
   './','./index.html','./sandbox.html','./base-v013.html',
   './assets/v014.css','./assets/v014.js','./assets/v014-dev3.css','./assets/v014-dev3.js','./assets/v014-rc2-category-fix.js','./assets/v014-final.js',
@@ -32,7 +32,7 @@ const APP_SHELL = [
   './assets/v02527-product-icons.css','./assets/v02527-product-icons.js','./assets/v02528-product-icons-soft.css','./assets/v02529-menu-category-legibility.css','./assets/v02531-product-icons-panel.css',
   './assets/v02533-menu-header-polish.css','./assets/v02533-menu-header-polish.js','./assets/v02534-menu-actions-polish.css','./assets/v02534-menu-actions-polish.js','./assets/v02535-edit-command-birthday.js','./assets/v02536-receivables-card.css',
   './assets/v02537-internal-consumption.css','./assets/v02537-internal-consumption.js','./assets/v02537-internal-stock-bridge.js','./assets/v02537-internal-sync-guard.js','./assets/v02537-history-financial-guard.js','./assets/v02537-internal-ledger-guard.js',
-  './assets/v02538-backup-sandbox.css','./assets/v02538-backup-sandbox.js',
+  './assets/v02538-backup-sandbox.css','./assets/v02538-backup-sandbox.js','./assets/v02539-internal-toggle-hotfix.js',
   './assets/brand/rota27-logo-oficial.png',
   './manifest.webmanifest','./icons/apple-touch-icon.png','./icons/icon-192.png','./icons/icon-512.png','./icons/icon-192-maskable.png','./icons/icon-512-maskable.png','./icons/favicon-32.png'
 ];
