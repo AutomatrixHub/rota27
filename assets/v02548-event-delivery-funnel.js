@@ -7,7 +7,7 @@
   const SANDBOX_KEY='rota27_v02538_sandbox_v1';
   let activeEventId='',detailsOpen=false,loading=false,lastData=null;
   const byId=id=>document.getElementById(id);
-  const esc=v=>typeof escapeHtml==='function'?escapeHtml(String(v??'')):String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[ch]));
+  const esc=v=>typeof escapeHtml==='function'?escapeHtml(String(v??'')):String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
   function readJson(key,fallback){try{const v=JSON.parse(localStorage.getItem(key)||'null');return v==null?fallback:v;}catch{return fallback;}}
   function events(){const v=readJson(EVENTS_KEY,[]);return Array.isArray(v)?v:[];}
   function cfg(){return readJson(SYNC_CONFIG_KEY,{});}
