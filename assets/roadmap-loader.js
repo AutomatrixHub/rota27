@@ -1,0 +1,26 @@
+/* Rota 27 — carregador incremental do roadmap pós-v0.25.46 */
+(function(){
+  'use strict';
+  const CURRENT='0.25.47';
+  const HELP='7.9';
+  const assets=[
+    {type:'css',id:'v02547TurnFavoritesCss',src:'./assets/v02547-turn-favorites.css?v=02547r1'},
+    {type:'js',id:'v02547TurnFavoritesJs',src:'./assets/v02547-turn-favorites.js?v=02547r1'}
+  ];
+  function identity(){
+    document.title=`Rota 27 Bodega • Comandas v${CURRENT}`;
+    const meta=document.querySelector('meta[name="rota27-release-version"]');if(meta)meta.content=CURRENT;
+    let style=document.getElementById('rota27RoadmapReleaseIdentity');
+    if(!style){style=document.createElement('style');style.id='rota27RoadmapReleaseIdentity';document.head.appendChild(style);}
+    style.textContent=`#v14VersionBadge::after{content:"v${CURRENT}"!important}`;
+    const footer=document.querySelector('#r27HelpOverlay .r27-help-footer span');if(footer)footer.textContent=`Ajuda v${HELP} • Rota 27 v${CURRENT}`;
+  }
+  function load(a){
+    if(document.getElementById(a.id))return;
+    if(a.type==='css'){const n=document.createElement('link');n.id=a.id;n.rel='stylesheet';n.href=a.src;document.head.appendChild(n);return;}
+    const n=document.createElement('script');n.id=a.id;n.src=a.src;n.async=false;document.body.appendChild(n);
+  }
+  function refresh(){identity();assets.forEach(load);}
+  function start(){refresh();document.addEventListener('click',e=>{if(e.target.closest?.('#r27HelpBtn,[data-help]'))setTimeout(identity,100);});document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')refresh();});window.Rota27Roadmap={version:CURRENT,refresh,assets:assets.map(a=>a.id)};console.info(`[Rota27] roadmap loader v${CURRENT} carregado.`);}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
+})();
