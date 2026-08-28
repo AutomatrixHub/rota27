@@ -19,9 +19,10 @@ Para garantir isolamento dos indicadores já existentes:
 - a data operacional real fica em `internalBusinessDate`;
 - o horário real fica em `internalClosedAt` / `operationalClosedAt`;
 - o registro usa `businessDate: 0000-00-00`, fora das datas operacionais válidas de vendas;
-- o valor de referência permanece em `internalReferenceTotal` / `referenceTotal`.
+- o valor de referência permanece em `internalReferenceTotal` / `referenceTotal`;
+- `v02537-history-financial-guard.js` remove temporariamente registros internos da visão financeira padrão e da exportação de vendas CSV, restaurando o estado logo depois da renderização/exportação.
 
-Com isso, o registro não participa do Painel de vendas, Histórico financeiro padrão nem dos snapshots de Fechamento do Turno.
+Com isso, o registro não participa do Painel de vendas, Histórico financeiro padrão, CSV de vendas nem dos snapshots de Fechamento do Turno.
 
 ## Histórico
 O Histórico ganhou um bloco separado **Consumo interno**, filtrado pelos mesmos períodos (Hoje, Ontem, 7 dias, 30 dias e Todos) e pela busca.
@@ -56,6 +57,7 @@ A Ajuda recebeu a seção **Consumo interno**, explicando quando usar e o que en
 - `assets/v02537-internal-consumption.js`
 - `assets/v02537-internal-consumption.css`
 - `assets/v02537-internal-sync-guard.js`
+- `assets/v02537-history-financial-guard.js`
 - `assets/v0256-release.js`
 - `VERSION`
 - `sw.js`
