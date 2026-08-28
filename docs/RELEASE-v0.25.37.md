@@ -20,7 +20,8 @@ Para garantir isolamento dos indicadores já existentes:
 - o horário real fica em `internalClosedAt` / `operationalClosedAt`;
 - o registro usa `businessDate: 0000-00-00`, fora das datas operacionais válidas de vendas;
 - o valor de referência permanece em `internalReferenceTotal` / `referenceTotal`;
-- `v02537-history-financial-guard.js` remove temporariamente registros internos da visão financeira padrão e da exportação de vendas CSV, restaurando o estado logo depois da renderização/exportação.
+- `v02537-history-financial-guard.js` remove temporariamente registros internos da visão financeira padrão e da exportação de vendas CSV, restaurando o estado logo depois da renderização/exportação;
+- `v02537-internal-ledger-guard.js` preserva abertura/fechamento reais em campos próprios e neutraliza os timestamps legados usados pelos algoritmos financeiros e de fechamento operacional, além de atualizar o evento de sincronização pendente antes do envio.
 
 Com isso, o registro não participa do Painel de vendas, Histórico financeiro padrão, CSV de vendas nem dos snapshots de Fechamento do Turno.
 
@@ -67,12 +68,13 @@ A Ajuda recebeu a seção **Consumo interno**, explicando quando usar e o que en
 - `assets/v02537-internal-stock-bridge.js`
 - `assets/v02537-internal-sync-guard.js`
 - `assets/v02537-history-financial-guard.js`
+- `assets/v02537-internal-ledger-guard.js`
 - `assets/v0256-release.js`
 - `VERSION`
 - `sw.js`
 
 ## Backend
-Sem alteração em Supabase, Edge Functions ou constraints do banco. A release reutiliza apenas tipos de evento já permitidos (`command_opened`, `command_closed` e `stock_movement`).
+Sem alteração em Supabase, Edge Functions ou constraints do banco. A release reutiliza apenas tipos de evento já permitidos (`command_opened`, `command_closed`, `history_upsert` e `stock_movement`).
 
 ## Rollback
 Baseline anterior: **v0.25.36** / `06f5ffbeae8f134b6605cdbb7d36f6dabf7e1fa0`.
