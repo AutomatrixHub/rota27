@@ -1,0 +1,21 @@
+/* Rota 27 v0.25.48 — funil real de entrega dos convites */
+#v02548DeliveryFunnel{margin:10px 0 0;padding:11px;border:1px solid #dfccb0;border-radius:16px;background:#fbf5eb}
+#v02548DeliveryFunnel[hidden]{display:none!important}
+.v02548-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:9px}
+.v02548-head strong{display:block;font-size:13px;line-height:1.2;font-weight:950;color:var(--ink)}
+.v02548-head small{display:block;margin-top:3px;font-size:9.5px;line-height:1.3;color:var(--muted)}
+.v02548-refresh{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:11px;padding:7px 9px;font-size:10px;font-weight:900;white-space:nowrap}
+.v02548-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.v02548-metric{min-width:0;border:1px solid rgba(126,94,62,.14);border-radius:11px;background:#fffaf2;padding:8px 7px}
+.v02548-metric b{display:block;font-size:17px;line-height:1;font-weight:950;color:var(--ink)}
+.v02548-metric span{display:block;margin-top:4px;font-size:8.7px;line-height:1.1;color:var(--muted)}
+.v02548-metric.good b{color:#397154}.v02548-metric.bad b{color:#a8493e}
+.v02548-note{margin-top:8px;padding:8px 9px;border-radius:11px;background:#f3eadb;color:#756555;font-size:9.5px;line-height:1.35}
+.v02548-note.bad{background:#f8e5e0;color:#98443b}
+.v02548-details-toggle{width:100%;margin-top:7px;border:0;background:transparent;color:#8e552f;font-size:10px;font-weight:900;text-align:left;padding:5px 2px}
+.v02548-details{display:grid;gap:6px;margin-top:5px}
+.v02548-recipient{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px;align-items:start;border:1px solid rgba(126,94,62,.14);border-radius:11px;background:#fff;padding:8px}
+.v02548-recipient strong{display:block;font-size:10.5px;line-height:1.2}.v02548-recipient small{display:block;margin-top:2px;font-size:8.8px;line-height:1.3;color:var(--muted);overflow-wrap:anywhere}
+.v02548-status{display:inline-flex;align-items:center;min-height:21px;padding:0 7px;border-radius:999px;background:#efe7dc;color:#705f50;font-size:8.5px;font-weight:900;white-space:nowrap}
+.v02548-status.read,.v02548-status.delivered{background:#e2f0e6;color:#35664b}.v02548-status.failed{background:#f6dfda;color:#9c4138}.v02548-status.sent{background:#e8eee7;color:#466a54}
+@media(max-width:370px){.v02548-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
