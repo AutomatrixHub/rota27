@@ -1,0 +1,19 @@
+/* Rota 27 v0.25.38 — Backup completo + Sandbox */
+#v02538BackupWrap .sheet{max-height:92vh}
+.v02538-backup-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.v02538-backup-head h3{margin-bottom:2px}
+.v02538-backup-grid{display:grid;gap:10px;margin:12px 0}
+.v02538-backup-card{border:1px solid #decbb1;border-radius:16px;background:#fffaf2;padding:12px}
+.v02538-backup-card strong{display:block;font-size:14px;color:#2c231c}
+.v02538-backup-card p{margin:4px 0 10px;color:#746356;font-size:11.5px;line-height:1.45}
+.v02538-backup-card button{width:100%;min-height:42px}
+.v02538-backup-card.sandbox{background:linear-gradient(145deg,#f5ead6,#efe0c7);border-color:#d8ba88}
+.v02538-status{margin:10px 0 0;padding:10px 12px;border-radius:12px;background:#f3ede5;border:1px solid #ded2c5;color:#65584d;font-size:11.5px;line-height:1.45}
+.v02538-status.ok{background:#edf5ea;border-color:#bfd1b7;color:#405b3c}
+.v02538-status.warn{background:#fff4df;border-color:#e0c692;color:#6d5428}
+.v02538-status.error{background:#fbe9e6;border-color:#dfb3ab;color:#7d3f36}
+.v02538-mini{display:block;margin-top:7px;color:#796b60;font-size:10.5px;line-height:1.4}
+#v02538SandboxBanner{position:sticky;top:0;z-index:80;margin:0 auto 6px;width:min(calc(100% - 16px),704px);padding:8px 11px;border-radius:0 0 14px 14px;background:#6d4c2f;color:#fff;text-align:center;font-size:11px;font-weight:900;letter-spacing:.02em;box-shadow:0 5px 14px rgba(75,48,28,.22)}
+#v02538SandboxBanner span{opacity:.82;font-weight:700;margin-left:4px}
+body.v02538-sandbox .brand{box-shadow:0 0 0 2px rgba(109,76,47,.18),0 10px 24px rgba(96,68,24,.10)}
+@media(max-width:480px){.v02538-backup-card{padding:11px}.v02538-backup-card p{font-size:11px}}
