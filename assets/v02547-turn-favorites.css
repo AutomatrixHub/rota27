@@ -1,0 +1,20 @@
+/* Rota 27 v0.25.47 — produtos mais usados hoje */
+#screenMenu #v14QuickProducts.v02547-turn-favorites{
+  margin:0 0 11px;
+  padding:10px;
+  border:1px solid #dfc9a9;
+  border-radius:16px;
+  background:linear-gradient(160deg,#f7ead8,#f2e2cb);
+}
+#screenMenu #v14QuickProducts .v02547-title{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;margin-bottom:8px}
+#screenMenu #v14QuickProducts .v02547-title strong{font-size:12.5px;line-height:1.15;font-weight:950;color:var(--ink)}
+#screenMenu #v14QuickProducts .v02547-title small{font-size:9.5px;line-height:1.2;color:var(--muted);text-align:right}
+#screenMenu #v14QuickProducts .v02547-row{display:flex;gap:7px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none}
+#screenMenu #v14QuickProducts .v02547-row::-webkit-scrollbar{display:none}
+#screenMenu #v14QuickProducts .v02547-product{flex:0 0 118px;min-height:86px;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:13px;padding:8px;text-align:left;position:relative}
+#screenMenu #v14QuickProducts .v02547-product:active{transform:scale(.985)}
+#screenMenu #v14QuickProducts .v02547-icon{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;background:#efe0ca;color:#8e512d}
+#screenMenu #v14QuickProducts .v02547-icon svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+#screenMenu #v14QuickProducts .v02547-product b{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;margin:5px 0 4px;font-size:10.5px;line-height:1.2;font-weight:900}
+#screenMenu #v14QuickProducts .v02547-product small{display:block;font-size:10px;color:var(--brand-2);font-weight:900}
+#screenMenu #v14QuickProducts .v02547-rank{position:absolute;right:7px;top:7px;min-width:20px;height:20px;padding:0 5px;border-radius:999px;display:grid;place-items:center;background:#f6ead8;border:1px solid #dfc9aa;color:#7e624c;font-size:9px;font-weight:900}
