@@ -1,11 +1,11 @@
-/* Rota 27 v0.25.47 — ponte de compatibilidade para o hotfix v0.25.49 */
+/* Rota 27 v0.25.47 — ponte de compatibilidade para o hotfix v0.25.50 */
 (function(){
   'use strict';
-  if(window.Rota27V02549TurnFavorites||document.getElementById('v02549TurnFavoritesCompatJs'))return;
+  if(window.Rota27V02550UI||document.getElementById('v02550UiStabilityJs'))return;
   const script=document.createElement('script');
-  script.id='v02549TurnFavoritesCompatJs';
-  script.src='./assets/v02549-turn-favorites-hotfix.js?v=02549r1';
+  script.id='v02550UiStabilityJs';
+  script.src='./assets/v02550-ui-stability.js?v=02550r1';
   script.async=false;
   document.body.appendChild(script);
-  console.info('[Rota27] v0.25.47 redirecionada para o hotfix v0.25.49.');
+  console.info('[Rota27] v0.25.47 redirecionada para o hotfix v0.25.50.');
 })();
