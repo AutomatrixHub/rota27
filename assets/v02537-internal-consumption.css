@@ -1,0 +1,41 @@
+/* Rota 27 v0.25.37 — consumo interno */
+#v02537InternalToggle{margin:4px 0 14px;padding:12px 13px;border:1px solid #dec9aa;border-radius:16px;background:linear-gradient(135deg,#f8ecd8,#f1dfc4);box-shadow:0 4px 12px rgba(91,62,26,.05)}
+#v02537InternalToggle label{display:flex;align-items:flex-start;gap:11px;cursor:pointer}
+#v02537InternalToggle input{width:22px;height:22px;margin:1px 0 0;accent-color:#a76532;flex:0 0 auto}
+#v02537InternalToggle strong{display:block;font-size:14px;line-height:1.2;color:#2b2119}
+#v02537InternalToggle small{display:block;margin-top:4px;font-size:11px;line-height:1.38;color:#776556}
+#newCommandWrap.v02537-internal-mode #v02537InternalToggle{border-color:#c58a52;background:linear-gradient(135deg,#f5dfc2,#ecd1ae)}
+#newCommandWrap.v02537-internal-mode #v02537InternalToggle strong{color:#8a4e22}
+#newCommandWrap.v02537-internal-mode .v02537-client-only{display:none!important}
+
+.v02537-internal-badge{display:inline-flex;align-items:center;justify-content:center;margin-left:7px;padding:3px 7px;border-radius:999px;background:#f0d7b9;color:#8a4e22;border:1px solid #d9b486;font-size:9.5px;font-weight:900;line-height:1;vertical-align:2px;text-transform:uppercase;letter-spacing:.03em}
+.command-card.v02537-internal-card{border-color:#d9b486!important;background:linear-gradient(145deg,#fff9f0,#f7ead8)!important}
+.command-card.v02537-internal-card:before{background:linear-gradient(180deg,#a76532,#d9a566)!important}
+
+#closeWrap.v02537-internal-close .v14-payment-field,
+#closeWrap.v02537-internal-close #paymentConfirmBtn{display:none!important}
+#closeWrap.v02537-internal-close .closed-note{margin-top:10px;padding:12px 13px;border:1px solid #d9b486;border-radius:14px;background:#f8ead7;color:#7f4b28;font-weight:750;line-height:1.4}
+#v02537CloseBanner{margin:0 0 12px;padding:12px 13px;border-radius:14px;background:#f3e3cc;border:1px solid #d9b486;color:#6f4a2d;font-size:12px;line-height:1.45}
+#v02537CloseBanner strong{display:block;margin-bottom:3px;color:#8a4e22;font-size:13px}
+
+#v02537InternalHistory{margin:10px 0 14px;padding:12px;border:1px solid #dec9aa;border-radius:18px;background:linear-gradient(145deg,#fffaf2,#f5e8d5);box-shadow:0 4px 13px rgba(42,36,26,.04)}
+#v02537InternalHistory[hidden]{display:none!important}
+.v02537-history-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:9px}
+.v02537-history-head strong{display:block;font-size:15px;line-height:1.2}
+.v02537-history-head small{display:block;margin-top:3px;color:#7a6757;font-size:10.5px;line-height:1.35}
+.v02537-history-chip{display:inline-flex;align-items:center;justify-content:center;min-height:24px;padding:0 8px;border-radius:999px;background:#efd9bb;color:#8a4e22;border:1px solid #d9b486;font-size:9.5px;font-weight:900;white-space:nowrap}
+.v02537-history-list{display:grid;gap:7px}
+.v02537-history-row{width:100%;border:1px solid #dfccb0;background:#fffaf3;border-radius:13px;padding:9px 10px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;text-align:left;color:inherit}
+.v02537-history-row strong{display:block;font-size:12.5px;line-height:1.2}
+.v02537-history-row small{display:block;margin-top:3px;color:#7d6b5b;font-size:10px;line-height:1.35}
+.v02537-history-row b{align-self:center;font-size:12px;color:#8a4e22;white-space:nowrap}
+.v02537-history-note{margin-top:8px;font-size:10px;line-height:1.35;color:#806b58}
+
+.v02537-detail-summary{margin:10px 0 12px;padding:11px 12px;border-radius:14px;background:#f4e5d1;border:1px solid #ddc5a5}
+.v02537-detail-summary small{display:block;color:#7b6858;font-size:10.5px}.v02537-detail-summary strong{display:block;margin-top:3px;font-size:20px;color:#8a4e22}
+.v02537-detail-list{display:grid;gap:8px}.v02537-detail-row{display:flex;justify-content:space-between;gap:12px;padding:9px 10px;border:1px solid #e0ceb4;border-radius:12px;background:#fffaf3;font-size:11px}.v02537-detail-row span:last-child{font-weight:850;white-space:nowrap}
+
+@media(max-width:520px){
+  #v02537InternalToggle{padding:11px 12px}
+  .v02537-history-row{grid-template-columns:1fr}.v02537-history-row b{justify-self:start}
+}
