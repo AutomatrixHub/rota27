@@ -1,0 +1,19 @@
+/* Rota 27 v0.25.49 — aniversários próximos */
+#v02549Birthdays{margin:10px 0;padding:11px 12px;border:1px solid #dfc9a7;border-radius:17px;background:linear-gradient(160deg,#fff8ea,#f4e8d4);box-shadow:0 4px 12px rgba(59,39,24,.04)}
+#v02549Birthdays[hidden]{display:none!important}
+.v02549-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.v02549-head-copy{display:grid;grid-template-columns:34px minmax(0,1fr);gap:9px;align-items:center;min-width:0}
+.v02549-icon{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;background:#efdfc5;color:#8e512d}
+.v02549-icon svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.v02549-head strong{display:block;font-size:14px;line-height:1.15;font-weight:950;color:var(--ink)}
+.v02549-head small{display:block;margin-top:3px;font-size:9.5px;line-height:1.3;color:var(--muted)}
+.v02549-counts{display:flex;gap:5px;flex:0 0 auto}
+.v02549-count{min-width:42px;padding:6px 7px;border-radius:11px;background:#fffaf2;border:1px solid rgba(143,100,55,.16);text-align:center}
+.v02549-count b{display:block;font-size:14px;line-height:1;font-weight:950;color:var(--ink)}
+.v02549-count span{display:block;margin-top:3px;font-size:7.8px;line-height:1;color:var(--muted)}
+.v02549-list{display:grid;gap:5px;margin-top:9px;padding-top:8px;border-top:1px solid rgba(217,199,167,.72)}
+.v02549-person{width:100%;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center;border:0;background:transparent;padding:4px 2px;text-align:left;color:var(--ink)}
+.v02549-person strong{display:block;font-size:11px;line-height:1.15;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.v02549-person small{display:block;margin-top:2px;font-size:8.8px;line-height:1.2;color:var(--muted)}
+.v02549-day{display:inline-flex;align-items:center;min-height:23px;padding:0 7px;border-radius:999px;background:#f4e6ce;border:1px solid #e0c79f;color:#7e542e;font-size:8.5px;font-weight:900;white-space:nowrap}
+.v02549-day.today{background:#e7f1e9;border-color:#bcd8c4;color:#35664b}
