@@ -1,4 +1,4 @@
-/* Rota 27 v0.25.45 — lista de comandas mais compacta */
+/* Rota 27 v0.25.45/v0.25.50 — lista de comandas mais compacta */
 
 /*
  * Escopo deliberadamente restrito à visualização Lista.
@@ -30,7 +30,7 @@
   font-size:12px!important;
   line-height:1.1!important;
   font-weight:900!important;
-  color:var(--brand)!important;
+  color:var(--brand-2,#c86d3c)!important;
   white-space:nowrap!important;
 }
 
