@@ -40,7 +40,15 @@ A comanda interna continua usando a sincronização existente de comandas e hist
 Como a marcação `internalConsumption` é um campo adicional ao modelo legado, a release inclui uma pequena garantia de sincronização (`v02537-internal-sync-guard.js`) que envia um `command_opened` idempotente adicional com o estado completo da comanda interna. Não foi criado novo tipo de evento e não há migração de banco.
 
 ## Estoque
-Os lançamentos de itens continuam seguindo o mesmo fluxo operacional de uma comanda comum. Portanto, os produtos permanecem rastreáveis pelo fluxo de estoque já existente; a diferença é apenas a classificação do fechamento como não faturado.
+Enquanto a comanda está aberta, seus itens continuam sendo considerados **comprometidos** pelo Estoque Essencial, como em qualquer comanda.
+
+Ao finalizar o consumo interno, `v02537-internal-stock-bridge.js` cria movimentos idempotentes de estoque com:
+- tipo `internal` / **Consumo interno**;
+- quantidade negativa correspondente aos itens consumidos;
+- vínculo com a comanda de origem;
+- sincronização pelo evento já existente `stock_movement`.
+
+Assim, o saldo físico baixa normalmente sem registrar uma venda. Produtos sem controle de estoque ativado continuam sem movimentação automática, preservando a regra atual do Estoque Essencial.
 
 ## WhatsApp e clientes
 Consumo interno força:
@@ -56,6 +64,7 @@ A Ajuda recebeu a seção **Consumo interno**, explicando quando usar e o que en
 ## Arquivos principais
 - `assets/v02537-internal-consumption.js`
 - `assets/v02537-internal-consumption.css`
+- `assets/v02537-internal-stock-bridge.js`
 - `assets/v02537-internal-sync-guard.js`
 - `assets/v02537-history-financial-guard.js`
 - `assets/v0256-release.js`
@@ -63,7 +72,7 @@ A Ajuda recebeu a seção **Consumo interno**, explicando quando usar e o que en
 - `sw.js`
 
 ## Backend
-Sem alteração em Supabase, Edge Functions ou constraints do banco.
+Sem alteração em Supabase, Edge Functions ou constraints do banco. A release reutiliza apenas tipos de evento já permitidos (`command_opened`, `command_closed` e `stock_movement`).
 
 ## Rollback
 Baseline anterior: **v0.25.36** / `06f5ffbeae8f134b6605cdbb7d36f6dabf7e1fa0`.
