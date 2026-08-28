@@ -6,6 +6,14 @@
 
   const byId=id=>document.getElementById(id);
 
+  function installDefensiveStyle(){
+    if(byId('v02539InternalToggleHotfixStyle'))return;
+    const style=document.createElement('style');
+    style.id='v02539InternalToggleHotfixStyle';
+    style.textContent='#newCommandWrap.v02537-internal-mode > .sheet.v02537-client-only{display:block!important}';
+    document.head.appendChild(style);
+  }
+
   function repairClientOnlyMarkers(){
     const wrap=byId('newCommandWrap');
     if(!wrap)return;
@@ -49,11 +57,13 @@
   }
 
   function start(){
+    installDefensiveStyle();
     repairClientOnlyMarkers();
     patchOpenNewCommand();
     document.addEventListener('change',onChangeCapture,true);
     document.addEventListener('visibilitychange',()=>{
       if(document.visibilityState==='visible'){
+        installDefensiveStyle();
         repairClientOnlyMarkers();
         patchOpenNewCommand();
       }
