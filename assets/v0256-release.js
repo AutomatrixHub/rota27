@@ -1,14 +1,14 @@
-/* Rota 27 v0.25.42 — feedback de envio de convites */
+/* Rota 27 v0.25.43 — status real de entrega do WhatsApp */
 (function(){
   'use strict';
-  const VERSION='0.25.42';
+  const VERSION='0.25.43';
   function updateIdentity(){
-    document.title='Rota 27 Bodega • Comandas v0.25.42';
+    document.title='Rota 27 Bodega • Comandas v0.25.43';
     const meta=document.querySelector('meta[name="rota27-release-version"]');if(meta)meta.content=VERSION;
-    let style=document.getElementById('v02542ReleaseIdentity');
-    if(!style){style=document.createElement('style');style.id='v02542ReleaseIdentity';style.textContent='#v14VersionBadge::after{content:"v0.25.42"!important}';document.head.appendChild(style);}
+    let style=document.getElementById('v02543ReleaseIdentity');
+    if(!style){style=document.createElement('style');style.id='v02543ReleaseIdentity';style.textContent='#v14VersionBadge::after{content:"v0.25.43"!important}';document.head.appendChild(style);}
   }
-  function updateHelpIdentity(){const overlay=document.getElementById('r27HelpOverlay');const footer=overlay?.querySelector('.r27-help-footer span');if(footer)footer.textContent='Ajuda v7.5 • Rota 27 v0.25.42';}
+  function updateHelpIdentity(){const overlay=document.getElementById('r27HelpOverlay');const footer=overlay?.querySelector('.r27-help-footer span');if(footer)footer.textContent='Ajuda v7.6 • Rota 27 v0.25.43';}
   function removeReplayUi(){document.getElementById('v0257ReplayCard')?.remove();document.getElementById('v0257ReplayCss')?.remove();document.getElementById('v0257ReplayJs')?.remove();}
   function loadCss(id,href){if(document.getElementById(id)||document.querySelector(`link[href*="${href.split('?')[0].split('/').pop()}"]`))return;const link=document.createElement('link');link.id=id;link.rel='stylesheet';link.href=href;document.head.appendChild(link);}
   function loadReleaseAssets(){
@@ -60,7 +60,8 @@
       ['v02538BackupSandboxJs','./assets/v02538-backup-sandbox.js?v=02538r1'],
       ['v02539InternalToggleHotfixJs','./assets/v02539-internal-toggle-hotfix.js?v=02539r1'],
       ['v02540EventsJs','./assets/v02540-events.js?v=02540r1'],
-      ['v02542EventSendFeedbackJs','./assets/v02542-event-send-feedback.js?v=02542r1']
+      ['v02542EventSendFeedbackJs','./assets/v02542-event-send-feedback.js?v=02542r1'],
+      ['v02543WhatsAppDeliveryStatusJs','./assets/v02543-whatsapp-delivery-status.js?v=02543r1']
     ];
     scripts.forEach(([id,src])=>{if(document.getElementById(id))return;const script=document.createElement('script');script.id=id;script.src=src;script.async=false;document.body.appendChild(script);});
   }
@@ -69,8 +70,8 @@
     updateIdentity();updateHelpIdentity();removeReplayUi();loadReleaseAssets();document.addEventListener('click',handleClick);
     document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){updateIdentity();updateHelpIdentity();removeReplayUi();loadReleaseAssets();}});
     const api={version:VERSION,updateIdentity,updateHelpIdentity,removeReplayUi,loadReleaseAssets,replayHibernated:true};
-    window.Rota27V02542Release=api;window.Rota27V02541Release=api;window.Rota27V02540Release=api;window.Rota27V02539Release=api;window.Rota27V02538Release=api;window.Rota27V02537Release=api;window.Rota27V02536Release=api;window.Rota27V02535Release=api;window.Rota27V02534Release=api;window.Rota27V02533Release=api;window.Rota27V02532Release=api;window.Rota27V02531Release=api;window.Rota27V02530Release=api;window.Rota27V02529Release=api;window.Rota27V02528Release=api;window.Rota27V02527Release=api;window.Rota27V02526Release=api;window.Rota27V02525Release=api;window.Rota27V02524Release=api;window.Rota27V02523Release=api;window.Rota27V02522Release=api;window.Rota27V02521Release=api;window.Rota27V02520Release=api;window.Rota27V02519Release=api;window.Rota27V02518Release=api;window.Rota27V02517Release=api;window.Rota27V02516Release=api;window.Rota27V02515Release=api;
-    console.info('[Rota27] v0.25.42 — feedback de envio de convites.');
+    window.Rota27V02543Release=api;window.Rota27V02542Release=api;window.Rota27V02541Release=api;window.Rota27V02540Release=api;window.Rota27V02539Release=api;window.Rota27V02538Release=api;window.Rota27V02537Release=api;window.Rota27V02536Release=api;window.Rota27V02535Release=api;window.Rota27V02534Release=api;window.Rota27V02533Release=api;window.Rota27V02532Release=api;window.Rota27V02531Release=api;window.Rota27V02530Release=api;window.Rota27V02529Release=api;window.Rota27V02528Release=api;window.Rota27V02527Release=api;window.Rota27V02526Release=api;window.Rota27V02525Release=api;window.Rota27V02524Release=api;window.Rota27V02523Release=api;window.Rota27V02522Release=api;window.Rota27V02521Release=api;window.Rota27V02520Release=api;window.Rota27V02519Release=api;window.Rota27V02518Release=api;window.Rota27V02517Release=api;window.Rota27V02516Release=api;window.Rota27V02515Release=api;
+    console.info('[Rota27] v0.25.43 — status real de entrega do WhatsApp.');
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
 })();
