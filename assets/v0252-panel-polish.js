@@ -1,4 +1,4 @@
-/* Rota 27 v0.25.31 — ordem, estabilidade e simplificação do Painel */
+/* Rota 27 v0.25.31/v0.25.51 — ordem, estabilidade e simplificação do Painel */
 (function(){
   'use strict';
 
@@ -11,6 +11,9 @@
   }
   function clientsCount(){
     try{return Array.isArray(state?.clients)?state.clients.length:0;}catch{return 0;}
+  }
+  function runPanelExtensions(){
+    try{window.Rota27V02551UX?.renderAttention?.();}catch{}
   }
 
   function buildRelationship(){
@@ -73,7 +76,6 @@
     }
     if(!section)section=buildRelationship();
 
-    /* Topo gerencial: Visão Gerencial e, logo abaixo, Clientes & Fidelização. */
     if(section.parentElement!==panel||section.previousElementSibling!==manager){
       manager.insertAdjacentElement('afterend',section);
     }
@@ -92,11 +94,6 @@
     const purchases=byId('v022PurchasesEntry');
     if(!operation||!stock||!purchases)return false;
 
-    /*
-     * A área antes ocupada por Acessos rápidos passa a receber os dois atalhos
-     * administrativos realmente úteis neste ponto do fluxo:
-     * Estoque Essencial e Compras & Reposição.
-     */
     if(stock.parentElement!==panel||stock.previousElementSibling!==operation){
       operation.insertAdjacentElement('afterend',stock);
     }
@@ -110,14 +107,14 @@
     removeQuickAccess();
     const relationshipOk=ensureRelationshipOrder();
     const operationalOk=ensureOperationalCardsPlacement();
+    runPanelExtensions();
     return relationshipOk&&operationalOk;
   }
 
   /*
-   * O Painel legado ainda redesenha screenPanel usando innerHTML. A ponte
-   * recoloca os cards após cada render sem criar MutationObserver adicional.
-   * O assentamento é curto e finito para conviver com os módulos legados que
-   * recriam Visão Gerencial, Estoque e Compras logo após o redraw.
+   * ÚNICA ponte de redraw do Painel. Extensões novas participam deste mesmo
+   * ciclo via runPanelExtensions(); nenhuma outra camada deve redefinir
+   * screenPanel.innerHTML. Isso evita cintilação e disputa de renderização.
    */
   function schedulePanelRepair(){
     const repair=()=>{
@@ -160,6 +157,7 @@
     removeLegacyRelationship();
     normalizePanel();
     updateClientSummary();
+    runPanelExtensions();
   }
 
   function handleClick(e){
@@ -178,8 +176,8 @@
     window.addEventListener('rota27:v021-stock-updated',refresh);
     window.addEventListener('rota27:v022-purchases-updated',refresh);
     document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')refresh();});
-    window.Rota27V0252Panel={version:VERSION,refresh,normalizePanel,ensureRelationshipOrder,ensureOperationalCardsPlacement};
-    console.info('[Rota27] v0.25.31 Painel simplificado: sem Acessos rápidos; Estoque e Compras após Operação.');
+    window.Rota27V0252Panel={version:VERSION,refresh,normalizePanel,ensureRelationshipOrder,ensureOperationalCardsPlacement,runPanelExtensions};
+    console.info('[Rota27] v0.25.31/v0.25.51 Painel estabilizado com uma única ponte de render.');
   }
 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
