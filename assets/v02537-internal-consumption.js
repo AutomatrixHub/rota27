@@ -150,7 +150,7 @@
     const record={...clone(c),internalConsumption:true,nonRevenue:true,internalType:'own_consumption',internalClosedAt:now,internalBusinessDate:operationalDate,internalReferenceTotal:reference,referenceTotal:reference,operationalClosedAt:now,closedAt:0,businessDate:INTERNAL_DATE_SENTINEL,paymentMethod:'Consumo interno',paymentConfirmedAt:null,total:reference,updatedAt:now,whatsappOptIn:false,whatsappPhone:'',customer:''};
     state.history.unshift(record);state.commands.splice(idx,1);
     try{if(typeof save==='function')save();}catch{}
-    try{typeof closeSheet==='function'&&closeSheet('closeWrap');}catch{wrap?.classList?.remove('open');}
+    try{typeof closeSheet==='function'&&closeSheet('closeWrap');}catch{byId('closeWrap')?.classList?.remove('open');}
     try{activeCommandId=null;}catch{}
     try{typeof showScreen==='function'&&showScreen('commands');}catch{}
     toast(`Consumo interno finalizado: ${moneyValue(reference)} em valor de referência, sem faturamento.`);
