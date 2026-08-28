@@ -1,14 +1,14 @@
-/* Rota 27 v0.25.45 — lista de comandas mais compacta */
+/* Rota 27 v0.25.46 — Hoje precisa de atenção */
 (function(){
   'use strict';
-  const VERSION='0.25.45';
+  const VERSION='0.25.46';
   function updateIdentity(){
-    document.title='Rota 27 Bodega • Comandas v0.25.45';
+    document.title='Rota 27 Bodega • Comandas v0.25.46';
     const meta=document.querySelector('meta[name="rota27-release-version"]');if(meta)meta.content=VERSION;
-    let style=document.getElementById('v02545ReleaseIdentity');
-    if(!style){style=document.createElement('style');style.id='v02545ReleaseIdentity';style.textContent='#v14VersionBadge::after{content:"v0.25.45"!important}';document.head.appendChild(style);}
+    let style=document.getElementById('v02546ReleaseIdentity');
+    if(!style){style=document.createElement('style');style.id='v02546ReleaseIdentity';style.textContent='#v14VersionBadge::after{content:"v0.25.46"!important}';document.head.appendChild(style);}
   }
-  function updateHelpIdentity(){const overlay=document.getElementById('r27HelpOverlay');const footer=overlay?.querySelector('.r27-help-footer span');if(footer)footer.textContent='Ajuda v7.7 • Rota 27 v0.25.45';}
+  function updateHelpIdentity(){const overlay=document.getElementById('r27HelpOverlay');const footer=overlay?.querySelector('.r27-help-footer span');if(footer)footer.textContent='Ajuda v7.8 • Rota 27 v0.25.46';}
   function removeReplayUi(){document.getElementById('v0257ReplayCard')?.remove();document.getElementById('v0257ReplayCss')?.remove();document.getElementById('v0257ReplayJs')?.remove();}
   function loadCss(id,href){if(document.getElementById(id)||document.querySelector(`link[href*="${href.split('?')[0].split('/').pop()}"]`))return;const link=document.createElement('link');link.id=id;link.rel='stylesheet';link.href=href;document.head.appendChild(link);}
   function loadReleaseAssets(){
@@ -34,6 +34,7 @@
     loadCss('v02540EventsCss','./assets/v02540-events.css?v=02540r1');
     loadCss('v02544ClientCardDetailsCss','./assets/v02544-client-card-details.css?v=02544r1');
     loadCss('v02545CommandListCompactCss','./assets/v02545-command-list-compact.css?v=02545r1');
+    loadCss('v02546AttentionPanelCss','./assets/v02546-attention-panel.css?v=02546r1');
     const scripts=[
       ['v0259CategoryReferenceJs','./assets/v0259-category-reference.js?v=0259r1'],
       ['v0259ProductionCleanupJs','./assets/v0259-production-cleanup.js?v=0259r1'],
@@ -65,7 +66,8 @@
       ['v02542EventSendFeedbackJs','./assets/v02542-event-send-feedback.js?v=02542r1'],
       ['v02543WhatsAppDeliveryStatusJs','./assets/v02543-whatsapp-delivery-status.js?v=02543r1'],
       ['v02544ClientCardDetailsJs','./assets/v02544-client-card-details.js?v=02544r1'],
-      ['v02545CommandListCompactJs','./assets/v02545-command-list-compact.js?v=02545r1']
+      ['v02545CommandListCompactJs','./assets/v02545-command-list-compact.js?v=02545r1'],
+      ['v02546AttentionPanelJs','./assets/v02546-attention-panel.js?v=02546r1']
     ];
     scripts.forEach(([id,src])=>{if(document.getElementById(id))return;const script=document.createElement('script');script.id=id;script.src=src;script.async=false;document.body.appendChild(script);});
   }
@@ -74,8 +76,8 @@
     updateIdentity();updateHelpIdentity();removeReplayUi();loadReleaseAssets();document.addEventListener('click',handleClick);
     document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){updateIdentity();updateHelpIdentity();removeReplayUi();loadReleaseAssets();}});
     const releaseApi={version:VERSION,updateIdentity,updateHelpIdentity,removeReplayUi,loadReleaseAssets,replayHibernated:true};
-    window.Rota27V02545Release=releaseApi;window.Rota27V02544Release=releaseApi;window.Rota27V02543Release=releaseApi;window.Rota27V02542Release=releaseApi;window.Rota27V02541Release=releaseApi;window.Rota27V02540Release=releaseApi;window.Rota27V02539Release=releaseApi;window.Rota27V02538Release=releaseApi;window.Rota27V02537Release=releaseApi;window.Rota27V02536Release=releaseApi;window.Rota27V02535Release=releaseApi;window.Rota27V02534Release=releaseApi;window.Rota27V02533Release=releaseApi;window.Rota27V02532Release=releaseApi;window.Rota27V02531Release=releaseApi;window.Rota27V02530Release=releaseApi;window.Rota27V02529Release=releaseApi;window.Rota27V02528Release=releaseApi;window.Rota27V02527Release=releaseApi;window.Rota27V02526Release=releaseApi;window.Rota27V02525Release=releaseApi;window.Rota27V02524Release=releaseApi;window.Rota27V02523Release=releaseApi;window.Rota27V02522Release=releaseApi;window.Rota27V02521Release=releaseApi;window.Rota27V02520Release=releaseApi;window.Rota27V02519Release=releaseApi;window.Rota27V02518Release=releaseApi;window.Rota27V02517Release=releaseApi;window.Rota27V02516Release=releaseApi;window.Rota27V02515Release=releaseApi;
-    console.info('[Rota27] v0.25.45 — lista de comandas mais compacta.');
+    window.Rota27V02546Release=releaseApi;window.Rota27V02545Release=releaseApi;window.Rota27V02544Release=releaseApi;window.Rota27V02543Release=releaseApi;window.Rota27V02542Release=releaseApi;window.Rota27V02541Release=releaseApi;window.Rota27V02540Release=releaseApi;window.Rota27V02539Release=releaseApi;window.Rota27V02538Release=releaseApi;window.Rota27V02537Release=releaseApi;window.Rota27V02536Release=releaseApi;window.Rota27V02535Release=releaseApi;window.Rota27V02534Release=releaseApi;window.Rota27V02533Release=releaseApi;window.Rota27V02532Release=releaseApi;window.Rota27V02531Release=releaseApi;window.Rota27V02530Release=releaseApi;window.Rota27V02529Release=releaseApi;window.Rota27V02528Release=releaseApi;window.Rota27V02527Release=releaseApi;window.Rota27V02526Release=releaseApi;window.Rota27V02525Release=releaseApi;window.Rota27V02524Release=releaseApi;window.Rota27V02523Release=releaseApi;window.Rota27V02522Release=releaseApi;window.Rota27V02521Release=releaseApi;window.Rota27V02520Release=releaseApi;window.Rota27V02519Release=releaseApi;window.Rota27V02518Release=releaseApi;window.Rota27V02517Release=releaseApi;window.Rota27V02516Release=releaseApi;window.Rota27V02515Release=releaseApi;
+    console.info('[Rota27] v0.25.46 — Hoje precisa de atenção.');
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
 })();
