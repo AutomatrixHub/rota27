@@ -1,4 +1,4 @@
-/* Rota 27 v0.25.45/v0.25.50 — lista de comandas mais compacta */
+/* Rota 27 v0.25.45/v0.25.51 — lista de comandas mais compacta */
 
 /*
  * Escopo deliberadamente restrito à visualização Lista.
@@ -27,7 +27,7 @@
 #screenCommands[data-v0252-view="list"] #commandList .v017-command-primary .v017-command-location{
   margin:0!important;
   flex:0 0 auto!important;
-  font-size:12px!important;
+  font-size:13px!important;
   line-height:1.1!important;
   font-weight:900!important;
   color:var(--brand-2,#c86d3c)!important;
@@ -43,15 +43,11 @@
   padding-top:6px!important;
 }
 
-/*
- * Em nomes excepcionalmente longos, o local continua visível sem esmagar o preço.
- * A quebra acontece apenas no bloco superior e não altera a estrutura do card.
- */
 @media (max-width:390px){
   #screenCommands[data-v0252-view="list"] #commandList .v017-command-primary{
     gap:6px!important;
   }
   #screenCommands[data-v0252-view="list"] #commandList .v017-command-primary .v017-command-location{
-    font-size:11px!important;
+    font-size:12px!important;
   }
 }
