@@ -1,0 +1,151 @@
+/* Rota 27 v0.25.51 — UX e estabilidade */
+
+/*
+ * O atalho legado da v0.14 ainda é criado por uma closure antiga durante o
+ * primeiro render. Mantê-lo invisível desde o CSS inicial evita o flash da
+ * segunda faixa "Mais lançados" antes da camada atual assumir o Cardápio.
+ */
+#v14QuickProducts,
+.v14-quick-products,
+#v02550QuickProducts{
+  display:none!important;
+}
+
+/* Lista de comandas: preserva a compactação, a cor original e ganha 1 ponto. */
+html body #screenCommands[data-v0252-view="list"] #commandList .v017-command-primary .v017-command-location{
+  font-size:13px!important;
+  color:var(--brand-2,#c86d3c)!important;
+}
+html body #screenCommands[data-v0252-view="list"] #commandList .v017-command-primary .v017-command-location::before{
+  content:" - ";
+}
+
+/* Atalhos realmente rápidos: Top 3, todos visíveis, sem ícone e sem rolagem lateral. */
+#v02551QuickProducts{
+  display:block;
+  margin:8px 0 12px;
+  padding:10px;
+  border:1px solid #dfc9a9;
+  border-radius:16px;
+  background:linear-gradient(160deg,#f7ead8,#f2e2cb);
+  overflow:hidden;
+}
+#v02551QuickProducts[hidden]{display:none!important}
+#v02551QuickProducts .v02551-quick-head{
+  display:flex;
+  align-items:baseline;
+  justify-content:space-between;
+  gap:10px;
+  margin:0 0 8px;
+}
+#v02551QuickProducts .v02551-quick-head strong{
+  font-size:13px;
+  line-height:1.15;
+  font-weight:950;
+  color:var(--ink,#1b1816);
+}
+#v02551QuickProducts .v02551-quick-head small{
+  font-size:9px;
+  line-height:1.15;
+  color:var(--muted,#6f6257);
+  white-space:nowrap;
+}
+#v02551QuickProducts .v02551-quick-grid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:7px;
+}
+#v02551QuickProducts .v02551-quick-item{
+  min-width:0;
+  min-height:84px;
+  margin:0;
+  padding:9px 8px 8px;
+  border:1px solid var(--line,#dccbb8);
+  border-radius:13px;
+  background:var(--surface,#fbf6ee);
+  color:var(--ink,#1b1816);
+  text-align:left;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+  gap:7px;
+  box-shadow:0 3px 9px rgba(42,36,26,.035);
+  overflow:hidden;
+}
+#v02551QuickProducts .v02551-quick-item:active{transform:scale(.985)}
+#v02551QuickProducts .v02551-quick-name{
+  min-width:0;
+  font-size:10.5px;
+  line-height:1.15;
+  font-weight:900;
+  display:-webkit-box;
+  -webkit-line-clamp:3;
+  -webkit-box-orient:vertical;
+  overflow:hidden;
+  overflow-wrap:anywhere;
+}
+#v02551QuickProducts .v02551-quick-foot{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:5px;
+  min-width:0;
+}
+#v02551QuickProducts .v02551-quick-price{
+  min-width:0;
+  color:var(--brand-2,#c86d3c);
+  font-size:10px;
+  line-height:1;
+  font-weight:950;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+#v02551QuickProducts .v02551-quick-count{
+  flex:0 0 auto;
+  min-width:22px;
+  height:18px;
+  padding:0 5px;
+  border-radius:999px;
+  display:grid;
+  place-items:center;
+  background:#f6ead8;
+  border:1px solid #dfc9aa;
+  color:#7e624c;
+  font-size:8px;
+  line-height:1;
+  font-weight:900;
+}
+
+/*
+ * A barra preta é fixa. O conteúdo do lançamento precisa de folga real para
+ * que a última linha possa subir completamente acima dela.
+ */
+#screenSale.active{
+  padding-bottom:128px!important;
+}
+html{
+  scroll-padding-bottom:calc(220px + env(safe-area-inset-bottom));
+}
+
+/* A consulta rápida legada foi aposentada: sem rótulo "Ver itens" na soma. */
+#cartbar .v15items-view{display:none!important}
+#cartbar .cart-summary{
+  cursor:default!important;
+}
+#cartbar .items-btn{
+  flex:0 1 118px;
+  max-width:118px;
+  padding:10px 10px!important;
+  line-height:1.05;
+  white-space:normal;
+}
+
+@media(max-width:390px){
+  html body #screenCommands[data-v0252-view="list"] #commandList .v017-command-primary .v017-command-location{
+    font-size:12px!important;
+  }
+  #v02551QuickProducts{padding:9px}
+  #v02551QuickProducts .v02551-quick-name{font-size:10px}
+  #cartbar .items-btn{flex-basis:110px;max-width:110px;font-size:12px}
+}
