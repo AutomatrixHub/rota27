@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#efe2cf">
+<title>Rota 27 • Modo Sandbox</title>
+<style>
+:root{--bg:#efe2cf;--surface:#fbf6ee;--ink:#1b1816;--muted:#6f6257;--line:#dccbb8;--accent:#c86d3c;--brand:#1a1613;--ok:#3e7c59}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;padding:22px}
+main{max-width:680px;margin:0 auto;background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:20px;box-shadow:0 12px 30px rgba(45,29,16,.12)}
+h1{font-size:24px;margin:0 0 5px}.lead{margin:0 0 18px;color:var(--muted);font-size:13px;line-height:1.5}
+.card{border:1px solid var(--line);border-radius:16px;padding:14px;background:#fffaf2;margin:10px 0}.card strong{display:block;margin-bottom:5px}.card p{margin:0;color:var(--muted);font-size:12px;line-height:1.45}
+.file{display:block;border:1px dashed #c9aa7b;border-radius:16px;padding:18px;text-align:center;background:#f6ead8;cursor:pointer;font-weight:850}.file input{display:none}
+button,a.btn{width:100%;min-height:46px;border-radius:14px;padding:12px 15px;font-weight:900;text-decoration:none;text-align:center;display:block;margin-top:10px}
+button{border:0;background:var(--accent);color:#fff;cursor:pointer}button:disabled{opacity:.45;cursor:not-allowed}.btn{background:var(--brand);color:#fff}
+.status{margin-top:12px;padding:11px 12px;border-radius:13px;background:#f2ece4;border:1px solid #ddd0c2;color:#65584d;font-size:12px;line-height:1.45}.status.ok{background:#edf5ea;border-color:#bfd1b7;color:#405b3c}.status.err{background:#fbe9e6;border-color:#dfb3ab;color:#7d3f36}.status.warn{background:#fff4df;border-color:#e0c692;color:#6d5428}
+.badge{display:inline-flex;padding:4px 8px;border-radius:999px;background:#6d4c2f;color:#fff;font-size:10px;font-weight:900;margin-bottom:10px}.steps{font-size:12px;line-height:1.55;color:#66594e;padding-left:20px}
+</style>
+</head>
+<body>
+<main>
+<span class="badge">SANDBOX LOCAL</span>
+<h1>Rota 27 — Modo Sandbox</h1>
+<p class="lead">Crie uma cópia isolada dos dados da loja para testar novas versões sem sincronizar eventos, enviar WhatsApp ou alterar a produção.</p>
+<div class="card"><strong>Antes de começar</strong><p>Esta página só permite importar dados quando aberta em <b>localhost</b> ou <b>127.0.0.1</b>. O arquivo de backup não precisa conter tokens; o Sandbox remove qualquer configuração de comunicação com produção.</p></div>
+<label class="file">Selecionar backup JSON<input id="file" type="file" accept="application/json,.json"></label>
+<div id="status" class="status">Nenhum arquivo selecionado.</div>
+<button id="apply" disabled>Importar e abrir Sandbox</button>
+<a class="btn" href="./">Voltar para o aplicativo local</a>
+<div class="card"><strong>Fluxo recomendado</strong><ol class="steps"><li>Na produção, gere <b>Backup completo</b>.</li><li>Atualize o repositório local e rode <code>py -m http.server 8787</code>.</li><li>Abra <b>http://localhost:8787/sandbox.html</b>.</li><li>Selecione o backup e clique em <b>Importar e abrir Sandbox</b>.</li></ol></div>
+</main>
+<script>
+(function(){
+'use strict';
+const APP='rota27-comandas',CORE='rota27_comandas_v01',SANDBOX='rota27_v02538_sandbox_v1';
+const runtime=[/(?:^|_)outbox(?:_|$)/i,/(?:^|_)cursor(?:_|$)/i,/sync_config/i,/whatsapp_config/i,/pre_adopt/i,/pre_restore/i,/sandbox/i];
+const local=/^(localhost|127\.0\.0\.1|\[::1\])$/i.test(location.hostname||'');
+const file=document.getElementById('file'),apply=document.getElementById('apply'),status=document.getElementById('status');let pkg=null;
+const dataKey=k=>/^rota27_/i.test(String(k||''))&&!runtime.some(rx=>rx.test(k));
+function setStatus(t,c=''){status.className='status '+c;status.textContent=t;}
+function normalize(data){
+ if(!data||typeof data!=='object'||data.app!==APP)throw new Error('Arquivo não reconhecido como backup do Rota 27.');
+ if(Number(data.schema)===1&&data.state&&Array.isArray(data.state.commands)&&Array.isArray(data.state.history)&&Array.isArray(data.state.catalog)){
+   return {legacy:true,release:String(data.version||'0.14'),exportedAt:data.exportedAt||null,stores:{[CORE]:JSON.stringify(data.state)},summary:{commands:data.state.commands.length,history:data.state.history.length,catalog:data.state.catalog.length,clients:Array.isArray(data.state.clients)?data.state.clients.length:0}};
+ }
+ if(Number(data.schema)>=2&&data.storage&&data.storage.localStorage&&typeof data.storage.localStorage==='object'){
+   const stores={};Object.entries(data.storage.localStorage).forEach(([k,v])=>{if(dataKey(k))stores[k]=String(v);});if(!stores[CORE])throw new Error('Backup completo sem estado principal.');
+   return {legacy:false,release:String(data.release||'desconhecida'),exportedAt:data.exportedAt||null,stores,summary:data.summary||{}};
+ }
+ throw new Error('Formato de backup incompatível.');
+}
+file.addEventListener('change',async()=>{
+ pkg=null;apply.disabled=true;const f=file.files&&file.files[0];if(!f)return;
+ try{if(f.size>20*1024*1024)throw new Error('Arquivo maior que 20 MB.');pkg=normalize(JSON.parse(await f.text()));const s=pkg.summary||{};setStatus(`${pkg.legacy?'Backup legado':'Backup completo'} válido • ${Number(s.commands||0)} comandas abertas • ${Number(s.history||0)} histórico • ${Number(s.catalog||0)} produtos • ${Number(s.clients||0)} clientes${pkg.legacy?' • o formato legado não contém todas as áreas modulares atuais':''}.`,pkg.legacy?'warn':'ok');apply.disabled=!local;if(!local)setStatus('Arquivo válido, mas esta página não está em localhost. Inicie o servidor local antes de importar.','warn');}catch(e){setStatus('Falha: '+(e&&e.message?e.message:'arquivo inválido'),'err');}
+});
+apply.addEventListener('click',async()=>{
+ if(!local||!pkg)return;
+ if(!confirm('Importar este backup no Sandbox local?\n\nTodo o armazenamento deste localhost será substituído. Produção, sincronização e WhatsApp não serão alterados.'))return;
+ try{
+   localStorage.clear();Object.entries(pkg.stores).forEach(([k,v])=>{if(dataKey(k))localStorage.setItem(k,String(v));});
+   localStorage.setItem(SANDBOX,JSON.stringify({enabled:true,createdAt:Date.now(),sourceRelease:pkg.release,sourceExportedAt:pkg.exportedAt,legacy:pkg.legacy}));
+   localStorage.removeItem('rota27_sync_config_v1');localStorage.removeItem('rota27_whatsapp_config_v1');
+   if('caches'in window){const names=await caches.keys();await Promise.all(names.map(n=>caches.delete(n)));}
+   if('serviceWorker'in navigator){const regs=await navigator.serviceWorker.getRegistrations();await Promise.all(regs.map(r=>r.unregister()));}
+   setStatus('Sandbox carregado. Abrindo o Rota 27 local...','ok');setTimeout(()=>location.href='./?sandbox=1',300);
+ }catch(e){setStatus('Falha ao criar Sandbox: '+(e&&e.message?e.message:String(e)),'err');}
+});
+if(!local){setStatus('Abra esta página via http://localhost:8787/sandbox.html para habilitar a importação.','warn');}
+})();
+</script>
+</body>
+</html>
