@@ -1,0 +1,230 @@
+/* Rota 27 v0.25.44 — cartões de clientes com mais contexto */
+
+#v017ClientList .v017-client-row.v02544-client-row{
+  grid-template-columns:48px minmax(0,1fr) auto;
+  grid-template-areas:
+    "avatar copy chevron"
+    "details details details";
+  column-gap:11px;
+  row-gap:10px;
+  align-items:start;
+  padding:12px 12px 10px;
+  border-radius:17px;
+  box-shadow:0 4px 12px rgba(59,39,24,.045);
+}
+
+#v017ClientList .v02544-client-row .v017-client-avatar{
+  grid-area:avatar;
+  width:48px;
+  height:48px;
+  border-radius:15px;
+  font-size:20px;
+  background:linear-gradient(160deg,#f6ead8,#efe0cc);
+  border:1px solid #e7d4bc;
+}
+
+#v017ClientList .v02544-client-row .v017-client-copy{
+  grid-area:copy;
+  min-width:0;
+  padding-top:1px;
+}
+
+#v017ClientList .v02544-client-row .v017-client-copy>strong{
+  font-size:15px;
+  line-height:1.2;
+  margin-bottom:3px;
+}
+
+#v017ClientList .v02544-client-row .v017-client-copy>small{
+  display:inline-block;
+  vertical-align:middle;
+  margin:0;
+  font-size:11px;
+  line-height:24px;
+}
+
+#v017ClientList .v02544-client-row>b{
+  grid-area:chevron;
+  align-self:center;
+  font-size:21px;
+  padding-top:2px;
+}
+
+#v017ClientList .v02544-original-summary{display:none!important}
+
+.v02544-wa-badge{
+  display:inline-flex!important;
+  align-items:center;
+  gap:4px;
+  width:max-content;
+  max-width:100%;
+  margin:3px 0 0 8px!important;
+  padding:3px 7px;
+  border:1px solid rgba(62,124,89,.28);
+  border-radius:999px;
+  background:rgba(62,124,89,.075);
+  color:#315f47!important;
+  font-size:10px!important;
+  font-weight:850;
+  line-height:1!important;
+  vertical-align:middle;
+}
+
+.v02544-wa-badge.is-missing{
+  border-color:#dfc879;
+  background:#f7eed8;
+  color:#6e5425!important;
+}
+
+.v02544-wa-badge>span{
+  display:inline!important;
+  margin:0!important;
+  color:inherit!important;
+  font-size:inherit!important;
+  line-height:inherit!important;
+}
+
+.v02544-wa-badge svg{
+  width:14px;
+  height:14px;
+  display:block;
+  flex:0 0 auto;
+  fill:none;
+  stroke:currentColor;
+  stroke-width:1.9;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+  vector-effect:non-scaling-stroke;
+}
+
+.v02544-client-details{
+  grid-area:details;
+  min-width:0;
+  border-top:1px solid var(--line);
+  padding-top:9px;
+}
+
+.v02544-client-info-grid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:0;
+}
+
+.v02544-client-info{
+  min-width:0;
+  display:grid;
+  grid-template-columns:20px minmax(0,1fr);
+  gap:6px;
+  align-items:center;
+  padding:0 9px;
+}
+
+.v02544-client-info:first-child{padding-left:2px}
+.v02544-client-info:last-child{padding-right:2px}
+.v02544-client-info+.v02544-client-info{border-left:1px solid rgba(217,199,167,.68)}
+
+.v02544-client-info-icon{
+  width:20px;
+  height:20px;
+  display:grid;
+  place-items:center;
+  color:#8f4421;
+}
+
+.v02544-client-info-icon svg{
+  width:18px;
+  height:18px;
+  display:block;
+  fill:none;
+  stroke:currentColor;
+  stroke-width:1.8;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+  vector-effect:non-scaling-stroke;
+}
+
+.v02544-client-info-copy{min-width:0}
+.v02544-client-info-copy small{
+  display:block;
+  margin:0 0 2px;
+  color:var(--muted);
+  font-size:9px;
+  line-height:1.15;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.v02544-client-info-copy strong{
+  display:block;
+  color:var(--ink);
+  font-size:11px;
+  line-height:1.15;
+  font-weight:850;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.v02544-client-info.is-missing .v02544-client-info-copy strong{color:#9a552d}
+
+.v02544-client-footer{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  margin-top:9px;
+  padding:6px 8px;
+  border-radius:11px;
+  background:linear-gradient(90deg,rgba(246,234,216,.82),rgba(247,238,216,.58));
+}
+
+.v02544-client-purchases{
+  min-width:0;
+  color:var(--muted);
+  font-size:11px;
+  line-height:1.2;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.v02544-client-purchases i{font-style:normal;color:#b0906d;padding:0 2px}
+
+.v02544-last-visit{
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+  flex:0 0 auto;
+  max-width:54%;
+  padding:3px 7px;
+  border:1px solid rgba(196,145,72,.3);
+  border-radius:999px;
+  background:#f7eed8;
+  color:#77572c;
+  font-size:9px;
+  font-weight:800;
+  line-height:1.1;
+}
+.v02544-last-visit svg{
+  width:13px;
+  height:13px;
+  flex:0 0 auto;
+  fill:none;
+  stroke:currentColor;
+  stroke-width:1.9;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+.v02544-last-visit span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+@media(max-width:380px){
+  #v017ClientList .v017-client-row.v02544-client-row{grid-template-columns:44px minmax(0,1fr) auto;padding-left:10px;padding-right:10px}
+  #v017ClientList .v02544-client-row .v017-client-avatar{width:44px;height:44px;border-radius:14px;font-size:18px}
+  .v02544-client-info{grid-template-columns:18px minmax(0,1fr);gap:4px;padding:0 6px}
+  .v02544-client-info-icon{width:18px;height:18px}
+  .v02544-client-info-icon svg{width:16px;height:16px}
+  .v02544-client-info-copy small{font-size:8px}
+  .v02544-client-info-copy strong{font-size:10px}
+  .v02544-wa-badge{margin-left:6px!important;padding:3px 6px}
+  .v02544-client-footer{padding:6px}
+  .v02544-client-purchases{font-size:10px}
+  .v02544-last-visit{font-size:8px;max-width:52%;padding:3px 6px}
+}

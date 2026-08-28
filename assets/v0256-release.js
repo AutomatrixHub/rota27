@@ -1,14 +1,14 @@
-/* Rota 27 v0.25.43 — status real de entrega do WhatsApp */
+/* Rota 27 v0.25.44 — cartões de clientes enriquecidos */
 (function(){
   'use strict';
-  const VERSION='0.25.43';
+  const VERSION='0.25.44';
   function updateIdentity(){
-    document.title='Rota 27 Bodega • Comandas v0.25.43';
+    document.title='Rota 27 Bodega • Comandas v0.25.44';
     const meta=document.querySelector('meta[name="rota27-release-version"]');if(meta)meta.content=VERSION;
-    let style=document.getElementById('v02543ReleaseIdentity');
-    if(!style){style=document.createElement('style');style.id='v02543ReleaseIdentity';style.textContent='#v14VersionBadge::after{content:"v0.25.43"!important}';document.head.appendChild(style);}
+    let style=document.getElementById('v02544ReleaseIdentity');
+    if(!style){style=document.createElement('style');style.id='v02544ReleaseIdentity';style.textContent='#v14VersionBadge::after{content:"v0.25.44"!important}';document.head.appendChild(style);}
   }
-  function updateHelpIdentity(){const overlay=document.getElementById('r27HelpOverlay');const footer=overlay?.querySelector('.r27-help-footer span');if(footer)footer.textContent='Ajuda v7.6 • Rota 27 v0.25.43';}
+  function updateHelpIdentity(){const overlay=document.getElementById('r27HelpOverlay');const footer=overlay?.querySelector('.r27-help-footer span');if(footer)footer.textContent='Ajuda v7.6 • Rota 27 v0.25.44';}
   function removeReplayUi(){document.getElementById('v0257ReplayCard')?.remove();document.getElementById('v0257ReplayCss')?.remove();document.getElementById('v0257ReplayJs')?.remove();}
   function loadCss(id,href){if(document.getElementById(id)||document.querySelector(`link[href*="${href.split('?')[0].split('/').pop()}"]`))return;const link=document.createElement('link');link.id=id;link.rel='stylesheet';link.href=href;document.head.appendChild(link);}
   function loadReleaseAssets(){
@@ -32,6 +32,7 @@
     loadCss('v02537InternalConsumptionCss','./assets/v02537-internal-consumption.css?v=02537r1');
     loadCss('v02538BackupSandboxCss','./assets/v02538-backup-sandbox.css?v=02538r1');
     loadCss('v02540EventsCss','./assets/v02540-events.css?v=02540r1');
+    loadCss('v02544ClientCardDetailsCss','./assets/v02544-client-card-details.css?v=02544r1');
     const scripts=[
       ['v0259CategoryReferenceJs','./assets/v0259-category-reference.js?v=0259r1'],
       ['v0259ProductionCleanupJs','./assets/v0259-production-cleanup.js?v=0259r1'],
@@ -61,7 +62,8 @@
       ['v02539InternalToggleHotfixJs','./assets/v02539-internal-toggle-hotfix.js?v=02539r1'],
       ['v02540EventsJs','./assets/v02540-events.js?v=02540r1'],
       ['v02542EventSendFeedbackJs','./assets/v02542-event-send-feedback.js?v=02542r1'],
-      ['v02543WhatsAppDeliveryStatusJs','./assets/v02543-whatsapp-delivery-status.js?v=02543r1']
+      ['v02543WhatsAppDeliveryStatusJs','./assets/v02543-whatsapp-delivery-status.js?v=02543r1'],
+      ['v02544ClientCardDetailsJs','./assets/v02544-client-card-details.js?v=02544r1']
     ];
     scripts.forEach(([id,src])=>{if(document.getElementById(id))return;const script=document.createElement('script');script.id=id;script.src=src;script.async=false;document.body.appendChild(script);});
   }
@@ -69,9 +71,9 @@
   function start(){
     updateIdentity();updateHelpIdentity();removeReplayUi();loadReleaseAssets();document.addEventListener('click',handleClick);
     document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){updateIdentity();updateHelpIdentity();removeReplayUi();loadReleaseAssets();}});
-    const api={version:VERSION,updateIdentity,updateHelpIdentity,removeReplayUi,loadReleaseAssets,replayHibernated:true};
-    window.Rota27V02543Release=api;window.Rota27V02542Release=api;window.Rota27V02541Release=api;window.Rota27V02540Release=api;window.Rota27V02539Release=api;window.Rota27V02538Release=api;window.Rota27V02537Release=api;window.Rota27V02536Release=api;window.Rota27V02535Release=api;window.Rota27V02534Release=api;window.Rota27V02533Release=api;window.Rota27V02532Release=api;window.Rota27V02531Release=api;window.Rota27V02530Release=api;window.Rota27V02529Release=api;window.Rota27V02528Release=api;window.Rota27V02527Release=api;window.Rota27V02526Release=api;window.Rota27V02525Release=api;window.Rota27V02524Release=api;window.Rota27V02523Release=api;window.Rota27V02522Release=api;window.Rota27V02521Release=api;window.Rota27V02520Release=api;window.Rota27V02519Release=api;window.Rota27V02518Release=api;window.Rota27V02517Release=api;window.Rota27V02516Release=api;window.Rota27V02515Release=api;
-    console.info('[Rota27] v0.25.43 — status real de entrega do WhatsApp.');
+    const releaseApi={version:VERSION,updateIdentity,updateHelpIdentity,removeReplayUi,loadReleaseAssets,replayHibernated:true};
+    window.Rota27V02544Release=releaseApi;window.Rota27V02543Release=releaseApi;window.Rota27V02542Release=releaseApi;window.Rota27V02541Release=releaseApi;window.Rota27V02540Release=releaseApi;window.Rota27V02539Release=releaseApi;window.Rota27V02538Release=releaseApi;window.Rota27V02537Release=releaseApi;window.Rota27V02536Release=releaseApi;window.Rota27V02535Release=releaseApi;window.Rota27V02534Release=releaseApi;window.Rota27V02533Release=releaseApi;window.Rota27V02532Release=releaseApi;window.Rota27V02531Release=releaseApi;window.Rota27V02530Release=releaseApi;window.Rota27V02529Release=releaseApi;window.Rota27V02528Release=releaseApi;window.Rota27V02527Release=releaseApi;window.Rota27V02526Release=releaseApi;window.Rota27V02525Release=releaseApi;window.Rota27V02524Release=releaseApi;window.Rota27V02523Release=releaseApi;window.Rota27V02522Release=releaseApi;window.Rota27V02521Release=releaseApi;window.Rota27V02520Release=releaseApi;window.Rota27V02519Release=releaseApi;window.Rota27V02518Release=releaseApi;window.Rota27V02517Release=releaseApi;window.Rota27V02516Release=releaseApi;window.Rota27V02515Release=releaseApi;
+    console.info('[Rota27] v0.25.44 — cartões de clientes enriquecidos.');
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
 })();
