@@ -1,11 +1,10 @@
 /* Rota 27 — carregador incremental do roadmap pós-v0.25.46 */
 (function(){
   'use strict';
-  const CURRENT='0.25.48';
-  const HELP='8.0';
+  const CURRENT='0.25.49';
+  const HELP='8.1';
   const assets=[
-    {type:'css',id:'v02547TurnFavoritesCss',src:'./assets/v02547-turn-favorites.css?v=02547r1'},
-    {type:'js',id:'v02547TurnFavoritesJs',src:'./assets/v02547-turn-favorites.js?v=02547r1'},
+    {type:'js',id:'v02549TurnFavoritesHotfixJs',src:'./assets/v02549-turn-favorites-hotfix.js?v=02549r1'},
     {type:'css',id:'v02548EventDeliveryFunnelCss',src:'./assets/v02548-event-delivery-funnel.css?v=02548r1'},
     {type:'js',id:'v02548EventDeliveryFunnelJs',src:'./assets/v02548-event-delivery-funnel.js?v=02548r1'}
   ];
