@@ -12,11 +12,11 @@
 }
 
 /* Lista de comandas: preserva a compactação, a cor original e ganha 1 ponto. */
-#screenCommands[data-v0252-view="list"] #commandList .v017-command-primary .v017-command-location{
+html body #screenCommands[data-v0252-view="list"] #commandList .v017-command-primary .v017-command-location{
   font-size:13px!important;
   color:var(--brand-2,#c86d3c)!important;
 }
-#screenCommands[data-v0252-view="list"] #commandList .v017-command-primary .v017-command-location::before{
+html body #screenCommands[data-v0252-view="list"] #commandList .v017-command-primary .v017-command-location::before{
   content:" - ";
 }
 
@@ -142,7 +142,7 @@ html{
 }
 
 @media(max-width:390px){
-  #screenCommands[data-v0252-view="list"] #commandList .v017-command-primary .v017-command-location{
+  html body #screenCommands[data-v0252-view="list"] #commandList .v017-command-primary .v017-command-location{
     font-size:12px!important;
   }
   #v02551QuickProducts{padding:9px}
