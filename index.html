@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#F5E9D5" />
   <!-- rota27-version permanece 0.22.0 como gate de compatibilidade das camadas v0.21/v0.22. -->
   <meta name="rota27-version" content="0.22.0" />
-  <meta name="rota27-release-version" content="0.25.63" />
+  <meta name="rota27-release-version" content="0.25.64" />
   <meta name="rota27-fixed-copy-whatsapp" content="5527997769279" />
   <title>Rota 27 Bodega • Comandas</title>
   <style>
@@ -28,7 +28,7 @@
         html=html.replace(/<title>[\s\S]*?<\/title>/i,'<title>Rota 27 Bodega • Comandas</title>');
         html=html.replace('</head>',
           '<meta name="rota27-version" content="0.22.0" />'+
-          '<meta name="rota27-release-version" content="0.25.63" />'+
+          '<meta name="rota27-release-version" content="0.25.64" />'+
           '<meta name="rota27-fixed-copy-whatsapp" content="5527997769279" />'+
           '<link rel="stylesheet" href="./assets/v014.css" />'+
           '<link rel="stylesheet" href="./assets/v014-dev3.css" />'+
@@ -74,6 +74,7 @@
           '<link id="v02552CommandMapSimplifyCss" rel="stylesheet" href="./assets/v02552-command-map-simplify.css?v=02552r1" />'+
           '<link id="v02553CartbarButtonCss" rel="stylesheet" href="./assets/v02553-cartbar-button.css?v=02553r1" />'+
           '<link id="v02563OperationalTurnCss" rel="stylesheet" href="./assets/v02563-operational-turn-coherence.css?v=02563r1" />'+
+          '<link id="v02564MobileRuntimeCss" rel="stylesheet" href="./assets/v02564-mobile-runtime-hotfix.css?v=02564r1" />'+
           '</head>');
         html=html.replace('</body>',
           '<script src="./assets/v014.js"><\/script>'+
@@ -131,7 +132,8 @@
           '<script src="./assets/v0256-release.js?v=02551r1"><\/script>'+
           '<script id="v02555FocusRootJs" src="./assets/v02555-new-command-focus-root.js?v=02555r2"><\/script>'+
           '<script id="v02563OperationalTurnJs" src="./assets/v02563-operational-turn-coherence.js?v=02563r1"><\/script>'+
-          '<script src="./assets/roadmap-loader.js?v=02563r1"><\/script>'+
+          '<script id="v02564MobileRuntimeJs" src="./assets/v02564-mobile-runtime-hotfix.js?v=02564r1"><\/script>'+
+          '<script src="./assets/roadmap-loader.js?v=02564r1"><\/script>'+
           '</body>');
         document.open();document.write(html);document.close();
       }catch(err){
