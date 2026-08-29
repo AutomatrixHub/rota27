@@ -1,4 +1,4 @@
-const CACHE_NAME = 'rota27-comandas-v0.25.52-r1';
+const CACHE_NAME = 'rota27-comandas-v0.25.53-r1';
 const APP_SHELL = [
   './','./index.html','./sandbox.html','./base-v013.html',
   './assets/v014.css','./assets/v014.js','./assets/v014-dev3.css','./assets/v014-dev3.js','./assets/v014-rc2-category-fix.js','./assets/v014-final.js',
@@ -33,7 +33,7 @@ const APP_SHELL = [
   './assets/v02533-menu-header-polish.css','./assets/v02533-menu-header-polish.js','./assets/v02534-menu-actions-polish.css','./assets/v02534-menu-actions-polish.js','./assets/v02535-edit-command-birthday.js','./assets/v02536-receivables-card.css',
   './assets/v02537-internal-consumption.css','./assets/v02537-internal-consumption.js','./assets/v02537-internal-stock-bridge.js','./assets/v02537-internal-sync-guard.js','./assets/v02537-history-financial-guard.js','./assets/v02537-internal-ledger-guard.js',
   './assets/v02538-backup-sandbox.css','./assets/v02538-backup-sandbox.js','./assets/v02539-internal-toggle-hotfix.js','./assets/v02540-events.css','./assets/v02540-events.js','./assets/v02542-event-send-feedback.js','./assets/v02543-whatsapp-delivery-status.js','./assets/v02544-client-card-details.css','./assets/v02544-client-card-details.js','./assets/v02545-command-list-compact.css','./assets/v02545-command-list-compact.js','./assets/v02546-attention-panel.css','./assets/v02546-attention-panel.js',
-  './assets/roadmap-loader.js','./assets/v02547-turn-favorites.css','./assets/v02547-turn-favorites.js','./assets/v02548-event-delivery-funnel.css','./assets/v02548-event-delivery-funnel.js','./assets/v02549-turn-favorites-hotfix.js','./assets/v02550-ui-stability.js','./assets/v02551-ux-hotfix.css','./assets/v02551-ux-hotfix.js','./assets/v02552-command-map-simplify.css','./assets/v02552-command-map-simplify.js',
+  './assets/roadmap-loader.js','./assets/v02547-turn-favorites.css','./assets/v02547-turn-favorites.js','./assets/v02548-event-delivery-funnel.css','./assets/v02548-event-delivery-funnel.js','./assets/v02549-turn-favorites-hotfix.js','./assets/v02550-ui-stability.js','./assets/v02551-ux-hotfix.css','./assets/v02551-ux-hotfix.js','./assets/v02552-command-map-simplify.css','./assets/v02552-command-map-simplify.js','./assets/v02553-cartbar-button.css',
   './assets/brand/rota27-logo-oficial.png',
   './manifest.webmanifest','./icons/apple-touch-icon.png','./icons/icon-192.png','./icons/icon-512.png','./icons/icon-192-maskable.png','./icons/icon-512-maskable.png','./icons/favicon-32.png'
 ];
