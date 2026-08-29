@@ -1,9 +1,11 @@
 /* Rota 27 — carregador incremental do roadmap pós-v0.25.46 */
 (function(){
   'use strict';
-  const CURRENT='0.25.59';
+  const CURRENT='0.25.60';
   const HELP='8.7';
   const assets=[
+    {type:'css',id:'v02560ClientIntelligenceCss',src:'./assets/v02560-client-intelligence.css?v=02560r1'},
+    {type:'js',id:'v02560ClientIntelligenceJs',src:'./assets/v02560-client-intelligence.js?v=02560r1'},
     {type:'css',id:'v02559StockCoverageCss',src:'./assets/v02559-stock-coverage.css?v=02559r1'},
     {type:'js',id:'v02559StockCoverageJs',src:'./assets/v02559-stock-coverage.js?v=02559r1'},
     {type:'css',id:'v02558ReceivableDueCss',src:'./assets/v02558-receivables-due-date.css?v=02558r1'},
