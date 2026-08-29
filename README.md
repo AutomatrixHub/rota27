@@ -4,11 +4,11 @@ Aplicativo mobile-first, offline-first e multidispositivo para controle rápido 
 
 ## Produção
 
-- **Versão:** v0.25.56 — Consolidação da baseline de produção
+- **Versão:** v0.25.57 — Aniversários próximos
 - **Branch:** `main`
 - **GitHub Pages:** `https://automatrixhub.github.io/rota27/`
-- **Service Worker:** `rota27-comandas-v0.25.56-r1`
-- **Baseline funcional anterior:** v0.25.55-r2
+- **Service Worker:** `rota27-comandas-v0.25.57-r1`
+- **Baseline anterior:** v0.25.56
 
 ## Navegação
 
@@ -66,6 +66,8 @@ Aplicativo mobile-first, offline-first e multidispositivo para controle rápido 
 - cards com nascimento, última compra, cliente desde, total de compras e última visita;
 - recorrência/fidelização;
 - campanha de solicitação de aniversário via WhatsApp;
+- bloco **Aniversários próximos** com contagem de hoje e dos próximos 7 dias, sem envio automático;
+- toque no nome do aniversariante localiza o cliente na lista;
 - Eventos & Convites com consentimento próprio de marketing.
 
 ### WhatsApp
@@ -99,9 +101,10 @@ As funções administrativas temporárias de replay/reenvio permanecem publicada
 - **v0.25.46** — Hoje precisa de atenção;
 - **v0.25.47** — Mais usados hoje;
 - **v0.25.48** — funil real de entrega dos Eventos;
-- **v0.25.49–v0.25.55** — sequência de hotfixes mobile de estabilidade, UX, barra da comanda, Mapa rápido e foco da Nova comanda;
+- **v0.25.49–v0.25.55** — sequência de hotfixes mobile de estabilidade e UX;
 - **v0.25.55-r2** — republicação do shell/PWA para eliminar cache antigo;
-- **v0.25.56** — consolidação da baseline e documentação operacional.
+- **v0.25.56** — consolidação da baseline e documentação operacional;
+- **v0.25.57** — Aniversários próximos.
 
 ## Roadmap retomado
 
@@ -110,11 +113,11 @@ Concluídos:
 0. Lista de comandas mais compacta;
 1. Hoje precisa de atenção;
 2. Mais usados hoje;
-3. Funil real de entrega dos Eventos.
+3. Funil real de entrega dos Eventos;
+4. Aniversários próximos.
 
 Próximos:
 
-4. Aniversários próximos;
 5. vencimento rápido em A Receber;
 6. Receber tudo em Compras;
 7. dias de cobertura do Estoque;
@@ -129,14 +132,13 @@ Não limpar `localStorage`, não reinstalar a PWA e não apagar dados de produç
 ## Documentação principal
 
 - `docs/STATUS-PRODUCAO.md`
+- `docs/RELEASE-v0.25.57.md`
 - `docs/RELEASE-v0.25.56.md`
 - `docs/RELEASE-v0.25.55-r2.md`
 - `docs/RELEASE-v0.25.55.md`
 - `docs/RELEASE-v0.25.51.md`
 - `docs/RELEASE-v0.25.48.md`
-- `docs/RELEASE-v0.25.46.md`
-- `docs/RELEASE-v0.25.45.md`
 
 ## Versão
 
-Produção: **0.25.56**
+Produção: **0.25.57**

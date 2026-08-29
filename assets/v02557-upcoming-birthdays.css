@@ -1,0 +1,20 @@
+/* Rota 27 v0.25.57 — aniversários próximos */
+#v02557UpcomingBirthdays{margin:10px 0 12px;padding:12px 13px;border:1px solid #dcc9a8;border-radius:16px;background:linear-gradient(180deg,#fffaf1,#fbf0df);box-shadow:0 4px 12px rgba(59,39,24,.045)}
+#v02557UpcomingBirthdays .v02557-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+#v02557UpcomingBirthdays .v02557-head-copy{min-width:0}
+#v02557UpcomingBirthdays .v02557-kicker{display:block;margin-bottom:3px;color:#9a4826;font-size:9px;font-weight:950;letter-spacing:.12em}
+#v02557UpcomingBirthdays .v02557-title{display:block;color:var(--ink,#111);font-size:14px;line-height:1.2;font-weight:950}
+#v02557UpcomingBirthdays .v02557-subtitle{display:block;margin-top:3px;color:var(--muted,#756656);font-size:10.5px;line-height:1.35}
+#v02557UpcomingBirthdays .v02557-icon{display:grid;place-items:center;flex:0 0 34px;width:34px;height:34px;border-radius:11px;background:#f2e4cf;color:#96502f}
+#v02557UpcomingBirthdays .v02557-icon svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+#v02557UpcomingBirthdays .v02557-counts{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:10px}
+#v02557UpcomingBirthdays .v02557-count{padding:8px 9px;border:1px solid #ead6bd;border-radius:11px;background:#fff8ee}
+#v02557UpcomingBirthdays .v02557-count b{display:block;color:var(--ink,#111);font-size:17px;line-height:1;font-weight:950}
+#v02557UpcomingBirthdays .v02557-count span{display:block;margin-top:4px;color:var(--muted,#756656);font-size:9.5px;line-height:1.2}
+#v02557UpcomingBirthdays .v02557-list{display:grid;gap:6px;margin-top:9px}
+#v02557UpcomingBirthdays .v02557-person{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;min-height:38px;padding:7px 9px;border:1px solid #e7d4ba;border-radius:11px;background:#fffaf3;color:var(--ink,#111);text-align:left;font:inherit}
+#v02557UpcomingBirthdays .v02557-person-copy{min-width:0}
+#v02557UpcomingBirthdays .v02557-person strong{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px;line-height:1.2}
+#v02557UpcomingBirthdays .v02557-person small{display:block;margin-top:2px;color:var(--muted,#756656);font-size:9px;line-height:1.2}
+#v02557UpcomingBirthdays .v02557-when{flex:0 0 auto;padding:4px 7px;border-radius:999px;background:#f3e2cc;color:#8d4828;font-size:9px;font-weight:900;white-space:nowrap}
+#v02557UpcomingBirthdays .v02557-empty{margin-top:9px;padding:9px;border:1px dashed #dec9ac;border-radius:11px;color:var(--muted,#756656);font-size:10px;line-height:1.35;text-align:center}

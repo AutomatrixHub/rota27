@@ -4,11 +4,11 @@
 
 ## Produção
 
-- versão: **v0.25.56 — Consolidação da baseline de produção**;
+- versão: **v0.25.57 — Aniversários próximos**;
 - branch: `main`;
 - GitHub Pages: `https://automatrixhub.github.io/rota27/`;
-- Service Worker: `rota27-comandas-v0.25.56-r1`;
-- baseline funcional anterior: **v0.25.55-r2**, merge `a1103b5056ea2d70533275adeabd300c926fb2fc`.
+- Service Worker: `rota27-comandas-v0.25.57-r1`;
+- baseline anterior: **v0.25.56**, merge `ae010727766e57ff315d2cbe29ac85017427f08a`.
 
 ## Estado operacional do frontend
 
@@ -32,6 +32,15 @@
 - `Hoje precisa de atenção` por exceção;
 - sem polling contínuo;
 - acessos gerenciais existentes preservados.
+
+### Clientes & Fidelização
+- cadastro compartilhado e sincronizado;
+- data de nascimento preservada via `client_upsert`;
+- cards enriquecidos com nascimento, última compra, cliente desde e histórico;
+- novo bloco **Aniversários próximos** mostra quantidade de aniversários hoje e nos próximos 7 dias;
+- lista compacta de até 5 aniversariantes ordenada por proximidade;
+- toque no aniversariante usa a busca existente para localizar o cliente;
+- nenhuma mensagem é enviada automaticamente por esse recurso.
 
 ### Eventos & Convites
 - consentimento específico de marketing preservado;
@@ -73,7 +82,8 @@ Nenhuma dessas três funções executa replay, envio, retry ou alteração de da
 - **v0.25.48** — funil real de entrega dos Eventos;
 - **v0.25.49–v0.25.55** — hotfixes mobile e estabilização de UX;
 - **v0.25.55-r2** — shell/PWA republicado com cache-busters corretos;
-- **v0.25.56** — baseline/documentação reconciliadas com produção.
+- **v0.25.56** — baseline/documentação reconciliadas com produção;
+- **v0.25.57** — Aniversários próximos.
 
 ## Roadmap retomado
 
@@ -82,15 +92,15 @@ Concluído:
 0. compactação de Comandas/Lista;
 1. Hoje precisa de atenção;
 2. Mais usados hoje;
-3. funil real de Eventos.
+3. funil real de Eventos;
+4. Aniversários próximos.
 
 Próximo item funcional:
 
-4. **Aniversários próximos**.
+5. **Vencimento rápido em A Receber**.
 
 Depois:
 
-5. vencimento rápido em A Receber;
 6. Receber tudo em Compras;
 7. dias de cobertura do Estoque;
 8. inteligência de Clientes;
@@ -109,4 +119,4 @@ Depois:
 
 ## Rollback
 
-Para rollback funcional imediato, usar a baseline **v0.25.55-r2** / merge `a1103b5056ea2d70533275adeabd300c926fb2fc`.
+Para rollback funcional imediato, usar a baseline **v0.25.56** / merge `ae010727766e57ff315d2cbe29ac85017427f08a`.
