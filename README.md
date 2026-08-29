@@ -3,58 +3,53 @@
 Aplicativo mobile-first, offline-first e multidispositivo para controle rápido de comandas da **Rota 27 Bodega**.
 
 ## Produção
-- **Versão:** v0.25.63 — Coerência operacional de turnos
+- **Versão:** v0.25.64 — Estabilidade mobile e fechamento interno
 - **Branch:** `main`
 - **GitHub Pages:** `https://automatrixhub.github.io/rota27/`
-- **Service Worker:** `rota27-comandas-v0.25.63-r1`
-- **Baseline anterior:** v0.25.62
+- **Service Worker:** `rota27-comandas-v0.25.64-r1`
+- **Baseline anterior:** v0.25.63
 
-## Estado funcional atual
+## Hotfix v0.25.64
 
-### Turnos, Painel e Histórico
-- a **data operacional** vem da abertura da comanda;
-- o horário físico de fechamento não muda o turno ao qual a venda pertence;
-- o Painel substitui a leitura civil de **Hoje** por **Turno atual**;
-- faturamento, ticket médio, comandas e itens do Painel consideram somente o movimento desde o último fechamento da data operacional;
-- **Consumo interno / próprio** fica fora de faturamento e de valores em aberto;
-- o Painel mostra um card compacto de **Último turno fechado** com faturamento, comandas, itens e horário físico do fechamento;
-- o Histórico passa a priorizar **Turno atual** e **Último turno**;
-- períodos de 7 e 30 dias usam a data operacional das comandas, não apenas `closedAt`;
-- cada linha do Histórico diferencia **Turno DD/MM/AAAA** de **fechado DD/MM às HH:MM**;
-- dados legados sem `businessDate` usam `createdAt/openedAt` como fallback, nunca `closedAt`.
+### Desempenho mobile / iPhone
+- remove do caminho crítico de `save()` a varredura de todo o Histórico introduzida na v0.25.63;
+- somente comandas abertas recebem a normalização operacional necessária antes da persistência/sincronização;
+- não cria nova ponte de renderização do Painel nem novo polling;
+- preserva a coerência por `businessDate` implementada na v0.25.63.
 
-### A Receber
-- permanece separado do faturamento do turno;
-- o card do Painel explicita que o valor representa **saldos não recebidos**;
-- pagamentos posteriores baixam a pendência e não criam nova venda;
-- vencimento opcional **Sem data / Hoje / Amanhã / 7 dias** preservado.
+### Botão + / Nova comanda
+- o FAB `+` permanece interativo em **Comandas**, tanto em **Lista** quanto em **Mapa**;
+- ao voltar para Comandas, uma barra de comanda anterior não pode encobrir/desabilitar o FAB;
+- Lista e Mapa continuam abrindo a mesma tela segura de Nova comanda;
+- a regra de não focar automaticamente campos permanece preservada.
 
 ### Consumo interno
-- flags `internalConsumption` / `nonRevenue` são revalidadas localmente quando a comanda é identificada como Consumo interno;
-- o valor permanece apenas como referência e não entra em faturamento, ticket médio ou formas de pagamento;
-- novas comandas passam a receber `businessDate` operacional antes dos próximos snapshots persistidos.
+- finalização de Consumo interno passa por uma interceptação canônica antes dos wrappers financeiros de A Receber;
+- o fechamento não depende mais da ordem em que `finalizeCommand` foi embrulhado por módulos antigos;
+- continua sem faturamento, ticket médio, forma de pagamento ou A Receber;
+- valor é mantido apenas como referência operacional e de estoque.
 
-### Demais módulos
-- Lista e Mapa de comandas preservados;
-- Mais usados hoje, Estoque, Compras, Clientes & Fidelização, Eventos, WhatsApp e Custos & Margem preservados;
-- pré-fechamento por exceção preservado.
-
-## Evidência do incidente que motivou a v0.25.63
-O fechamento operacional de **28/08/2026**, concluído fisicamente em 29/08 às 08:25, possui snapshot oficial de **R$ 2.350,55**, 22 comandas e 165 itens. Dentro desse total, **R$ 680,80** correspondem a vendas em **A receber**. A interface antiga agrupava essas cinco comandas como “Hoje” porque foram fechadas fisicamente pela manhã, gerando leitura visual incorreta do novo turno.
+## Turnos, Painel e Histórico
+A v0.25.63 permanece como regra vigente:
+- data operacional vem da abertura da comanda;
+- horário físico de fechamento não muda o turno da venda;
+- Painel usa **Turno atual** e apresenta **Último turno fechado** separadamente;
+- A Receber representa saldos não recebidos, não novo faturamento;
+- Histórico diferencia data operacional e horário físico de fechamento.
 
 ## Backend
-Projeto Supabase: `owkvwsiblbzlpxjwybrt`. A v0.25.63 não altera schema, migration ou Edge Function.
+Projeto Supabase: `owkvwsiblbzlpxjwybrt`. A v0.25.64 não altera schema, migration, Edge Function ou dados históricos.
 
 ## Roadmap original
-Planejamento 0–10 permanece **concluído**. A v0.25.63 é uma correção pós-roadmap de coerência operacional.
+Planejamento 0–10 permanece **concluído**. v0.25.63 e v0.25.64 são correções pós-roadmap motivadas por uso real.
 
 ## Atualização da PWA
 Não limpar `localStorage`, não reinstalar a PWA e não apagar dados de produção. Abra online, aguarde a atualização, feche completamente e abra novamente.
 
 ## Documentação
 - `docs/STATUS-PRODUCAO.md`
+- `docs/RELEASE-v0.25.64.md`
 - `docs/RELEASE-v0.25.63.md`
-- `docs/RELEASE-v0.25.62.md`
 
 ## Versão
-Produção: **0.25.63**
+Produção: **0.25.64**
