@@ -80,6 +80,7 @@
     };
     if(typeof queueMicrotask==='function')queueMicrotask(run);else Promise.resolve().then(run);
   }
+
   /* FAB: Lista e Mapa usam a mesma ação real de Nova comanda. */
   function repairCommandsChrome(){
     const commands=byId('screenCommands')?.classList.contains('active');
@@ -135,6 +136,19 @@
     return true;
   }
 
+  /*
+   * O botão de finalizar usa onclick legado. A captura abaixo acontece antes
+   * desse onclick e garante que nenhum wrapper de A Receber possa desviar um
+   * Consumo interno para o fluxo financeiro.
+   */
+  function handleCapture(e){
+    const finalize=e.target.closest?.('#finalizeBtn');
+    if(finalize&&isInternal(activeCommand())){
+      e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();
+      finalizeInternal();
+    }
+  }
+
   function settle(){
     installLightSave();bindFab();installFinalizeRoot();normalizeOpenCommands();repairCommandsChrome();schedulePanelRepair();
   }
@@ -145,6 +159,7 @@
   }
   function start(){
     settle();delayedSettle();
+    document.addEventListener('click',handleCapture,true);
     document.addEventListener('click',handleClick);
     ['rota27:v02537-internal-updated','rota27:v017-domain-updated'].forEach(name=>window.addEventListener(name,()=>requestAnimationFrame(()=>{settle();})));
     document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')requestAnimationFrame(settle);});
