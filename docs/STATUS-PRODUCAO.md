@@ -3,63 +3,61 @@
 Última revisão: 29/08/2026
 
 ## Produção
-- versão: **v0.25.63 — Coerência operacional de turnos**;
+- versão: **v0.25.64 — Estabilidade mobile e fechamento interno**;
 - branch: `main`;
 - GitHub Pages: `https://automatrixhub.github.io/rota27/`;
-- Service Worker: `rota27-comandas-v0.25.63-r1`;
-- baseline anterior: **v0.25.62**, merge `a3e2cf9a5dc90b45f5fc0733f52b31aa9f0ebbba`.
+- Service Worker: `rota27-comandas-v0.25.64-r1`;
+- baseline anterior: **v0.25.63**, merge `c8b8d54a99eefee047e294ba7bf9ce01dc64b14f`.
 
-## Incidente validado
-O fechamento operacional de **28/08/2026** foi concluído fisicamente em **29/08/2026 às 08:25**. O evento `turn_closed` no Supabase registra corretamente:
-- faturamento: **R$ 2.350,55**;
-- 22 comandas fechadas;
-- 165 itens;
-- ticket médio: R$ 106,84;
-- Crédito: R$ 910,95;
-- **A receber: R$ 680,80**;
-- Pix: R$ 395,85;
-- Débito: R$ 362,95.
+## Incidente pós-v0.25.63
+Uso real apontou três regressões:
+1. responsividade mais lenta no iPhone;
+2. botão `+` de Nova comanda sem resposta em Comandas / Lista;
+3. Consumo interno com item lançado sem concluir o fechamento.
 
-A interface anterior exibia R$ 680,80 como “Faturamento hoje” porque cinco comandas do turno de 28/08 foram fechadas fisicamente na manhã de 29/08. O dado oficial do fechamento estava correto; a inconsistência era de agrupamento e apresentação.
+A auditoria confirmou que a comanda interna `c1788014228867` foi aberta com `internalConsumption=true`, recebeu item e não gerou fechamento; posteriormente foi cancelada. Nenhum reparo histórico automático é feito nesta release.
 
-## Correção v0.25.63
+## Correção v0.25.64
 
-### Painel
-- substitui a leitura civil de **Hoje** por **Turno atual**;
-- calcula faturamento, ticket, comandas e itens pela **data operacional da abertura** e pelo último fechamento daquela data;
-- comandas de Consumo interno / próprio são excluídas de faturamento e de valores em aberto;
-- exibe **Último turno fechado** com faturamento, comandas, itens e horário físico do fechamento;
-- A Receber é identificado como **saldos não recebidos**, separado de faturamento.
+### Desempenho
+- o wrapper pesado da v0.25.63, que normalizava `commands + history` a cada `save()`, é substituído por normalização somente das comandas abertas;
+- nenhuma nova rotina de polling contínuo;
+- nenhuma nova ponte `innerHTML` é criada pelo hotfix;
+- a coerência operacional da v0.25.63 permanece preservada.
 
-### Histórico
-- prioridade visual: **Turno atual** e **Último turno**;
-- 7 e 30 dias passam a usar `businessDate`/data operacional;
-- dados legados sem `businessDate` derivam a data de `createdAt/openedAt`, nunca de `closedAt`;
-- cada linha diferencia a data do turno e o horário físico do fechamento;
-- o resumo superior acompanha o recorte operacional selecionado.
+### FAB + Nova comanda
+- em `screenCommands.active`, o FAB `+` é mantido visível e interativo em Lista e Mapa;
+- `cartbar.show` residual é removido ao retornar para a tela de Comandas;
+- o clique do FAB chama diretamente a rotina real `openNewCommandSheet()`;
+- a Nova comanda continua sem foco automático obrigatório.
 
 ### Consumo interno
-- comandos identificados como `Consumo interno` ou `own_consumption` são revalidados como `internalConsumption=true` e `nonRevenue=true` antes dos próximos saves;
-- valor interno permanece apenas como referência e não entra nas métricas de vendas;
-- o caso observado de R$ 18,00 deixa de aparecer em “Em aberto”/faturamento.
+- o botão de finalizar é interceptado em captura antes dos wrappers financeiros legados;
+- Consumo interno é fechado pelo fluxo canônico próprio, independentemente da ordem dos módulos de A Receber;
+- continua com `nonRevenue=true`, sem faturamento, sem pagamento e sem A Receber;
+- valor permanece somente como referência operacional/estoque.
+
+## Turnos
+As regras da v0.25.63 permanecem:
+- `businessDate`/data operacional pela abertura da comanda;
+- Turno atual separado do Último turno fechado;
+- A Receber separado visualmente do faturamento;
+- Consumo interno fora das métricas de venda.
 
 ## Backend Supabase
 Projeto `owkvwsiblbzlpxjwybrt`.
 - nenhuma migration;
 - nenhum schema alterado;
 - nenhuma Edge Function alterada;
-- dados históricos não são regravados;
-- o snapshot `turn_closed` de 28/08 permanece imutável.
-
-## Roadmap original
-Itens 0–10 continuam **concluídos**. A v0.25.63 é uma correção pós-roadmap motivada por uso real na virada de turno.
+- nenhum reset ou reprocessamento de dados;
+- eventos reais foram apenas consultados para diagnóstico.
 
 ## Regras de preservação
 - não limpar `localStorage` de produção;
-- não reinstalar a PWA como atualização normal;
+- não reinstalar PWA como atualização normal;
 - não resetar Supabase;
 - Sandbox não envia WhatsApp real nem sincroniza produção;
 - mudanças usam branch curta + PR + merge + confirmação do Pages.
 
 ## Rollback
-Baseline anterior: **v0.25.62** / merge `a3e2cf9a5dc90b45f5fc0733f52b31aa9f0ebbba`.
+Baseline anterior: **v0.25.63** / merge `c8b8d54a99eefee047e294ba7bf9ce01dc64b14f`.
