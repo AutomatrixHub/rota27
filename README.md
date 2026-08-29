@@ -4,199 +4,139 @@ Aplicativo mobile-first, offline-first e multidispositivo para controle rápido 
 
 ## Produção
 
-**Versão: v0.25.28 — Novo estilo dos ícones do Cardápio**  
-Branch: `main`  
-GitHub Pages: `https://automatrixhub.github.io/rota27/`  
-Service Worker: `rota27-comandas-v0.25.28-r1`
+- **Versão:** v0.25.56 — Consolidação da baseline de produção
+- **Branch:** `main`
+- **GitHub Pages:** `https://automatrixhub.github.io/rota27/`
+- **Service Worker:** `rota27-comandas-v0.25.56-r1`
+- **Baseline funcional anterior:** v0.25.55-r2
 
 ## Navegação
-- **Comandas = atender**;
-- **Cardápio = o que é vendido**;
-- **Painel = administrar o negócio**;
-- **Histórico = o que aconteceu**.
 
-## v0.25.28 — Novo estilo dos ícones do Cardápio
-A apresentação dos ícones dos produtos foi refeita após feedback visual da v0.25.27.
+- **Comandas = atender**
+- **Cardápio = o que é vendido**
+- **Painel = administrar o negócio**
+- **Histórico = o que aconteceu**
 
-Refinamentos:
-- caixas bege/monocromáticas foram substituídas por badges circulares mais leves e modernos;
-- famílias de produtos recebem cores terrosas suaves e consistentes;
-- pictogramas ficam brancos, com traço um pouco mais firme e leitura mais rápida no celular;
-- cervejas, vinhos, bebidas, café, queijos, frios/embutidos, molhos/temperos, castanhas, biscoitos, doces, pães, petiscos e fallback genérico permanecem diferenciados;
-- produtos inativos usam acabamento neutro/desaturado;
-- nenhum dado do catálogo foi alterado; a mudança é exclusivamente visual.
+## Estado funcional atual
 
-## v0.25.27 — Ícones profissionais no Cardápio
-Os emojis exibidos nos cards de produtos da aba **Cardápio** foram substituídos por um conjunto de ícones vetoriais mais sóbrio e consistente.
+### Comandas
+- abertura rápida por Mesa, Balcão, Parklet ou cliente;
+- Lista e Mapa preservados;
+- cards compactos na Lista;
+- local exibido ao lado do nome do cliente;
+- edição, fechamento e cancelamento de comandas;
+- consumo interno/próprio sem contaminar faturamento;
+- `A receber / Paga depois`, inclusive recebimentos parciais;
+- barra de ação com `Ver/Editar itens` e `Fechar`;
+- Nova comanda sem foco automático obrigatório em `Mesa/Local`.
 
-Refinamentos:
-- ícones monocromáticos com mesma linguagem de traço, escala e alinhamento;
-- associação automática por categoria/nome para cervejas, vinhos, bebidas, café, queijos, frios/embutidos, molhos/temperos, castanhas, biscoitos, doces, pães e petiscos;
-- fallback neutro para qualquer produto sem correspondência específica;
-- produtos inativos preservam diferenciação visual com versão neutra do mesmo ícone;
-- os emojis originais permanecem armazenados no catálogo para compatibilidade; a troca é apenas de apresentação no Cardápio;
-- sem alteração de catálogo, preços, categorias, sincronização ou backend.
+### Cardápio
+- catálogo por categorias;
+- busca;
+- histórico de preço e gestão de produtos/categorias;
+- ícones vetoriais no padrão Rota27;
+- bloco **Mais usados hoje** com Top 3 calculado automaticamente a partir do uso real.
 
-## v0.25.26 — Acabamento visual do Cardápio
-A aba **Cardápio** recebeu o mesmo padrão de refinamento visual já validado em **Fechamentos**, **Histórico & resultados** e **Painel**.
+### Painel
+- visão da operação atual;
+- resultados do dia;
+- situação de Internet, sincronização, WhatsApp e conflitos;
+- acessos a Visão Gerencial, Clientes & Fidelização, A Receber, Estoque e Compras;
+- bloco **Hoje precisa de atenção** por exceção, sem polling contínuo.
 
-Refinamentos:
-- cabeçalho mais compacto, preservando contador, **Categorias** e **+ Produto**;
-- aviso de histórico de preço e busca com menor altura ociosa;
-- cards de produtos mais densos, com maior destaque para nome e preço;
-- categoria, status do produto e status da categoria ficam mais suaves;
-- botão **Editar** mantém área de toque com menor peso visual;
-- produtos inativos continuam diferenciados sem perder legibilidade;
-- tela **Gerenciar categorias** também foi compactada, incluindo cabeçalho, avisos, cards e ações;
-- nenhuma lógica de catálogo, categorias, preços, sincronização ou backend foi alterada.
+### Histórico e fechamento
+- data operacional definida pela abertura da comanda;
+- múltiplos turnos no mesmo dia;
+- fechamento imutável e sincronizado;
+- períodos Hoje / Ontem / 7 dias / 30 dias / Todos;
+- rankings por produto/categoria;
+- CSV e backup;
+- reparos administrativos históricos preservados com rastreabilidade.
 
-## v0.25.25 — Acabamento visual do Painel
-A aba **Painel** recebeu o mesmo padrão de refinamento visual já validado em **Fechamentos** e **Histórico & resultados**.
+### Estoque, compras, inventário e custos
+- Estoque Essencial;
+- reposição derivada do estoque;
+- compras e recebimentos parciais;
+- inventário com divergências e ajustes controlados;
+- custo real e margem bruta estimada sem inventar custo ausente.
 
-Refinamentos:
-- cabeçalho e seções com menor altura ociosa e hierarquia mais clara;
-- bloco **A receber** mais compacto, preservando o destaque e a área de toque do botão;
-- cards de **Agora** e **Hoje** mais densos, com valores maiores e rótulos mais suaves;
-- **Comandas** no bloco Hoje passa a ser apresentado visualmente como **Comandas fechadas**;
-- cartões de **Operação** mais compactos e legíveis;
-- **Acessos rápidos** com menor peso visual, sem perda de usabilidade;
-- cards **Visão Gerencial**, **Estoque Essencial**, **Compras & Reposição** e **Clientes & Fidelização** compactados e normalizados;
-- nenhuma lógica de cálculo, sincronização ou backend foi alterada.
+### Clientes & Fidelização
+- cadastro compartilhado e sincronizado;
+- WhatsApp e data de nascimento;
+- cards com nascimento, última compra, cliente desde, total de compras e última visita;
+- recorrência/fidelização;
+- campanha de solicitação de aniversário via WhatsApp;
+- Eventos & Convites com consentimento próprio de marketing.
 
-## v0.25.24 — Acabamento visual do Histórico & resultados
-A tela principal **Histórico & resultados** recebeu o mesmo padrão de refinamento validado na tela Fechamentos.
+### WhatsApp
+- envio transacional da comanda;
+- campanha de aniversário;
+- Eventos & Convites;
+- callbacks assíncronos `sent`, `delivered`, `read` e `failed`;
+- funil de Eventos distinguindo **Aceito Meta / Enviado / Entregue / Lido / Falhou**.
 
-Refinamentos:
-- título, subtítulo e contador com hierarquia mais clara;
-- períodos **Hoje / Ontem / 7 dias / 30 dias / Todos** e busca mais compactos;
-- bloco de **Ontem** com destaque discreto de **Último fechamento**;
-- métricas mais densas, com valores maiores e rótulos mais suaves;
-- **Comandas** passa a ser apresentado visualmente como **Comandas fechadas**;
-- botões de exportação/backup mantêm área de toque, com menor peso visual;
-- painéis de produtos/categorias, barras de ranking e lista de comandas fechadas ficam mais compactos e fáceis de escanear;
-- nenhuma lógica de período, cálculo, fechamento ou sincronização foi alterada.
+## Backend de produção
 
-## v0.25.23 — Acabamento visual dos Fechamentos
-A tela **Fechamentos** recebeu o acabamento final depois da validação real da v0.25.22-r4 no celular.
+Projeto Supabase: `owkvwsiblbzlpxjwybrt`.
 
-Refinamentos:
-- data operacional continua como informação dominante;
-- **Fechado: DD/MM HH:MM** ficou mais discreto;
-- valores ganharam maior destaque e rótulos ficaram mais suaves;
-- cards, status verde, rodapé e espaçamentos verticais foram levemente compactados;
-- o fechamento mais recente ganhou o marcador **Último fechamento**;
-- o fechamento histórico reparado aparece como **ajuste administrativo** na interface, mantendo a trilha técnica original na auditoria;
-- botões **Sincronizar** e **Concluir** permanecem inalterados.
+Principais Edge Functions:
 
-Nenhuma regra de domínio, sincronização ou Supabase foi alterada.
+- `rota27-whatsapp` — v23 ACTIVE;
+- `rota27-sync` — v9 ACTIVE;
+- `rota27-whatsapp-inbound` — v3 ACTIVE;
+- `rota27-birthday-campaign` — v2 ACTIVE;
+- `rota27-event-campaign` — v4 ACTIVE;
+- `rota27-event-delivery-status` — v1 ACTIVE, somente leitura;
+- `rota27-audit` — v1 ACTIVE, somente leitura.
 
-## v0.25.22 — Refinamento dos Fechamentos
-A tela **Fechamentos** foi reorganizada para melhorar a hierarquia e a leitura no celular.
+As funções administrativas temporárias de replay/reenvio permanecem publicadas apenas como **tombstones encerrados**, exigem JWT e respondem HTTP 410; não executam mais reprocessamento.
 
-Nova ordem dos indicadores:
-- **Faturamento | Ticket médio**;
-- **Comandas fechadas | Comandas canceladas**;
-- **Itens vendidos | Formas de pagamento**.
+## Releases recentes
 
-Também foram aplicados:
-- rótulos operacionais completos;
-- horário explícito como **Fechado: DD/MM HH:MM**;
-- remoção do ID técnico `turn_...` da visão operacional, sem apagar o identificador do armazenamento/event log;
-- status verde reduzido para **Sincronizado • data/hora**;
-- espaço inferior adicional para o último card não ficar escondido pelos botões fixos.
+- **v0.25.43** — status real de entrega do WhatsApp;
+- **v0.25.44** — cartões de clientes com mais informações;
+- **v0.25.45** — Lista de comandas mais compacta;
+- **v0.25.46** — Hoje precisa de atenção;
+- **v0.25.47** — Mais usados hoje;
+- **v0.25.48** — funil real de entrega dos Eventos;
+- **v0.25.49–v0.25.55** — sequência de hotfixes mobile de estabilidade, UX, barra da comanda, Mapa rápido e foco da Nova comanda;
+- **v0.25.55-r2** — republicação do shell/PWA para eliminar cache antigo;
+- **v0.25.56** — consolidação da baseline e documentação operacional.
 
-### Hotfix r2
-A primeira publicação da v0.25.22 aplicou corretamente a ordem visual dos cards via CSS, mas o renderer-base podia redesenhar a tela após a sincronização e restaurar textos antigos. O hotfix **r2** passou a controlar a abertura e a sincronização da tela de Fechamentos de forma determinística, sem `MutationObserver` e sem polling visual frequente.
+## Roadmap retomado
 
-### Hotfix r3/r4
-As capturas reais mostraram que o rodapé/status ainda podiam ser redesenhados pelo módulo-base após o renderer novo. O r4 eliminou essa regressão visual com proteção de CSS e estabilização curta e finita, mantendo:
-- rodapé **Data operacional pela abertura • fechado em <aparelho>**;
-- nenhum `turn_...` visível na tela operacional;
-- status **Sincronizado • data/hora**;
-- mesma fonte de dados e mesma sincronização de fechamentos;
-- sem `MutationObserver` e sem polling contínuo.
+Concluídos:
 
-## v0.25.21 — Ontem no Histórico + leitura dos fechamentos
-A tela **Histórico** passa a ter cinco períodos: **Hoje, Ontem, 7 dias, 30 dias e Todos**.
+0. Lista de comandas mais compacta;
+1. Hoje precisa de atenção;
+2. Mais usados hoje;
+3. Funil real de entrega dos Eventos.
 
-A aba **Ontem** usa o fechamento imutável do dia operacional anterior como referência. Quando houver mais de um turno no mesmo dia, detalha o **último fechamento de ontem**, respeitando o corte do fechamento anterior. Exibe faturamento, comandas, ticket médio, itens vendidos, produtos/categorias e as comandas pertencentes àquele fechamento.
+Próximos:
 
-## v0.25.20 — Campanha de aniversários
-A área de clientes passa a ter uma campanha controlada para solicitar **Data de nascimento** por WhatsApp usando template oficial da Meta.
+4. Aniversários próximos;
+5. vencimento rápido em A Receber;
+6. Receber tudo em Compras;
+7. dias de cobertura do Estoque;
+8. classificação/ordenação inteligente de Clientes;
+9. pré-fechamento por exceção;
+10. alertas de custo/margem.
 
-Fluxo:
-- identifica clientes com WhatsApp e sem `birthDate`;
-- por segurança, o disparo padrão considera somente telefones com evidência anterior de mensagem transacional autorizada no Rota 27;
-- template: `solicitar_aniversario_rota27_v1`;
-- o painel mostra status do template, quantidade elegível, já solicitados e prontos para envio;
-- mensagens usam `whatsapp_message_log` com `event_id` determinístico, evitando duplicidade;
-- respostas em `DD/MM/AAAA` ou `AAAA-MM-DD` são reconhecidas automaticamente;
-- resposta válida gera `client_upsert` com `birthDate` e `birthDateUpdatedAt`, convergindo para os aparelhos;
-- o cliente recebe confirmação após gravação;
-- resposta inválida recebe orientação para reenviar no formato correto;
-- não foi criado novo tipo de evento de sincronização.
+## Regras de atualização da PWA
 
-Backend:
-- nova Edge Function `rota27-birthday-campaign`;
-- `rota27-whatsapp-inbound` processa respostas da campanha antes do encaminhamento comum ao gerente;
-- `rota27-sync` permanece inalterado.
+Não limpar `localStorage`, não reinstalar a PWA e não apagar dados de produção para atualizar versão. Com internet ativa, abrir o app, aguardar a atualização do Service Worker, fechar completamente e abrir novamente.
 
-## v0.25.19 — Cards compactos de comandas
-A tela **Comandas** ganhou cards mais baixos na Lista e duas colunas no Mapa mobile, sem alterar lógica operacional.
+## Documentação principal
 
-## v0.25.18 — Cadastro completo na abertura da comanda
-A nova comanda aceita **Data de nascimento** opcional junto com Cliente e WhatsApp. Cliente cadastrado preenche WhatsApp/nascimento quando disponíveis; cliente novo pode ter o nascimento salvo já na abertura. O campo vazio nunca apaga nascimento existente.
-
-## v0.25.17 — Aniversário no cadastro de clientes
-Adicionou Data de nascimento opcional ao cadastro compartilhado, Relacionamento & Fidelização e CSV de clientes, sincronizado via `client_upsert`.
-
-## v0.25.16 — Reparo histórico de fechamento
-Mantém o reparo administrativo rastreável do fechamento histórico ligado à comanda `c1787690191876` (Fred / Balcão / R$ 145,00), com estado canônico de 25/08 em R$ 448,00 / 8 comandas / 33 unidades.
-
-## Regra operacional preservada
-A data de abertura da comanda define a qual turno a venda pertence. Múltiplos turnos no mesmo dia continuam suportados; o fechamento anterior funciona como corte.
-
-## Preservado
-- seletor pesquisável de clientes na nova comanda;
-- data de nascimento no cadastro e na abertura da comanda;
-- A receber / Paga depois, inclusive recebimentos parciais;
-- rankings por ID/código com nome atual do produto;
-- referência de produtos ao editar categorias;
-- Lista + Mapa;
-- cópia fixa de WhatsApp para `+55 27 99776-9279` (`5527997769279`);
-- replay histórico hibernado;
-- estoque, compras, inventário, custos e relacionamento/fidelização.
-
-## Backend
-- `rota27-sync`: versão **9 ACTIVE** (`rota27-sync-v0.25.16`);
-- `rota27-whatsapp`: versão **23 ACTIVE**;
-- `rota27-birthday-campaign`: versão **2 ACTIVE**;
-- `rota27-whatsapp-inbound`: versão **2 ACTIVE**;
-- sem novo tipo de evento de sync e sem alteração de `rota27_sync_events_type_ck` na v0.25.28.
-
-## Ajuda
-Ajuda **v7.0** permanece ativa, identificando a release v0.25.28.
-
-## Atualização da PWA
-Não limpar dados nem reinstalar. Abra a PWA online, aguarde 20–30 segundos, feche completamente e abra novamente em cada aparelho.
-
-## Documentos
-- `docs/RELEASE-v0.25.28.md`
-- `docs/RELEASE-v0.25.27.md`
-- `docs/RELEASE-v0.25.26.md`
-- `docs/RELEASE-v0.25.25.md`
-- `docs/RELEASE-v0.25.24.md`
-- `docs/RELEASE-v0.25.23.md`
-- `docs/RELEASE-v0.25.22.md`
-- `docs/RELEASE-v0.25.21.md`
-- `docs/RELEASE-v0.25.20.md`
-- `docs/RELEASE-v0.25.19.md`
-- `docs/RELEASE-v0.25.18.md`
-- `docs/RELEASE-v0.25.17.md`
-- `docs/RELEASE-v0.25.16.md`
 - `docs/STATUS-PRODUCAO.md`
-
-Baseline de rollback do código: **v0.25.27**.
+- `docs/RELEASE-v0.25.56.md`
+- `docs/RELEASE-v0.25.55-r2.md`
+- `docs/RELEASE-v0.25.55.md`
+- `docs/RELEASE-v0.25.51.md`
+- `docs/RELEASE-v0.25.48.md`
+- `docs/RELEASE-v0.25.46.md`
+- `docs/RELEASE-v0.25.45.md`
 
 ## Versão
-Produção: **0.25.28**
+
+Produção: **0.25.56**
