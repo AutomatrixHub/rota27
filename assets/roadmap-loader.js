@@ -1,9 +1,10 @@
 /* Rota 27 — carregador incremental do roadmap pós-v0.25.46 */
 (function(){
   'use strict';
-  const CURRENT='0.25.52';
-  const HELP='8.4';
+  const CURRENT='0.25.53';
+  const HELP='8.5';
   const assets=[
+    {type:'css',id:'v02553CartbarButtonCss',src:'./assets/v02553-cartbar-button.css?v=02553r1'},
     {type:'css',id:'v02552CommandMapSimplifyCss',src:'./assets/v02552-command-map-simplify.css?v=02552r1'},
     {type:'js',id:'v02552CommandMapSimplifyJs',src:'./assets/v02552-command-map-simplify.js?v=02552r1'},
     {type:'css',id:'v02551UxHotfixCss',src:'./assets/v02551-ux-hotfix.css?v=02551r1'},
