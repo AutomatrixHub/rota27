@@ -1,9 +1,11 @@
 /* Rota 27 — carregador incremental do roadmap pós-v0.25.46 */
 (function(){
   'use strict';
-  const CURRENT='0.25.62';
-  const HELP='8.7';
+  const CURRENT='0.25.63';
+  const HELP='8.8';
   const assets=[
+    {type:'css',id:'v02563OperationalTurnCss',src:'./assets/v02563-operational-turn-coherence.css?v=02563r1'},
+    {type:'js',id:'v02563OperationalTurnJs',src:'./assets/v02563-operational-turn-coherence.js?v=02563r1'},
     {type:'css',id:'v02562CostAlertsCss',src:'./assets/v02562-cost-margin-alerts.css?v=02562r1'},
     {type:'js',id:'v02562CostAlertsJs',src:'./assets/v02562-cost-margin-alerts.js?v=02562r1'},
     {type:'css',id:'v02561TurnPreflightCss',src:'./assets/v02561-turn-preflight.css?v=02561r1'},

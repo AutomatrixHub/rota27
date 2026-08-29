@@ -3,79 +3,58 @@
 Aplicativo mobile-first, offline-first e multidispositivo para controle rápido de comandas da **Rota 27 Bodega**.
 
 ## Produção
-- **Versão:** v0.25.62 — Alertas de custo/margem
+- **Versão:** v0.25.63 — Coerência operacional de turnos
 - **Branch:** `main`
 - **GitHub Pages:** `https://automatrixhub.github.io/rota27/`
-- **Service Worker:** `rota27-comandas-v0.25.62-r1`
-- **Baseline anterior:** v0.25.61
+- **Service Worker:** `rota27-comandas-v0.25.63-r1`
+- **Baseline anterior:** v0.25.62
 
 ## Estado funcional atual
 
-### Comandas e Fechamento
-- Lista e Mapa preservados;
-- consumo interno/próprio preservado;
-- Nova comanda sem foco automático obrigatório;
-- pré-fechamento por exceção no card **Fechamento do turno**;
-- comandas abertas e cancelamentos pendentes continuam obedecendo às regras de bloqueio já existentes;
-- quando não há pendências, o card informa **Tudo certo para fechar**.
+### Turnos, Painel e Histórico
+- a **data operacional** vem da abertura da comanda;
+- o horário físico de fechamento não muda o turno ao qual a venda pertence;
+- o Painel substitui a leitura civil de **Hoje** por **Turno atual**;
+- faturamento, ticket médio, comandas e itens do Painel consideram somente o movimento desde o último fechamento da data operacional;
+- **Consumo interno / próprio** fica fora de faturamento e de valores em aberto;
+- o Painel mostra um card compacto de **Último turno fechado** com faturamento, comandas, itens e horário físico do fechamento;
+- o Histórico passa a priorizar **Turno atual** e **Último turno**;
+- períodos de 7 e 30 dias usam a data operacional das comandas, não apenas `closedAt`;
+- cada linha do Histórico diferencia **Turno DD/MM/AAAA** de **fechado DD/MM às HH:MM**;
+- dados legados sem `businessDate` usam `createdAt/openedAt` como fallback, nunca `closedAt`.
 
 ### A Receber
-- vencimento opcional **Sem data / Hoje / Amanhã / 7 dias**;
-- vencidas e vencimentos do dia destacados;
-- baixas parciais preservadas.
+- permanece separado do faturamento do turno;
+- o card do Painel explicita que o valor representa **saldos não recebidos**;
+- pagamentos posteriores baixam a pendência e não criam nova venda;
+- vencimento opcional **Sem data / Hoje / Amanhã / 7 dias** preservado.
 
-### Cardápio, Estoque e Compras
-- **Mais usados hoje** em Top 3;
-- dias de cobertura do Estoque calculados com consumo recente;
-- Reposição com referência para aproximadamente 7 dias;
-- recebimento de Compras já pré-preenche integralmente as quantidades pendentes, deixando somente exceções para edição.
+### Consumo interno
+- flags `internalConsumption` / `nonRevenue` são revalidadas localmente quando a comanda é identificada como Consumo interno;
+- o valor permanece apenas como referência e não entra em faturamento, ticket médio ou formas de pagamento;
+- novas comandas passam a receber `businessDate` operacional antes dos próximos snapshots persistidos.
 
-### Clientes & Fidelização
-- cards enriquecidos e **Aniversários próximos**;
-- níveis **Novo / Recorrente / Frequente / Cliente da casa / Sumido** reutilizando `Rota27V025.profileFor`;
-- ordenação por **Nome / Última visita / Mais frequentes / Aniversário próximo**.
+### Demais módulos
+- Lista e Mapa de comandas preservados;
+- Mais usados hoje, Estoque, Compras, Clientes & Fidelização, Eventos, WhatsApp e Custos & Margem preservados;
+- pré-fechamento por exceção preservado.
 
-### Custos & Margem
-- custos reais de aquisição e margem bruta estimada preservados;
-- produtos sem custo conhecido continuam fora das estimativas financeiras;
-- **margem bruta negativa** gera alerta por exceção;
-- **aumento de 10% ou mais no último custo efetivo**, quando ocorrido nos últimos 30 dias, gera alerta;
-- alertas detalhados aparecem em **Custos & Margem**;
-- o Painel recebe apenas uma linha consolidada em **Hoje precisa de atenção**;
-- quando não há exceções, o bloco de alertas não ocupa espaço.
-
-### WhatsApp
-- fluxo transacional, aniversários e Eventos & Convites preservados;
-- callbacks `sent`, `delivered`, `read`, `failed` e funil real de entrega preservados.
+## Evidência do incidente que motivou a v0.25.63
+O fechamento operacional de **28/08/2026**, concluído fisicamente em 29/08 às 08:25, possui snapshot oficial de **R$ 2.350,55**, 22 comandas e 165 itens. Dentro desse total, **R$ 680,80** correspondem a vendas em **A receber**. A interface antiga agrupava essas cinco comandas como “Hoje” porque foram fechadas fisicamente pela manhã, gerando leitura visual incorreta do novo turno.
 
 ## Backend
-Projeto Supabase: `owkvwsiblbzlpxjwybrt`. A v0.25.62 não altera Edge Function, migration, schema ou tipo de evento.
+Projeto Supabase: `owkvwsiblbzlpxjwybrt`. A v0.25.63 não altera schema, migration ou Edge Function.
 
-## Roadmap original — encerrado
-
-Concluídos:
-0. Lista compacta;
-1. Hoje precisa de atenção;
-2. Mais usados hoje;
-3. Funil real de Eventos;
-4. Aniversários próximos;
-5. Vencimento rápido em A Receber;
-6. Receber tudo em Compras — atendido pelo pré-preenchimento integral já existente;
-7. Dias de cobertura do Estoque;
-8. Inteligência de Clientes;
-9. Pré-fechamento por exceção;
-10. Alertas de custo/margem.
-
-**Planejamento original 0–10: concluído.**
+## Roadmap original
+Planejamento 0–10 permanece **concluído**. A v0.25.63 é uma correção pós-roadmap de coerência operacional.
 
 ## Atualização da PWA
 Não limpar `localStorage`, não reinstalar a PWA e não apagar dados de produção. Abra online, aguarde a atualização, feche completamente e abra novamente.
 
 ## Documentação
 - `docs/STATUS-PRODUCAO.md`
+- `docs/RELEASE-v0.25.63.md`
 - `docs/RELEASE-v0.25.62.md`
-- `docs/RELEASE-v0.25.61.md`
-- `docs/RELEASE-v0.25.60.md`
 
 ## Versão
-Produção: **0.25.62**
+Produção: **0.25.63**

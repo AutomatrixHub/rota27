@@ -1,0 +1,15 @@
+/* Rota 27 v0.25.63 — coerência operacional de turnos */
+#v02563LastTurn{background:#fbf6ee;border-style:dashed}
+.v02563-last-head{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.v02563-last-head>div{min-width:0}
+.v02563-last-head span{display:block;font-size:9px;font-weight:950;letter-spacing:.1em;color:#8a5d3b}
+.v02563-last-head strong{display:block;margin-top:3px;font-size:18px}
+.v02563-last-head small{display:block;margin-top:3px;color:#75685d;font-size:11px;line-height:1.3}
+.v02563-last-head button{border:1px solid #dec8aa;background:#fff8ee;color:#9b4f2b;border-radius:12px;padding:10px 12px;font-size:11px;font-weight:900;white-space:nowrap}
+.v02563-last-metrics{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:8px;margin-top:10px}
+.v02563-last-metrics>div{background:#f1e4d2;border:1px solid #dfccb0;border-radius:13px;padding:10px}
+.v02563-last-metrics small{display:block;color:#78695c;font-size:10px}
+.v02563-last-metrics strong{display:block;margin-top:3px;font-size:15px}
+.v02563-summary-note{margin-top:10px;padding:9px 10px;border-radius:11px;background:#f2eadc;color:#6f6257;font-size:10px;line-height:1.35}
+#v14HistoryToolbar .v14-periods button[data-v02563-mode="current"],#v02521YesterdayBtn[data-v02563-mode="last"]{font-weight:900}
+@media(max-width:380px){.v02563-last-head{align-items:flex-start}.v02563-last-head button{padding:9px 10px}.v02563-last-metrics{grid-template-columns:1fr 1fr 1fr}}
