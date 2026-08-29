@@ -1,0 +1,43 @@
+/* Rota 27 v0.25.52 — simplificação de Comandas */
+
+/*
+ * Mantém as duas visualizações oficiais, Lista e Mapa.
+ * Desabilita somente o bloco adicional "Mapa rápido" e seus atalhos de abertura.
+ */
+#screenCommands .v0252-map-intro,
+#screenCommands .v0252-quick-new{
+  display:none!important;
+}
+
+/*
+ * A ação única de itens precisa caber em uma linha na barra preta.
+ * O botão continua abrindo o mesmo editor validado da comanda.
+ */
+#cartbar .items-btn{
+  flex:0 0 140px!important;
+  min-width:140px!important;
+  max-width:140px!important;
+  padding:11px 10px!important;
+  white-space:nowrap!important;
+  line-height:1!important;
+  font-size:12px!important;
+}
+
+/*
+ * Nova comanda não faz sentido enquanto a barra da comanda atual está ativa.
+ * Evita qualquer sobreposição com Fechar sem alterar o comportamento normal do FAB.
+ */
+body:has(#cartbar.show) #fabNew{
+  display:none!important;
+}
+
+@media(max-width:360px){
+  #cartbar .items-btn{
+    flex-basis:134px!important;
+    min-width:134px!important;
+    max-width:134px!important;
+    font-size:11.5px!important;
+    padding-left:8px!important;
+    padding-right:8px!important;
+  }
+}
