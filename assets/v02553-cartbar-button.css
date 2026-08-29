@@ -1,0 +1,29 @@
+/* Rota 27 v0.25.53 — ajuste do botão Ver/Editar itens */
+
+/*
+ * Mantém a ação Ver/Editar itens em uma única linha, mas recupera a mesma
+ * presença visual do botão Fechar: fonte e altura equivalentes, com largura
+ * suficiente para o rótulo completo.
+ */
+#cartbar .items-btn{
+  flex:0 0 148px!important;
+  min-width:148px!important;
+  max-width:148px!important;
+  padding:11px 13px!important;
+  font-size:16px!important;
+  line-height:normal!important;
+  font-weight:900!important;
+  white-space:nowrap!important;
+  min-height:0!important;
+}
+
+@media(max-width:360px){
+  #cartbar .items-btn{
+    flex-basis:144px!important;
+    min-width:144px!important;
+    max-width:144px!important;
+    padding-left:11px!important;
+    padding-right:11px!important;
+    font-size:16px!important;
+  }
+}
