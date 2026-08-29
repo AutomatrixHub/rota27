@@ -3,92 +3,75 @@
 Última revisão: 29/08/2026
 
 ## Produção
-
-- versão: **v0.25.59 — Dias de cobertura do Estoque**;
+- versão: **v0.25.60 — Inteligência de Clientes**;
 - branch: `main`;
 - GitHub Pages: `https://automatrixhub.github.io/rota27/`;
-- Service Worker: `rota27-comandas-v0.25.59-r1`;
-- baseline anterior: **v0.25.58**, merge `cb854a335a964a8a2c27d647ddd088bca1773eec`.
+- Service Worker: `rota27-comandas-v0.25.60-r1`;
+- baseline anterior: **v0.25.59**, merge `08904789aeb01eec1efaf0bd985a725468322869`.
 
 ## Estado operacional
 
-### Comandas e A Receber
+### Comandas, A Receber e Cardápio
 - Lista e Mapa ativos;
-- Mapa rápido desabilitado;
 - consumo interno/próprio preservado;
-- `A receber / Paga depois` preservado;
-- vencimento opcional **Sem data / Hoje / Amanhã / 7 dias**;
-- vencidas e vencimentos do dia destacados;
+- vencimento rápido em A Receber preservado;
+- Mais usados hoje em Top 3;
 - Nova comanda sem foco automático obrigatório.
 
-### Cardápio
-- catálogo, categorias, busca e gestão de preços preservados;
-- **Mais usados hoje** em Top 3.
-
 ### Estoque & Compras
-- Estoque Essencial preservado;
-- cada produto controlado recebe estimativa de **dias de cobertura** quando há consumo recente suficiente;
-- cálculo usa até 7 dias operacionais recentes e exclui cancelamentos, consumo interno e não faturáveis;
-- sem histórico recente, exibe **Sem consumo recente**;
-- Reposição mostra também a quantidade aproximada necessária para chegar a 7 dias de cobertura, sem alterar o campo Comprar automaticamente;
-- o fluxo de recebimento de compras já abre com todas as quantidades pendentes preenchidas, exigindo edição somente das exceções; isso atende ao item planejado **Receber tudo** sem criar botão redundante.
+- cobertura estimada em dias ativa;
+- cálculo usa até 7 dias operacionais recentes e ignora cancelamentos/consumo interno/não faturáveis;
+- Reposição mostra quantidade aproximada para ~7 dias sem alterar Comprar;
+- recebimento de compras já pré-preenche toda quantidade pendente, deixando o usuário corrigir apenas exceções.
 
 ### Clientes & Fidelização
-- cards enriquecidos;
-- data de nascimento sincronizada;
-- **Aniversários próximos** mostra hoje e próximos 7 dias;
-- Eventos & Convites preservados.
+- `Rota27V025.profileFor` permanece a fonte oficial de classificação;
+- níveis: **Novo (0–1), Recorrente (2–4), Frequente (5–9), Cliente da casa (10+)**;
+- **Sumido** continua significando cliente com pelo menos 2 visitas e 30+ dias sem voltar;
+- a lista principal exibe esses selos sem gravar novo dado;
+- ordenações disponíveis: **Nome / Última visita / Mais frequentes / Aniversário próximo**;
+- ordenação é somente visual/local e não altera cadastro nem sync;
+- Aniversários próximos e Eventos & Convites preservados.
 
 ### WhatsApp
-- callbacks `sent/delivered/read/failed` preservados;
-- funil real de Eventos preservado.
+- callbacks `sent/delivered/read/failed` e funil real de Eventos preservados.
 
 ## Backend Supabase
-
 Projeto: `owkvwsiblbzlpxjwybrt`.
 
-Permanecem sem alteração nesta release:
-- `rota27-whatsapp` — v23 ACTIVE;
-- `rota27-sync` — v9 ACTIVE;
-- `rota27-whatsapp-inbound` — v3 ACTIVE;
-- `rota27-birthday-campaign` — v2 ACTIVE;
-- `rota27-event-campaign` — v4 ACTIVE;
-- `rota27-event-delivery-status` — v1 ACTIVE;
-- `rota27-audit` — v1 ACTIVE.
+Sem alteração nesta release:
+- `rota27-whatsapp` v23 ACTIVE;
+- `rota27-sync` v9 ACTIVE;
+- `rota27-whatsapp-inbound` v3 ACTIVE;
+- `rota27-birthday-campaign` v2 ACTIVE;
+- `rota27-event-campaign` v4 ACTIVE;
+- `rota27-event-delivery-status` v1 ACTIVE;
+- `rota27-audit` v1 ACTIVE.
 
-A v0.25.59 não cria Edge Function, migration, schema ou tipo de evento.
-
-## Roadmap retomado
-
+## Roadmap
 Concluído:
-
 0. compactação de Comandas/Lista;
 1. Hoje precisa de atenção;
 2. Mais usados hoje;
 3. funil real de Eventos;
 4. Aniversários próximos;
 5. Vencimento rápido em A Receber;
-6. Receber tudo em Compras — já atendido pelo pré-preenchimento integral existente;
-7. Dias de cobertura do Estoque.
+6. Receber tudo em Compras — já atendido pelo comportamento existente;
+7. Dias de cobertura do Estoque;
+8. Inteligência de Clientes.
 
-Próximo item funcional:
-
-8. **Inteligência de Clientes: classificação e ordenação**.
+Próximo:
+9. **Pré-fechamento por exceção**.
 
 Depois:
-
-9. pré-fechamento por exceção;
 10. alertas de custo/margem.
 
 ## Regras de preservação
-
 - não limpar `localStorage` de produção;
 - não reinstalar PWA como mecanismo normal de atualização;
 - não resetar Supabase;
-- não recriar clientes;
 - Sandbox não envia WhatsApp real nem sincroniza produção;
 - novas alterações usam branch curta + PR + merge + confirmação do GitHub Pages.
 
 ## Rollback
-
-Para rollback funcional imediato, usar a baseline **v0.25.58** / merge `cb854a335a964a8a2c27d647ddd088bca1773eec`.
+Baseline anterior: **v0.25.59** / merge `08904789aeb01eec1efaf0bd985a725468322869`.
