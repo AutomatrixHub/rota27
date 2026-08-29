@@ -1,0 +1,3 @@
+/* Rota 27 v0.25.59 — dias de cobertura do estoque */
+.v02559-coverage,.v02559-restock-coverage{display:block!important;margin-top:4px;font-size:9.5px!important;line-height:1.25!important;font-weight:800!important}.v02559-coverage.neutral,.v02559-restock-coverage.neutral{color:#7a6c5f!important}.v02559-coverage.ok,.v02559-restock-coverage.ok{color:#3f6b4b!important}.v02559-coverage.warn,.v02559-restock-coverage.warn{color:#8a6723!important}.v02559-coverage.danger,.v02559-restock-coverage.danger{color:#a04438!important}
+.v022-restock-row .v02559-restock-coverage{margin-top:5px;padding-top:4px;border-top:1px dashed rgba(130,101,76,.18)}
