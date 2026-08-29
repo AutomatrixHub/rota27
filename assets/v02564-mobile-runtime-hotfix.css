@@ -1,0 +1,12 @@
+/* Rota 27 v0.25.64 — interação mobile */
+#fabNew{
+  z-index:42!important;
+  pointer-events:auto!important;
+  touch-action:manipulation;
+}
+body:has(#screenCommands.active) #fabNew{
+  display:block!important;
+}
+body:has(#screenSale.active) #fabNew{
+  display:none!important;
+}
