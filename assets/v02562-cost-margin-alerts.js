@@ -43,11 +43,16 @@
     const count=list.querySelectorAll('.v02546-attention-item').length,ct=byId('v02546AttentionCount');if(ct)ct.textContent=String(count);section.hidden=false;return true;
   }
   function refresh(){renderCostsAlert();ensurePanelSignal();}
-  function settle(){[0,90,260,600].forEach(ms=>setTimeout(refresh,ms));}
+  function refreshAfterPanel(){requestAnimationFrame(()=>requestAnimationFrame(refresh));}
   function start(){
-    settle();document.addEventListener('click',e=>{if(e.target.closest?.('#v024PurchasesCostBtn,#v024StockCostBtn,#v024CostsWrap [data-mode],#navPanel'))settle();});
-    ['rota27:v022-purchases-updated','rota27:v021-stock-updated','rota27:v023-inventory-updated','rota27:v017-domain-updated'].forEach(name=>window.addEventListener(name,settle));window.addEventListener('storage',settle);
-    document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')settle();});
+    refresh();
+    document.addEventListener('click',e=>{
+      if(e.target.closest?.('#navPanel')){refreshAfterPanel();return;}
+      if(e.target.closest?.('#v024PurchasesCostBtn,#v024StockCostBtn,#v024CostsWrap [data-mode]'))queueMicrotask(refresh);
+    });
+    ['rota27:v022-purchases-updated','rota27:v021-stock-updated','rota27:v023-inventory-updated','rota27:v017-domain-updated'].forEach(name=>window.addEventListener(name,refresh));
+    window.addEventListener('storage',refresh);
+    document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')refreshAfterPanel();});
     window.Rota27V02562CostAlerts={version:VERSION,refresh,getAlerts:alerts};console.info('[Rota27] v0.25.62 — alertas de custo/margem ativos.');
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
