@@ -30,6 +30,13 @@
   }
   function units(c){return Object.values(c?.items||{}).reduce((s,q)=>s+Math.max(0,Number(q||0)),0);}
 
+  /*
+   * A v0.25.63 normalizava commands + history em todo save(). Em aparelhos
+   * móveis com histórico grande isso cria custo repetitivo. Aqui removemos
+   * somente aquele wrapper e mantemos a garantia necessária nos comandos
+   * abertos, que são poucos e são os únicos que precisam receber businessDate
+   * antes do diff/sync.
+   */
   function normalizeOpenCommands(){
     let changed=false;
     (Array.isArray(state?.commands)?state.commands:[]).forEach(c=>{
@@ -63,6 +70,7 @@
     return true;
   }
 
+  /* Reaproveita a ponte estável existente do Painel; não cria outra ponte. */
   function schedulePanelRepair(){
     if(panelScheduled)return;panelScheduled=true;
     const run=()=>{
@@ -72,24 +80,7 @@
     };
     if(typeof queueMicrotask==='function')queueMicrotask(run);else Promise.resolve().then(run);
   }
-  function installCanonicalPanelBridge(){
-    const panel=byId('screenPanel');if(!panel)return false;
-    if(panel.dataset.v02564CanonicalBridge==='1')return true;
-    const d=Object.getOwnPropertyDescriptor(Element.prototype,'innerHTML');
-    if(!d?.get||!d?.set)return false;
-    try{
-      Object.defineProperty(panel,'innerHTML',{
-        configurable:true,enumerable:d.enumerable,
-        get:function(){return d.get.call(this);},
-        set:function(value){d.set.call(this,value);schedulePanelRepair();}
-      });
-      panel.dataset.v02564CanonicalBridge='1';
-      panel.dataset.v0252RelationshipBridge='1';
-      panel.dataset.v02563OperationalBridge='1';
-      return true;
-    }catch(err){console.warn('[Rota27 v0.25.64] ponte única do Painel:',err);return false;}
-  }
-
+  /* FAB: Lista e Mapa usam a mesma ação real de Nova comanda. */
   function repairCommandsChrome(){
     const commands=byId('screenCommands')?.classList.contains('active');
     const sale=byId('screenSale')?.classList.contains('active');
@@ -114,6 +105,7 @@
     return true;
   }
 
+  /* Finalização canônica de consumo interno, independente da ordem dos wrappers. */
   function finalizeInternal(){
     const c=activeCommand();if(!isInternal(c))return false;
     if(units(c)<=0){toast('Lance ao menos um produto antes de finalizar o consumo interno.');return true;}
@@ -144,7 +136,7 @@
   }
 
   function settle(){
-    installLightSave();installCanonicalPanelBridge();bindFab();installFinalizeRoot();normalizeOpenCommands();repairCommandsChrome();schedulePanelRepair();
+    installLightSave();bindFab();installFinalizeRoot();normalizeOpenCommands();repairCommandsChrome();schedulePanelRepair();
   }
   function delayedSettle(){[0,420,1050].forEach(ms=>setTimeout(settle,ms));}
   function handleClick(e){
