@@ -4,11 +4,11 @@ Aplicativo mobile-first, offline-first e multidispositivo para controle rápido 
 
 ## Produção
 
-- **Versão:** v0.25.57 — Aniversários próximos
+- **Versão:** v0.25.58 — Vencimento rápido em A Receber
 - **Branch:** `main`
 - **GitHub Pages:** `https://automatrixhub.github.io/rota27/`
-- **Service Worker:** `rota27-comandas-v0.25.57-r1`
-- **Baseline anterior:** v0.25.56
+- **Service Worker:** `rota27-comandas-v0.25.58-r1`
+- **Baseline anterior:** v0.25.57
 
 ## Navegação
 
@@ -27,8 +27,18 @@ Aplicativo mobile-first, offline-first e multidispositivo para controle rápido 
 - edição, fechamento e cancelamento de comandas;
 - consumo interno/próprio sem contaminar faturamento;
 - `A receber / Paga depois`, inclusive recebimentos parciais;
+- ao fechar como **A receber**, vencimento opcional com atalhos **Sem data / Hoje / Amanhã / 7 dias**;
 - barra de ação com `Ver/Editar itens` e `Fechar`;
 - Nova comanda sem foco automático obrigatório em `Mesa/Local`.
+
+### A Receber
+- vencimento é opcional; o padrão continua **Sem data**;
+- vencimentos também podem ser ajustados depois na lista de pendências;
+- pendências vencidas e com vencimento hoje ganham destaque;
+- ordenação prioriza vencidas, depois hoje, futuras e sem data;
+- Painel destaca vencidas ou vencimentos do dia antes do resumo geral;
+- a data é sincronizada pelo `receivable_upsert` já existente, sem novo tipo de evento;
+- não existe cobrança automática.
 
 ### Cardápio
 - catálogo por categorias;
@@ -95,16 +105,9 @@ As funções administrativas temporárias de replay/reenvio permanecem publicada
 
 ## Releases recentes
 
-- **v0.25.43** — status real de entrega do WhatsApp;
-- **v0.25.44** — cartões de clientes com mais informações;
-- **v0.25.45** — Lista de comandas mais compacta;
-- **v0.25.46** — Hoje precisa de atenção;
-- **v0.25.47** — Mais usados hoje;
-- **v0.25.48** — funil real de entrega dos Eventos;
-- **v0.25.49–v0.25.55** — sequência de hotfixes mobile de estabilidade e UX;
-- **v0.25.55-r2** — republicação do shell/PWA para eliminar cache antigo;
 - **v0.25.56** — consolidação da baseline e documentação operacional;
-- **v0.25.57** — Aniversários próximos.
+- **v0.25.57** — Aniversários próximos;
+- **v0.25.58** — Vencimento rápido em A Receber.
 
 ## Roadmap retomado
 
@@ -114,11 +117,11 @@ Concluídos:
 1. Hoje precisa de atenção;
 2. Mais usados hoje;
 3. Funil real de entrega dos Eventos;
-4. Aniversários próximos.
+4. Aniversários próximos;
+5. Vencimento rápido em A Receber.
 
 Próximos:
 
-5. vencimento rápido em A Receber;
 6. Receber tudo em Compras;
 7. dias de cobertura do Estoque;
 8. classificação/ordenação inteligente de Clientes;
@@ -132,13 +135,10 @@ Não limpar `localStorage`, não reinstalar a PWA e não apagar dados de produç
 ## Documentação principal
 
 - `docs/STATUS-PRODUCAO.md`
+- `docs/RELEASE-v0.25.58.md`
 - `docs/RELEASE-v0.25.57.md`
 - `docs/RELEASE-v0.25.56.md`
-- `docs/RELEASE-v0.25.55-r2.md`
-- `docs/RELEASE-v0.25.55.md`
-- `docs/RELEASE-v0.25.51.md`
-- `docs/RELEASE-v0.25.48.md`
 
 ## Versão
 
-Produção: **0.25.57**
+Produção: **0.25.58**
