@@ -3,61 +3,56 @@
 Última revisão: 29/08/2026
 
 ## Produção
-- versão: **v0.25.65 — Parabéns automático de aniversário**;
+- versão: **v0.25.66 — Elegibilidade de aniversário**;
 - branch: `main`;
 - GitHub Pages: `https://automatrixhub.github.io/rota27/`;
-- Service Worker: `rota27-comandas-v0.25.65-r1`;
-- baseline anterior: **v0.25.64**, merge `3e730cdbb4f97b6511bb1e70709d6c47ea117731`.
+- Service Worker: `rota27-comandas-v0.25.66-r1`;
+- baseline anterior: **v0.25.65**, merge `9a9e2a64bd6d2b3b01004dc2e804128386221a02`.
 
 ## Parabéns automático
 - envio diário às **09:30**, fuso `America/Sao_Paulo`;
 - cron backend: `rota27-birthday-greeting-0930` / `30 12 * * *` UTC;
-- aniversariante precisa ter data de nascimento válida, WhatsApp válido e `relationshipMarketingOptIn=true`;
-- idempotência: `birthday_greeting_v1::<ano>::<clientId>`, impedindo duplicidade anual;
+- template `aniversario_cliente_rota27_v1`: **APPROVED**, categoria MARKETING, `pt_BR`;
+- idempotência anual: `birthday_greeting_v1::<ano>::<clientId>`;
 - Sandbox não envia;
-- template não aprovado gera `skip`, nunca texto livre ou fallback promocional.
+- sem fallback por texto livre.
 
-## Consentimento
-O editor de Clientes mantém dois contextos separados:
-- atualizações da comanda: consentimento operacional já existente;
-- **Receber mensagens da Rota 27 pelo WhatsApp**: aniversário, eventos e relacionamento.
+## Regra de elegibilidade v0.25.66
+Quando uma data de nascimento é fornecida ou alterada no cadastro:
+- a data é sincronizada no `client_upsert`;
+- `relationshipMarketingOptIn=true` acompanha o mesmo fluxo;
+- `eventMarketingOptIn=true` é mantido por compatibilidade;
+- fonte: `birth_date_provided_v02566`.
 
-O novo consentimento é persistido como `relationshipMarketingOptIn` e também mantém compatibilidade com `eventMarketingOptIn` para campanhas futuras de eventos. Autorizações antigas exclusivamente de eventos não são usadas automaticamente para parabéns até nova confirmação no cadastro.
+Se o cliente fizer opt-out explicitamente depois, sem alterar novamente a data, o opt-out continua podendo ser salvo.
 
-## Template Meta
-- `aniversario_cliente_rota27_v1`;
-- `MARKETING` / `pt_BR`;
-- texto aprovado no produto: `Olá, {{1}}! A equipe da Rota 27 Bodega deseja a você um feliz aniversário, com muita saúde, alegria e bons momentos. Parabéns pelo seu dia!`;
-- submissão inicial executada em 29/08/2026;
-- retorno inicial da Meta: **PENDING**, id `2886374555032299`;
-- a automação só envia quando o status remoto for `APPROVED`.
+## Backfill aprovado
+Foi executado um backfill append-only em produção para **21 clientes** que já possuíam data de nascimento. Foram inseridos novos `client_upsert` com a data preservada e autorização `true`.
 
-## Edge Function
-`rota27-birthday-greeting`:
-- versão inicial: `rota27-birthday-greeting-v1`;
-- ações de status e envio manual exigem `x-rota27-device-token`;
-- execução automática só funciona na janela local 09:30–09:45 e sempre recalcula a elegibilidade;
-- usa `whatsapp_message_log` para auditoria e entrega;
-- o webhook `rota27-whatsapp-inbound` continua sendo a fonte dos estados entregue/lido/falhou por `wa_message_id`.
+O backfill corrigiu também clientes cuja data existia em evento anterior, mas não no snapshot mais recente, como o caso de **JJ Ivan Lins**.
 
-## Banco / scheduling
-Migration `birthday_greeting_cron_0930` aplicada em produção:
-- habilita `pg_cron` e `pg_net`;
-- registra o job `rota27-birthday-greeting-0930`;
-- job ativo confirmado em produção.
+Nenhum evento histórico foi apagado ou atualizado in-place.
 
 ## Interface
 Em **Clientes & Fidelização → Aniversários próximos**:
-- informa que parabéns é automático às 09:30;
-- mostra estado do template e contagem do dia;
-- aniversariante pode aparecer como Agendado 09:30, Aceito pela Meta, Enviado, Entregue, Lido, Falhou ou Sem autorização;
-- botão Atualizar consulta o backend sem polling contínuo.
+- o texto passa a informar o envio automático às 09:30;
+- cada cliente recebe um status de elegibilidade;
+- `Autorizado • 09h30 no dia`: data + WhatsApp válido + autorização;
+- `Sem autorização`: relacionamento desabilitado;
+- `Sem WhatsApp`: telefone ausente/inválido;
+- no dia do aniversário, os estados da entrega permanecem: Agendado 09:30, Aceito pela Meta, Enviado, Entregue, Lido ou Falhou.
+
+## Consentimentos
+- atualizações da comanda: consentimento operacional separado;
+- aniversário, eventos e relacionamento: `relationshipMarketingOptIn`;
+- o editor continua permitindo opt-out posterior.
 
 ## Preservação
+- v0.25.65 permanece responsável pela automação de parabéns e status de entrega;
 - v0.25.64 permanece responsável por estabilidade mobile, FAB + e Consumo interno;
 - v0.25.63 permanece responsável pela data operacional de turnos;
-- nenhum dado histórico foi resetado ou reprocessado;
-- nenhuma mensagem de aniversário foi enviada durante a implantação, pois o template ainda estava PENDING.
+- nenhum reset de dados;
+- nenhum envio de WhatsApp foi feito durante o backfill.
 
 ## Regras de operação
 - não limpar `localStorage` de produção;
@@ -67,4 +62,4 @@ Em **Clientes & Fidelização → Aniversários próximos**:
 - mudanças usam branch curta + PR + merge + confirmação do Pages.
 
 ## Rollback
-Baseline anterior: **v0.25.64** / merge `3e730cdbb4f97b6511bb1e70709d6c47ea117731`.
+Baseline anterior: **v0.25.65** / merge `9a9e2a64bd6d2b3b01004dc2e804128386221a02`.
