@@ -72,10 +72,34 @@
     return c?clone(c):null;
   }
 
+  function isCancellationWhatsappEligible(c){
+    return !!(c?.id&&c.cancelled!==true&&c.whatsappOptIn===true&&validPhone(c.whatsappPhone||'')&&cancellationItems(c).length);
+  }
+
+  function decorateCancelConfirm(){
+    const summary=document.getElementById('v0151CancelSummary');
+    if(!summary)return;
+    const snapshot=currentCommandSnapshot();
+    summary.innerHTML=summary.innerHTML.replace(
+      'e nenhum envio pendente de WhatsApp desta comanda será tentado.',
+      'e os envios pendentes anteriores desta comanda serão cancelados.'
+    );
+    summary.querySelector('.v02573-cancel-wa-note')?.remove();
+    const note=document.createElement('div');
+    note.className='v02573-cancel-wa-note';
+    note.style.cssText='margin-top:12px;padding:10px 11px;border-radius:12px;background:#f4e5d2;color:#68442b;font-size:12px;line-height:1.4;';
+    if(isCancellationWhatsappEligible(snapshot)){
+      note.innerHTML='<strong>WhatsApp:</strong> o cliente será avisado do cancelamento, com os itens marcados como removidos e total atualizado para R$ 0,00.';
+    }else{
+      note.innerHTML='<strong>WhatsApp:</strong> não há aviso de cancelamento a enviar para esta comanda.';
+    }
+    summary.appendChild(note);
+  }
+
   function queueCancellation(c){
-    if(!c?.id||c.cancelled===true||c.whatsappOptIn!==true)return false;
-    const phone=normalizePhone(c.whatsappPhone||'');if(!validPhone(phone))return false;
-    const items=cancellationItems(c);if(!items.length)return false;
+    if(!isCancellationWhatsappEligible(c))return false;
+    const phone=normalizePhone(c.whatsappPhone||'');
+    const items=cancellationItems(c);
     if(wasSent(c.id))return false;
 
     const rows=readOutbox();
@@ -138,7 +162,7 @@
 
   async function flushOutbox(){
     if(flushing||!navigator.onLine)return false;
-    let rows=readOutbox();if(!rows.length)return true;
+    const rows=readOutbox();if(!rows.length)return true;
     flushing=true;
     let nextDelay=null;
     try{
@@ -173,11 +197,14 @@
   function start(){
     identity();
     document.addEventListener('click',captureCancellation,true);
+    document.addEventListener('click',e=>{
+      if(e.target?.closest?.('#v0151CancelCommandBtn'))queueMicrotask(decorateCancelConfirm);
+    });
     window.addEventListener('online',()=>scheduleFlush(300));
     window.addEventListener('pageshow',()=>scheduleFlush(450));
     document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')scheduleFlush(450);});
     scheduleFlush(800);
-    window.Rota27V02573WhatsappCancel={version:VERSION,flush:flushOutbox,pending:()=>readOutbox().length};
+    window.Rota27V02573WhatsappCancel={version:VERSION,flush:flushOutbox,pending:()=>readOutbox().length,decorateCancelConfirm};
     console.info('[Rota27] v0.25.73 — aviso WhatsApp de cancelamento ativo.');
   }
 
