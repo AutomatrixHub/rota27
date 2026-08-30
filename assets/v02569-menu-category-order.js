@@ -4,6 +4,7 @@
   const VERSION='0.25.69';
   const collator=new Intl.Collator('pt-BR',{sensitivity:'base',numeric:true});
   let menuCategory='Todos';
+  let usageCache={signature:'',map:new Map()};
 
   function text(v){return String(v??'').trim();}
   function key(v){return text(v).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLocaleLowerCase('pt-BR');}
@@ -16,7 +17,15 @@
     style.textContent=`#v14VersionBadge::after{content:"v${VERSION}"!important}`;
   }
 
+  function historySignature(){
+    const rows=Array.isArray(state?.history)?state.history:[];
+    const first=rows[0]||{},last=rows[rows.length-1]||{};
+    return `${rows.length}|${first.id||''}|${first.closedAt||''}|${first.updatedAt||''}|${last.id||''}|${last.closedAt||''}`;
+  }
+
   function usageByCategory(){
+    const signature=historySignature();
+    if(usageCache.signature===signature)return usageCache.map;
     const usage=new Map();
     const rows=Array.isArray(state?.history)?state.history:[];
     for(const command of rows){
@@ -28,6 +37,7 @@
         const k=key(cat);usage.set(k,(usage.get(k)||0)+qty);
       }
     }
+    usageCache={signature,map:usage};
     return usage;
   }
 
@@ -36,11 +46,11 @@
     const beer=raw.find(c=>same(c,'Cervejas'))||null;
     const drinks=raw.find(c=>same(c,'Bebidas'))||null;
     const fixed=[beer,drinks].filter(Boolean);
-    const scores=usageByCategory();
+    const scores=consumptionOrder?usageByCategory():null;
     const rest=raw.filter(c=>!fixed.some(f=>same(c,f)));
     rest.sort((a,b)=>{
       if(consumptionOrder){
-        const delta=(scores.get(key(b))||0)-(scores.get(key(a))||0);
+        const delta=(scores?.get(key(b))||0)-(scores?.get(key(a))||0);
         if(delta)return delta;
       }
       return collator.compare(a,b);
