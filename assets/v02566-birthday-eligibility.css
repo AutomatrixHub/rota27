@@ -1,0 +1,9 @@
+/* Rota 27 v0.25.66 — elegibilidade de aniversário */
+#v02557UpcomingBirthdays .v02557-person{position:relative;padding-right:150px!important;min-height:58px}
+#v02557UpcomingBirthdays .v02566-eligibility{position:absolute;right:14px;bottom:7px;display:inline-flex;align-items:center;justify-content:center;max-width:142px;padding:4px 8px;border-radius:999px;font-size:11px;font-weight:800;line-height:1.15;text-align:center;white-space:normal}
+#v02557UpcomingBirthdays .v02566-eligibility.ok{background:#e6f4e9;color:#1f6a36;border:1px solid #b9dfc3}
+#v02557UpcomingBirthdays .v02566-eligibility.off{background:#f4eadc;color:#8a5a2c;border:1px solid #e4cfb2}
+@media (max-width:420px){
+  #v02557UpcomingBirthdays .v02557-person{padding-right:132px!important}
+  #v02557UpcomingBirthdays .v02566-eligibility{right:10px;max-width:124px;font-size:10px;padding:4px 6px}
+}
