@@ -3,38 +3,42 @@
 Última revisão: 30/08/2026
 
 ## Produção
-- versão: **v0.25.71 — Prioridade de categorias e seletor real de clientes**;
+- versão: **v0.25.72 — Seletor persistente de clientes + Painel sem redundância**;
 - branch: `main`;
 - GitHub Pages: `https://automatrixhub.github.io/rota27/`;
-- Service Worker: `rota27-comandas-v0.25.71-r1`;
-- baseline anterior: **v0.25.70**, merge `33cd7e314c738bc0e939d62d5b6836a7133bccb5`.
+- Service Worker: `rota27-comandas-v0.25.72-r1`;
+- baseline anterior: **v0.25.71**, merge `5bc6f45e26b4926c7b73084c2e7a06c1a7a18442`.
 
-## Categorias
-Ordem fixa no Cardápio e no lançamento:
+## Nova comanda — seletor de clientes
+A v0.25.71 eliminou a sobreposição principal, mas o core v0.17 ainda possui `refreshClientDatalist()` e pode tentar recolocar `list=v017ClientSuggestions` após refreshes de domínio. A imagem real de produção confirmou a reincidência.
+
+A v0.25.72 resolve a concorrência de forma persistente:
+- `v02513-client-picker.js` não instala mais listeners legados em releases modernas;
+- `#newCustomer` recebe proteção local que ignora novas tentativas de `setAttribute('list', ...)`;
+- o datalist `v017ClientSuggestions` é removido da Nova comanda quando a camada moderna é preparada;
+- o campo recebe um nome de formulário próprio da release para evitar reaproveitamento indevido de sugestões antigas do navegador;
+- o seletor v0.25.71 continua sendo a única lista visual, com clientes sincronizados, deduplicação, rolagem por toque e seleção por click;
+- a proteção é orientada a eventos; não há polling nem `MutationObserver`.
+
+## Painel — A Receber
+O card isolado `#v02512ReceivablesEntry` foi removido visualmente por redundância.
+
+Quando existem pendências, **Hoje precisa de atenção** já apresenta:
+- quantidade de pendências;
+- saldo ainda não recebido;
+- ação para abrir A Receber.
+
+Na v0.25.72, essa ação recebe destaque laranja/alto contraste. O módulo, os dados e a sincronização de A Receber permanecem intactos.
+
+## Categorias preservadas
+A v0.25.71 continua responsável pela ordem:
 1. **Todos**;
 2. **Cervejas**;
 3. **Bebidas**;
 4. **Charcutaria**;
 5. **Vinhos**.
 
-No Cardápio, as demais categorias ficam em ordem alfabética. No lançamento, as demais continuam ordenadas pela quantidade histórica faturável vendida, com empate alfabético. Consumo interno/non-revenue permanece fora. O alias `Carchutaria` é reconhecido sem alterar o cadastro.
-
-## Nova comanda — seleção de clientes
-A auditoria confirmou concorrência entre o `<datalist>` nativo criado por `v017-core.js` e o seletor visual `v02513-client-picker.js`.
-
-A v0.25.71 adiciona `v02571-client-picker.css/js`:
-- remove `list=v017ClientSuggestions` de `#newCustomer` sempre que a camada é ativada;
-- desativa autocomplete/autocorreção nativos no campo;
-- chama `Rota27V017.syncDomainNow()` ao focar o campo;
-- usa `Rota27V017.clients()` após sincronização;
-- deduplica clientes por WhatsApp/ID;
-- substitui o picker antigo por um nó sem o handler `pointerdown.preventDefault()` legado;
-- usa seleção por `click`;
-- painel fica no fluxo da folha e é rolável por toque;
-- preenche nome e WhatsApp do cliente selecionado.
-
-## Nova comanda — abertura preservada
-A v0.25.70 permanece responsável pela abertura canônica do `+` e de **Abrir primeira comanda**, com fallback direto no DOM e sem autofocus.
+No Cardápio, demais categorias ficam alfabéticas. No lançamento, demais categorias continuam por consumo histórico faturável.
 
 ## Backend de relacionamento preservado
 - `rota27-birthday-campaign`: v3 ACTIVE;
@@ -46,14 +50,13 @@ A v0.25.70 permanece responsável pela abertura canônica do `+` e de **Abrir pr
 - nenhuma migration;
 - nenhuma Edge Function alterada;
 - nenhum reset ou alteração de dados;
-- preços, produtos, estoque, comandas, clientes e histórico preservados;
+- preços, produtos, estoque, comandas, clientes, recebíveis e histórico preservados;
 - nenhum polling ou `MutationObserver` novo.
 
 ## Atualização PWA
-- shell declara `rota27-release-version=0.25.71`;
-- `v02569-menu-category-order.js` usa cache-buster `02571r1`;
-- `v02571-client-picker.css/js` são carregados diretamente pelo shell e pelo roadmap loader;
-- cache `rota27-comandas-v0.25.71-r1`;
+- shell declara `rota27-release-version=0.25.72`;
+- `v02572-panel-client-stability.css/js` são carregados diretamente pelo shell e pelo roadmap loader;
+- cache `rota27-comandas-v0.25.72-r1`;
 - não limpar `localStorage` de produção.
 
 ## Regras de operação
@@ -63,4 +66,4 @@ A v0.25.70 permanece responsável pela abertura canônica do `+` e de **Abrir pr
 - mudanças usam branch curta + PR + merge + confirmação do Pages.
 
 ## Rollback
-Baseline anterior: **v0.25.70** / merge `33cd7e314c738bc0e939d62d5b6836a7133bccb5`.
+Baseline anterior: **v0.25.71** / merge `5bc6f45e26b4926c7b73084c2e7a06c1a7a18442`.
