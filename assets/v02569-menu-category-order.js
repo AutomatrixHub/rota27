@@ -8,6 +8,13 @@
   function text(v){return String(v??'').trim();}
   function key(v){return text(v).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLocaleLowerCase('pt-BR');}
   function same(a,b){return key(a)===key(b);}
+  function identity(){
+    document.title=`Rota 27 Bodega • Comandas v${VERSION}`;
+    const meta=document.querySelector('meta[name="rota27-release-version"]');if(meta)meta.content=VERSION;
+    let style=document.getElementById('v02569ReleaseIdentity');
+    if(!style){style=document.createElement('style');style.id='v02569ReleaseIdentity';document.head.appendChild(style);}
+    style.textContent=`#v14VersionBadge::after{content:"v${VERSION}"!important}`;
+  }
 
   function usageByCategory(){
     const usage=new Map();
@@ -41,13 +48,8 @@
     return ['Todos',...fixed,...rest];
   }
 
-  function saleCategories(){
-    return orderedCategories(activeCatalog().map(p=>p.cat),{consumptionOrder:true});
-  }
-
-  function menuCategories(){
-    return orderedCategories(allCategories(),{consumptionOrder:false});
-  }
+  function saleCategories(){return orderedCategories(activeCatalog().map(p=>p.cat),{consumptionOrder:true});}
+  function menuCategories(){return orderedCategories(allCategories(),{consumptionOrder:false});}
 
   function ensureMenuChips(){
     const screen=document.getElementById('screenMenu');
@@ -68,20 +70,15 @@
     if(!cats.includes(menuCategory))menuCategory='Todos';
     chips.innerHTML='';
     cats.forEach(cat=>{
-      const b=document.createElement('button');
-      b.type='button';
-      b.className='chip'+(same(cat,menuCategory)?' active':'');
-      b.textContent=cat;
-      b.onclick=()=>{menuCategory=cat;renderMenu();};
-      chips.appendChild(b);
+      const b=document.createElement('button');b.type='button';b.className='chip'+(same(cat,menuCategory)?' active':'');b.textContent=cat;
+      b.onclick=()=>{menuCategory=cat;renderMenu();};chips.appendChild(b);
     });
   }
 
   function renderMenuV02569(){
     updateWhatsappConfigUI();
     const q=key(document.getElementById('searchMenu')?.value||'');
-    const cats=menuCategories();
-    renderMenuChips(cats);
+    const cats=menuCategories();renderMenuChips(cats);
     const all=[...state.catalog].sort((a,b)=>collator.compare(text(a.name),text(b.name))||collator.compare(text(a.cat),text(b.cat)));
     const rows=all.filter(p=>{
       const categoryOk=same(menuCategory,'Todos')||same(p.cat,menuCategory);
@@ -90,8 +87,7 @@
     });
     const count=document.getElementById('menuCount');if(count)count.textContent=`${state.catalog.filter(p=>p.active!==false).length}/${state.catalog.length}`;
     const empty=document.getElementById('menuEmpty');if(empty)empty.style.display=rows.length?'none':'block';
-    const list=document.getElementById('menuList');if(!list)return;
-    list.innerHTML='';
+    const list=document.getElementById('menuList');if(!list)return;list.innerHTML='';
     rows.forEach(p=>{
       const el=document.createElement('div');el.className='menu-item'+(p.active===false?' inactive':'');
       const catInactive=!isCategoryActive(p.cat);
@@ -101,27 +97,22 @@
   }
 
   function patch(){
-    if(typeof categories==='function'&&categories.__v02569!==true){
-      const next=function(){return saleCategories();};next.__v02569=true;categories=next;
-    }
-    if(typeof renderMenu==='function'&&renderMenu.__v02569!==true){
-      renderMenuV02569.__v02569=true;renderMenu=renderMenuV02569;
-    }
+    if(typeof categories==='function'&&categories.__v02569!==true){const next=function(){return saleCategories();};next.__v02569=true;categories=next;}
+    if(typeof renderMenu==='function'&&renderMenu.__v02569!==true){renderMenuV02569.__v02569=true;renderMenu=renderMenuV02569;}
   }
 
   function refresh(){
-    patch();
+    identity();patch();
     if(document.getElementById('screenMenu')?.classList.contains('active'))renderMenuV02569();
     if(document.getElementById('screenSale')?.classList.contains('active')&&typeof renderSale==='function')renderSale();
   }
 
   function start(){
-    patch();
+    identity();patch();
     const search=document.getElementById('searchMenu');
     if(search&&!search.dataset.v02569){search.dataset.v02569='1';search.addEventListener('input',()=>renderMenuV02569());}
-    document.addEventListener('click',e=>{
-      if(e.target.closest?.('#navMenu'))setTimeout(()=>{patch();renderMenuV02569();},0);
-    });
+    document.addEventListener('click',e=>{if(e.target.closest?.('#navMenu'))setTimeout(()=>{identity();patch();renderMenuV02569();},0);});
+    document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')identity();});
     window.Rota27V02569MenuCategoryOrder={version:VERSION,refresh,usageByCategory,saleCategories,menuCategories};
     console.info('[Rota27] v0.25.69 — Cardápio alfabético e categorias ordenadas.');
   }
