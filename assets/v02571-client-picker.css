@@ -1,0 +1,20 @@
+/* Rota 27 v0.25.71 — lista de clientes rolável e sem sobreposição */
+#newCommandWrap .v02571-client-field{position:relative;z-index:auto}
+#newCommandWrap .v02571-client-picker{
+  position:static!important;
+  left:auto!important;right:auto!important;top:auto!important;
+  width:100%;margin:6px 0 0;padding:4px;
+  max-height:min(34vh,300px);overflow-y:auto!important;overflow-x:hidden;
+  overscroll-behavior:contain;-webkit-overflow-scrolling:touch;touch-action:pan-y;
+  background:#fff9f0;border:1px solid #d9c7a7;border-radius:14px;
+  box-shadow:0 10px 22px rgba(30,22,15,.10);z-index:auto!important;
+}
+#newCommandWrap .v02571-client-picker:not(.open){display:none!important}
+#newCommandWrap .v02571-client-picker.open{display:block!important}
+#newCommandWrap .v02571-client-option{min-height:62px;touch-action:manipulation;cursor:pointer}
+#newCommandWrap .v02571-client-option:focus-visible{outline:2px solid #d96a36;outline-offset:-2px}
+#newCommandWrap .v02571-client-state{padding:14px 12px;color:#756656;font-size:13px;line-height:1.35}
+@media(max-width:520px){
+  #newCommandWrap .v02571-client-picker{max-height:30vh}
+  #newCommandWrap .v02571-client-option{padding:12px 10px}
+}
