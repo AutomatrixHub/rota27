@@ -3,31 +3,34 @@
 Aplicativo mobile-first, offline-first e multidispositivo para controle rápido de comandas da **Rota 27 Bodega**.
 
 ## Produção
-- **Versão:** v0.25.70 — Abertura canônica de Nova comanda
+- **Versão:** v0.25.71 — Prioridade de categorias e seletor real de clientes
 - **Branch:** `main`
 - **GitHub Pages:** `https://automatrixhub.github.io/rota27/`
-- **Service Worker:** `rota27-comandas-v0.25.70-r1`
-- **Baseline anterior:** v0.25.69
+- **Service Worker:** `rota27-comandas-v0.25.71-r1`
+- **Baseline anterior:** v0.25.70
+
+## v0.25.71 — Prioridade de categorias e clientes
+
+### Categorias
+- ordem fixa: **Todos → Cervejas → Bebidas → Charcutaria → Vinhos**;
+- no Cardápio, demais categorias continuam em ordem alfabética;
+- no lançamento da comanda, demais categorias continuam pela quantidade histórica vendida;
+- Consumo interno/non-revenue não entra no ranking;
+- alias `Carchutaria` é reconhecido sem renomear dados existentes.
+
+### Nova comanda — Nome do cliente
+- remove o `<datalist>` nativo que concorria com o seletor do Rota27;
+- atualiza o domínio de clientes ao focar o campo;
+- usa os clientes sincronizados do Rota27;
+- deduplica por WhatsApp/ID;
+- painel próprio rolável por toque;
+- seleção por toque/click sem bloquear a rolagem;
+- nome e WhatsApp continuam preenchidos ao selecionar um cliente.
 
 ## v0.25.70 — Abertura canônica de Nova comanda
-
-Corrige a regressão em que o botão `+` de **Comandas** podia mostrar **“Não foi possível abrir Nova comanda.”** quando `window.openNewCommandSheet` não estava exposta naquele ciclo do bootstrap/PWA.
-
-### Correção
-- `+` passa a usar uma abertura raiz/canônica;
-- **Abrir primeira comanda** usa a mesma proteção;
-- se a função legada estiver disponível, ela continua sendo aproveitada;
-- se a referência global estiver ausente ou falhar, o formulário é aberto diretamente pelo DOM;
-- campos de Nova comanda são reiniciados de forma segura;
-- Consumo interno volta ao modo normal ao abrir uma nova comanda;
-- permanece a regra de **não focar automaticamente** Mesa/Local ou qualquer outro campo;
-- nenhuma rotina de polling ou `MutationObserver` foi adicionada.
-
-## v0.25.69 — Organização do cardápio e categorias
-- Cardápio administrativo em ordem alfabética;
-- abas **Todos → Cervejas → Bebidas → demais categorias**;
-- no lançamento, demais categorias ordenadas pela quantidade histórica vendida;
-- Consumo interno/non-revenue fora desse ranking.
+- `+` e **Abrir primeira comanda** usam abertura raiz;
+- fallback direto no DOM quando a referência global legada não está disponível;
+- nenhum campo recebe foco automático.
 
 ## Aniversários e relacionamento
 - parabéns automático às 09:30 permanece ativo;
@@ -38,15 +41,15 @@ Corrige a regressão em que o botão `+` de **Comandas** podia mostrar **“Não
 - nenhuma migration;
 - nenhuma Edge Function alterada;
 - nenhum reset ou alteração de dados;
-- preços, produtos, estoque, comandas e histórico preservados.
+- preços, produtos, estoque, comandas, clientes e histórico preservados.
 
 ## Atualização da PWA
 Não limpar `localStorage`, não reinstalar a PWA e não apagar dados de produção. Abra online, aguarde a atualização, feche completamente e abra novamente.
 
 ## Documentação
 - `docs/STATUS-PRODUCAO.md`
+- `docs/RELEASE-v0.25.71.md`
 - `docs/RELEASE-v0.25.70.md`
-- `docs/RELEASE-v0.25.69.md`
 
 ## Versão
-Produção: **0.25.70**
+Produção: **0.25.71**
