@@ -1,5 +1,0 @@
-v0.25.75 — Cardápio compacto e edição de comanda em destaque
-- Cards de produtos sem ícones, descrição +1px, badge no canto inferior direito.
-- Top 3 com mesma referência de altura e destaque discreto.
-- Botão Editar comanda passa a ser textual e laranja.
-- Sem backend, migration, polling ou MutationObserver.
