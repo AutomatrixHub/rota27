@@ -2,6 +2,7 @@
 (function(){
   'use strict';
   const VERSION='0.25.70';
+  const FOCUS_GUARD_MS=260;
   const byId=id=>document.getElementById(id);
   let previousOpen=null;
 
@@ -38,14 +39,29 @@
     return true;
   }
 
+  function withFocusGuard(fn){
+    const proto=window.HTMLElement?.prototype,nativeFocus=proto?.focus;
+    if(!proto||typeof nativeFocus!=='function')return fn();
+    const guarded=function(){
+      const wrap=byId('newCommandWrap');
+      if(this?.id==='newTable'&&wrap?.classList.contains('open'))return;
+      return nativeFocus.apply(this,arguments);
+    };
+    try{proto.focus=guarded;}catch{return fn();}
+    try{return fn();}
+    finally{window.setTimeout(()=>{try{if(proto.focus===guarded)proto.focus=nativeFocus;}catch{}},FOCUS_GUARD_MS);}
+  }
+
   function rootedOpen(){
     const wrap=byId('newCommandWrap');
     let opened=false;
-    if(typeof previousOpen==='function'){
-      try{previousOpen.apply(this,arguments);opened=!!wrap?.classList.contains('open');}
-      catch(err){console.warn('[Rota27 v0.25.70] opener legado falhou; usando abertura canônica.',err);}
-    }
-    if(!opened)opened=canonicalOpen();
+    withFocusGuard(()=>{
+      if(typeof previousOpen==='function'){
+        try{previousOpen.apply(this,arguments);opened=!!wrap?.classList.contains('open');}
+        catch(err){console.warn('[Rota27 v0.25.70] opener legado falhou; usando abertura canônica.',err);}
+      }
+      if(!opened)opened=canonicalOpen();
+    });
     if(opened){
       const active=document.activeElement;
       if(active&&active!==document.body&&wrap?.contains(active)&&typeof active.blur==='function')active.blur();
