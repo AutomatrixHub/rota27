@@ -3,66 +3,55 @@
 Aplicativo mobile-first, offline-first e multidispositivo para controle rápido de comandas da **Rota 27 Bodega**.
 
 ## Produção
-- **Versão:** v0.25.73 — Aviso de cancelamento por WhatsApp
+- **Versão:** v0.25.74 — Consentimento persistente de WhatsApp
 - **Branch:** `main`
 - **GitHub Pages:** `https://automatrixhub.github.io/rota27/`
-- **Service Worker:** `rota27-comandas-v0.25.73-r1`
-- **Baseline anterior:** v0.25.72
+- **Service Worker:** `rota27-comandas-v0.25.74-r1`
+- **Baseline anterior:** v0.25.73
+
+## v0.25.74 — Consentimento persistente de WhatsApp
+
+### Regra operacional
+A autorização para **atualizações operacionais da comanda** passa a pertencer ao cadastro do cliente, e não apenas à comanda atual.
+
+- ao selecionar um cliente que já autorizou, o checkbox de WhatsApp é marcado automaticamente;
+- a tela informa que a autorização já estava registrada e mostra a data disponível;
+- desmarcar o checkbox afeta somente a comanda atual e não revoga a autorização global;
+- a revogação global é uma ação separada e explícita;
+- se o cliente autorizar novamente após uma revogação, marcar o checkbox registra uma nova autorização;
+- clientes antigos com alguma comanda histórica `whatsappOptIn=true` são migrados como autorização já existente;
+- o consentimento é sincronizado entre aparelhos usando `client_upsert`, com armazenamento local próprio e cursor independente;
+- autorização de comanda não é reutilizada como autorização para marketing, eventos ou outras campanhas.
+
+### Cadastro de clientes
+O editor de cliente passa a exibir o estado **Autorizado / Revogado / Não registrado** para atualizações da comanda e permite registrar ou revogar a autorização de forma explícita.
 
 ## v0.25.73 — Cancelamento + WhatsApp
-
-### Problema corrigido
-O fluxo legado de **Cancelar comanda** desligava `whatsappOptIn` e removia a fila de WhatsApp antes de sincronizar `cancelled=true`. Assim, o cliente podia receber os lançamentos da comanda e não receber nenhuma correção quando a comanda inteira era cancelada.
-
-### Comportamento novo
-- ao confirmar o cancelamento, a v0.25.73 captura um snapshot da comanda **antes** da rotina legada apagar a fila;
-- se havia autorização de WhatsApp, telefone válido e itens na comanda, cria uma fila de cancelamento independente;
-- usa os templates Utility de atualização de comanda já aprovados pela Meta;
-- a comanda é identificada como **CANCELADA**;
-- todos os itens atuais são enviados como **REMOVIDO**;
-- o total informado ao cliente é **R$ 0,00**;
-- `eventId` determinístico torna o envio idempotente;
-- se o aparelho estiver offline ou a chamada falhar, o aviso fica persistido e tenta novamente ao reconectar/retomar o app;
-- o cancelamento operacional e sua sincronização continuam usando o fluxo existente.
-
-Exemplo esperado:
-
-`Comanda: Balcão • CANCELADA`
-
-`REMOVIDO: 1x Cerveja Original 300ml - R$ 6,00`
-
-`Total atual: R$ 0,00`
-
-## v0.25.72 — Clientes e Painel
-- seletor antigo de clientes desativado nas releases atuais;
-- seletor sincronizado/rolável permanece como fonte única da Nova comanda;
-- card isolado **A receber** removido do Painel;
-- pendências de recebíveis destacadas em **Hoje precisa de atenção**.
-
-## v0.25.71 — Prioridade de categorias e clientes
-- ordem fixa: **Todos → Cervejas → Bebidas → Charcutaria → Vinhos**;
-- demais categorias do Cardápio em ordem alfabética;
-- demais categorias do lançamento pela quantidade histórica vendida;
-- seletor próprio de clientes sincronizados na Nova comanda.
+- cancelamento captura a comanda antes da limpeza legada da fila;
+- cliente autorizado recebe a comanda como **CANCELADA**;
+- itens aparecem como **REMOVIDO**;
+- total final do cancelamento é **R$ 0,00**;
+- envio possui fila persistente, retry e `eventId` idempotente.
 
 ## Aniversários e relacionamento
 - parabéns automático às 09:30 permanece ativo;
-- solicitação de data de nascimento permanece limitada a 3 envios bem-sucedidos com 7 dias entre eles.
+- solicitação de data de nascimento permanece limitada a 3 envios bem-sucedidos com 7 dias entre eles;
+- consentimento de atualização da comanda não altera as regras de aniversário ou eventos.
 
 ## Preservação
 - nenhuma migration;
 - nenhuma Edge Function alterada nesta release;
-- nenhum reset ou alteração de dados;
+- nenhum reset ou exclusão de dados;
 - preços, produtos, estoque, comandas, clientes, recebíveis e histórico preservados;
-- cancelamentos já existentes não são reenviados retroativamente.
+- sem `MutationObserver` e sem polling contínuo novo.
 
 ## Atualização da PWA
 Não limpar `localStorage`, não reinstalar a PWA e não apagar dados de produção. Abra online, aguarde a atualização, feche completamente e abra novamente.
 
 ## Documentação
 - `docs/STATUS-PRODUCAO.md`
+- `docs/RELEASE-v0.25.74.md`
 - `docs/RELEASE-v0.25.73.md`
-- `docs/RELEASE-v0.25.72.md`
 
 ## Versão
-Produção: **0.25.73**
+Produção: **0.25.74**

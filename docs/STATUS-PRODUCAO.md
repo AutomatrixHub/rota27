@@ -3,75 +3,76 @@
 Última revisão: 30/08/2026
 
 ## Produção
-- versão: **v0.25.73 — Aviso de cancelamento por WhatsApp**;
+- versão: **v0.25.74 — Consentimento persistente de WhatsApp**;
 - branch: `main`;
 - GitHub Pages: `https://automatrixhub.github.io/rota27/`;
-- Service Worker: `rota27-comandas-v0.25.73-r1`;
-- baseline anterior: **v0.25.72**, merge `ea8800ec9f836f1d66dd9729ef871c425d141880`.
+- Service Worker: `rota27-comandas-v0.25.74-r1`;
+- baseline anterior: **v0.25.73**, merge `ca64b52e7197c332e5f9f12022a6b94784d7e8e6`.
+
+## Consentimento de atualizações da comanda
+Até a v0.25.73, `whatsappOptIn` existia somente na comanda. Mesmo quando o cliente já havia autorizado em uma visita anterior, toda nova comanda começava com o checkbox desmarcado.
+
+A v0.25.74 cria uma camada de consentimento persistente, vinculada ao cadastro canônico do cliente por ID/WhatsApp:
+- estados: `granted`, `revoked` e ausência de registro;
+- escopo exclusivo: `command_updates`;
+- data, origem e versão do registro ficam preservadas;
+- sincronização usa `client_upsert` já existente, sem novo tipo de evento e sem migration;
+- uma camada própria lê os eventos `client_upsert` e evidências históricas `command_opened` para preservar/reconstruir o consentimento;
+- nenhum consentimento de comanda é convertido em autorização de marketing, eventos ou campanhas.
+
+## Nova comanda
+Ao selecionar um cliente cadastrado:
+- consentimento `granted`: checkbox é marcado automaticamente;
+- a interface informa que a autorização já estava registrada e exibe a data disponível;
+- se o operador desmarcar o checkbox, somente a comanda atual fica sem mensagens; a autorização global permanece;
+- consentimento `revoked`: checkbox permanece desmarcado e a tela pede nova autorização antes de registrar novamente;
+- cliente sem registro: comportamento conservador, checkbox desmarcado até autorização explícita.
+
+Para cliente novo, marcar o checkbox continua significando que o cliente autorizou. Depois da criação do cadastro, essa autorização é gravada também no consentimento persistente.
+
+## Migração do histórico existente
+Clientes ainda sem registro persistente podem ter a autorização reconstruída de duas fontes:
+- comandas locais preservadas com `whatsappOptIn=true`;
+- eventos compartilhados `command_opened` cujo snapshot original registra `whatsappOptIn=true`, inclusive quando a comanda foi depois cancelada e deixou de existir localmente.
+
+A identificação prioriza o WhatsApp canônico. A data original da comanda é usada como `updatedAt`. A comparação entre registros prioriza `updatedAt`, depois `seq`; em empate completo, `revoked` prevalece sobre `granted`. Assim, autorização histórica não substitui revogação mais recente.
+
+A migração apenas registra a permissão: **não envia nenhuma mensagem retroativa ao cliente**.
+
+## Revogação explícita
+A autorização global pode ser revogada de forma separada:
+- na própria Nova comanda, pelo link **Revogar autorização salva**;
+- no editor do cadastro do cliente, que passa a mostrar **Autorizado / Revogado / Não registrado**.
+
+Revogar é diferente de apenas desmarcar o checkbox de uma comanda. O texto antigo do editor, que dizia que o consentimento era definido em cada comanda, também é substituído pela regra persistente atual.
 
 ## Cancelamento de comanda — WhatsApp
-A auditoria de produção confirmou a lacuna: o cliente podia receber lançamentos da comanda, mas o cancelamento completo não gerava correção no WhatsApp.
-
-Exemplo real auditado em 30/08/2026:
-- cliente: Mamute;
-- comanda: Balcão;
-- evento `command_opened` seguido de `item_delta` para 1 Cerveja Original 300ml;
-- mensagem Utility de R$ 6,00 enviada e lida;
-- depois, `command_patch` com `cancelled=true`;
-- nenhum segundo registro no `whatsapp_message_log` para informar o cancelamento.
-
-Causa encontrada em `v0151-hotfix.js`: ao cancelar, a rotina desliga `whatsappOptIn` e limpa a fila normal de WhatsApp antes de remover a comanda, preservando apenas a sincronização operacional do cancelamento.
-
-A v0.25.73 adiciona uma fila independente de aviso de cancelamento:
-- captura a comanda antes da rotina legada limpá-la;
-- exige opt-in da própria comanda, telefone válido e pelo menos um item;
-- reutiliza os templates Utility `atualizacao_comanda_rota27_mini2_1..5`, já aprovados pela Meta;
-- rótulo enviado: `<local> • CANCELADA`;
-- todos os itens atuais são enviados com delta negativo e aparecem como `REMOVIDO`;
-- total final enviado: **R$ 0,00**;
-- `eventId=cancel_whatsapp_<commandId>` garante idempotência no backend existente;
-- fila persiste offline e usa retry com backoff ao reconectar/retomar o app;
-- cancelamentos anteriores à v0.25.73 não são reenviados retroativamente.
-
-A confirmação de cancelamento também passa a informar quando haverá aviso ao cliente.
-
-## Nova comanda — seletor de clientes
-A v0.25.72 permanece responsável por manter o seletor sincronizado v0.25.71 como única lista visual da Nova comanda, impedindo a reincidência do datalist legado.
-
-## Painel — A Receber
-O card isolado de A Receber permanece oculto por redundância. Quando existem pendências, a ação fica em destaque dentro de **Hoje precisa de atenção**.
-
-## Categorias preservadas
-Ordem fixa:
-1. **Todos**;
-2. **Cervejas**;
-3. **Bebidas**;
-4. **Charcutaria**;
-5. **Vinhos**.
-
-No Cardápio, as demais categorias ficam alfabéticas. No lançamento, as demais continuam por consumo histórico faturável.
+A v0.25.73 permanece ativa:
+- cancelamento captura a comanda antes da limpeza legada;
+- cliente autorizado recebe a comanda como **CANCELADA**;
+- itens aparecem como **REMOVIDO**;
+- total final é **R$ 0,00**;
+- envio mantém fila persistente, retry e `eventId` idempotente.
 
 ## Backend preservado
 - `rota27-whatsapp`: v23 ACTIVE;
 - `rota27-sync`: v9 ACTIVE;
 - `rota27-whatsapp-inbound`: v4 ACTIVE;
-- `rota27-birthday-campaign`: v3 ACTIVE;
-- parabéns automático às 09:30 preservado;
-- solicitação de data de nascimento em até 3 tentativas / 7 dias preservada.
+- `rota27-birthday-campaign`: v3 ACTIVE.
 
-A v0.25.73 **não altera Edge Functions**, schemas ou tabelas. O backend WhatsApp atual já suporta delta negativo e idempotência por `event_id`.
+A v0.25.74 **não altera Edge Functions**, schemas ou tabelas. A sincronização de consentimento reutiliza a infraestrutura de domínio existente.
 
 ## Preservação
 - nenhuma migration;
 - nenhuma Edge Function alterada;
-- nenhum reset ou alteração de dados;
+- nenhum reset ou exclusão de dados;
 - preços, produtos, estoque, comandas, clientes, recebíveis e histórico preservados;
 - sem polling contínuo e sem `MutationObserver` novo.
 
 ## Atualização PWA
-- shell declara `rota27-release-version=0.25.73`;
-- `v02573-whatsapp-cancel.js` é carregado diretamente pelo shell e pelo roadmap loader;
-- cache `rota27-comandas-v0.25.73-r1`;
+- shell declara `rota27-release-version=0.25.74`;
+- `v02574-whatsapp-consent.css/js` são carregados diretamente pelo shell e pelo roadmap loader;
+- cache `rota27-comandas-v0.25.74-r1`;
 - não limpar `localStorage` de produção.
 
 ## Regras de operação
@@ -81,4 +82,4 @@ A v0.25.73 **não altera Edge Functions**, schemas ou tabelas. O backend WhatsAp
 - mudanças usam branch curta + PR + merge + confirmação do Pages.
 
 ## Rollback
-Baseline anterior: **v0.25.72** / merge `ea8800ec9f836f1d66dd9729ef871c425d141880`.
+Baseline anterior: **v0.25.73** / merge `ca64b52e7197c332e5f9f12022a6b94784d7e8e6`.
