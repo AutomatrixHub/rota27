@@ -2,6 +2,15 @@
 (function(){
   'use strict';
   const VERSION='0.25.13';
+  const release=String(document.querySelector('meta[name="rota27-release-version"]')?.content||'');
+  const parts=release.split('.').map(v=>Number(v)||0);
+  const modern=(parts[0]>0)||(parts[1]>25)||(parts[1]===25&&parts[2]>=71);
+  if(modern){
+    const refresh=()=>window.Rota27V02571ClientPicker?.refresh?.()||window.Rota27V02572ClientPicker?.refresh?.();
+    window.Rota27V02513ClientPicker={version:VERSION,legacyDisabled:true,refresh};
+    console.info('[Rota27] v0.25.13 em modo compatibilidade — seletor legado desativado.');
+    return;
+  }
   const byId=id=>document.getElementById(id);
   const api=()=>window.Rota27V017||null;
   const clean=v=>String(v??'').trim().replace(/\s+/g,' ');

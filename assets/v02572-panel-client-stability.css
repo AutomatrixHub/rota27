@@ -1,0 +1,40 @@
+/* Rota 27 v0.25.72 — Painel sem redundância + destaque de A receber */
+
+/* A entrada isolada de A Receber deixa de ocupar espaço no Painel.
+   O acesso permanece no bloco Hoje precisa de atenção quando há pendências. */
+#screenPanel #v02512ReceivablesEntry{
+  display:none!important;
+}
+
+/* A Receber vira a ação de maior destaque dentro de Operação. */
+#screenPanel #v02546AttentionList .v02546-attention-item[data-v02546-action="receivables"]{
+  border:1px solid #a95724!important;
+  background:linear-gradient(135deg,#cf7532,#b95f27)!important;
+  color:#fff!important;
+  box-shadow:0 8px 20px rgba(168,80,31,.22)!important;
+}
+#screenPanel #v02546AttentionList .v02546-attention-item[data-v02546-action="receivables"] .v02546-attention-icon{
+  background:rgba(255,255,255,.18)!important;
+  color:#fff!important;
+  border-color:rgba(255,255,255,.22)!important;
+}
+#screenPanel #v02546AttentionList .v02546-attention-item[data-v02546-action="receivables"] .v02546-attention-icon svg{
+  stroke:currentColor!important;
+}
+#screenPanel #v02546AttentionList .v02546-attention-item[data-v02546-action="receivables"] .v02546-attention-copy strong{
+  color:#fff!important;
+  font-weight:900!important;
+}
+#screenPanel #v02546AttentionList .v02546-attention-item[data-v02546-action="receivables"] .v02546-attention-copy small{
+  color:rgba(255,255,255,.88)!important;
+  font-weight:650!important;
+}
+#screenPanel #v02546AttentionList .v02546-attention-item[data-v02546-action="receivables"] .v02546-attention-arrow{
+  color:#fff!important;
+  font-weight:900!important;
+  opacity:1!important;
+}
+#screenPanel #v02546AttentionList .v02546-attention-item[data-v02546-action="receivables"]:active{
+  transform:translateY(1px);
+  filter:brightness(.96);
+}
