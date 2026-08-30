@@ -1,0 +1,13 @@
+/* Rota 27 v0.25.69 — categorias no Cardápio */
+#screenMenu .v02569-menu-chips{
+  margin-top:-1px;
+  margin-bottom:12px;
+  padding-bottom:4px;
+}
+#screenMenu .v02569-menu-chips .chip{
+  flex:0 0 auto;
+}
+#screenMenu .menu-list{
+  display:grid;
+  gap:10px;
+}

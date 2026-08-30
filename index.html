@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#F5E9D5" />
   <!-- rota27-version permanece 0.22.0 como gate de compatibilidade das camadas v0.21/v0.22. -->
   <meta name="rota27-version" content="0.22.0" />
-  <meta name="rota27-release-version" content="0.25.68" />
+  <meta name="rota27-release-version" content="0.25.69" />
   <meta name="rota27-fixed-copy-whatsapp" content="5527997769279" />
   <title>Rota 27 Bodega • Comandas</title>
   <style>
@@ -28,7 +28,7 @@
         html=html.replace(/<title>[\s\S]*?<\/title>/i,'<title>Rota 27 Bodega • Comandas</title>');
         html=html.replace('</head>',
           '<meta name="rota27-version" content="0.22.0" />'+
-          '<meta name="rota27-release-version" content="0.25.68" />'+
+          '<meta name="rota27-release-version" content="0.25.69" />'+
           '<meta name="rota27-fixed-copy-whatsapp" content="5527997769279" />'+
           '<link rel="stylesheet" href="./assets/v014.css" />'+
           '<link rel="stylesheet" href="./assets/v014-dev3.css" />'+
@@ -77,6 +77,7 @@
           '<link id="v02564MobileRuntimeCss" rel="stylesheet" href="./assets/v02564-mobile-runtime-hotfix.css?v=02564r1" />'+
           '<link id="v02565BirthdayGreetingCss" rel="stylesheet" href="./assets/v02565-birthday-greeting.css?v=02565r1" />'+
           '<link id="v02566BirthdayEligibilityCss" rel="stylesheet" href="./assets/v02566-birthday-eligibility.css?v=02566r1" />'+
+          '<link id="v02569MenuCategoryOrderCss" rel="stylesheet" href="./assets/v02569-menu-category-order.css?v=02569r1" />'+
           '</head>');
         html=html.replace('</body>',
           '<script src="./assets/v014.js"><\/script>'+
@@ -131,14 +132,15 @@
           '<script src="./assets/v0256-map-list-parity.js?v=02512r1"><\/script>'+
           '<script id="v02551UxHotfixJs" src="./assets/v02551-ux-hotfix.js?v=02551r1"><\/script>'+
           '<script id="v02552CommandMapSimplifyJs" src="./assets/v02552-command-map-simplify.js?v=02552r1"><\/script>'+
-          '<script src="./assets/v0256-release.js?v=02568r1"><\/script>'+
+          '<script src="./assets/v0256-release.js?v=02569r1"><\/script>'+
           '<script id="v02555FocusRootJs" src="./assets/v02555-new-command-focus-root.js?v=02555r2"><\/script>'+
           '<script id="v02563OperationalTurnJs" src="./assets/v02563-operational-turn-coherence.js?v=02563r1"><\/script>'+
           '<script id="v02564MobileRuntimeJs" src="./assets/v02564-mobile-runtime-hotfix.js?v=02564r1"><\/script>'+
           '<script id="v02565BirthdayGreetingJs" src="./assets/v02565-birthday-greeting.js?v=02565r1"><\/script>'+
           '<script id="v02566BirthdayEligibilityJs" src="./assets/v02566-birthday-eligibility.js?v=02566r1"><\/script>'+
           '<script id="v02567BirthdayVisualStateJs" src="./assets/v02567-birthday-visual-state.js?v=02567r1"><\/script>'+
-          '<script src="./assets/roadmap-loader.js?v=02568r1"><\/script>'+
+          '<script id="v02569MenuCategoryOrderJs" src="./assets/v02569-menu-category-order.js?v=02569r1"><\/script>'+
+          '<script src="./assets/roadmap-loader.js?v=02569r1"><\/script>'+
           '</body>');
         document.open();document.write(html);document.close();
       }catch(err){
