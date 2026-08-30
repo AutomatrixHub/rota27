@@ -52,7 +52,7 @@
     if(!confirm(`Enviar agora ${n} solicitação${n===1?'':'ões'} de data de nascimento?\n\n${retries?`${retries} são recontatos.\n`:''}Cada cliente recebe no máximo ${max} mensagens desta rotina, com pelo menos ${cooldown} dias entre envios.`))return;
     loading=true;toggle(true);try{const data=await call('send_campaign');toast(`${Number(data.sent||0)} solicitação(ões) enviada(s).${Number(data.failed||0)?` ${Number(data.failed)} falhou(aram).`:''}`);await refreshAfter();}catch(err){toast(err?.message||'Falha no disparo.');}finally{loading=false;toggle(false);}
   }
-  function toggle(busy){['v02520CampaignRefresh','v02520CampaignTemplate','v02520CampaignSend'].forEach(id=>{const b=byId(id);if(b)b.disabled=busy||(id==='v02520CampaignSend'&&String(lastStatus?.template?.status||'').toUpperCase()!=='APPROVED');});}
+  function toggle(busy){['v02520CampaignRefresh','v02520CampaignTemplate','v02520CampaignSend'].forEach(id=>{const b=byId(id);if(!b)return;const sendBlocked=id==='v02520CampaignSend'&&(String(lastStatus?.template?.status||'').toUpperCase()!=='APPROVED'||Number(lastStatus?.counts?.readyToSend||0)<=0);b.disabled=busy||sendBlocked;});}
   async function refreshAfter(){try{const data=await call('status');render(data);}catch{}}
   function start(){ensureCard();setTimeout(()=>{ensureCard();refresh();},500);document.addEventListener('click',e=>{if(e.target.closest?.('#v017ClientsBtn,[data-clients]'))setTimeout(()=>{ensureCard();refresh();},150);});window.addEventListener('rota27:v02517-birthday-updated',()=>setTimeout(refresh,300));window.Rota27V02520BirthdayCampaign={version:VERSION,refresh,submitTemplate,sendCampaign};}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
