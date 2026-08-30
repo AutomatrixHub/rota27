@@ -1,9 +1,10 @@
 /* Rota 27 — carregador incremental do roadmap pós-v0.25.46 */
 (function(){
   'use strict';
-  const CURRENT='0.25.72';
-  const HELP='9.7';
+  const CURRENT='0.25.73';
+  const HELP='9.8';
   const assets=[
+    {type:'js',id:'v02573WhatsappCancelJs',src:'./assets/v02573-whatsapp-cancel.js?v=02573r1'},
     {type:'css',id:'v02572PanelClientStabilityCss',src:'./assets/v02572-panel-client-stability.css?v=02572r1'},
     {type:'js',id:'v02572PanelClientStabilityJs',src:'./assets/v02572-panel-client-stability.js?v=02572r1'},
     {type:'css',id:'v02571ClientPickerCss',src:'./assets/v02571-client-picker.css?v=02571r1'},
