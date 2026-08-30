@@ -5,7 +5,7 @@
   const byId=id=>document.getElementById(id);
   const api=()=>window.Rota27V017||null;
   const clean=(v,max=240)=>api()?.clean?.(v,max)||String(v??'').replace(/[\u0000-\u001F\u007F]/g,' ').trim().replace(/\s+/g,' ').slice(0,max);
-  const esc=v=>api()?.esc?.(v)||String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+  const esc=v=>api()?.esc?.(v)||String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[ch]));
   const clients=()=>{try{return Array.isArray(api()?.clients?.())?api().clients():[];}catch{return [];}};
   const icon='<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="4" y="5" width="16" height="15" rx="3"/><path d="M8 3v4M16 3v4M4 10h16"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 17h.01M12 17h.01"/></svg>';
 
@@ -59,7 +59,8 @@
     const card=ensureCard();if(!card)return false;
     const rows=upcoming(),today=rows.filter(x=>x.next.days===0),next7=rows.filter(x=>x.next.days>0&&x.next.days<=7);
     const shown=rows.slice(0,5);
-    card.innerHTML=`<div class="v02557-head"><div class="v02557-head-copy"><span class="v02557-kicker">RELACIONAMENTO</span><strong class="v02557-title">Aniversários próximos</strong><small class="v02557-subtitle">Usa as datas já cadastradas. Nenhuma mensagem é enviada automaticamente.</small></div><span class="v02557-icon">${icon}</span></div><div class="v02557-counts"><div class="v02557-count"><b>${today.length}</b><span>aniversário${today.length===1?'':'s'} hoje</span></div><div class="v02557-count"><b>${next7.length}</b><span>nos próximos 7 dias</span></div></div>${shown.length?`<div class="v02557-list">${shown.map(({client,next})=>`<button type="button" class="v02557-person" data-client-name="${esc(clean(client?.name,120))}"><span class="v02557-person-copy"><strong>${esc(clean(client?.name||'Cliente',120))}</strong><small>${dateLabel(next)}</small></span><span class="v02557-when">${labelDays(next.days)}</span></button>`).join('')}</div>`:`<div class="v02557-empty">Nenhum aniversário cadastrado para hoje ou para os próximos 7 dias.</div>`}`;
+    card.innerHTML=`<div class="v02557-head"><div class="v02557-head-copy"><span class="v02557-kicker">RELACIONAMENTO</span><strong class="v02557-title">Aniversários próximos</strong><small class="v02557-subtitle">Parabéns automático às 09:30 no dia do aniversário para clientes autorizados.</small></div><span class="v02557-icon">${icon}</span></div><div class="v02557-counts"><div class="v02557-count"><b>${today.length}</b><span>aniversário${today.length===1?'':'s'} hoje</span></div><div class="v02557-count"><b>${next7.length}</b><span>nos próximos 7 dias</span></div></div>${shown.length?`<div class="v02557-list">${shown.map(({client,next})=>`<button type="button" class="v02557-person" data-client-id="${esc(clean(client?.id,160))}" data-client-name="${esc(clean(client?.name,120))}"><span class="v02557-person-copy"><strong>${esc(clean(client?.name||'Cliente',120))}</strong><small>${dateLabel(next)}</small></span><span class="v02557-when">${labelDays(next.days)}</span></button>`).join('')}</div>`:`<div class="v02557-empty">Nenhum aniversário cadastrado para hoje ou para os próximos 7 dias.</div>`}`;
+    try{window.dispatchEvent(new CustomEvent('rota27:v02557-rendered',{detail:{today:today.length,next7:next7.length,shown:shown.length}}));}catch{}
     return true;
   }
   function focusClient(name){
