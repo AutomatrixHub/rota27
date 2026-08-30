@@ -3,11 +3,24 @@
 Aplicativo mobile-first, offline-first e multidispositivo para controle rápido de comandas da **Rota 27 Bodega**.
 
 ## Produção
-- **Versão:** v0.25.74 — Consentimento persistente de WhatsApp
+- **Versão:** v0.25.75 — Cardápio compacto e edição de comanda em destaque
 - **Branch:** `main`
 - **GitHub Pages:** `https://automatrixhub.github.io/rota27/`
-- **Service Worker:** `rota27-comandas-v0.25.74-r1`
-- **Baseline anterior:** v0.25.73
+- **Service Worker:** `rota27-comandas-v0.25.75-r1`
+- **Baseline anterior:** v0.25.74
+
+## v0.25.75 — Cardápio compacto e edição de comanda em destaque
+
+### Lançamento de produtos
+- ícones removidos dos botões de produtos no lançamento da comanda;
+- descrição dos produtos aumentada em 1px;
+- badge da quantidade já lançada movida para o canto inferior direito;
+- cards normais reduzidos para uma altura mais compacta, diminuindo rolagem;
+- `Mais usados recentemente/hoje` mantém Top 3, recebe tipografia maior e destaque discreto de cor;
+- atalhos do Top 3 passam a ter altura equivalente aos cards compactos da grade normal.
+
+### Editar comanda
+O antigo botão de lápis discreto no cabeçalho da comanda passa a ser uma ação laranja com texto **Editar comanda**, mantendo o mesmo fluxo funcional de edição.
 
 ## v0.25.74 — Consentimento persistente de WhatsApp
 
@@ -50,8 +63,8 @@ Não limpar `localStorage`, não reinstalar a PWA e não apagar dados de produç
 
 ## Documentação
 - `docs/STATUS-PRODUCAO.md`
+- `docs/RELEASE-v0.25.75.md`
 - `docs/RELEASE-v0.25.74.md`
-- `docs/RELEASE-v0.25.73.md`
 
 ## Versão
-Produção: **0.25.74**
+Produção: **0.25.75**

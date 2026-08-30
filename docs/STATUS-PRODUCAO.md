@@ -3,11 +3,23 @@
 Última revisão: 30/08/2026
 
 ## Produção
-- versão: **v0.25.74 — Consentimento persistente de WhatsApp**;
+- versão: **v0.25.75 — Cardápio compacto e edição de comanda em destaque**;
 - branch: `main`;
 - GitHub Pages: `https://automatrixhub.github.io/rota27/`;
-- Service Worker: `rota27-comandas-v0.25.74-r1`;
-- baseline anterior: **v0.25.73**, merge `ca64b52e7197c332e5f9f12022a6b94784d7e8e6`.
+- Service Worker: `rota27-comandas-v0.25.75-r1`;
+- baseline anterior: **v0.25.74**, merge `3e291ef5fe118f69f7f85a7c287a6f7e29487679`.
+
+## Refinamento do lançamento de produtos — v0.25.75
+A tela de lançamento foi compactada para reduzir rolagem sem perder legibilidade:
+- ícones dos produtos removidos somente dos cards de lançamento da comanda;
+- descrição dos produtos aumentada de 14px para 15px;
+- badge de quantidade já lançada movida para o canto inferior direito;
+- cards normais reduzidos para 96px de altura mínima, com ajuste adicional em telas estreitas;
+- `Mais usados hoje/recentemente` mantém Top 3, ganha texto maior e contraste discreto em borda/fundo;
+- cards do Top 3 usam a mesma referência de altura dos cards normais compactos.
+
+## Editar comanda — v0.25.75
+O botão de edição no cabeçalho da comanda deixa de ser apenas um lápis discreto e passa a exibir **Editar comanda** em um botão laranja de maior contraste. A ação continua chamando o fluxo existente `openEditCommandSheet()`; não há mudança de dados ou regra de negócio.
 
 ## Consentimento de atualizações da comanda
 Até a v0.25.73, `whatsappOptIn` existia somente na comanda. Mesmo quando o cliente já havia autorizado em uma visita anterior, toda nova comanda começava com o checkbox desmarcado.
@@ -60,19 +72,20 @@ A v0.25.73 permanece ativa:
 - `rota27-whatsapp-inbound`: v4 ACTIVE;
 - `rota27-birthday-campaign`: v3 ACTIVE.
 
-A v0.25.74 **não altera Edge Functions**, schemas ou tabelas. A sincronização de consentimento reutiliza a infraestrutura de domínio existente.
+A v0.25.75 **não altera Edge Functions**, schemas ou tabelas. É uma release somente de apresentação/UX no frontend.
 
 ## Preservação
 - nenhuma migration;
 - nenhuma Edge Function alterada;
 - nenhum reset ou exclusão de dados;
 - preços, produtos, estoque, comandas, clientes, recebíveis e histórico preservados;
+- Lista e Mapa de comandas preservados;
 - sem polling contínuo e sem `MutationObserver` novo.
 
 ## Atualização PWA
-- shell declara `rota27-release-version=0.25.74`;
-- `v02574-whatsapp-consent.css/js` são carregados diretamente pelo shell e pelo roadmap loader;
-- cache `rota27-comandas-v0.25.74-r1`;
+- shell declara `rota27-release-version=0.25.75`;
+- `v02575-cardapio-compact-edit.css` é carregado diretamente pelo shell e pelo roadmap loader;
+- cache `rota27-comandas-v0.25.75-r1`;
 - não limpar `localStorage` de produção.
 
 ## Regras de operação
@@ -82,4 +95,4 @@ A v0.25.74 **não altera Edge Functions**, schemas ou tabelas. A sincronização
 - mudanças usam branch curta + PR + merge + confirmação do Pages.
 
 ## Rollback
-Baseline anterior: **v0.25.73** / merge `ca64b52e7197c332e5f9f12022a6b94784d7e8e6`.
+Baseline anterior: **v0.25.74** / merge `3e291ef5fe118f69f7f85a7c287a6f7e29487679`.

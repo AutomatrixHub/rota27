@@ -1,0 +1,183 @@
+/* Rota 27 v0.25.75 — Cardápio compacto + ação clara de editar comanda */
+
+/*
+ * Lançamento rápido: remove o ícone dos produtos, aumenta a descrição em 1px,
+ * leva a quantidade já lançada para o canto inferior direito e reduz a altura
+ * sem sacrificar nomes de até três linhas.
+ */
+html body #screenSale .product-grid .product{
+  min-height:96px!important;
+  padding:11px 12px 10px!important;
+  border-radius:16px!important;
+}
+html body #screenSale .product-grid .product .emoji{
+  display:none!important;
+}
+html body #screenSale .product-grid .product h4{
+  margin:0 0 7px!important;
+  font-size:15px!important;
+  line-height:1.17!important;
+  font-weight:900!important;
+  padding-right:0!important;
+}
+html body #screenSale .product-grid .product .price{
+  font-size:15px!important;
+  line-height:1.05!important;
+  padding-right:34px!important;
+}
+html body #screenSale .product-grid .product .qty-badge{
+  top:auto!important;
+  right:9px!important;
+  bottom:9px!important;
+  min-width:25px!important;
+  height:25px!important;
+  padding:0 7px!important;
+}
+
+/*
+ * Top 3: mantém três atalhos visíveis, com altura equivalente à grade normal,
+ * tipografia maior e um destaque discreto de cor — sem reintroduzir ícones.
+ */
+html body #v02551QuickProducts{
+  margin:8px 0 11px!important;
+  padding:9px!important;
+  border-color:#dca06f!important;
+  background:linear-gradient(160deg,#f8ead9,#f2dfc6)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.55)!important;
+}
+html body #v02551QuickProducts .v02551-quick-head{
+  margin-bottom:7px!important;
+}
+html body #v02551QuickProducts .v02551-quick-head strong{
+  font-size:13.5px!important;
+  color:#2a1d15!important;
+}
+html body #v02551QuickProducts .v02551-quick-head small{
+  color:#9a5a35!important;
+  font-weight:800!important;
+}
+html body #v02551QuickProducts .v02551-quick-grid{
+  gap:7px!important;
+}
+html body #v02551QuickProducts .v02551-quick-item{
+  min-height:96px!important;
+  padding:10px 9px 9px!important;
+  border:1.5px solid #df9a62!important;
+  background:linear-gradient(180deg,#fffaf2,#fbf0e1)!important;
+  box-shadow:0 4px 11px rgba(146,78,34,.07)!important;
+}
+html body #v02551QuickProducts .v02551-quick-name{
+  font-size:12.5px!important;
+  line-height:1.16!important;
+  font-weight:950!important;
+  color:#241a14!important;
+}
+html body #v02551QuickProducts .v02551-quick-price{
+  font-size:11.5px!important;
+  color:#d85f2c!important;
+}
+html body #v02551QuickProducts .v02551-quick-count{
+  min-width:25px!important;
+  height:20px!important;
+  padding:0 6px!important;
+  border-color:#e3a272!important;
+  background:#f8e1ca!important;
+  color:#8c4b2b!important;
+  font-size:8.5px!important;
+}
+
+/*
+ * Cabeçalho da comanda: o lápis deixa de ser uma ação quase invisível e vira
+ * um CTA textual, exatamente no contexto da comanda aberta.
+ */
+html body #screenSale .detail-head{
+  display:grid!important;
+  grid-template-columns:42px minmax(0,1fr) auto!important;
+  grid-template-areas:
+    "back title total"
+    "back title edit"!important;
+  column-gap:11px!important;
+  row-gap:5px!important;
+  align-items:center!important;
+  padding:13px 14px!important;
+}
+html body #screenSale .detail-head .back{
+  grid-area:back!important;
+  align-self:center!important;
+}
+html body #screenSale .detail-head .detail-title{
+  grid-area:title!important;
+  align-self:center!important;
+}
+html body #screenSale .detail-head .total-pill{
+  grid-area:total!important;
+  justify-self:end!important;
+  align-self:end!important;
+  font-size:19px!important;
+  line-height:1!important;
+}
+html body #screenSale .detail-head .edit-command{
+  grid-area:edit!important;
+  justify-self:end!important;
+  align-self:start!important;
+  width:auto!important;
+  min-width:146px!important;
+  height:40px!important;
+  padding:0 14px!important;
+  border:0!important;
+  border-radius:12px!important;
+  background:linear-gradient(135deg,var(--brand-2,#c86d3c),#df713d)!important;
+  color:#fff!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:7px!important;
+  box-shadow:0 7px 16px rgba(200,109,60,.19)!important;
+  font-size:18px!important;
+  line-height:1!important;
+  white-space:nowrap!important;
+}
+html body #screenSale .detail-head .edit-command::after{
+  content:"Editar comanda";
+  font-size:13.5px;
+  line-height:1;
+  font-weight:900;
+  letter-spacing:-.01em;
+}
+html body #screenSale .detail-head .edit-command:active{
+  transform:scale(.985);
+}
+
+@media(max-width:390px){
+  html body #screenSale .product-grid .product{
+    min-height:92px!important;
+    padding:10px 11px 9px!important;
+  }
+  html body #screenSale .product-grid .product h4{
+    font-size:15px!important;
+    line-height:1.14!important;
+  }
+  html body #v02551QuickProducts .v02551-quick-item{
+    min-height:92px!important;
+    padding:9px 8px 8px!important;
+  }
+  html body #v02551QuickProducts .v02551-quick-name{
+    font-size:12px!important;
+  }
+  html body #screenSale .detail-head{
+    grid-template-columns:42px minmax(0,1fr) auto!important;
+    column-gap:9px!important;
+    padding:12px!important;
+  }
+  html body #screenSale .detail-head .edit-command{
+    min-width:136px!important;
+    height:38px!important;
+    padding:0 11px!important;
+  }
+  html body #screenSale .detail-head .edit-command::after{
+    font-size:12.5px!important;
+  }
+  html body #screenSale .detail-head .total-pill{
+    font-size:18px!important;
+  }
+}
