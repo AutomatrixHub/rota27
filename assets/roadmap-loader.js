@@ -1,12 +1,14 @@
 /* Rota 27 — carregador incremental do roadmap pós-v0.25.46 */
 (function(){
   'use strict';
-  const CURRENT='0.25.70';
-  const HELP='9.5';
+  const CURRENT='0.25.71';
+  const HELP='9.6';
   const assets=[
+    {type:'css',id:'v02571ClientPickerCss',src:'./assets/v02571-client-picker.css?v=02571r1'},
+    {type:'js',id:'v02571ClientPickerJs',src:'./assets/v02571-client-picker.js?v=02571r1'},
     {type:'js',id:'v02570NewCommandRootJs',src:'./assets/v02570-new-command-root.js?v=02570r1'},
     {type:'css',id:'v02569MenuCategoryOrderCss',src:'./assets/v02569-menu-category-order.css?v=02569r1'},
-    {type:'js',id:'v02569MenuCategoryOrderJs',src:'./assets/v02569-menu-category-order.js?v=02569r1'},
+    {type:'js',id:'v02569MenuCategoryOrderJs',src:'./assets/v02569-menu-category-order.js?v=02571r1'},
     {type:'css',id:'v02557UpcomingBirthdaysCss',src:'./assets/v02557-upcoming-birthdays.css?v=02567r1'},
     {type:'js',id:'v02557UpcomingBirthdaysJs',src:'./assets/v02557-upcoming-birthdays.js?v=02567r1'},
     {type:'css',id:'v02565BirthdayGreetingCss',src:'./assets/v02565-birthday-greeting.css?v=02567r1'},

@@ -3,30 +3,38 @@
 Última revisão: 30/08/2026
 
 ## Produção
-- versão: **v0.25.70 — Abertura canônica de Nova comanda**;
+- versão: **v0.25.71 — Prioridade de categorias e seletor real de clientes**;
 - branch: `main`;
 - GitHub Pages: `https://automatrixhub.github.io/rota27/`;
-- Service Worker: `rota27-comandas-v0.25.70-r1`;
-- baseline anterior: **v0.25.69**, merge `e3f7b941574bdfdc65137914994e5fd2e580e11a`.
+- Service Worker: `rota27-comandas-v0.25.71-r1`;
+- baseline anterior: **v0.25.70**, merge `33cd7e314c738bc0e939d62d5b6836a7133bccb5`.
 
-## Hotfix Nova comanda
-A v0.25.64 havia removido o `onclick` original do FAB e passado a depender de `window.openNewCommandSheet`. Em alguns ciclos de bootstrap/PWA essa referência global pode não estar exposta mesmo com o formulário `#newCommandWrap` presente no DOM, causando a mensagem **“Não foi possível abrir Nova comanda.”**.
+## Categorias
+Ordem fixa no Cardápio e no lançamento:
+1. **Todos**;
+2. **Cervejas**;
+3. **Bebidas**;
+4. **Charcutaria**;
+5. **Vinhos**.
 
-A v0.25.70 introduz `v02570-new-command-root.js`:
-- captura o FAB `#fabNew` antes dos listeners antigos;
-- protege também **Abrir primeira comanda**;
-- usa a função legada quando ela existe e funciona;
-- possui fallback canônico que reinicia os campos e abre `#newCommandWrap` diretamente;
-- remove qualquer `autofocus` e não chama `.focus()`;
-- reinicia o modo de Consumo interno antes de uma nova comanda;
-- reinstala a referência raiz em `visibilitychange` sem polling.
+No Cardápio, as demais categorias ficam em ordem alfabética. No lançamento, as demais continuam ordenadas pela quantidade histórica faturável vendida, com empate alfabético. Consumo interno/non-revenue permanece fora. O alias `Carchutaria` é reconhecido sem alterar o cadastro.
 
-## Cardápio preservado
-A v0.25.69 permanece responsável por:
-- Cardápio administrativo em ordem alfabética;
-- filtros **Todos → Cervejas → Bebidas → demais categorias**;
-- categorias de lançamento após as três primeiras ordenadas por consumo histórico faturável;
-- exclusão de Consumo interno/non-revenue do ranking.
+## Nova comanda — seleção de clientes
+A auditoria confirmou concorrência entre o `<datalist>` nativo criado por `v017-core.js` e o seletor visual `v02513-client-picker.js`.
+
+A v0.25.71 adiciona `v02571-client-picker.css/js`:
+- remove `list=v017ClientSuggestions` de `#newCustomer` sempre que a camada é ativada;
+- desativa autocomplete/autocorreção nativos no campo;
+- chama `Rota27V017.syncDomainNow()` ao focar o campo;
+- usa `Rota27V017.clients()` após sincronização;
+- deduplica clientes por WhatsApp/ID;
+- substitui o picker antigo por um nó sem o handler `pointerdown.preventDefault()` legado;
+- usa seleção por `click`;
+- painel fica no fluxo da folha e é rolável por toque;
+- preenche nome e WhatsApp do cliente selecionado.
+
+## Nova comanda — abertura preservada
+A v0.25.70 permanece responsável pela abertura canônica do `+` e de **Abrir primeira comanda**, com fallback direto no DOM e sem autofocus.
 
 ## Backend de relacionamento preservado
 - `rota27-birthday-campaign`: v3 ACTIVE;
@@ -38,13 +46,14 @@ A v0.25.69 permanece responsável por:
 - nenhuma migration;
 - nenhuma Edge Function alterada;
 - nenhum reset ou alteração de dados;
-- preços, produtos, estoque, comandas e histórico preservados;
+- preços, produtos, estoque, comandas, clientes e histórico preservados;
 - nenhum polling ou `MutationObserver` novo.
 
 ## Atualização PWA
-- shell declara `rota27-release-version=0.25.70`;
-- `v02570-new-command-root.js` é carregado diretamente pelo shell e pelo roadmap loader;
-- cache `rota27-comandas-v0.25.70-r1`;
+- shell declara `rota27-release-version=0.25.71`;
+- `v02569-menu-category-order.js` usa cache-buster `02571r1`;
+- `v02571-client-picker.css/js` são carregados diretamente pelo shell e pelo roadmap loader;
+- cache `rota27-comandas-v0.25.71-r1`;
 - não limpar `localStorage` de produção.
 
 ## Regras de operação
@@ -54,4 +63,4 @@ A v0.25.69 permanece responsável por:
 - mudanças usam branch curta + PR + merge + confirmação do Pages.
 
 ## Rollback
-Baseline anterior: **v0.25.69** / merge `e3f7b941574bdfdc65137914994e5fd2e580e11a`.
+Baseline anterior: **v0.25.70** / merge `33cd7e314c738bc0e939d62d5b6836a7133bccb5`.

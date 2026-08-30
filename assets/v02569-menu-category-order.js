@@ -1,8 +1,9 @@
-/* Rota 27 v0.25.69 — organização do Cardápio e categorias por consumo */
+/* Rota 27 v0.25.69/v0.25.71 — organização do Cardápio e categorias por consumo */
 (function(){
   'use strict';
-  const VERSION='0.25.69';
+  const VERSION='0.25.71';
   const collator=new Intl.Collator('pt-BR',{sensitivity:'base',numeric:true});
+  const FIXED_ALIASES=[['Cervejas'],['Bebidas'],['Charcutaria','Carchutaria'],['Vinhos','Vinho']];
   let menuCategory='Todos';
   let usageCache={signature:'',map:new Map()};
 
@@ -43,9 +44,11 @@
 
   function orderedCategories(source,{consumptionOrder=true}={}){
     const raw=[...new Set((source||[]).map(text).filter(Boolean))];
-    const beer=raw.find(c=>same(c,'Cervejas'))||null;
-    const drinks=raw.find(c=>same(c,'Bebidas'))||null;
-    const fixed=[beer,drinks].filter(Boolean);
+    const fixed=[];
+    for(const aliases of FIXED_ALIASES){
+      const match=raw.find(c=>aliases.some(alias=>same(c,alias)));
+      if(match&&!fixed.some(f=>same(f,match)))fixed.push(match);
+    }
     const scores=consumptionOrder?usageByCategory():null;
     const rest=raw.filter(c=>!fixed.some(f=>same(c,f)));
     rest.sort((a,b)=>{
@@ -107,8 +110,8 @@
   }
 
   function patch(){
-    if(typeof categories==='function'&&categories.__v02569!==true){const next=function(){return saleCategories();};next.__v02569=true;categories=next;}
-    if(typeof renderMenu==='function'&&renderMenu.__v02569!==true){renderMenuV02569.__v02569=true;renderMenu=renderMenuV02569;}
+    if(typeof categories==='function'&&categories.__v02571!==true){const next=function(){return saleCategories();};next.__v02569=true;next.__v02571=true;categories=next;try{window.categories=next;}catch{}}
+    if(typeof renderMenu==='function'&&renderMenu.__v02571!==true){renderMenuV02569.__v02569=true;renderMenuV02569.__v02571=true;renderMenu=renderMenuV02569;try{window.renderMenu=renderMenuV02569;}catch{}}
   }
 
   function refresh(){
@@ -122,9 +125,9 @@
     const search=document.getElementById('searchMenu');
     if(search&&!search.dataset.v02569){search.dataset.v02569='1';search.addEventListener('input',()=>renderMenuV02569());}
     document.addEventListener('click',e=>{if(e.target.closest?.('#navMenu'))setTimeout(()=>{identity();patch();renderMenuV02569();},0);});
-    document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')identity();});
+    document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){identity();patch();}});
     window.Rota27V02569MenuCategoryOrder={version:VERSION,refresh,usageByCategory,saleCategories,menuCategories};
-    console.info('[Rota27] v0.25.69 — Cardápio alfabético e categorias ordenadas.');
+    console.info('[Rota27] v0.25.71 — categorias prioritárias Todos, Cervejas, Bebidas, Charcutaria e Vinhos.');
   }
 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
