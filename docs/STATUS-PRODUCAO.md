@@ -3,11 +3,25 @@
 Última revisão: 29/08/2026
 
 ## Produção
-- versão: **v0.25.66 — Elegibilidade de aniversário**;
+- versão: **v0.25.67 — Estado visual de aniversários**;
 - branch: `main`;
 - GitHub Pages: `https://automatrixhub.github.io/rota27/`;
-- Service Worker: `rota27-comandas-v0.25.66-r1`;
-- baseline anterior: **v0.25.65**, merge `9a9e2a64bd6d2b3b01004dc2e804128386221a02`.
+- Service Worker: `rota27-comandas-v0.25.67-r1`;
+- baseline anterior: **v0.25.66**, merge `a801ddbd821e88a92c6a703713be54b317027b8f`.
+
+## Incidente visual corrigido
+A automação de aniversário estava correta no backend, porém o renderer legado v0.25.57 reconstruía `#v02557UpcomingBirthdays` depois das camadas v0.25.65/66. Isso podia apagar visualmente:
+- a frase de envio automático às 09:30;
+- o bloco de status da automação;
+- os badges de elegibilidade.
+
+## Correção v0.25.67
+- `v02557-upcoming-birthdays.js` agora usa a cópia correta de automação e emite `rota27:v02557-rendered` após cada render;
+- `v02567-birthday-visual-state.js` escuta esse evento e reaplica o estado de elegibilidade v0.25.66;
+- o bloco `v02565BirthdayAutomation` é restaurado a partir do último status já consultado, sem polling adicional;
+- o shell carrega diretamente a camada v0.25.67 antes do roadmap loader;
+- o roadmap loader usa cache-buster `02567r1` para as camadas de aniversário;
+- não foi adicionado `MutationObserver` nem varredura contínua.
 
 ## Parabéns automático
 - envio diário às **09:30**, fuso `America/Sao_Paulo`;
@@ -22,37 +36,32 @@ Quando uma data de nascimento é fornecida ou alterada no cadastro:
 - a data é sincronizada no `client_upsert`;
 - `relationshipMarketingOptIn=true` acompanha o mesmo fluxo;
 - `eventMarketingOptIn=true` é mantido por compatibilidade;
-- fonte: `birth_date_provided_v02566`.
-
-Se o cliente fizer opt-out explicitamente depois, sem alterar novamente a data, o opt-out continua podendo ser salvo.
+- opt-out explícito posterior continua sendo respeitado.
 
 ## Backfill aprovado
-Foi executado um backfill append-only em produção para **21 clientes** que já possuíam data de nascimento. Foram inseridos novos `client_upsert` com a data preservada e autorização `true`.
+Foi executado backfill append-only em produção para **21 clientes** que já possuíam data de nascimento. Os 21 possuem autorização de relacionamento `true` no snapshot consolidado.
 
-O backfill corrigiu também clientes cuja data existia em evento anterior, mas não no snapshot mais recente, como o caso de **JJ Ivan Lins**.
+Para 30/08, **Cliente X** e **JJ Ivan Lins** possuem data, WhatsApp válido e autorização, ficando elegíveis para o cron das 09:30.
 
 Nenhum evento histórico foi apagado ou atualizado in-place.
 
-## Interface
+## Interface esperada
 Em **Clientes & Fidelização → Aniversários próximos**:
-- o texto passa a informar o envio automático às 09:30;
-- cada cliente recebe um status de elegibilidade;
-- `Autorizado • 09h30 no dia`: data + WhatsApp válido + autorização;
-- `Sem autorização`: relacionamento desabilitado;
-- `Sem WhatsApp`: telefone ausente/inválido;
-- no dia do aniversário, os estados da entrega permanecem: Agendado 09:30, Aceito pela Meta, Enviado, Entregue, Lido ou Falhou.
-
-## Consentimentos
-- atualizações da comanda: consentimento operacional separado;
-- aniversário, eventos e relacionamento: `relationshipMarketingOptIn`;
-- o editor continua permitindo opt-out posterior.
+- subtítulo: `Parabéns automático às 09:30 no dia do aniversário para clientes autorizados.`;
+- `Autorizado • 09h30 no dia` para aniversariantes futuros elegíveis;
+- `Sem autorização` para relacionamento desabilitado;
+- `Sem WhatsApp` para telefone ausente/inválido;
+- no próprio dia, os estados de entrega permanecem: Agendado 09:30, Aceito pela Meta, Enviado, Entregue, Lido ou Falhou.
 
 ## Preservação
-- v0.25.65 permanece responsável pela automação de parabéns e status de entrega;
-- v0.25.64 permanece responsável por estabilidade mobile, FAB + e Consumo interno;
-- v0.25.63 permanece responsável pela data operacional de turnos;
+- nenhuma migration nesta release;
+- nenhuma Edge Function alterada;
 - nenhum reset de dados;
-- nenhum envio de WhatsApp foi feito durante o backfill.
+- nenhum envio de WhatsApp disparado pela correção visual;
+- v0.25.66 continua responsável pela elegibilidade/backfill;
+- v0.25.65 continua responsável pela automação e entrega;
+- v0.25.64 continua responsável por estabilidade mobile/FAB/Consumo interno;
+- v0.25.63 continua responsável pela data operacional de turnos.
 
 ## Regras de operação
 - não limpar `localStorage` de produção;
@@ -62,4 +71,4 @@ Em **Clientes & Fidelização → Aniversários próximos**:
 - mudanças usam branch curta + PR + merge + confirmação do Pages.
 
 ## Rollback
-Baseline anterior: **v0.25.65** / merge `9a9e2a64bd6d2b3b01004dc2e804128386221a02`.
+Baseline anterior: **v0.25.66** / merge `a801ddbd821e88a92c6a703713be54b317027b8f`.

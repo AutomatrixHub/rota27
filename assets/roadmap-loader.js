@@ -1,13 +1,16 @@
 /* Rota 27 — carregador incremental do roadmap pós-v0.25.46 */
 (function(){
   'use strict';
-  const CURRENT='0.25.66';
-  const HELP='9.1';
+  const CURRENT='0.25.67';
+  const HELP='9.2';
   const assets=[
-    {type:'css',id:'v02566BirthdayEligibilityCss',src:'./assets/v02566-birthday-eligibility.css?v=02566r1'},
-    {type:'js',id:'v02566BirthdayEligibilityJs',src:'./assets/v02566-birthday-eligibility.js?v=02566r1'},
-    {type:'css',id:'v02565BirthdayGreetingCss',src:'./assets/v02565-birthday-greeting.css?v=02565r1'},
-    {type:'js',id:'v02565BirthdayGreetingJs',src:'./assets/v02565-birthday-greeting.js?v=02565r1'},
+    {type:'css',id:'v02557UpcomingBirthdaysCss',src:'./assets/v02557-upcoming-birthdays.css?v=02567r1'},
+    {type:'js',id:'v02557UpcomingBirthdaysJs',src:'./assets/v02557-upcoming-birthdays.js?v=02567r1'},
+    {type:'css',id:'v02565BirthdayGreetingCss',src:'./assets/v02565-birthday-greeting.css?v=02567r1'},
+    {type:'js',id:'v02565BirthdayGreetingJs',src:'./assets/v02565-birthday-greeting.js?v=02567r1'},
+    {type:'css',id:'v02566BirthdayEligibilityCss',src:'./assets/v02566-birthday-eligibility.css?v=02567r1'},
+    {type:'js',id:'v02566BirthdayEligibilityJs',src:'./assets/v02566-birthday-eligibility.js?v=02567r1'},
+    {type:'js',id:'v02567BirthdayVisualStateJs',src:'./assets/v02567-birthday-visual-state.js?v=02567r1'},
     {type:'css',id:'v02564MobileRuntimeCss',src:'./assets/v02564-mobile-runtime-hotfix.css?v=02564r1'},
     {type:'js',id:'v02564MobileRuntimeJs',src:'./assets/v02564-mobile-runtime-hotfix.js?v=02564r1'},
     {type:'css',id:'v02563OperationalTurnCss',src:'./assets/v02563-operational-turn-coherence.css?v=02563r1'},
@@ -22,8 +25,6 @@
     {type:'js',id:'v02559StockCoverageJs',src:'./assets/v02559-stock-coverage.js?v=02559r1'},
     {type:'css',id:'v02558ReceivableDueCss',src:'./assets/v02558-receivables-due-date.css?v=02558r1'},
     {type:'js',id:'v02558ReceivableDueJs',src:'./assets/v02558-receivables-due-date.js?v=02558r1'},
-    {type:'css',id:'v02557UpcomingBirthdaysCss',src:'./assets/v02557-upcoming-birthdays.css?v=02557r1'},
-    {type:'js',id:'v02557UpcomingBirthdaysJs',src:'./assets/v02557-upcoming-birthdays.js?v=02557r1'},
     {type:'js',id:'v02555FocusRootJs',src:'./assets/v02555-new-command-focus-root.js?v=02555r2'},
     {type:'js',id:'v02554NoAutofocusJs',src:'./assets/v02554-new-command-no-autofocus.js?v=02554r1'},
     {type:'css',id:'v02553CartbarButtonCss',src:'./assets/v02553-cartbar-button.css?v=02553r1'},
