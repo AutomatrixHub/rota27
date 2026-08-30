@@ -54,15 +54,22 @@
     const p=phone(client?.whatsappPhone||client?.phone||'');if(p)out.push(`p:${p}`);
     return out;
   }
+  function normalizeStatus(value){return value==='granted'||value==='revoked'?value:'unknown';}
+  function statusRank(value){return normalizeStatus(value)==='revoked'?2:normalizeStatus(value)==='granted'?1:0;}
+  function compareRecord(a,b){
+    if(!b)return 1;if(!a)return -1;
+    const at=Number(a.updatedAt||0),bt=Number(b.updatedAt||0);
+    if(at!==bt)return at>bt?1:-1;
+    const as=Number(a.seq||0),bs=Number(b.seq||0);
+    if(as!==bs)return as>bs?1:-1;
+    const ar=statusRank(a.status),br=statusRank(b.status);
+    return ar===br?0:(ar>br?1:-1);
+  }
   function bestRecord(client){
     const store=readStore();let best=null;
-    keysFor(client).forEach(k=>{
-      const r=store.records[k];if(!r||typeof r!=='object')return;
-      if(!best||Number(r.seq||0)>Number(best.seq||0)||(Number(r.seq||0)===Number(best.seq||0)&&Number(r.updatedAt||0)>Number(best.updatedAt||0)))best=r;
-    });
+    keysFor(client).forEach(k=>{const r=store.records[k];if(r&&typeof r==='object'&&compareRecord(r,best)>0)best=r;});
     return best;
   }
-  function normalizeStatus(value){return value==='granted'||value==='revoked'?value:'unknown';}
   function recordLabel(record){
     const ts=Number(record?.updatedAt||0);if(!ts)return '';
     try{return new Date(ts).toLocaleDateString('pt-BR');}catch{return '';}
@@ -84,7 +91,7 @@
     let changed=false;
     keysFor(client).forEach(k=>{
       const old=store.records[k];
-      if(!old||Number(record.seq)>Number(old.seq||0)||(Number(record.seq)===Number(old.seq||0)&&Number(record.updatedAt)>=Number(old.updatedAt||0))){
+      if(!old||compareRecord(record,old)>=0){
         if(JSON.stringify(old)!==JSON.stringify(record)){store.records[k]=record;changed=true;}
       }
     });
@@ -129,7 +136,7 @@
     let changed=false;
     keysFor(shadow).forEach(k=>{
       const old=store.records[k];
-      if(!old||seq>Number(old.seq||0)||(seq===Number(old.seq||0)&&updatedAt>=Number(old.updatedAt||0))){
+      if(!old||compareRecord(record,old)>=0){
         if(JSON.stringify(old)!==JSON.stringify(record)){store.records[k]=record;changed=true;}
       }
     });
@@ -157,7 +164,8 @@
   function queueConsent(client,status,source,updatedAt=Date.now()){
     if(!client)return false;
     const current=bestRecord(client);
-    if(normalizeStatus(current?.status)===status&&Number(current?.updatedAt||0)>=Number(updatedAt||0))return false;
+    const candidate={status,updatedAt,seq:Number(current?.seq||0)};
+    if(current&&compareRecord(candidate,current)<=0&&normalizeStatus(current.status)===status)return false;
     writeRecord(client,status,{source,updatedAt,seq:Number(current?.seq||0)});
     const payload={...clone(client),whatsappCommandConsent:status,whatsappCommandConsentAt:updatedAt,whatsappCommandConsentUpdatedAt:updatedAt,whatsappCommandConsentSource:source,whatsappCommandConsentVersion:1};
     try{api()?.queueDomainEvent?.('client_upsert',client.id,{client:payload});}catch{}
@@ -202,27 +210,27 @@
     }
     return hint;
   }
+  function baseConsentCopy(text){const small=byId('newWhatsappOptIn')?.closest('.wa-consent')?.querySelector('small');if(small)small.textContent=text;}
   function selectedClient(){return findClient(byId('newCustomer')?.value||'',byId('newWhatsapp')?.value||'',byId('newWhatsappOptIn')?.dataset?.v02574ClientId||'');}
   function renderHint(client,record,manualOff=false){
     const hint=ensureHint();if(!hint)return;
-    const opt=byId('newWhatsappOptIn'),small=opt?.closest('.wa-consent')?.querySelector('small');
     const status=normalizeStatus(record?.status);
     hint.className='v02574-consent-hint '+status;
-    if(!client){if(small)small.textContent='Marque somente após o cliente autorizar o recebimento das atualizações desta comanda.';hint.innerHTML='Para cliente novo, marque somente após autorização. A permissão ficará salva no cadastro.';return;}
+    if(!client){baseConsentCopy('Marque somente após o cliente autorizar o recebimento das atualizações desta comanda.');hint.innerHTML='Para cliente novo, marque somente após autorização. A permissão ficará salva no cadastro.';return;}
     const when=recordLabel(record);
     if(status==='granted'){
-      if(small)small.textContent=manualOff?'Autorização salva; esta comanda foi deixada sem atualizações.':'Autorização já registrada para atualizações operacionais da comanda.';
+      baseConsentCopy(manualOff?'Autorização salva; esta comanda foi deixada sem atualizações.':'Autorização já registrada para atualizações operacionais da comanda.');
       hint.innerHTML=manualOff
         ? `Autorização salva${when?` em ${when}`:''}, mas <strong>esta comanda ficará sem atualizações</strong>. <button type="button" data-v02574-revoke>Revogar autorização salva</button>`
         : `Autorização já registrada${when?` em ${when}`:''}. As atualizações desta comanda estão habilitadas automaticamente. <button type="button" data-v02574-revoke>Revogar autorização salva</button>`;
       return;
     }
     if(status==='revoked'){
-      if(small)small.textContent='Autorização revogada. Marque somente após o cliente autorizar novamente.';
+      baseConsentCopy('Autorização revogada. Marque somente após o cliente autorizar novamente.');
       hint.innerHTML=`Autorização revogada${when?` em ${when}`:''}. Se o cliente autorizar novamente, marque a opção para registrar uma nova autorização.`;
       return;
     }
-    if(small)small.textContent='Marque somente após o cliente autorizar o recebimento das atualizações desta comanda.';
+    baseConsentCopy('Marque somente após o cliente autorizar o recebimento das atualizações desta comanda.');
     hint.innerHTML='Cliente cadastrado sem autorização registrada. Marque somente após o cliente autorizar.';
   }
 
@@ -268,9 +276,12 @@
   }
 
   function resetForNewCommand(){
-    const opt=byId('newWhatsappOptIn');if(opt){delete opt.dataset.v02574ClientId;delete opt.dataset.v02574ManualOff;delete opt.dataset.v02574PendingGrant;}
+    const opt=byId('newWhatsappOptIn');
+    if(opt){opt.checked=false;delete opt.dataset.v02574ClientId;delete opt.dataset.v02574ManualOff;delete opt.dataset.v02574PendingGrant;}
+    baseConsentCopy('Marque somente após o cliente autorizar o recebimento das atualizações desta comanda.');
     const hint=ensureHint();if(hint){hint.className='v02574-consent-hint';hint.textContent='Selecione um cliente para verificar se já existe autorização de WhatsApp.';}
   }
+  function isNewCommandTrigger(target){return !!target?.closest?.('#fabNew,#commandsEmpty [onclick*="openNewCommandSheet"],[data-v02570-new-command],#v0252MapAddMesa,#v0252MapAddCounter,#v0252MapAddParklet,#v0252MapAddClient');}
 
   function applyPendingGrant(pending,attempt=0){
     const client=findClient(pending.name,pending.rawPhone);
@@ -297,6 +308,8 @@
 
   function ensureClientEditorConsent(){
     const editor=byId('v017ClientEditWrap');if(!editor)return false;
+    const desc=editor.querySelector('.v017-editor .desc')||editor.querySelector('.desc');
+    if(desc)desc.textContent='A autorização para atualizações da comanda fica salva no cadastro e pode ser revogada aqui.';
     let box=byId('v02574ClientConsentBox');
     if(!box){
       const phoneField=byId('v017ClientPhone')?.closest('.field');
@@ -311,7 +324,7 @@
   function decorateClientEditor(){
     if(!ensureClientEditorConsent())return;
     const box=byId('v02574ClientConsentBox'),client=editorClient();if(!box)return;
-    if(!client){box.innerHTML='<small>Atualizações da comanda por WhatsApp</small><strong>Sem cliente selecionado</strong>';return;}
+    if(!client){box.className='v02574-client-consent';box.innerHTML='<div><small>Atualizações da comanda por WhatsApp</small><strong>Será registrado após salvar um cliente com WhatsApp</strong></div>';return;}
     const record=bestRecord(client),status=normalizeStatus(record?.status),when=recordLabel(record);
     const label=status==='granted'?'Autorizado':status==='revoked'?'Revogado':'Não registrado';
     box.className=`v02574-client-consent ${status}`;
@@ -340,12 +353,13 @@
     byId('newWhatsapp')?.addEventListener('change',refresh);
     byId('newWhatsapp')?.addEventListener('blur',refresh);
     byId('newWhatsappOptIn')?.addEventListener('change',onCheckboxChange);
+    window.addEventListener('click',e=>{if(isNewCommandTrigger(e.target))resetForNewCommand();},true);
     document.addEventListener('click',e=>{
       if(e.target.closest?.('[data-v02574-revoke]')){e.preventDefault();revokeSelected();return;}
       const action=e.target.closest?.('[data-v02574-editor-action]')?.dataset?.v02574EditorAction;if(action){e.preventDefault();editorAction(action);return;}
       if(e.target.closest?.('[data-v02571-client],[data-v02513-client]'))setTimeout(()=>{refreshNewCommandConsent();syncConsents().then(refreshNewCommandConsent);},70);
-      if(e.target.closest?.('#fabNew,#commandsEmpty [onclick*="openNewCommandSheet"],[data-v02570-new-command]'))setTimeout(()=>{resetForNewCommand();patchCreateCommand();},0);
-      if(e.target.closest?.('[data-client-id],#v017ClientEditWrap'))setTimeout(decorateClientEditor,50);
+      if(e.target.closest?.('.v017-client-row,#v017NewClient'))setTimeout(decorateClientEditor,30);
+      if(e.target.closest?.('#v017ClientEditWrap'))setTimeout(decorateClientEditor,0);
     });
   }
 
