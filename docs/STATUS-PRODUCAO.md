@@ -17,7 +17,7 @@ A v0.25.74 cria uma camada de consentimento persistente, vinculada ao cadastro c
 - escopo exclusivo: `command_updates`;
 - data, origem e versão do registro ficam preservadas;
 - sincronização usa `client_upsert` já existente, sem novo tipo de evento e sem migration;
-- uma camada própria lê os eventos `client_upsert` para preservar os campos de consentimento mesmo quando o core antigo sanitiza o cadastro base;
+- uma camada própria lê os eventos `client_upsert` e evidências históricas `command_opened` para preservar/reconstruir o consentimento;
 - nenhum consentimento de comanda é convertido em autorização de marketing, eventos ou campanhas.
 
 ## Nova comanda
@@ -31,16 +31,20 @@ Ao selecionar um cliente cadastrado:
 Para cliente novo, marcar o checkbox continua significando que o cliente autorizou. Depois da criação do cadastro, essa autorização é gravada também no consentimento persistente.
 
 ## Migração do histórico existente
-Clientes que ainda não possuem registro de consentimento e possuem alguma comanda histórica com `whatsappOptIn=true` são migrados para `granted`.
+Clientes ainda sem registro persistente podem ter a autorização reconstruída de duas fontes:
+- comandas locais preservadas com `whatsappOptIn=true`;
+- eventos compartilhados `command_opened` cujo snapshot original registra `whatsappOptIn=true`, inclusive quando a comanda foi depois cancelada e deixou de existir localmente.
 
-A migração usa a data da comanda histórica como `updatedAt`, evitando que uma autorização antiga possa prevalecer sobre uma revogação posterior sincronizada em outro aparelho.
+A identificação prioriza o WhatsApp canônico. A data original da comanda é usada como `updatedAt`. A comparação entre registros prioriza `updatedAt`, depois `seq`; em empate completo, `revoked` prevalece sobre `granted`. Assim, autorização histórica não substitui revogação mais recente.
+
+A migração apenas registra a permissão: **não envia nenhuma mensagem retroativa ao cliente**.
 
 ## Revogação explícita
 A autorização global pode ser revogada de forma separada:
 - na própria Nova comanda, pelo link **Revogar autorização salva**;
 - no editor do cadastro do cliente, que passa a mostrar **Autorizado / Revogado / Não registrado**.
 
-Revogar é diferente de apenas desmarcar o checkbox de uma comanda.
+Revogar é diferente de apenas desmarcar o checkbox de uma comanda. O texto antigo do editor, que dizia que o consentimento era definido em cada comanda, também é substituído pela regra persistente atual.
 
 ## Cancelamento de comanda — WhatsApp
 A v0.25.73 permanece ativa:
