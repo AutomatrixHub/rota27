@@ -1,75 +1,61 @@
 # Rota 27 — Status de produção
 
-Última revisão: 29/08/2026
+Última revisão: 30/08/2026
 
 ## Produção
-- versão: **v0.25.68 — Recontato de cadastro**;
+- versão: **v0.25.69 — Organização do cardápio e categorias**;
 - branch: `main`;
 - GitHub Pages: `https://automatrixhub.github.io/rota27/`;
-- Service Worker: `rota27-comandas-v0.25.68-r1`;
-- baseline anterior: **v0.25.67**, merge `35d6841f7be7e1de09ab371f91dbc073ecbbccf6`.
+- Service Worker: `rota27-comandas-v0.25.69-r1`;
+- baseline anterior: **v0.25.68**, merge `9d5a930ee72afb1abcede3c82bcacef1104ebd79`.
 
-## Solicitação de data de nascimento
-A campanha `birthday_request_v1` agora aceita até **3 solicitações bem-sucedidas por cliente**, com cooldown mínimo de **7 dias**.
+## Cardápio
+A tela administrativa do Cardápio passa a exibir os produtos em **ordem alfabética por nome**, independentemente de ativo/inativo ou categoria.
 
-### Elegibilidade
-Para receber uma solicitação o cliente precisa:
-- ter WhatsApp válido;
-- ainda não possuir data de nascimento válida;
-- possuir evidência anterior de contato autorizado, ou já ter sido elegível e recebido uma solicitação anterior desta campanha;
-- não ter alcançado 3 solicitações bem-sucedidas;
-- ter completado 7 dias desde a solicitação anterior, quando houver.
+Acima da lista existem filtros em chips:
+- **Todos**;
+- **Cervejas**;
+- **Bebidas**;
+- demais categorias em ordem alfabética.
 
-Falhas técnicas não contam para o limite de três. O disparo é manual pelo card de Clientes; não existe cron de reenvio para esta campanha.
+A busca continua combinável com a categoria selecionada.
 
-## Interface
-Em **Clientes → Solicitar data de nascimento pelo WhatsApp**, o painel informa:
-- com WhatsApp sem aniversário;
-- com histórico autorizado;
-- já receberam 1+ solicitação;
-- aguardando 7 dias;
-- limite de 3 atingido;
-- prontos agora;
-- quantidade de primeiras solicitações e recontatos disponíveis.
+## Lançamento em comandas
+As categorias do lançamento usam uma prioridade operacional:
+1. **Todos**;
+2. **Cervejas**;
+3. **Bebidas**;
+4. demais categorias ordenadas pelo total histórico de unidades vendidas;
+5. empate por ordem alfabética.
 
-Clientes sem evidência anterior de contato continuam bloqueados. Clientes sem WhatsApp válido são indicados para atualização manual.
-
-## Respostas pelo WhatsApp
-`rota27-whatsapp-inbound` v4 mantém o fluxo anterior de reconhecimento de `DD/MM/AAAA` e agora grava no mesmo `client_upsert`:
-- `birthDate`;
-- `relationshipMarketingOptIn=true`;
-- `eventMarketingOptIn=true` por compatibilidade;
-- fonte `birth_date_reply_whatsapp_v02568`.
-
-Assim que a data é gravada, o cliente sai da audiência de novas solicitações.
-
-## Edge Functions
-- `rota27-birthday-campaign`: **v3 ACTIVE**, `verify_jwt=false`, autenticação própria por `x-rota27-device-token`;
-- `rota27-whatsapp-inbound`: **v4 ACTIVE**, `verify_jwt=false`, webhook Meta com verificação de assinatura quando configurada;
-- template `solicitar_aniversario_rota27_v1` permanece o mesmo já aprovado pela Meta;
-- nenhuma mensagem foi enviada durante a implantação da v0.25.68.
-
-## Parabéns automático
-Preservado sem mudança:
-- `rota27-birthday-greeting`;
-- cron diário às 09:30 em `America/Sao_Paulo`;
-- template `aniversario_cliente_rota27_v1` MARKETING aprovado;
-- idempotência anual.
+O ranking considera somente comandas fechadas faturáveis. Registros com `internalConsumption=true` ou `nonRevenue=true` ficam fora. A categoria histórica usa `itemMeta` da comanda quando disponível, com fallback para o catálogo atual.
 
 ## Preservação
+- nenhuma alteração nos registros do catálogo;
+- nenhum preço modificado;
+- nenhuma categoria criada, removida ou renomeada;
 - nenhuma migration;
-- nenhum reset de dados;
-- histórico de solicitações antigas é reaproveitado como tentativa 1;
-- v0.25.67 continua responsável pelo estado visual dos aniversários;
-- v0.25.66 continua responsável pela elegibilidade/backfill;
-- v0.25.65 continua responsável pelo parabéns automático.
+- nenhuma Edge Function alterada;
+- nenhum polling ou `MutationObserver` novo;
+- somente ordenação e filtros de apresentação.
+
+## Backend de relacionamento preservado
+- `rota27-birthday-campaign`: v3 ACTIVE;
+- `rota27-whatsapp-inbound`: v4 ACTIVE;
+- parabéns automático às 09:30 preservado;
+- rotina de solicitação de data de nascimento em até 3 tentativas / 7 dias preservada.
+
+## Atualização PWA
+- shell declara `rota27-release-version=0.25.69`;
+- `v02569-menu-category-order.css/js` são carregados diretamente pelo shell e pelo roadmap loader;
+- cache `rota27-comandas-v0.25.69-r1`;
+- não limpar `localStorage` de produção.
 
 ## Regras de operação
-- não limpar `localStorage` de produção;
 - não reinstalar PWA como atualização normal;
 - não resetar Supabase;
 - Sandbox não envia WhatsApp real nem sincroniza produção;
 - mudanças usam branch curta + PR + merge + confirmação do Pages.
 
 ## Rollback
-Baseline anterior: **v0.25.67** / merge `35d6841f7be7e1de09ab371f91dbc073ecbbccf6`.
+Baseline anterior: **v0.25.68** / merge `9d5a930ee72afb1abcede3c82bcacef1104ebd79`.
