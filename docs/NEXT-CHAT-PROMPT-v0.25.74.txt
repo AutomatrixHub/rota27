@@ -1,0 +1,31 @@
+Continue o projeto **Rota 27 Bodega — Comandas** a partir da baseline oficial de produção **v0.25.74 — Consentimento persistente de WhatsApp**.
+
+ANTES DE QUALQUER ALTERAÇÃO:
+1. Leia integralmente `docs/HANDOFF-v0.25.74.md`.
+2. Confira `main`, `VERSION`, `index.html`, `sw.js`, `README.md`, `docs/STATUS-PRODUCAO.md` e `docs/RELEASE-v0.25.74.md`.
+3. Confira os PRs recentes, especialmente #109, #108, #107, #106 e #105.
+4. Confira o Supabase conectado do projeto `owkvwsiblbzlpxjwybrt`, principalmente as Edge Functions e os eventos reais relevantes à tarefa.
+5. Considere como baseline de produção o merge `3e291ef5fe118f69f7f85a7c287a6f7e29487679`, PR #109, Pages run #145 (`33336820520`), com build/report-build-status/deploy = success e cache PWA `rota27-comandas-v0.25.74-r1`.
+
+REGRAS DE TRABALHO:
+- Não altere `main` diretamente para novas mudanças.
+- Use branch curta -> implementação -> revisão do diff -> PR -> merge -> GitHub Pages -> verificação da produção.
+- Não diga que algo está em produção antes de conferir `VERSION`, release meta no `index.html`, Service Worker/cache e os três jobs do Pages.
+- Preserve dados reais. Não faça reset, limpeza de `localStorage` nem alterações destrutivas para “resolver cache”.
+- Não faça disparos reais de WhatsApp de teste para vários clientes.
+- Sandbox não deve sincronizar/enviar.
+- Evite `MutationObserver`, polling contínuo e varreduras pesadas em `save()`; já houve regressões de desempenho no iPhone/Safari.
+- Preserve Lista e Mapa de comandas; não reative o antigo “Mapa rápido”.
+- Priorize correção de causa raiz em vez de empilhar wrappers.
+
+CONTEXTO CRÍTICO ATUAL:
+- A data operacional do turno, e não o dia civil de `closedAt`, é a fonte de verdade para faturamento/turno.
+- A v0.25.73 envia aviso de cancelamento da comanda ao cliente autorizado: CANCELADA / itens REMOVIDO / total R$ 0,00.
+- A v0.25.74 tornou persistente o consentimento de **atualizações operacionais da comanda** (`command_updates`). Cliente já autorizado deve abrir nova comanda com checkbox marcado automaticamente. Desmarcar vale só para aquela comanda; revogação global é ação explícita. Este consentimento não autoriza marketing/aniversário/eventos.
+- O seletor de clientes da Nova comanda deve usar somente o picker sincronizado/rolável; não permitir regressão do `<datalist>` legado.
+- Parabéns de aniversário roda automaticamente às 09:30, via `rota27-birthday-greeting`, somente para clientes autorizados; template `aniversario_cliente_rota27_v1` está aprovado.
+- Solicitação de data de nascimento permite até 3 tentativas bem-sucedidas, separadas por 7 dias.
+- Categorias prioritárias: Todos -> Cervejas -> Bebidas -> Charcutaria -> Vinhos; demais por consumo no lançamento e alfabeticamente no Cardápio.
+
+PRIMEIRO PASSO DO NOVO CHAT:
+Valide o estado real de produção v0.25.74 e espere minha próxima solicitação. Não avance automaticamente para um novo roadmap sem eu pedir.
