@@ -17,6 +17,7 @@
   const clean=(v,max=240)=>api()?.clean?.(v,max)||String(v??'').replace(/[\u0000-\u001F\u007F]/g,' ').trim().replace(/\s+/g,' ').slice(0,max);
   const norm=v=>api()?.norm?.(v)||clean(v,500).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLocaleLowerCase('pt-BR');
   const phone=v=>api()?.normalizePhone?.(v)||String(v||'').replace(/\D/g,'');
+  const validPhone=v=>{const p=phone(v);return p.length>=12&&p.length<=15;};
   const toast=msg=>{try{api()?.toast?.(msg)}catch{try{showToast(msg,false)}catch{}}};
 
   function identity(){
@@ -33,9 +34,11 @@
   function findClient(name,rawPhone,id=''){
     if(id){const hit=clients().find(c=>String(c?.id||'')===String(id));if(hit)return hit;}
     const p=phone(rawPhone||'');
-    if(p){const hit=clients().find(c=>phone(c?.whatsappPhone||'')===p);if(hit)return hit;}
+    if(p)return clients().find(c=>phone(c?.whatsappPhone||'')===p)||null;
     const n=norm(name||'');
-    return n?clients().find(c=>norm(c?.name||'')===n)||null:null;
+    if(!n)return null;
+    const matches=clients().filter(c=>norm(c?.name||'')===n);
+    return matches.length===1?matches[0]:null;
   }
 
   function readStore(){
@@ -202,20 +205,24 @@
   function selectedClient(){return findClient(byId('newCustomer')?.value||'',byId('newWhatsapp')?.value||'',byId('newWhatsappOptIn')?.dataset?.v02574ClientId||'');}
   function renderHint(client,record,manualOff=false){
     const hint=ensureHint();if(!hint)return;
+    const opt=byId('newWhatsappOptIn'),small=opt?.closest('.wa-consent')?.querySelector('small');
     const status=normalizeStatus(record?.status);
     hint.className='v02574-consent-hint '+status;
-    if(!client){hint.innerHTML='Para cliente novo, marque somente após autorização. A permissão ficará salva no cadastro.';return;}
+    if(!client){if(small)small.textContent='Marque somente após o cliente autorizar o recebimento das atualizações desta comanda.';hint.innerHTML='Para cliente novo, marque somente após autorização. A permissão ficará salva no cadastro.';return;}
     const when=recordLabel(record);
     if(status==='granted'){
+      if(small)small.textContent=manualOff?'Autorização salva; esta comanda foi deixada sem atualizações.':'Autorização já registrada para atualizações operacionais da comanda.';
       hint.innerHTML=manualOff
         ? `Autorização salva${when?` em ${when}`:''}, mas <strong>esta comanda ficará sem atualizações</strong>. <button type="button" data-v02574-revoke>Revogar autorização salva</button>`
         : `Autorização já registrada${when?` em ${when}`:''}. As atualizações desta comanda estão habilitadas automaticamente. <button type="button" data-v02574-revoke>Revogar autorização salva</button>`;
       return;
     }
     if(status==='revoked'){
+      if(small)small.textContent='Autorização revogada. Marque somente após o cliente autorizar novamente.';
       hint.innerHTML=`Autorização revogada${when?` em ${when}`:''}. Se o cliente autorizar novamente, marque a opção para registrar uma nova autorização.`;
       return;
     }
+    if(small)small.textContent='Marque somente após o cliente autorizar o recebimento das atualizações desta comanda.';
     hint.innerHTML='Cliente cadastrado sem autorização registrada. Marque somente após o cliente autorizar.';
   }
 
@@ -238,7 +245,7 @@
     const client=findClient(byId('newCustomer')?.value||'',byId('newWhatsapp')?.value||'');
     if(opt.checked){
       delete opt.dataset.v02574ManualOff;
-      if(client){
+      if(client&&validPhone(client.whatsappPhone||byId('newWhatsapp')?.value||'')){
         const current=bestRecord(client);
         if(normalizeStatus(current?.status)!=='granted')queueConsent(client,'granted','new-command-checkbox');
       }else opt.dataset.v02574PendingGrant='1';
@@ -316,6 +323,7 @@
       if(!window.confirm(`Revogar a autorização de WhatsApp de ${clean(client.name,120)}?`))return;
       queueConsent(client,'revoked','client-editor-revoke');toast('Autorização de WhatsApp revogada.');
     }else{
+      if(!validPhone(client.whatsappPhone||'')){toast('Informe um WhatsApp válido no cadastro antes de registrar a autorização.');return;}
       if(!window.confirm(`Registrar que ${clean(client.name,120)} autorizou atualizações operacionais da comanda por WhatsApp?`))return;
       queueConsent(client,'granted','client-editor-grant');toast('Autorização de WhatsApp registrada.');
     }
