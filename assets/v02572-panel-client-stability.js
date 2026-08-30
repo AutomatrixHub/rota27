@@ -12,11 +12,18 @@
     style.textContent=`#v14VersionBadge::after{content:"v${VERSION}"!important}`;
   }
 
+  function removeLegacyDatalist(){
+    const dl=byId('v017ClientSuggestions');
+    if(dl)dl.remove();
+  }
+
   function guardCustomerInput(){
     const input=byId('newCustomer');
     if(!input)return false;
+    removeLegacyDatalist();
     input.removeAttribute('list');
     input.setAttribute('autocomplete','off');
+    input.setAttribute('name','rota27_customer_picker_v02572');
     input.setAttribute('autocorrect','off');
     input.setAttribute('autocapitalize','words');
     input.setAttribute('spellcheck','false');
