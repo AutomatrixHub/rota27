@@ -3,52 +3,48 @@
 Última revisão: 30/08/2026
 
 ## Produção
-- versão: **v0.25.69 — Organização do cardápio e categorias**;
+- versão: **v0.25.70 — Abertura canônica de Nova comanda**;
 - branch: `main`;
 - GitHub Pages: `https://automatrixhub.github.io/rota27/`;
-- Service Worker: `rota27-comandas-v0.25.69-r1`;
-- baseline anterior: **v0.25.68**, merge `9d5a930ee72afb1abcede3c82bcacef1104ebd79`.
+- Service Worker: `rota27-comandas-v0.25.70-r1`;
+- baseline anterior: **v0.25.69**, merge `e3f7b941574bdfdc65137914994e5fd2e580e11a`.
 
-## Cardápio
-A tela administrativa do Cardápio passa a exibir os produtos em **ordem alfabética por nome**, independentemente de ativo/inativo ou categoria.
+## Hotfix Nova comanda
+A v0.25.64 havia removido o `onclick` original do FAB e passado a depender de `window.openNewCommandSheet`. Em alguns ciclos de bootstrap/PWA essa referência global pode não estar exposta mesmo com o formulário `#newCommandWrap` presente no DOM, causando a mensagem **“Não foi possível abrir Nova comanda.”**.
 
-Acima da lista existem filtros em chips:
-- **Todos**;
-- **Cervejas**;
-- **Bebidas**;
-- demais categorias em ordem alfabética.
+A v0.25.70 introduz `v02570-new-command-root.js`:
+- captura o FAB `#fabNew` antes dos listeners antigos;
+- protege também **Abrir primeira comanda**;
+- usa a função legada quando ela existe e funciona;
+- possui fallback canônico que reinicia os campos e abre `#newCommandWrap` diretamente;
+- remove qualquer `autofocus` e não chama `.focus()`;
+- reinicia o modo de Consumo interno antes de uma nova comanda;
+- reinstala a referência raiz em `visibilitychange` sem polling.
 
-A busca continua combinável com a categoria selecionada.
-
-## Lançamento em comandas
-As categorias do lançamento usam uma prioridade operacional:
-1. **Todos**;
-2. **Cervejas**;
-3. **Bebidas**;
-4. demais categorias ordenadas pelo total histórico de unidades vendidas;
-5. empate por ordem alfabética.
-
-O ranking considera somente comandas fechadas faturáveis. Registros com `internalConsumption=true` ou `nonRevenue=true` ficam fora. A categoria histórica usa `itemMeta` da comanda quando disponível, com fallback para o catálogo atual.
-
-## Preservação
-- nenhuma alteração nos registros do catálogo;
-- nenhum preço modificado;
-- nenhuma categoria criada, removida ou renomeada;
-- nenhuma migration;
-- nenhuma Edge Function alterada;
-- nenhum polling ou `MutationObserver` novo;
-- somente ordenação e filtros de apresentação.
+## Cardápio preservado
+A v0.25.69 permanece responsável por:
+- Cardápio administrativo em ordem alfabética;
+- filtros **Todos → Cervejas → Bebidas → demais categorias**;
+- categorias de lançamento após as três primeiras ordenadas por consumo histórico faturável;
+- exclusão de Consumo interno/non-revenue do ranking.
 
 ## Backend de relacionamento preservado
 - `rota27-birthday-campaign`: v3 ACTIVE;
 - `rota27-whatsapp-inbound`: v4 ACTIVE;
 - parabéns automático às 09:30 preservado;
-- rotina de solicitação de data de nascimento em até 3 tentativas / 7 dias preservada.
+- solicitação de data de nascimento em até 3 tentativas / 7 dias preservada.
+
+## Preservação
+- nenhuma migration;
+- nenhuma Edge Function alterada;
+- nenhum reset ou alteração de dados;
+- preços, produtos, estoque, comandas e histórico preservados;
+- nenhum polling ou `MutationObserver` novo.
 
 ## Atualização PWA
-- shell declara `rota27-release-version=0.25.69`;
-- `v02569-menu-category-order.css/js` são carregados diretamente pelo shell e pelo roadmap loader;
-- cache `rota27-comandas-v0.25.69-r1`;
+- shell declara `rota27-release-version=0.25.70`;
+- `v02570-new-command-root.js` é carregado diretamente pelo shell e pelo roadmap loader;
+- cache `rota27-comandas-v0.25.70-r1`;
 - não limpar `localStorage` de produção.
 
 ## Regras de operação
@@ -58,4 +54,4 @@ O ranking considera somente comandas fechadas faturáveis. Registros com `intern
 - mudanças usam branch curta + PR + merge + confirmação do Pages.
 
 ## Rollback
-Baseline anterior: **v0.25.68** / merge `9d5a930ee72afb1abcede3c82bcacef1104ebd79`.
+Baseline anterior: **v0.25.69** / merge `e3f7b941574bdfdc65137914994e5fd2e580e11a`.
