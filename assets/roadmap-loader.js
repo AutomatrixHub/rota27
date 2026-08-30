@@ -1,9 +1,11 @@
 /* Rota 27 — carregador incremental do roadmap pós-v0.25.46 */
 (function(){
   'use strict';
-  const CURRENT='0.25.65';
-  const HELP='9.0';
+  const CURRENT='0.25.66';
+  const HELP='9.1';
   const assets=[
+    {type:'css',id:'v02566BirthdayEligibilityCss',src:'./assets/v02566-birthday-eligibility.css?v=02566r1'},
+    {type:'js',id:'v02566BirthdayEligibilityJs',src:'./assets/v02566-birthday-eligibility.js?v=02566r1'},
     {type:'css',id:'v02565BirthdayGreetingCss',src:'./assets/v02565-birthday-greeting.css?v=02565r1'},
     {type:'js',id:'v02565BirthdayGreetingJs',src:'./assets/v02565-birthday-greeting.js?v=02565r1'},
     {type:'css',id:'v02564MobileRuntimeCss',src:'./assets/v02564-mobile-runtime-hotfix.css?v=02564r1'},
