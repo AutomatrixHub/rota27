@@ -36,9 +36,12 @@ Quando o operador marca o checkbox para um cliente novo e abre a comanda, a auto
 ## Migração das autorizações existentes
 Para não exigir nova autorização de clientes que já passaram pelo fluxo atual:
 - somente clientes sem registro persistente são avaliados;
-- se existir comanda histórica com `whatsappOptIn=true`, o consentimento é migrado para `granted`;
-- a data da comanda histórica é usada como data do registro migrado;
-- uma revogação posterior, com timestamp mais novo, sempre prevalece.
+- comandas ainda presentes localmente com `whatsappOptIn=true` são reconhecidas como evidência de autorização;
+- o histórico compartilhado de sincronização também é lido: eventos `command_opened` cujo snapshot contém `whatsappOptIn=true` são reconhecidos mesmo quando a comanda depois foi cancelada e removida da lista local;
+- a autorização é vinculada prioritariamente ao WhatsApp canônico do cliente;
+- a data original da comanda é usada como data do registro migrado;
+- comparação entre registros prioriza `updatedAt`; em empate, o `seq` do servidor é usado e, persistindo empate, `revoked` prevalece sobre `granted`;
+- assim, uma autorização histórica nunca substitui uma revogação mais recente.
 
 ## Revogação
 A revogação é uma ação separada e explícita:
@@ -55,7 +58,7 @@ O consentimento prioriza identificação canônica por ID/WhatsApp. Quando não 
 - cursor dedicado: `rota27_v02574_whatsapp_consent_cursor_v1`;
 - sincronização reutiliza `client_upsert` existente;
 - campos adicionais no payload: `whatsappCommandConsent`, `whatsappCommandConsentAt`, `whatsappCommandConsentUpdatedAt`, `whatsappCommandConsentSource` e `whatsappCommandConsentVersion`;
-- camada própria lê esses campos do event log e os reidrata localmente;
+- camada própria lê os campos de consentimento e também a evidência histórica dos `command_opened` no event log;
 - não foi criado novo tipo de evento.
 
 ## Backend
@@ -63,14 +66,15 @@ Nenhuma alteração:
 - sem migration;
 - sem nova tabela;
 - sem alteração de Edge Function;
-- `rota27-sync` existente é reutilizado.
+- `rota27-sync` existente é reutilizado somente para leitura/push dos eventos já suportados.
 
 ## Segurança e estabilidade
 - sem `MutationObserver`;
-- sem polling contínuo;
+- sem polling contínuo novo;
 - sincronização acionada por abertura/retomada, eventos de domínio e conectividade;
 - nenhuma limpeza de `localStorage`;
-- nenhum reenvio retroativo de WhatsApp.
+- nenhum reenvio retroativo de WhatsApp;
+- migração de consentimento não envia mensagem ao cliente.
 
 ## PWA
 - `VERSION`: `0.25.74`;
