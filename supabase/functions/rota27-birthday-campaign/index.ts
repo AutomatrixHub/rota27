@@ -1,20 +1,22 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
 
-const EDGE_VERSION = "rota27-birthday-campaign-v2";
+const EDGE_VERSION = "rota27-birthday-campaign-v3-retry-3";
 const TEMPLATE_NAME = "solicitar_aniversario_rota27_v1";
 const TEMPLATE_LANG = "pt_BR";
 const CAMPAIGN = "birthday_request_v1";
 const STORE_ID_DEFAULT = "rota27-bodega";
 const ROTA27_WABA_ID = "2184585049047021";
+const MAX_SUCCESSFUL_REQUESTS = 3;
+const COOLDOWN_DAYS = 7;
+const COOLDOWN_MS = COOLDOWN_DAYS * 86400000;
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "content-type, x-rota27-device-token",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
-const jsonHeaders = { ...corsHeaders, "Content-Type": "application/json; charset=utf-8" };
-
+const jsonHeaders = { ...corsHeaders, "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" };
 function json(status: number, body: unknown) { return new Response(JSON.stringify(body), { status, headers: jsonHeaders }); }
 function clean(value: unknown, max = 500) { return String(value ?? "").replace(/\u0000/g, "").replace(/[\r\n\t]+/g, " ").replace(/\s{2,}/g, " ").trim().slice(0, max); }
 function digits(value: unknown) { return String(value ?? "").replace(/\D/g, ""); }
@@ -29,6 +31,7 @@ function validBirthDate(value: unknown) {
   const now = new Date(), today = `${now.getUTCFullYear()}-${String(now.getUTCMonth()+1).padStart(2,"0")}-${String(now.getUTCDate()).padStart(2,"0")}`;
   return raw <= today;
 }
+function requestEventId(clientId: string, attempt: number) { return attempt <= 1 ? `${CAMPAIGN}::${clientId}` : `${CAMPAIGN}::${clientId}::${attempt}`; }
 async function graphJson(url: string, accessToken: string, init: RequestInit = {}) {
   const response = await fetch(url, { ...init, headers: { Authorization: `Bearer ${accessToken}`, "Content-Type": "application/json", ...(init.headers || {}) } });
   const data = await response.json().catch(() => ({}));
@@ -65,20 +68,57 @@ Deno.serve(async (req: Request) => {
   async function latestClients() {
     const { data, error } = await db.from("rota27_sync_events").select("seq,entity_id,payload").eq("store_id", storeId).eq("event_type", "client_upsert").order("seq", { ascending: true }).limit(5000);
     if (error) throw new Error(`Falha ao ler clientes: ${error.message}`);
-    const map = new Map<string, any>(); for (const row of data || []) { const c = row?.payload?.client; if (!c || typeof c !== "object") continue; const id = clean(c.id || row.entity_id, 160); if (id) map.set(id, { ...c, id }); }
+    const map = new Map<string, any>();
+    for (const row of data || []) { const c = row?.payload?.client; if (!c || typeof c !== "object") continue; const id = clean(c.id || row.entity_id, 160); if (!id) continue; const old = map.get(id) || {}; map.set(id, { ...old, ...c, id }); }
     return [...map.values()];
   }
-  async function priorSentPhones() { const { data, error } = await db.from("whatsapp_message_log").select("phone").eq("status", "sent").limit(5000); if (error) throw new Error(`Falha ao ler histórico de WhatsApp: ${error.message}`); return new Set((data || []).map((r: any) => normalizePhone(r.phone)).filter(validPhone)); }
-  async function campaignSentIds() { const { data, error } = await db.from("whatsapp_message_log").select("event_id").like("event_id", `${CAMPAIGN}::%`).eq("status", "sent").limit(5000); if (error) throw new Error(`Falha ao ler campanha: ${error.message}`); return new Set((data || []).map((r: any) => clean(r.event_id, 240))); }
+  async function priorSentPhones() {
+    const { data, error } = await db.from("whatsapp_message_log").select("phone,payload,event_id").eq("status", "sent").limit(5000);
+    if (error) throw new Error(`Falha ao ler histórico de WhatsApp: ${error.message}`);
+    return new Set((data || []).filter((r: any) => clean(r?.payload?.campaign || "", 80) !== CAMPAIGN).map((r: any) => normalizePhone(r.phone)).filter(validPhone));
+  }
+  async function campaignHistory() {
+    const { data, error } = await db.from("whatsapp_message_log").select("event_id,status,sent_at,updated_at,payload,phone").like("event_id", `${CAMPAIGN}::%`).order("sent_at", { ascending: true }).limit(5000);
+    if (error) throw new Error(`Falha ao ler campanha: ${error.message}`);
+    const map = new Map<string, any[]>();
+    for (const row of data || []) {
+      const eventId = clean(row?.event_id || "", 260); if (!eventId.startsWith(`${CAMPAIGN}::`)) continue;
+      const clientId = clean(row?.payload?.clientId || eventId.slice(`${CAMPAIGN}::`.length).replace(/::\d+$/, ""), 160); if (!clientId) continue;
+      if (!map.has(clientId)) map.set(clientId, []); map.get(clientId)!.push(row);
+    }
+    return map;
+  }
   async function audience() {
-    const clients = await latestClients(), prior = await priorSentPhones(), requested = await campaignSentIds();
-    return clients.map((client: any) => { const phone = normalizePhone(client.whatsappPhone || client.phone || ""), eventId = `${CAMPAIGN}::${clean(client.id,160)}`; return { id: clean(client.id,160), name: clean(client.name || "Cliente",120) || "Cliente", phone, hasPhone: validPhone(phone), hasBirthDate: validBirthDate(client.birthDate), priorConsentEvidence: prior.has(phone), alreadyRequested: requested.has(eventId), eventId }; });
+    const clients = await latestClients(), prior = await priorSentPhones(), history = await campaignHistory(), now = Date.now();
+    return clients.map((client: any) => {
+      const id = clean(client.id, 160), phone = normalizePhone(client.whatsappPhone || client.phone || ""), logs = history.get(id) || [];
+      const successful = logs.filter((r: any) => r?.status === "sent" && r?.sent_at).sort((a: any, b: any) => Date.parse(a.sent_at) - Date.parse(b.sent_at));
+      const requestCount = successful.length, lastSentAt = requestCount ? successful[requestCount - 1].sent_at : null, lastMs = lastSentAt ? Date.parse(lastSentAt) : 0;
+      const maxedOut = requestCount >= MAX_SUCCESSFUL_REQUESTS, nextEligibleAt = requestCount > 0 && !maxedOut ? new Date(lastMs + COOLDOWN_MS).toISOString() : null;
+      const cooldownReady = requestCount === 0 || (!maxedOut && Number.isFinite(lastMs) && now >= lastMs + COOLDOWN_MS);
+      const priorConsentEvidence = prior.has(phone) || requestCount > 0;
+      const hasPhone = validPhone(phone), hasBirthDate = validBirthDate(client.birthDate);
+      const readyToSend = hasPhone && !hasBirthDate && priorConsentEvidence && !maxedOut && cooldownReady;
+      return { id, name: clean(client.name || "Cliente", 120) || "Cliente", phone, hasPhone, hasBirthDate, priorConsentEvidence, requestCount, lastSentAt, nextEligibleAt, maxedOut, cooldownReady, readyToSend, nextAttempt: Math.min(MAX_SUCCESSFUL_REQUESTS, requestCount + 1) };
+    });
   }
 
   if (action === "status") {
     let template: any, templateError: string | null = null; try { template = await getTemplate(accessToken, waba, graphVersion); } catch (error) { template = { found: false, status: "ERROR" }; templateError = clean(error instanceof Error ? error.message : "Falha ao consultar template.", 900); }
-    const rows = await audience(), missing = rows.filter(r => r.hasPhone && !r.hasBirthDate), eligible = missing.filter(r => r.priorConsentEvidence && !r.alreadyRequested);
-    return json(200, { ok: true, edgeVersion: EDGE_VERSION, campaign: CAMPAIGN, templateName: TEMPLATE_NAME, template, templateError, counts: { clients: rows.length, withWhatsAppMissingBirthDate: missing.length, withPriorConsentEvidence: missing.filter(r => r.priorConsentEvidence).length, alreadyRequested: missing.filter(r => r.alreadyRequested).length, readyToSend: eligible.length, withoutPriorConsentEvidence: missing.filter(r => !r.priorConsentEvidence).length } });
+    const rows = await audience(), missing = rows.filter(r => r.hasPhone && !r.hasBirthDate), ready = missing.filter(r => r.readyToSend);
+    return json(200, { ok: true, edgeVersion: EDGE_VERSION, campaign: CAMPAIGN, templateName: TEMPLATE_NAME, template, templateError, policy: { maxSuccessfulRequests: MAX_SUCCESSFUL_REQUESTS, cooldownDays: COOLDOWN_DAYS }, counts: {
+      clients: rows.length,
+      withWhatsAppMissingBirthDate: missing.length,
+      withoutWhatsAppMissingBirthDate: rows.filter(r => !r.hasPhone && !r.hasBirthDate).length,
+      withPriorConsentEvidence: missing.filter(r => r.priorConsentEvidence).length,
+      withoutPriorConsentEvidence: missing.filter(r => !r.priorConsentEvidence).length,
+      requestedAtLeastOnce: missing.filter(r => r.requestCount > 0).length,
+      waitingCooldown: missing.filter(r => r.priorConsentEvidence && r.requestCount > 0 && !r.maxedOut && !r.cooldownReady).length,
+      maxAttemptsReached: missing.filter(r => r.maxedOut).length,
+      readyFirstAttempt: ready.filter(r => r.requestCount === 0).length,
+      readyRetry: ready.filter(r => r.requestCount > 0).length,
+      readyToSend: ready.length,
+    }, rows: missing.map(r => ({ clientId: r.id, name: r.name, requestCount: r.requestCount, nextAttempt: r.nextAttempt, readyToSend: r.readyToSend, nextEligibleAt: r.nextEligibleAt, maxedOut: r.maxedOut, priorConsentEvidence: r.priorConsentEvidence })) });
   }
   if (action === "submit_template") {
     try { const template = await submitTemplate(accessToken, waba, graphVersion); return json(200, { ok: true, edgeVersion: EDGE_VERSION, templateName: TEMPLATE_NAME, template }); }
@@ -86,20 +126,26 @@ Deno.serve(async (req: Request) => {
   }
   if (action !== "send_campaign") return json(400, { ok: false, error: "Ação não suportada." });
   let template: any; try { template = await getTemplate(accessToken, waba, graphVersion); } catch (error) { return json(502, { ok: false, error: clean(error instanceof Error ? error.message : "Falha ao consultar template.", 900), edgeVersion: EDGE_VERSION }); }
-  if (template.status !== "APPROVED") return json(409, { ok: false, error: `Template ainda não aprovado pela Meta (${template.status || "desconhecido"}).`, template, edgeVersion: EDGE_VERSION });
-  const includeWithoutEvidence = body?.includeWithoutPriorConsent === true && body?.confirmConsent === true, rows = await audience(), targets = rows.filter(r => r.hasPhone && !r.hasBirthDate && !r.alreadyRequested && (r.priorConsentEvidence || includeWithoutEvidence)), endpoint = `https://graph.facebook.com/${encodeURIComponent(graphVersion)}/${encodeURIComponent(phoneNumberId)}/messages`, results: any[] = [];
+  if (String(template.status || "").toUpperCase() !== "APPROVED") return json(409, { ok: false, error: `Template ainda não aprovado pela Meta (${template.status || "desconhecido"}).`, template, edgeVersion: EDGE_VERSION });
+  const rows = await audience(), targets = rows.filter(r => r.readyToSend), endpoint = `https://graph.facebook.com/${encodeURIComponent(graphVersion)}/${encodeURIComponent(phoneNumberId)}/messages`, results: any[] = [];
   for (const target of targets.slice(0, 100)) {
-    const now = new Date().toISOString(), payloadLog = { campaign: CAMPAIGN, clientId: target.id, template: TEMPLATE_NAME, edgeVersion: EDGE_VERSION, consentBasis: target.priorConsentEvidence ? "prior_successful_transactional_message" : "explicit_admin_confirmation" };
-    const { data: existing } = await db.from("whatsapp_message_log").select("status,wa_message_id,attempts").eq("event_id", target.eventId).limit(1).maybeSingle();
-    if (existing?.status === "sent") { results.push({ clientId: target.id, status: "duplicate_skipped", messageId: existing.wa_message_id || null }); continue; }
-    await db.from("whatsapp_message_log").upsert({ event_id: target.eventId, command_id: `client::${target.id}`, phone: target.phone, customer_name: target.name, command_label: "Atualização cadastral", payload: payloadLog, status: "processing", attempts: Number(existing?.attempts || 0) + 1, last_error: null, updated_at: now }, { onConflict: "event_id" });
+    const attempt = target.nextAttempt, eventId = requestEventId(target.id, attempt), now = new Date().toISOString();
+    const payloadLog = { campaign: CAMPAIGN, clientId: target.id, template: TEMPLATE_NAME, edgeVersion: EDGE_VERSION, consentBasis: target.requestCount > 0 ? "previously_eligible_birthday_request" : "prior_successful_non_campaign_message", requestAttempt: attempt, maxSuccessfulRequests: MAX_SUCCESSFUL_REQUESTS, cooldownDays: COOLDOWN_DAYS };
+    const { data: existing } = await db.from("whatsapp_message_log").select("status,wa_message_id,attempts,updated_at").eq("event_id", eventId).limit(1).maybeSingle();
+    if (existing?.status === "sent") { results.push({ clientId: target.id, status: "duplicate_skipped", attempt, messageId: existing.wa_message_id || null }); continue; }
+    const processingAge = existing?.status === "processing" && existing?.updated_at ? Date.now() - Date.parse(existing.updated_at) : Infinity;
+    if (processingAge >= 0 && processingAge < 120000) { results.push({ clientId: target.id, status: "processing_skipped", attempt }); continue; }
+    await db.from("whatsapp_message_log").upsert({ event_id: eventId, command_id: `client::${target.id}`, phone: target.phone, customer_name: target.name, command_label: `Atualização cadastral • tentativa ${attempt}/${MAX_SUCCESSFUL_REQUESTS}`, payload: payloadLog, status: "processing", attempts: Number(existing?.attempts || 0) + 1, last_error: null, updated_at: now }, { onConflict: "event_id" });
     const metaPayload = { messaging_product: "whatsapp", recipient_type: "individual", to: target.phone, type: "template", template: { name: TEMPLATE_NAME, language: { code: TEMPLATE_LANG }, components: [{ type: "body", parameters: [{ type: "text", text: target.name }] }] } };
     try {
-      const metaData = await graphJson(endpoint, accessToken, { method: "POST", body: JSON.stringify(metaPayload) }), messageId = Array.isArray(metaData?.messages) && metaData.messages.length ? clean(metaData.messages[0]?.id,300) : "";
-      await db.from("whatsapp_message_log").upsert({ event_id: target.eventId, command_id: `client::${target.id}`, phone: target.phone, customer_name: target.name, command_label: "Atualização cadastral", payload: payloadLog, status: "sent", wa_message_id: messageId || null, last_error: null, sent_at: new Date().toISOString(), updated_at: new Date().toISOString() }, { onConflict: "event_id" }); results.push({ clientId: target.id, status: "sent", messageId: messageId || null });
+      const metaData = await graphJson(endpoint, accessToken, { method: "POST", body: JSON.stringify(metaPayload) }), messageId = Array.isArray(metaData?.messages) && metaData.messages.length ? clean(metaData.messages[0]?.id, 300) : "";
+      await db.from("whatsapp_message_log").upsert({ event_id: eventId, command_id: `client::${target.id}`, phone: target.phone, customer_name: target.name, command_label: `Atualização cadastral • tentativa ${attempt}/${MAX_SUCCESSFUL_REQUESTS}`, payload: payloadLog, status: "sent", wa_message_id: messageId || null, last_error: null, sent_at: new Date().toISOString(), updated_at: new Date().toISOString() }, { onConflict: "event_id" });
+      results.push({ clientId: target.id, status: "sent", attempt, messageId: messageId || null });
     } catch (error: any) {
-      const errorText = clean(error?.message || "Falha ao enviar.", 900); await db.from("whatsapp_message_log").upsert({ event_id: target.eventId, command_id: `client::${target.id}`, phone: target.phone, customer_name: target.name, command_label: "Atualização cadastral", payload: payloadLog, status: "failed", last_error: errorText, updated_at: new Date().toISOString() }, { onConflict: "event_id" }); results.push({ clientId: target.id, status: "failed", error: errorText });
+      const errorText = clean(error?.message || "Falha ao enviar.", 900);
+      await db.from("whatsapp_message_log").upsert({ event_id: eventId, command_id: `client::${target.id}`, phone: target.phone, customer_name: target.name, command_label: `Atualização cadastral • tentativa ${attempt}/${MAX_SUCCESSFUL_REQUESTS}`, payload: payloadLog, status: "failed", last_error: errorText, updated_at: new Date().toISOString() }, { onConflict: "event_id" });
+      results.push({ clientId: target.id, status: "failed", attempt, error: errorText });
     }
   }
-  return json(200, { ok: true, edgeVersion: EDGE_VERSION, campaign: CAMPAIGN, templateName: TEMPLATE_NAME, sent: results.filter(r => r.status === "sent").length, failed: results.filter(r => r.status === "failed").length, skipped: rows.filter(r => r.hasPhone && !r.hasBirthDate && !r.priorConsentEvidence && !includeWithoutEvidence).length, results });
+  return json(200, { ok: true, edgeVersion: EDGE_VERSION, campaign: CAMPAIGN, templateName: TEMPLATE_NAME, policy: { maxSuccessfulRequests: MAX_SUCCESSFUL_REQUESTS, cooldownDays: COOLDOWN_DAYS }, sent: results.filter(r => r.status === "sent").length, failed: results.filter(r => r.status === "failed").length, skipped: rows.filter(r => r.hasPhone && !r.hasBirthDate && !r.priorConsentEvidence).length, results });
 });

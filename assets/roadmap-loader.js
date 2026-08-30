@@ -1,8 +1,8 @@
 /* Rota 27 — carregador incremental do roadmap pós-v0.25.46 */
 (function(){
   'use strict';
-  const CURRENT='0.25.67';
-  const HELP='9.2';
+  const CURRENT='0.25.68';
+  const HELP='9.3';
   const assets=[
     {type:'css',id:'v02557UpcomingBirthdaysCss',src:'./assets/v02557-upcoming-birthdays.css?v=02567r1'},
     {type:'js',id:'v02557UpcomingBirthdaysJs',src:'./assets/v02557-upcoming-birthdays.js?v=02567r1'},

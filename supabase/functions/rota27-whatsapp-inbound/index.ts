@@ -1,7 +1,7 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
 
-const EDGE_VERSION = "rota27-whatsapp-inbound-v3-delivery-status";
+const EDGE_VERSION = "rota27-whatsapp-inbound-v4-birthday-consent";
 const DEFAULT_VERIFY_TOKEN = "rota27-whatsapp-inbound-verify-v1-20260823";
 const DEFAULT_MANAGER_TEMPLATE = "resposta_cliente_rota27_gerente_v1";
 const BIRTHDAY_CAMPAIGN = "birthday_request_v1";
@@ -51,7 +51,7 @@ function statusErrorText(status: any) {
 Deno.serve(async (req: Request) => {
   const url = new URL(req.url), verifyToken = Deno.env.get("META_WEBHOOK_VERIFY_TOKEN") || DEFAULT_VERIFY_TOKEN, appSecretConfigured = Boolean(Deno.env.get("META_APP_SECRET"));
   if (req.method === "GET") {
-    if (url.searchParams.get("health") === "1") return json(200, { ok: true, edgeVersion: EDGE_VERSION, signatureVerification: appSecretConfigured, mode: appSecretConfigured ? "signed" : "context-bound", birthdayReplies: true, deliveryStatuses: true });
+    if (url.searchParams.get("health") === "1") return json(200, { ok: true, edgeVersion: EDGE_VERSION, signatureVerification: appSecretConfigured, mode: appSecretConfigured ? "signed" : "context-bound", birthdayReplies: true, deliveryStatuses: true, birthdayRelationshipConsent: true });
     const mode = url.searchParams.get("hub.mode") || "", supplied = url.searchParams.get("hub.verify_token") || "", challenge = url.searchParams.get("hub.challenge") || ""; if (mode === "subscribe" && timingSafeEqual(supplied, verifyToken) && challenge) return new Response(challenge, { status: 200, headers: { "content-type": "text/plain; charset=utf-8" } }); return json(401, { ok: false, error: "Webhook não verificado." });
   }
   if (req.method !== "POST") return json(405, { ok: false, error: "Método não permitido." });
@@ -71,31 +71,11 @@ Deno.serve(async (req: Request) => {
     if (!row?.event_id) return { matched: false, deliveryStatus };
     const errorText = statusErrorText(status);
     const timestamp = Number(status?.timestamp || 0) || null;
-    const nextPayload = {
-      ...(row.payload && typeof row.payload === "object" ? row.payload : {}),
-      delivery: {
-        status: deliveryStatus,
-        timestamp,
-        receivedAt: new Date().toISOString(),
-        recipientId: clean(status?.recipient_id, 80) || null,
-        conversationId: clean(status?.conversation?.id, 180) || null,
-        conversationOrigin: clean(status?.conversation?.origin?.type, 80) || null,
-        pricingCategory: clean(status?.pricing?.category, 80) || null,
-        pricingModel: clean(status?.pricing?.pricing_model, 80) || null,
-        billable: typeof status?.pricing?.billable === "boolean" ? status.pricing.billable : null,
-        error: errorText || null,
-      },
-    };
+    const nextPayload = { ...(row.payload && typeof row.payload === "object" ? row.payload : {}), delivery: { status: deliveryStatus, timestamp, receivedAt: new Date().toISOString(), recipientId: clean(status?.recipient_id, 80) || null, conversationId: clean(status?.conversation?.id, 180) || null, conversationOrigin: clean(status?.conversation?.origin?.type, 80) || null, pricingCategory: clean(status?.pricing?.category, 80) || null, pricingModel: clean(status?.pricing?.pricing_model, 80) || null, billable: typeof status?.pricing?.billable === "boolean" ? status.pricing.billable : null, error: errorText || null } };
     const patch: Record<string, unknown> = { payload: nextPayload, updated_at: new Date().toISOString() };
-    if (deliveryStatus === "failed") {
-      patch.status = "failed";
-      patch.last_error = errorText || "Falha de entrega reportada pela Meta.";
-    } else if (["sent", "delivered", "read"].includes(deliveryStatus) && row.status !== "failed") {
-      patch.status = "sent";
-      patch.last_error = null;
-    }
-    const { error: updateError } = await db.from("whatsapp_message_log").update(patch).eq("event_id", row.event_id);
-    if (updateError) throw new Error(`Falha ao salvar status de entrega: ${updateError.message}`);
+    if (deliveryStatus === "failed") { patch.status = "failed"; patch.last_error = errorText || "Falha de entrega reportada pela Meta."; }
+    else if (["sent", "delivered", "read"].includes(deliveryStatus) && row.status !== "failed") { patch.status = "sent"; patch.last_error = null; }
+    const { error: updateError } = await db.from("whatsapp_message_log").update(patch).eq("event_id", row.event_id); if (updateError) throw new Error(`Falha ao salvar status de entrega: ${updateError.message}`);
     return { matched: true, deliveryStatus, eventId: row.event_id };
   }
   async function latestManager() { const { data, error } = await db.from("rota27_sync_events").select("payload,seq").eq("store_id", storeId).eq("event_type", "manager_config_replace").order("seq", { ascending: false }).limit(1).maybeSingle(); if (error) throw new Error(`Falha ao ler gerente: ${error.message}`); const config = data?.payload?.config || {}, phone = normalizePhone(config?.phone || ""); return { name: clean(config?.name || "Gerente", 120) || "Gerente", phone, enabled: config?.enabled === true && validPhone(phone) }; }
@@ -105,38 +85,26 @@ Deno.serve(async (req: Request) => {
     if (clientId) { const { data, error } = await db.from("rota27_sync_events").select("payload,entity_id,seq").eq("store_id", storeId).eq("event_type", "client_upsert").eq("entity_id", clientId).order("seq", { ascending: false }).limit(1).maybeSingle(); if (error) throw new Error(`Falha ao localizar cliente: ${error.message}`); if (data?.payload?.client) return { ...data.payload.client, id: clean(data.payload.client.id || data.entity_id, 160) }; }
     const { data, error } = await db.from("rota27_sync_events").select("payload,entity_id,seq").eq("store_id", storeId).eq("event_type", "client_upsert").order("seq", { ascending: false }).limit(1000); if (error) throw new Error(`Falha ao localizar cliente por telefone: ${error.message}`); const seen = new Set<string>(); for (const row of data || []) { const c = row?.payload?.client; if (!c) continue; const id = clean(c.id || row.entity_id, 160); if (!id || seen.has(id)) continue; seen.add(id); if (normalizePhone(c.whatsappPhone || c.phone || "") === senderPhone) return { ...c, id }; } return null;
   }
-  async function persistBirthday(original: any, senderPhone: string, birthDate: string, metaMessageId: string) { const clientId = clean(original?.payload?.clientId || "", 160), client = await latestClient(clientId, senderPhone); if (!client?.id) throw new Error("Cliente da campanha não foi localizado no cadastro sincronizado."); const updatedAt = Date.now(), next = { ...client, birthDate, birthDateUpdatedAt: updatedAt }, eventId = `birthday_reply::${metaMessageId}`; const { error } = await db.from("rota27_sync_events").insert({ store_id: storeId, event_id: eventId, device_id: "backend-whatsapp-birthday", event_type: "client_upsert", entity_id: client.id, payload: { client: next }, app_version: "0.25.20", client_created_at: new Date().toISOString() }); if (error && error.code !== "23505") throw new Error(`Falha ao salvar aniversário: ${error.message}`); return next; }
+  async function persistBirthday(original: any, senderPhone: string, birthDate: string, metaMessageId: string) {
+    const clientId = clean(original?.payload?.clientId || "", 160), client = await latestClient(clientId, senderPhone); if (!client?.id) throw new Error("Cliente da campanha não foi localizado no cadastro sincronizado.");
+    const updatedAt = Date.now();
+    const next = { ...client, birthDate, birthDateUpdatedAt: updatedAt, relationshipMarketingOptIn: true, relationshipMarketingOptInAt: Number(client.relationshipMarketingOptInAt || updatedAt), relationshipMarketingOptOutAt: 0, relationshipMarketingConsentSource: "birth_date_reply_whatsapp_v02568", eventMarketingOptIn: true, eventMarketingOptInAt: Number(client.eventMarketingOptInAt || client.relationshipMarketingOptInAt || updatedAt), eventMarketingOptOutAt: 0, eventMarketingConsentSource: "birth_date_reply_whatsapp_v02568" };
+    const eventId = `birthday_reply::${metaMessageId}`;
+    const { error } = await db.from("rota27_sync_events").insert({ store_id: storeId, event_id: eventId, device_id: "backend-whatsapp-birthday", event_type: "client_upsert", entity_id: client.id, payload: { client: next }, app_version: "0.25.68", client_created_at: new Date().toISOString() });
+    if (error && error.code !== "23505") throw new Error(`Falha ao salvar aniversário: ${error.message}`); return next;
+  }
   async function sendSessionText(to: string, text: string, logEventId: string, client: any) {
     const endpoint = `https://graph.facebook.com/${encodeURIComponent(graphVersion)}/${encodeURIComponent(phoneNumberId)}/messages`, response = await fetch(endpoint, { method: "POST", headers: { Authorization: `Bearer ${accessToken}`, "content-type": "application/json" }, body: JSON.stringify({ messaging_product: "whatsapp", recipient_type: "individual", to, type: "text", text: { body: clean(text, 1000) } }) }), data = await response.json().catch(() => ({})), messageId = Array.isArray(data?.messages) && data.messages.length ? clean(data.messages[0]?.id, 300) : "", ok = response.ok;
     await db.from("whatsapp_message_log").upsert({ event_id: logEventId, command_id: `client::${clean(client?.id || "birthday", 160)}`, phone: to, customer_name: clean(client?.name || "Cliente", 120), command_label: "Atualização cadastral", payload: { campaign: BIRTHDAY_CAMPAIGN, kind: "reply_ack", edgeVersion: EDGE_VERSION, delivery: { status: ok ? "accepted" : "failed", receivedAt: new Date().toISOString() } }, status: ok ? "sent" : "failed", attempts: 1, wa_message_id: messageId || null, last_error: ok ? null : clean(data?.error?.message || `Meta HTTP ${response.status}`, 600), sent_at: ok ? new Date().toISOString() : null, updated_at: new Date().toISOString() }, { onConflict: "event_id" }); return { ok, messageId };
   }
   async function sendToManager(manager: { name: string; phone: string }, original: any, sender: string, text: string) { const endpoint = `https://graph.facebook.com/${encodeURIComponent(graphVersion)}/${encodeURIComponent(phoneNumberId)}/messages`, payload = { messaging_product: "whatsapp", recipient_type: "individual", to: manager.phone, type: "template", template: { name: managerTemplate, language: { code: templateLang }, components: [{ type: "body", parameters: [{ type: "text", text: manager.name }, { type: "text", text: clean(original?.command_label || "Comanda", 120) || "Comanda" }, { type: "text", text: clean(original?.customer_name || "Cliente", 120) || "Cliente" }, { type: "text", text: formatPhone(sender) }, { type: "text", text: clean(text, 700) || "[Mensagem recebida]" }] }] } }, response = await fetch(endpoint, { method: "POST", headers: { Authorization: `Bearer ${accessToken}`, "content-type": "application/json" }, body: JSON.stringify(payload) }), data = await response.json().catch(() => ({})); if (!response.ok) { const message = clean(data?.error?.message || `Meta HTTP ${response.status}`, 500), details = clean(data?.error?.error_data?.details || "", 700); throw new Error(details ? `${message} | ${details}` : message); } return Array.isArray(data?.messages) && data.messages.length ? clean(data.messages[0]?.id, 300) : ""; }
 
-  const messages: Array<{ value: any; message: any }> = [];
-  const statuses: any[] = [];
-  for (const entry of Array.isArray(body?.entry) ? body.entry : []) for (const change of Array.isArray(entry?.changes) ? entry.changes : []) {
-    if (change?.field !== "messages") continue;
-    const value = change?.value || {};
-    if (clean(value?.metadata?.phone_number_id, 120) !== clean(phoneNumberId, 120)) continue;
-    for (const status of Array.isArray(value?.statuses) ? value.statuses : []) statuses.push(status);
-    for (const message of Array.isArray(value?.messages) ? value.messages : []) messages.push({ value, message });
-  }
+  const messages: Array<{ value: any; message: any }> = []; const statuses: any[] = [];
+  for (const entry of Array.isArray(body?.entry) ? body.entry : []) for (const change of Array.isArray(entry?.changes) ? entry.changes : []) { if (change?.field !== "messages") continue; const value = change?.value || {}; if (clean(value?.metadata?.phone_number_id, 120) !== clean(phoneNumberId, 120)) continue; for (const status of Array.isArray(value?.statuses) ? value.statuses : []) statuses.push(status); for (const message of Array.isArray(value?.messages) ? value.messages : []) messages.push({ value, message }); }
 
   let statusProcessed = 0, statusIgnored = 0, statusFailures = 0;
-  for (const status of statuses) {
-    try {
-      const result = await applyDeliveryStatus(status);
-      if (result.matched) statusProcessed++; else statusIgnored++;
-    } catch (error) {
-      statusFailures++;
-      console.error("[Rota27] Falha ao processar status Meta:", error);
-    }
-  }
-
-  if (!messages.length) {
-    if (statusFailures) return json(500, { ok: false, processed: 0, ignored: 0, failures: statusFailures, statusProcessed, statusIgnored, edgeVersion: EDGE_VERSION });
-    return json(200, { ok: true, processed: 0, ignored: 0, failures: 0, statusProcessed, statusIgnored, edgeVersion: EDGE_VERSION });
-  }
+  for (const status of statuses) { try { const result = await applyDeliveryStatus(status); if (result.matched) statusProcessed++; else statusIgnored++; } catch (error) { statusFailures++; console.error("[Rota27] Falha ao processar status Meta:", error); } }
+  if (!messages.length) { if (statusFailures) return json(500, { ok: false, processed: 0, ignored: 0, failures: statusFailures, statusProcessed, statusIgnored, edgeVersion: EDGE_VERSION }); return json(200, { ok: true, processed: 0, ignored: 0, failures: 0, statusProcessed, statusIgnored, edgeVersion: EDGE_VERSION }); }
 
   let processed = 0, ignored = 0, failures = 0;
   for (const { message } of messages) {

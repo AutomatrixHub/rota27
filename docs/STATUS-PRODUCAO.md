@@ -3,65 +3,66 @@
 Última revisão: 29/08/2026
 
 ## Produção
-- versão: **v0.25.67 — Estado visual de aniversários**;
+- versão: **v0.25.68 — Recontato de cadastro**;
 - branch: `main`;
 - GitHub Pages: `https://automatrixhub.github.io/rota27/`;
-- Service Worker: `rota27-comandas-v0.25.67-r1`;
-- baseline anterior: **v0.25.66**, merge `a801ddbd821e88a92c6a703713be54b317027b8f`.
+- Service Worker: `rota27-comandas-v0.25.68-r1`;
+- baseline anterior: **v0.25.67**, merge `35d6841f7be7e1de09ab371f91dbc073ecbbccf6`.
 
-## Incidente visual corrigido
-A automação de aniversário estava correta no backend, porém o renderer legado v0.25.57 reconstruía `#v02557UpcomingBirthdays` depois das camadas v0.25.65/66. Isso podia apagar visualmente:
-- a frase de envio automático às 09:30;
-- o bloco de status da automação;
-- os badges de elegibilidade.
+## Solicitação de data de nascimento
+A campanha `birthday_request_v1` agora aceita até **3 solicitações bem-sucedidas por cliente**, com cooldown mínimo de **7 dias**.
 
-## Correção v0.25.67
-- `v02557-upcoming-birthdays.js` agora usa a cópia correta de automação e emite `rota27:v02557-rendered` após cada render;
-- `v02567-birthday-visual-state.js` escuta esse evento e reaplica o estado de elegibilidade v0.25.66;
-- o bloco `v02565BirthdayAutomation` é restaurado a partir do último status já consultado, sem polling adicional;
-- o shell carrega diretamente a camada v0.25.67 antes do roadmap loader;
-- o roadmap loader usa cache-buster `02567r1` para as camadas de aniversário;
-- não foi adicionado `MutationObserver` nem varredura contínua.
+### Elegibilidade
+Para receber uma solicitação o cliente precisa:
+- ter WhatsApp válido;
+- ainda não possuir data de nascimento válida;
+- possuir evidência anterior de contato autorizado, ou já ter sido elegível e recebido uma solicitação anterior desta campanha;
+- não ter alcançado 3 solicitações bem-sucedidas;
+- ter completado 7 dias desde a solicitação anterior, quando houver.
+
+Falhas técnicas não contam para o limite de três. O disparo é manual pelo card de Clientes; não existe cron de reenvio para esta campanha.
+
+## Interface
+Em **Clientes → Solicitar data de nascimento pelo WhatsApp**, o painel informa:
+- com WhatsApp sem aniversário;
+- com histórico autorizado;
+- já receberam 1+ solicitação;
+- aguardando 7 dias;
+- limite de 3 atingido;
+- prontos agora;
+- quantidade de primeiras solicitações e recontatos disponíveis.
+
+Clientes sem evidência anterior de contato continuam bloqueados. Clientes sem WhatsApp válido são indicados para atualização manual.
+
+## Respostas pelo WhatsApp
+`rota27-whatsapp-inbound` v4 mantém o fluxo anterior de reconhecimento de `DD/MM/AAAA` e agora grava no mesmo `client_upsert`:
+- `birthDate`;
+- `relationshipMarketingOptIn=true`;
+- `eventMarketingOptIn=true` por compatibilidade;
+- fonte `birth_date_reply_whatsapp_v02568`.
+
+Assim que a data é gravada, o cliente sai da audiência de novas solicitações.
+
+## Edge Functions
+- `rota27-birthday-campaign`: **v3 ACTIVE**, `verify_jwt=false`, autenticação própria por `x-rota27-device-token`;
+- `rota27-whatsapp-inbound`: **v4 ACTIVE**, `verify_jwt=false`, webhook Meta com verificação de assinatura quando configurada;
+- template `solicitar_aniversario_rota27_v1` permanece o mesmo já aprovado pela Meta;
+- nenhuma mensagem foi enviada durante a implantação da v0.25.68.
 
 ## Parabéns automático
-- envio diário às **09:30**, fuso `America/Sao_Paulo`;
-- cron backend: `rota27-birthday-greeting-0930` / `30 12 * * *` UTC;
-- template `aniversario_cliente_rota27_v1`: **APPROVED**, categoria MARKETING, `pt_BR`;
-- idempotência anual: `birthday_greeting_v1::<ano>::<clientId>`;
-- Sandbox não envia;
-- sem fallback por texto livre.
-
-## Regra de elegibilidade v0.25.66
-Quando uma data de nascimento é fornecida ou alterada no cadastro:
-- a data é sincronizada no `client_upsert`;
-- `relationshipMarketingOptIn=true` acompanha o mesmo fluxo;
-- `eventMarketingOptIn=true` é mantido por compatibilidade;
-- opt-out explícito posterior continua sendo respeitado.
-
-## Backfill aprovado
-Foi executado backfill append-only em produção para **21 clientes** que já possuíam data de nascimento. Os 21 possuem autorização de relacionamento `true` no snapshot consolidado.
-
-Para 30/08, **Cliente X** e **JJ Ivan Lins** possuem data, WhatsApp válido e autorização, ficando elegíveis para o cron das 09:30.
-
-Nenhum evento histórico foi apagado ou atualizado in-place.
-
-## Interface esperada
-Em **Clientes & Fidelização → Aniversários próximos**:
-- subtítulo: `Parabéns automático às 09:30 no dia do aniversário para clientes autorizados.`;
-- `Autorizado • 09h30 no dia` para aniversariantes futuros elegíveis;
-- `Sem autorização` para relacionamento desabilitado;
-- `Sem WhatsApp` para telefone ausente/inválido;
-- no próprio dia, os estados de entrega permanecem: Agendado 09:30, Aceito pela Meta, Enviado, Entregue, Lido ou Falhou.
+Preservado sem mudança:
+- `rota27-birthday-greeting`;
+- cron diário às 09:30 em `America/Sao_Paulo`;
+- template `aniversario_cliente_rota27_v1` MARKETING aprovado;
+- idempotência anual.
 
 ## Preservação
-- nenhuma migration nesta release;
-- nenhuma Edge Function alterada;
+- nenhuma migration;
 - nenhum reset de dados;
-- nenhum envio de WhatsApp disparado pela correção visual;
+- histórico de solicitações antigas é reaproveitado como tentativa 1;
+- v0.25.67 continua responsável pelo estado visual dos aniversários;
 - v0.25.66 continua responsável pela elegibilidade/backfill;
-- v0.25.65 continua responsável pela automação e entrega;
-- v0.25.64 continua responsável por estabilidade mobile/FAB/Consumo interno;
-- v0.25.63 continua responsável pela data operacional de turnos.
+- v0.25.65 continua responsável pelo parabéns automático.
 
 ## Regras de operação
 - não limpar `localStorage` de produção;
@@ -71,4 +72,4 @@ Em **Clientes & Fidelização → Aniversários próximos**:
 - mudanças usam branch curta + PR + merge + confirmação do Pages.
 
 ## Rollback
-Baseline anterior: **v0.25.66** / merge `a801ddbd821e88a92c6a703713be54b317027b8f`.
+Baseline anterior: **v0.25.67** / merge `35d6841f7be7e1de09ab371f91dbc073ecbbccf6`.
