@@ -71,8 +71,18 @@
     return clean(await response.text(),40);
   }
   function isEditable(el){return !!el&&(el.matches?.('input,textarea,select,[contenteditable="true"]')||el.closest?.('[contenteditable="true"]'));}
+  function isActuallyVisible(el){
+    if(!el||!el.isConnected)return false;
+    try{
+      const style=getComputedStyle(el);
+      if(style.display==='none'||style.visibility==='hidden'||Number(style.opacity)===0)return false;
+      const rect=el.getBoundingClientRect();
+      return rect.width>0&&rect.height>0;
+    }catch{return false;}
+  }
   function unsafeOverlayOpen(){
-    return !!document.querySelector('.sheet-wrap.open,[id$="Wrap"].open,[id$="Overlay"].open,dialog[open],[role="dialog"][aria-modal="true"]');
+    const candidates=document.querySelectorAll('.sheet-wrap.open,[id$="Wrap"].open,[id$="Overlay"].open,dialog[open],[role="dialog"][aria-modal="true"]');
+    return Array.from(candidates).some(isActuallyVisible);
   }
   function safeToReload(){
     if(document.visibilityState!=='visible'||inTestMode())return false;

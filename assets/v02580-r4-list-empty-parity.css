@@ -5,9 +5,11 @@
  * `.v0252-map-empty` usada pelo Mapa. Estas regras apenas neutralizam
  * resíduos do componente legado #commandsEmpty que ainda poderiam alterar
  * altura, pseudo-elementos ou espaçamento.
+ *
+ * v0.25.88: NÃO forçar display. A visibilidade pertence ao render canônico,
+ * que alterna #commandsEmpty entre none/block conforme a quantidade de comandas.
  */
 #screenCommands[data-v0252-view="list"] #commandsEmpty.v02580r4-list-empty{
-  display:block!important;
   min-height:0!important;
   height:auto!important;
   padding:25px 18px!important;
