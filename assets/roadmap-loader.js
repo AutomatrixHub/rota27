@@ -1,8 +1,8 @@
 /* Rota 27 — carregador incremental do roadmap pós-v0.25.46 */
 (function(){
   'use strict';
-  const CURRENT='0.25.80';
-  const HELP='9.8';
+  const CURRENT='0.25.81';
+  const HELP='9.9';
   const assets=[
     {type:'js',id:'v02580ProductCategoryNoAutofocusJs',src:'./assets/v02580-product-category-no-autofocus.js?v=02580r1'},
     {type:'css',id:'v02579RoundedBorderCss',src:'./assets/v02577-menu-option-b.css?v=02579r1'},
@@ -47,7 +47,10 @@
     {type:'css',id:'v02551UxHotfixCss',src:'./assets/v02551-ux-hotfix.css?v=02551r1'},
     {type:'js',id:'v02551UxHotfixJs',src:'./assets/v02551-ux-hotfix.js?v=02551r1'},
     {type:'css',id:'v02548EventDeliveryFunnelCss',src:'./assets/v02548-event-delivery-funnel.css?v=02548r1'},
-    {type:'js',id:'v02548EventDeliveryFunnelJs',src:'./assets/v02548-event-delivery-funnel.js?v=02548r1'}
+    {type:'js',id:'v02548EventDeliveryFunnelJs',src:'./assets/v02548-event-delivery-funnel.js?v=02548r1'},
+    {type:'css',id:'v02581GlobalTestModeCss',src:'./assets/v02581-global-test-mode.css?v=02581r1'},
+    {type:'js',id:'v02581GlobalTestModeJs',src:'./assets/v02581-global-test-mode.js?v=02581r1'},
+    {type:'js',id:'v02581ManagerTestBridgeJs',src:'./assets/v02581-manager-test-bridge.js?v=02581r1'}
   ];
   function identity(){
     document.title=`Rota 27 Bodega • Comandas v${CURRENT}`;
