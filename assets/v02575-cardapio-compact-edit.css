@@ -24,6 +24,7 @@ html body #screenSale .product-grid .product .price{
   font-size:15px!important;
   line-height:1.05!important;
   padding-right:34px!important;
+  color:#d85f2c!important;
 }
 html body #screenSale .product-grid .product .qty-badge{
   top:auto!important;
