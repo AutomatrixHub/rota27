@@ -3,11 +3,25 @@
 Última revisão: 30/08/2026
 
 ## Produção
-- versão: **v0.25.75 — Cardápio compacto e edição de comanda em destaque**;
+- versão: **v0.25.76 — Editar comanda sem foco automático + preço vermelho nos produtos**;
 - branch: `main`;
 - GitHub Pages: `https://automatrixhub.github.io/rota27/`;
-- Service Worker: `rota27-comandas-v0.25.75-r1`;
-- baseline anterior: **v0.25.74**, merge `3e291ef5fe118f69f7f85a7c287a6f7e29487679`.
+- Service Worker: `rota27-comandas-v0.25.76-r1`;
+- baseline anterior: **v0.25.75**, PR #111, merge `ece7e8a6539f16a2f30ee8c1c06b8bf6cbe2ae2f`.
+
+## Correções de UX — v0.25.76
+### Editar comanda sem foco automático
+A abertura da tela **Editar comanda** passa a neutralizar o foco inicial exatamente como já ocorre na **Nova comanda**:
+- nenhum campo recebe foco automaticamente ao abrir;
+- teclado virtual não deve abrir sozinho;
+- `autofocus` dentro do modal é removido;
+- foco inicial dentro da área de edição é removido imediatamente, em microtask e no próximo frame;
+- depois da abertura, o operador pode tocar e editar qualquer campo normalmente.
+
+A implementação é finita e idempotente, sem `MutationObserver` e sem polling.
+
+### Preço dos produtos
+Nos cards de produtos da tela de lançamento, o preço volta para vermelho/terracota `#d85f2c`, preservando integralmente a compactação da v0.25.75, os cards sem ícones, o texto aumentado em 1px e o badge no canto inferior direito.
 
 ## Refinamento do lançamento de produtos — v0.25.75
 A tela de lançamento foi compactada para reduzir rolagem sem perder legibilidade:
@@ -72,7 +86,7 @@ A v0.25.73 permanece ativa:
 - `rota27-whatsapp-inbound`: v4 ACTIVE;
 - `rota27-birthday-campaign`: v3 ACTIVE.
 
-A v0.25.75 **não altera Edge Functions**, schemas ou tabelas. É uma release somente de apresentação/UX no frontend.
+A v0.25.76 **não altera Edge Functions**, schemas ou tabelas. É uma correção estritamente de UX/frontend.
 
 ## Preservação
 - nenhuma migration;
@@ -83,9 +97,10 @@ A v0.25.75 **não altera Edge Functions**, schemas ou tabelas. É uma release so
 - sem polling contínuo e sem `MutationObserver` novo.
 
 ## Atualização PWA
-- shell declara `rota27-release-version=0.25.75`;
-- `v02575-cardapio-compact-edit.css` é carregado diretamente pelo shell e pelo roadmap loader;
-- cache `rota27-comandas-v0.25.75-r1`;
+- shell declara `rota27-release-version=0.25.76`;
+- `v02575-cardapio-compact-edit.css` é recarregado com revisão `02576r1`;
+- `v02576-edit-command-no-autofocus.js` é carregado diretamente pelo shell e pelo roadmap loader;
+- cache `rota27-comandas-v0.25.76-r1`;
 - não limpar `localStorage` de produção.
 
 ## Regras de operação
@@ -95,4 +110,4 @@ A v0.25.75 **não altera Edge Functions**, schemas ou tabelas. É uma release so
 - mudanças usam branch curta + PR + merge + confirmação do Pages.
 
 ## Rollback
-Baseline anterior: **v0.25.74** / merge `3e291ef5fe118f69f7f85a7c287a6f7e29487679`.
+Baseline anterior: **v0.25.75** / PR #111 / merge `ece7e8a6539f16a2f30ee8c1c06b8bf6cbe2ae2f`.
