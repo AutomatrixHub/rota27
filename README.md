@@ -3,11 +3,26 @@
 Aplicativo mobile-first, offline-first e multidispositivo para controle rápido de comandas da **Rota 27 Bodega**.
 
 ## Produção
-- **Versão:** v0.25.79 — Borda vermelha real com cantos arredondados
+- **Versão:** v0.25.80 — Edição sem foco + campo Ícone removido
 - **Branch:** `main`
 - **GitHub Pages:** `https://automatrixhub.github.io/rota27/`
-- **Service Worker:** `rota27-comandas-v0.25.79-r1`
-- **Baseline anterior:** v0.25.78
+- **Service Worker:** `rota27-comandas-v0.25.80-r1`
+- **Baseline anterior:** v0.25.79
+
+## v0.25.80 — Edição sem foco + campo Ícone removido
+
+### Editar produto e Editar categoria
+As telas de edição passam a abrir sem foco inicial automático, seguindo o padrão já aprovado para **Nova comanda** e **Editar comanda**:
+- **Editar produto** não coloca foco automático em `NOME DO PRODUTO`;
+- **Editar categoria** não coloca foco/seleção automática em `NOME DA CATEGORIA`;
+- o teclado virtual não deve abrir sozinho;
+- o operador escolhe explicitamente o campo que deseja editar;
+- o bloqueio é finito e atua somente na abertura dos modos de edição.
+
+### Cadastro de produtos — campo Ícone
+O campo visual **Ícone** foi removido do cadastro/edição de produtos. Para preservar compatibilidade com dados históricos e com a função legada de salvamento, o identificador `menuItemEmoji` permanece apenas como input oculto interno. Nenhum dado existente é apagado e a categoria passa a ocupar toda a largura disponível nessa linha.
+
+A release não altera regras de produto, preços, estoque, backend ou integrações.
 
 ## v0.25.79 — Borda vermelha real com cantos arredondados
 
@@ -105,6 +120,7 @@ Não limpar `localStorage`, não reinstalar a PWA e não apagar dados de produç
 
 ## Documentação
 - `docs/STATUS-PRODUCAO.md`
+- `docs/RELEASE-v0.25.80.md`
 - `docs/RELEASE-v0.25.79.md`
 - `docs/RELEASE-v0.25.78.md`
 - `docs/RELEASE-v0.25.77.md`
@@ -113,4 +129,4 @@ Não limpar `localStorage`, não reinstalar a PWA e não apagar dados de produç
 - `docs/RELEASE-v0.25.74.md`
 
 ## Versão
-Produção: **0.25.79**
+Produção: **0.25.80**
