@@ -1,11 +1,33 @@
-/* Rota 27 v0.25.80-r2 — Produto/categoria sem foco automático + campo Ícone removido */
+/* Rota 27 v0.25.80-r3 — Produto/categoria sem foco + refinamentos de Lista/topbar */
 (function(){
   'use strict';
   if(window.Rota27V02580ProductCategoryNoAutofocus)return;
 
-  const VERSION='0.25.80-r2';
+  const VERSION='0.25.80-r3';
   const GUARD_MS=220;
   const byId=id=>document.getElementById(id);
+
+  function ensureR3Layout(){
+    if(!byId('v02580R3ListEmptyTopbarCss')){
+      const link=document.createElement('link');
+      link.id='v02580R3ListEmptyTopbarCss';
+      link.rel='stylesheet';
+      link.href='./assets/v02580-r3-list-empty-topbar.css?v=02580r3';
+      document.head.appendChild(link);
+    }
+
+    const subtitle=document.querySelector('.topbar .brand-copy > small');
+    if(subtitle&&subtitle.dataset.v02580r3Split!=='1'){
+      const first=document.createElement('span');
+      const second=document.createElement('span');
+      first.className='v02580r3-subline';
+      second.className='v02580r3-subline';
+      first.textContent='Das delícias capixabas •';
+      second.textContent='Jardim Camburi';
+      subtitle.replaceChildren(first,second);
+      subtitle.dataset.v02580r3Split='1';
+    }
+  }
 
   function removeIconField(){
     const current=byId('menuItemEmoji');
@@ -116,6 +138,7 @@
   }
 
   function refresh(){
+    ensureR3Layout();
     removeIconField();
     patchProductEditor();
     patchCategoryEditor();
@@ -126,8 +149,8 @@
     document.addEventListener('visibilitychange',()=>{
       if(document.visibilityState==='visible')refresh();
     });
-    window.Rota27V02580ProductCategoryNoAutofocus={version:VERSION,refresh,removeIconField};
-    console.info('[Rota27] v0.25.80-r2 — novo/editar produto e nova/editar categoria abrem sem foco automático; campo Ícone permanece removido.');
+    window.Rota27V02580ProductCategoryNoAutofocus={version:VERSION,refresh,removeIconField,ensureR3Layout};
+    console.info('[Rota27] v0.25.80-r3 — produto/categoria sem foco; Lista vazia e topbar refinadas.');
   }
 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
