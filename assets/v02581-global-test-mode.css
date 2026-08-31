@@ -1,0 +1,133 @@
+/* Rota 27 v0.25.81 — identidade visual do Modo Teste Global */
+
+body.v02581-test-mode{
+  --bg:#eceafd;
+  --surface:#faf9ff;
+  --surface-2:#efedff;
+  --ink:#211d3b;
+  --muted:#68627f;
+  --brand:#342d78;
+  --brand-2:#5b50c8;
+  --accent:#7e72e8;
+  --accent-2:#b9b3f4;
+  --line:#c9c4eb;
+  --ok:#397765;
+  background:#eceafd!important;
+}
+
+body.v02581-test-mode .topbar{
+  background:linear-gradient(180deg,#eceafd 0%,#eceafd 78%,rgba(236,234,253,0) 100%)!important;
+}
+body.v02581-test-mode .topbar .brand{
+  background:linear-gradient(135deg,#e9e6ff,#dcd7ff)!important;
+  border-color:#9d94df!important;
+  box-shadow:0 10px 24px rgba(63,53,135,.15)!important;
+}
+body.v02581-test-mode .topbar .logo-shell{
+  background:#f4f2ff!important;
+  box-shadow:inset 0 0 0 1px rgba(76,64,153,.12),0 8px 18px rgba(58,47,127,.13)!important;
+}
+body.v02581-test-mode .bottomnav{
+  background:rgba(248,247,255,.99)!important;
+  border-top-color:#c9c4eb!important;
+}
+body.v02581-test-mode .navbtn.active{
+  color:#342d78!important;
+  background:#e5e1ff!important;
+}
+body.v02581-test-mode .navbtn.active .navicon{
+  background:linear-gradient(135deg,#4f46a5,#7468dc)!important;
+  box-shadow:0 8px 18px rgba(79,70,165,.25)!important;
+}
+body.v02581-test-mode .fab,
+body.v02581-test-mode .chip.active,
+body.v02581-test-mode .v0252-view-switch button.active{
+  background:linear-gradient(135deg,#4f46a5,#7468dc)!important;
+  border-color:#4f46a5!important;
+}
+body.v02581-test-mode .command-card:before,
+body.v02581-test-mode .v0256-map-command-card::before{
+  background:linear-gradient(180deg,#6559cf 0%,#6559cf 68%,#292451 68%,#292451 100%)!important;
+}
+
+#v02581TestBadge{
+  position:fixed;
+  z-index:46;
+  right:max(9px,calc((100vw - 720px)/2 + 9px));
+  top:calc(102px + env(safe-area-inset-top));
+  border:1px solid #9188dc;
+  background:linear-gradient(135deg,#4d459b,#6b5fd1);
+  color:#fff;
+  border-radius:999px;
+  min-height:36px;
+  padding:6px 10px;
+  display:flex;
+  align-items:center;
+  gap:5px;
+  box-shadow:0 8px 20px rgba(55,45,130,.28);
+  font-size:10px;
+  font-weight:900;
+  letter-spacing:.02em;
+  touch-action:manipulation;
+}
+#v02581TestBadge[hidden]{display:none!important}
+#v02581TestBadge span{font-size:14px;line-height:1}
+#v02581TestBadge strong{font-size:10px;white-space:nowrap}
+#v02581TestBadge small{
+  padding-left:5px;
+  border-left:1px solid rgba(255,255,255,.35);
+  font-size:9px;
+  font-weight:800;
+  color:#eeeaff;
+}
+#v02581TestBadge:active{transform:scale(.98)}
+
+.v02581-help-test{
+  border-color:#b5afe9!important;
+  background:linear-gradient(180deg,rgba(240,238,255,.72),rgba(250,249,255,.75))!important;
+}
+.v02581-help-test .r27-help-section-icon{
+  background:#e1ddff!important;
+  color:#4f46a5!important;
+}
+.v02581-help-actions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin-top:12px;
+}
+.v02581-help-actions button{
+  min-height:44px;
+  border:1px solid #a9a1e1;
+  border-radius:13px;
+  background:#f6f4ff;
+  color:#38306e;
+  padding:9px 11px;
+  font-weight:900;
+}
+.v02581-help-actions button.primary{
+  grid-column:1/-1;
+  border-color:#4f46a5;
+  background:linear-gradient(135deg,#4f46a5,#6f63d6);
+  color:#fff;
+}
+.v02581-help-actions button.danger{
+  border-color:#a94757;
+  background:#a94757;
+  color:#fff;
+}
+
+/* O modo demonstração antigo da Visão Gerencial é substituído pelo modo global. */
+#v020DemoMode{display:none!important}
+
+@media(max-width:420px){
+  #v02581TestBadge{
+    top:calc(96px + env(safe-area-inset-top));
+    right:8px;
+    min-height:34px;
+    padding:5px 8px;
+  }
+  #v02581TestBadge strong{font-size:9.5px}
+  .v02581-help-actions{grid-template-columns:1fr}
+  .v02581-help-actions button.primary{grid-column:auto}
+}
