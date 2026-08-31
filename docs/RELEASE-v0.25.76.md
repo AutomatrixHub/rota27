@@ -14,7 +14,8 @@ A tela **Editar comanda** passa a seguir o mesmo princípio já aplicado à **No
 - teclado virtual não deve abrir sozinho;
 - atributos `autofocus`, caso existam na área de edição, são neutralizados;
 - qualquer foco inicial dentro do modal é removido imediatamente, em microtask e no próximo frame;
-- o usuário continua podendo tocar normalmente em qualquer campo depois da abertura.
+- o foco legado tardio de `editTable`, agendado 120 ms após a abertura, é bloqueado na origem por uma guarda curta de 240 ms e o `focus()` nativo é restaurado em seguida;
+- o usuário continua podendo tocar normalmente nos demais campos durante a abertura e em qualquer campo depois da guarda.
 
 A correção é finita e idempotente, sem `MutationObserver` e sem polling.
 
