@@ -1,0 +1,210 @@
+/* Rota 27 v0.25.83 — paridade visual Histórico ↔ Painel */
+
+/*
+ * Referência visual: assets/v02525-panel-finish.css.
+ * O Histórico mantém conteúdo e regras próprias, mas passa a usar a mesma
+ * hierarquia tipográfica, densidade, raios e peso visual do Painel.
+ */
+
+#screenHistory{padding-bottom:10px}
+
+/* Cabeçalho do Histórico: mesma escala tipográfica do cabeçalho do Painel. */
+#screenHistory .v14-history-head{align-items:flex-end;margin:0 0 10px}
+#screenHistory .v14-history-head h2{
+  margin:0 0 3px;
+  font-size:24px;
+  line-height:1.05;
+  font-weight:900;
+  letter-spacing:-.025em;
+  color:var(--ink);
+}
+#screenHistory .v14-history-head p{
+  margin:0;
+  font-size:12px;
+  line-height:1.35;
+  font-weight:400;
+  color:var(--muted);
+}
+#screenHistory .v14-history-head .badge{
+  min-width:26px;
+  height:26px;
+  padding:0 9px;
+  border-radius:999px;
+  font-size:11px;
+  line-height:1;
+  font-weight:900;
+}
+
+/* Resumo operacional: mesma gramática de seção do Painel. */
+#screenHistory .v018-turn-summary{
+  margin:0 0 10px;
+  padding:11px 12px;
+  border-radius:18px;
+  border:1px solid var(--line);
+  background:var(--surface);
+  box-shadow:0 4px 13px rgba(42,36,26,.04);
+}
+#screenHistory .v018-turn-head{
+  align-items:flex-start;
+  gap:10px;
+  margin:0 0 8px;
+}
+#screenHistory .v018-turn-head h3{
+  margin:0;
+  font-size:18px;
+  line-height:1.1;
+  font-weight:900;
+  letter-spacing:-.015em;
+  color:var(--ink);
+}
+#screenHistory .v018-turn-head p{
+  margin:3px 0 0;
+  font-size:11px;
+  line-height:1.25;
+  font-weight:400;
+  color:#817264;
+}
+#screenHistory .v018-turn-date{
+  min-height:30px;
+  box-sizing:border-box;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:0 10px;
+  border-radius:999px;
+  font-size:11px;
+  line-height:1;
+  font-weight:850;
+  color:#77695d;
+  background:var(--surface-2);
+  border:1px solid var(--line);
+}
+
+/* Métricas do Histórico = métricas do Painel. */
+#screenHistory .v018-turn-metrics{
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:8px;
+}
+#screenHistory .v018-turn-metric{
+  min-width:0;
+  min-height:80px;
+  box-sizing:border-box;
+  padding:9px 10px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  border-radius:14px;
+  border:1px solid var(--line);
+  background:linear-gradient(160deg,var(--surface-2),#f3e5d0);
+  box-shadow:none;
+}
+#screenHistory .v018-turn-metric small{
+  display:block;
+  font-size:10.5px;
+  line-height:1.15;
+  font-weight:750;
+  color:#77695d;
+}
+#screenHistory .v018-turn-metric strong{
+  display:block;
+  margin:4px 0 3px;
+  font-size:22px;
+  line-height:1;
+  font-weight:950;
+  letter-spacing:-.018em;
+  color:var(--ink);
+  overflow:visible;
+  text-overflow:clip;
+}
+#screenHistory .v018-turn-metric span{
+  display:block;
+  margin:0;
+  font-size:10.5px;
+  line-height:1.2;
+  font-weight:400;
+  color:#88796b;
+}
+
+/* Blocos de detalhe: mesma densidade e cantos dos cartões operacionais. */
+#screenHistory .v018-turn-grid{
+  grid-template-columns:1fr;
+  gap:8px;
+  margin-top:10px;
+}
+#screenHistory .v018-turn-panel{
+  min-width:0;
+  padding:10px 11px;
+  border-radius:14px;
+  border:1px solid var(--line);
+  background:linear-gradient(160deg,var(--surface-2),#f3e5d0);
+}
+#screenHistory .v018-turn-panel h4{
+  margin:0 0 8px;
+  font-size:14.5px;
+  line-height:1.15;
+  font-weight:900;
+  letter-spacing:-.01em;
+  color:var(--ink);
+}
+#screenHistory .v018-turn-list{gap:7px}
+#screenHistory .v018-turn-row{
+  gap:9px;
+  font-size:11.5px;
+  line-height:1.25;
+  color:var(--ink);
+}
+#screenHistory .v018-turn-row strong{
+  min-width:0;
+  font-weight:750;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+#screenHistory .v018-turn-row span{
+  white-space:nowrap;
+  font-size:11px;
+  font-weight:750;
+  color:#77695d;
+}
+#screenHistory .v018-turn-empty{
+  font-size:10.5px;
+  line-height:1.3;
+  color:#88796b;
+}
+#screenHistory .v02563-summary-note{
+  margin-top:9px;
+  font-size:10px;
+  line-height:1.3;
+  color:#88796b;
+}
+
+/* Demais blocos da tela seguem a mesma escala tipográfica. */
+#screenHistory .v14-panel{border-radius:18px;box-shadow:0 4px 13px rgba(42,36,26,.04)}
+#screenHistory .v14-panel-head strong,
+#screenHistory .v14-list-head strong{font-size:14.5px;line-height:1.15;font-weight:900;letter-spacing:-.01em}
+#screenHistory .v14-panel-head small,
+#screenHistory .v14-list-head small{font-size:10px;line-height:1.2;color:#88796b}
+#screenHistory .v14-history-item{border-radius:14px}
+#screenHistory .v14-history-item .history-top h4{font-size:13.5px;line-height:1.15;font-weight:900}
+#screenHistory .v14-history-item .history-top p{font-size:10px;line-height:1.3;color:#88796b}
+#screenHistory .v14-history-item .history-top .money{font-size:15px;line-height:1.05;font-weight:900}
+
+/* O mesmo CSS vale no sandbox; apenas as cores acompanham o tema de teste. */
+body.v02581-test-mode #screenHistory .v018-turn-head p,
+body.v02581-test-mode #screenHistory .v018-turn-date,
+body.v02581-test-mode #screenHistory .v018-turn-metric small,
+body.v02581-test-mode #screenHistory .v018-turn-row span{color:var(--muted)}
+body.v02581-test-mode #screenHistory .v018-turn-metric,
+body.v02581-test-mode #screenHistory .v018-turn-panel{
+  background:linear-gradient(160deg,var(--surface-2),#e4e0fb);
+}
+
+@media(max-width:380px){
+  #screenHistory .v14-history-head h2{font-size:23px}
+  #screenHistory .v018-turn-head h3{font-size:17px}
+  #screenHistory .v018-turn-metric{min-height:76px;padding:9px 10px}
+  #screenHistory .v018-turn-metric strong{font-size:20px}
+  #screenHistory .v018-turn-panel h4{font-size:14px}
+  #screenHistory .v018-turn-row{font-size:11px}
+  #screenHistory .v018-turn-row span{font-size:10.5px}
+}
