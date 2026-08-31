@@ -3,11 +3,20 @@
 Aplicativo mobile-first, offline-first e multidispositivo para controle rápido de comandas da **Rota 27 Bodega**.
 
 ## Produção
-- **Versão:** v0.25.77 — Cardápio sem ícones + cards Opção B
+- **Versão:** v0.25.78 — Bordas vermelhas refinadas no Cardápio
 - **Branch:** `main`
 - **GitHub Pages:** `https://automatrixhub.github.io/rota27/`
-- **Service Worker:** `rota27-comandas-v0.25.77-r1`
-- **Baseline anterior:** v0.25.76
+- **Service Worker:** `rota27-comandas-v0.25.78-r1`
+- **Baseline anterior:** v0.25.77
+
+## v0.25.78 — Bordas vermelhas refinadas no Cardápio
+
+A Opção B do Cardápio permanece integralmente preservada, com um refinamento visual solicitado após comparação entre a proposta aprovada e a tela real em produção:
+- o acento vertical dos cards deixa o gradiente alaranjado da v0.25.77 e passa a usar vermelho-terra sólido `#da693d`;
+- o contorno do botão **Editar** usa o mesmo vermelho-terra, aproximando a produção da proposta visual aprovada;
+- dimensões, altura, tipografia, preço, categoria, status e organização dos cards não mudam.
+
+A alteração é estritamente CSS. Nenhum dado, regra de produto, backend ou integração foi alterado.
 
 ## v0.25.77 — Cardápio sem ícones + cards Opção B
 
@@ -15,9 +24,9 @@ Aplicativo mobile-first, offline-first e multidispositivo para controle rápido 
 A lista administrativa de produtos adota a **Opção B** aprovada:
 - ícones removidos de todos os produtos da tela **Cardápio**;
 - cards reorganizados em duas áreas: informações do produto à esquerda e preço/ação à direita;
-- barra vertical laranja identifica visualmente cada card sem consumir largura útil;
+- barra vertical de destaque identifica visualmente cada card sem consumir largura útil;
 - preço aparece em pill terracota suave de alto contraste;
-- botão **Editar** passa a ter contorno laranja e fica logo abaixo do preço;
+- botão **Editar** fica logo abaixo do preço;
 - categoria e estado do produto permanecem visíveis na segunda linha;
 - altura permanece compacta para reduzir rolagem.
 
@@ -85,10 +94,11 @@ Não limpar `localStorage`, não reinstalar a PWA e não apagar dados de produç
 
 ## Documentação
 - `docs/STATUS-PRODUCAO.md`
+- `docs/RELEASE-v0.25.78.md`
 - `docs/RELEASE-v0.25.77.md`
 - `docs/RELEASE-v0.25.76.md`
 - `docs/RELEASE-v0.25.75.md`
 - `docs/RELEASE-v0.25.74.md`
 
 ## Versão
-Produção: **0.25.77**
+Produção: **0.25.78**
