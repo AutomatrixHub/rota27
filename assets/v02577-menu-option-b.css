@@ -1,11 +1,11 @@
-/* Rota 27 v0.25.78 — Cardápio Opção B, acentos vermelhos refinados */
+/* Rota 27 v0.25.79 — Cardápio Opção B, borda esquerda real arredondada */
 
 /*
  * Direção aprovada:
  * - remove integralmente os ícones dos produtos na tela Cardápio;
  * - reorganiza cada card em conteúdo + preço/ação;
  * - mantém a Opção B da v0.25.77;
- * - refina os acentos para o vermelho-terra da proposta visual aprovada.
+ * - usa a própria border-left do card para que o vermelho acompanhe os cantos arredondados.
  */
 html body #screenMenu .menu-list{
   gap:8px!important;
@@ -19,22 +19,20 @@ html body #screenMenu .menu-item{
   align-items:center!important;
   column-gap:12px!important;
   min-height:78px!important;
-  padding:10px 11px 10px 15px!important;
+  box-sizing:border-box!important;
+  padding:10px 11px 10px 12px!important;
   overflow:hidden!important;
   border:1px solid #e8d7c2!important;
+  border-left:4px solid #da693d!important;
   border-radius:15px!important;
   background:linear-gradient(180deg,#fffdf9,#fffaf3)!important;
   box-shadow:0 4px 12px rgba(67,44,25,.045)!important;
 }
 
+/* A faixa interna antiga é desativada: a borda vermelha agora é parte real do card. */
 html body #screenMenu .menu-item::before{
-  content:""!important;
-  position:absolute!important;
-  left:0!important;
-  top:0!important;
-  bottom:0!important;
-  width:4px!important;
-  background:#da693d!important;
+  content:none!important;
+  display:none!important;
 }
 
 /* Nenhum ícone de produto permanece visível no Cardápio. */
@@ -132,10 +130,7 @@ html body #screenMenu .menu-item.inactive{
   opacity:.68!important;
   background:#f3efe9!important;
   border-color:#ddd5ca!important;
-}
-
-html body #screenMenu .menu-item.inactive::before{
-  background:#aaa097!important;
+  border-left-color:#aaa097!important;
 }
 
 html body #screenMenu .menu-item.inactive .menu-right strong{
@@ -152,7 +147,7 @@ html body #screenMenu .menu-item.inactive .menu-edit{
 @media(max-width:390px){
   html body #screenMenu .menu-item{
     min-height:74px!important;
-    padding:9px 9px 9px 13px!important;
+    padding:9px 9px 9px 10px!important;
     column-gap:9px!important;
   }
   html body #screenMenu .menu-info h4{
