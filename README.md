@@ -3,11 +3,19 @@
 Aplicativo mobile-first, offline-first e multidispositivo para controle rápido de comandas da **Rota 27 Bodega**.
 
 ## Produção
-- **Versão:** v0.25.75 — Cardápio compacto e edição de comanda em destaque
+- **Versão:** v0.25.76 — Editar comanda sem foco automático + preço vermelho nos produtos
 - **Branch:** `main`
 - **GitHub Pages:** `https://automatrixhub.github.io/rota27/`
-- **Service Worker:** `rota27-comandas-v0.25.75-r1`
-- **Baseline anterior:** v0.25.74
+- **Service Worker:** `rota27-comandas-v0.25.76-r1`
+- **Baseline anterior:** v0.25.75
+
+## v0.25.76 — Editar comanda sem foco automático + preço vermelho
+
+### Editar comanda
+A tela **Editar comanda** passa a abrir sem foco inicial em qualquer campo ou elemento interativo, seguindo o mesmo comportamento já adotado na **Nova comanda**. O teclado virtual não deve abrir sozinho; o usuário escolhe explicitamente qual campo deseja editar.
+
+### Preço dos produtos
+Nos cards da tela de lançamento da comanda, o preço volta para o vermelho/terracota utilizado no design, mantendo todos os refinamentos compactos da v0.25.75.
 
 ## v0.25.75 — Cardápio compacto e edição de comanda em destaque
 
@@ -63,8 +71,9 @@ Não limpar `localStorage`, não reinstalar a PWA e não apagar dados de produç
 
 ## Documentação
 - `docs/STATUS-PRODUCAO.md`
+- `docs/RELEASE-v0.25.76.md`
 - `docs/RELEASE-v0.25.75.md`
 - `docs/RELEASE-v0.25.74.md`
 
 ## Versão
-Produção: **0.25.75**
+Produção: **0.25.76**
