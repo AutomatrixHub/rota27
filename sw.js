@@ -11,7 +11,7 @@ const APP_SHELL = [
   './assets/v0182-brand-theme.css','./assets/v0183-capixaba-help.css','./assets/v0183-final.js',
   './assets/v019-turn-close.css','./assets/v019-turn-close.js','./assets/v02515-turn-close.js','./assets/v02516-repair.js',
   './assets/v020-manager-dashboard.css','./assets/v020-manager-dashboard.js','./assets/v020-demo-mode.css','./assets/v020-demo-mode.js','./assets/v020-preview-demo.js',
-  './assets/v021-stock.css','./assets/v021-stock.js','./assets/v021-compat.css','./assets/v021-compat.js','./assets/v021-help-compat.js',
+  './assets/v021-stock.css','./assets/v021-stock.js','./assets/v021-compat.js','./assets/v021-help-compat.js',
   './assets/v022-stock-preflight.js','./assets/v022-stock-release.js','./assets/v022-stock-manager-view.css','./assets/v022-stock-manager-view.js','./assets/v022-stock-view-bridge.js','./assets/v022-purchases.css','./assets/v022-purchases.js','./assets/v022-compat.js','./assets/v022-manager-view.css','./assets/v022-manager-view.js',
   './assets/v023-inventory.css','./assets/v023-inventory.js',
   './assets/v024-costs.css','./assets/v024-costs.js','./assets/v024-draft-edit.css','./assets/v024-draft-edit.js','./assets/v024-release-identity.css',
