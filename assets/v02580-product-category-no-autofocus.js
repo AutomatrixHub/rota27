@@ -1,9 +1,9 @@
-/* Rota 27 v0.25.80-r3 — Produto/categoria sem foco + refinamentos de Lista/topbar */
+/* Rota 27 v0.25.80-r4 — Produto/categoria sem foco + paridade real do empty state Lista/Mapa */
 (function(){
   'use strict';
   if(window.Rota27V02580ProductCategoryNoAutofocus)return;
 
-  const VERSION='0.25.80-r3';
+  const VERSION='0.25.80-r4';
   const GUARD_MS=220;
   const byId=id=>document.getElementById(id);
 
@@ -27,6 +27,45 @@
       subtitle.replaceChildren(first,second);
       subtitle.dataset.v02580r3Split='1';
     }
+  }
+
+  function ensureR4ListParityCss(){
+    if(byId('v02580R4ListEmptyParityCss'))return;
+    const link=document.createElement('link');
+    link.id='v02580R4ListEmptyParityCss';
+    link.rel='stylesheet';
+    link.href='./assets/v02580-r4-list-empty-parity.css?v=02580r4';
+    document.head.appendChild(link);
+  }
+
+  function syncListEmpty(){
+    const empty=byId('commandsEmpty');
+    if(!empty)return false;
+
+    empty.classList.add('v0252-map-empty','v02580r4-list-empty');
+
+    const children=Array.from(empty.children||[]);
+    const canonical=children.length===2
+      && children[0]?.tagName==='STRONG'
+      && children[1]?.tagName==='SPAN'
+      && children[0]?.textContent==='Nenhuma comanda aberta'
+      && children[1]?.textContent==='Use um dos atalhos acima para abrir a primeira.';
+
+    if(!canonical){
+      const title=document.createElement('strong');
+      const hint=document.createElement('span');
+      title.textContent='Nenhuma comanda aberta';
+      hint.textContent='Use um dos atalhos acima para abrir a primeira.';
+      empty.replaceChildren(title,hint);
+    }
+
+    empty.dataset.v02580r4Canonical='1';
+    return true;
+  }
+
+  function ensureR4ListParity(){
+    ensureR4ListParityCss();
+    syncListEmpty();
   }
 
   function removeIconField(){
@@ -139,6 +178,7 @@
 
   function refresh(){
     ensureR3Layout();
+    ensureR4ListParity();
     removeIconField();
     patchProductEditor();
     patchCategoryEditor();
@@ -146,11 +186,15 @@
 
   function start(){
     refresh();
+    window.addEventListener('rota27:v017-domain-updated',()=>window.setTimeout(syncListEmpty,0));
+    document.addEventListener('click',event=>{
+      if(event.target.closest?.('[data-v0252-view="list"],#navCommands'))window.setTimeout(syncListEmpty,0);
+    });
     document.addEventListener('visibilitychange',()=>{
       if(document.visibilityState==='visible')refresh();
     });
-    window.Rota27V02580ProductCategoryNoAutofocus={version:VERSION,refresh,removeIconField,ensureR3Layout};
-    console.info('[Rota27] v0.25.80-r3 — produto/categoria sem foco; Lista vazia e topbar refinadas.');
+    window.Rota27V02580ProductCategoryNoAutofocus={version:VERSION,refresh,removeIconField,ensureR3Layout,ensureR4ListParity,syncListEmpty};
+    console.info('[Rota27] v0.25.80-r4 — Lista usa o mesmo empty state canônico do Mapa; demais correções v0.25.80 preservadas.');
   }
 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
