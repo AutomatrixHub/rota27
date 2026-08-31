@@ -3,11 +3,22 @@
 Aplicativo mobile-first, offline-first e multidispositivo para controle rápido de comandas da **Rota 27 Bodega**.
 
 ## Produção
-- **Versão:** v0.25.78 — Bordas vermelhas refinadas no Cardápio
+- **Versão:** v0.25.79 — Borda vermelha real com cantos arredondados
 - **Branch:** `main`
 - **GitHub Pages:** `https://automatrixhub.github.io/rota27/`
-- **Service Worker:** `rota27-comandas-v0.25.78-r1`
-- **Baseline anterior:** v0.25.77
+- **Service Worker:** `rota27-comandas-v0.25.79-r1`
+- **Baseline anterior:** v0.25.78
+
+## v0.25.79 — Borda vermelha real com cantos arredondados
+
+A faixa vermelha interna da Opção B foi substituída por uma **borda esquerda real do próprio card**:
+- o vermelho agora acompanha o `border-radius` nos cantos superior e inferior;
+- a pseudo-faixa `::before` foi desativada;
+- a espessura permanece em 4px e o tom permanece `#da693d`;
+- o padding esquerdo foi compensado para manter o texto na mesma posição visual;
+- altura, largura, preço, botão Editar, tipografia, categoria e status permanecem inalterados.
+
+A correção é estritamente CSS e resolve a diferença de formato observada entre a proposta aprovada e a tela real.
 
 ## v0.25.78 — Bordas vermelhas refinadas no Cardápio
 
@@ -94,6 +105,7 @@ Não limpar `localStorage`, não reinstalar a PWA e não apagar dados de produç
 
 ## Documentação
 - `docs/STATUS-PRODUCAO.md`
+- `docs/RELEASE-v0.25.79.md`
 - `docs/RELEASE-v0.25.78.md`
 - `docs/RELEASE-v0.25.77.md`
 - `docs/RELEASE-v0.25.76.md`
@@ -101,4 +113,4 @@ Não limpar `localStorage`, não reinstalar a PWA e não apagar dados de produç
 - `docs/RELEASE-v0.25.74.md`
 
 ## Versão
-Produção: **0.25.78**
+Produção: **0.25.79**
