@@ -4,7 +4,7 @@
   if(window.Rota27V02589ReceivableSettlement)return;
 
   const VERSION='0.25.89';
-  const esc=value=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[ch]));
+  const esc=value=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
   const money=value=>Number(value||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
   let observer=null;
   let applying=false;
