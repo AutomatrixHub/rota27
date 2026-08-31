@@ -1,7 +1,7 @@
 /* Rota 27 — carregador incremental do roadmap pós-v0.25.46 */
 (function(){
   'use strict';
-  const CURRENT='0.25.87';
+  const CURRENT='0.25.88';
   const HELP='10.0';
   const assets=[
     {type:'js',id:'v02580ProductCategoryNoAutofocusJs',src:'./assets/v02580-product-category-no-autofocus.js?v=02580r1'},
@@ -60,7 +60,8 @@
     {type:'js',id:'v02585DeviceManagementStabilityJs',src:'./assets/v02585-device-management-stability.js?v=02585r1'},
     {type:'css',id:'v02586DeviceTelemetryCss',src:'./assets/v02586-device-telemetry.css?v=02586r1'},
     {type:'js',id:'v02586DeviceTelemetryJs',src:'./assets/v02586-device-telemetry.js?v=02586r1'},
-    {type:'js',id:'v02587AutoUpdateJs',src:'./assets/v02587-auto-update.js?v=02587r1'}
+    {type:'js',id:'v02587AutoUpdateJs',src:'./assets/v02587-auto-update.js?v=02587r1'},
+    {type:'js',id:'v02588ListEmptyVisibilityJs',src:'./assets/v02588-list-empty-visibility.js?v=02588r1'}
   ];
   function identity(){
     document.title=`Rota 27 Bodega • Comandas v${CURRENT}`;
