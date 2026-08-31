@@ -4,7 +4,7 @@
   if(window.Rota27V02589ReceivableSettlement)return;
 
   const VERSION='0.25.89';
-  const esc=value=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+  const esc=value=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[ch]));
   const money=value=>Number(value||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
   let observer=null;
   let applying=false;
@@ -58,6 +58,9 @@
     const sections=[...body.querySelectorAll('.v02512-section-title')];
     return sections.find(section=>String(section.querySelector('h4')?.textContent||'').trim()===title)||null;
   }
+  function reapplyDueDates(){
+    try{window.Rota27V02558ReceivableDue?.refresh?.();}catch{}
+  }
   function apply(){
     const body=document.getElementById('v02512ReceivablesBody');
     if(!body||!document.getElementById('v02512ReceivablesWrap')?.classList.contains('open'))return;
@@ -68,6 +71,7 @@
     const paidSection=findSection(body,'Quitadas recentemente');
     const openList=openSection?.nextElementSibling?.classList?.contains('v02512-list')?openSection.nextElementSibling:null;
     const paidList=paidSection?.nextElementSibling?.classList?.contains('v02512-list')?paidSection.nextElementSibling:null;
+    let rebuilt=false;
 
     applying=true;
     try{
@@ -76,6 +80,7 @@
         if(openList.dataset.v02589Settlement!==sig){
           openList.innerHTML=open.length?open.map(rowHtml).join(''):'<div class="v02512-empty">Nenhuma pendência em aberto.</div>';
           openList.dataset.v02589Settlement=sig;
+          rebuilt=true;
         }
       }
       if(paidSection){
@@ -87,9 +92,11 @@
         if(paidList.dataset.v02589Settlement!==sig){
           paidList.innerHTML=paid.map(rowHtml).join('');
           paidList.dataset.v02589Settlement=sig;
+          rebuilt=true;
         }
       }
     }finally{applying=false;}
+    if(rebuilt)setTimeout(reapplyDueDates,0);
   }
   function schedule(delay=50){clearTimeout(timer);timer=setTimeout(apply,delay);}
   function watch(){
