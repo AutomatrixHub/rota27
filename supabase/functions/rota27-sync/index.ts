@@ -1,7 +1,7 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
 
-const EDGE_VERSION = "rota27-sync-v0.25.12";
+const EDGE_VERSION = "rota27-sync-v0.25.85";
 const ALLOWED_TYPES = new Set([
   "state_snapshot",
   "command_opened",
@@ -24,6 +24,14 @@ const ALLOWED_TYPES = new Set([
   "inventory_upsert",
   "receivable_upsert",
   "receivable_payment",
+  "turn_closure_repair",
+]);
+
+const MANAGEMENT_ACTIONS = new Set([
+  "devices_list",
+  "device_retire",
+  "device_reactivate",
+  "device_remove",
 ]);
 
 const corsHeaders = {
@@ -84,12 +92,23 @@ Deno.serve(async (req) => {
   const deviceId = cleanText(body.deviceId, 120);
   const deviceName = cleanText(body.deviceName || "Aparelho", 80);
   const appVersion = cleanText(body.appVersion || "", 40);
-  const action = cleanText(body.action, 24);
+  const action = cleanText(body.action, 32);
   if (!deviceId) return json(400, { ok: false, error: "deviceId obrigatório." });
 
   const db = createClient(supabaseUrl, serviceRoleKey, {
     auth: { persistSession: false, autoRefreshToken: false },
   });
+
+  async function getDevice(id = deviceId) {
+    const { data, error } = await db
+      .from("rota27_sync_devices")
+      .select("store_id,device_id,device_name,app_version,first_seen_at,last_seen_at,last_cursor,status,retired_at,retired_reason")
+      .eq("store_id", storeId)
+      .eq("device_id", id)
+      .maybeSingle();
+    if (error) throw new Error(error.message);
+    return data || null;
+  }
 
   async function heartbeat(cursor = 0) {
     const row = {
@@ -129,14 +148,108 @@ Deno.serve(async (req) => {
     return Number(data?.seq || 0);
   }
 
+  async function updateTargetStatus(targetDeviceId: string, status: "active" | "retired" | "removed", reason = "") {
+    if (!targetDeviceId) return { row: null, error: "Aparelho alvo obrigatório." };
+    if (targetDeviceId === deviceId) return { row: null, error: "Este aparelho não pode ser desativado ou removido por ele mesmo." };
+
+    const patch = status === "active"
+      ? { status: "active", retired_at: null, retired_reason: null }
+      : { status, retired_at: new Date().toISOString(), retired_reason: cleanText(reason, 240) || null };
+
+    const { data, error } = await db
+      .from("rota27_sync_devices")
+      .update(patch)
+      .eq("store_id", storeId)
+      .eq("device_id", targetDeviceId)
+      .select("device_id,device_name,app_version,first_seen_at,last_seen_at,last_cursor,status,retired_at,retired_reason")
+      .maybeSingle();
+    if (error) throw new Error(error.message);
+    if (!data) return { row: null, error: "Aparelho não encontrado." };
+    return { row: data, error: "" };
+  }
+
   try {
+    const existingDevice = await getDevice(deviceId);
+    const callerStatus = cleanText(existingDevice?.status || "active", 20) || "active";
+
+    if (existingDevice && callerStatus !== "active") {
+      return json(403, {
+        ok: false,
+        code: "device_inactive",
+        deviceStatus: callerStatus,
+        error: callerStatus === "removed"
+          ? "Este aparelho foi removido da sincronização."
+          : "Este aparelho está desativado para sincronização.",
+        edgeVersion: EDGE_VERSION,
+      });
+    }
+
+    if (MANAGEMENT_ACTIONS.has(action) && !existingDevice) {
+      return json(403, {
+        ok: false,
+        code: "device_not_registered",
+        error: "Sincronize este aparelho ao menos uma vez antes de gerenciar outros dispositivos.",
+        edgeVersion: EDGE_VERSION,
+      });
+    }
+
+    if (action === "devices_list") {
+      await heartbeat(Number(body.afterSeq || 0));
+      const includeRemoved = body.includeRemoved === true;
+      let query = db
+        .from("rota27_sync_devices")
+        .select("device_id,device_name,app_version,first_seen_at,last_seen_at,last_cursor,status,retired_at,retired_reason")
+        .eq("store_id", storeId)
+        .order("last_seen_at", { ascending: false })
+        .limit(100);
+      if (!includeRemoved) query = query.neq("status", "removed");
+      const { data: devices, error } = await query;
+      if (error) throw new Error(error.message);
+      return json(200, {
+        ok: true,
+        edgeVersion: EDGE_VERSION,
+        currentDeviceId: deviceId,
+        devices: devices || [],
+      });
+    }
+
+    if (action === "device_retire") {
+      await heartbeat(Number(body.afterSeq || 0));
+      const targetDeviceId = cleanText(body.targetDeviceId, 120);
+      const result = await updateTargetStatus(targetDeviceId, "retired", cleanText(body.reason || "Desativado pelo gerenciamento de aparelhos", 240));
+      if (result.error) return json(400, { ok: false, error: result.error, edgeVersion: EDGE_VERSION });
+      return json(200, { ok: true, edgeVersion: EDGE_VERSION, device: result.row });
+    }
+
+    if (action === "device_reactivate") {
+      await heartbeat(Number(body.afterSeq || 0));
+      const targetDeviceId = cleanText(body.targetDeviceId, 120);
+      const result = await updateTargetStatus(targetDeviceId, "active");
+      if (result.error) return json(400, { ok: false, error: result.error, edgeVersion: EDGE_VERSION });
+      return json(200, { ok: true, edgeVersion: EDGE_VERSION, device: result.row });
+    }
+
+    if (action === "device_remove") {
+      await heartbeat(Number(body.afterSeq || 0));
+      const targetDeviceId = cleanText(body.targetDeviceId, 120);
+      const result = await updateTargetStatus(targetDeviceId, "removed", cleanText(body.reason || "Removido pelo gerenciamento de aparelhos", 240));
+      if (result.error) return json(400, { ok: false, error: result.error, edgeVersion: EDGE_VERSION });
+      return json(200, {
+        ok: true,
+        edgeVersion: EDGE_VERSION,
+        device: result.row,
+        eventsPreserved: true,
+      });
+    }
+
     if (action === "status") {
       await heartbeat(Number(body.afterSeq || 0));
       const [latest, snapshot] = await Promise.all([latestSeq(), latestSnapshotSeq()]);
       const { data: devices, error } = await db
         .from("rota27_sync_devices")
-        .select("device_id,device_name,app_version,last_seen_at,last_cursor")
+        .select("device_id,device_name,app_version,last_seen_at,last_cursor,status,retired_at")
         .eq("store_id", storeId)
+        .neq("status", "removed")
         .order("last_seen_at", { ascending: false })
         .limit(20);
       if (error) throw new Error(error.message);
@@ -231,7 +344,11 @@ Deno.serve(async (req) => {
       });
     }
 
-    return json(400, { ok: false, error: "Ação inválida. Use status, push ou pull." });
+    return json(400, {
+      ok: false,
+      error: "Ação inválida. Use status, push, pull ou as ações de gerenciamento de aparelhos.",
+      edgeVersion: EDGE_VERSION,
+    });
   } catch (err) {
     console.error("[rota27-sync]", err);
     return json(500, {
