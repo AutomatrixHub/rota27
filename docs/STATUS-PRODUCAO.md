@@ -3,21 +3,30 @@
 Última revisão: 30/08/2026
 
 ## Produção
-- versão: **v0.25.77 — Cardápio sem ícones + cards Opção B**;
+- versão: **v0.25.78 — Bordas vermelhas refinadas no Cardápio**;
 - branch: `main`;
 - GitHub Pages: `https://automatrixhub.github.io/rota27/`;
-- Service Worker: `rota27-comandas-v0.25.77-r1`;
-- baseline anterior: **v0.25.76**, PR #112, merge `a45c7772716a4f7434fd1a3b8ad413f259fd2d85`.
+- Service Worker: `rota27-comandas-v0.25.78-r1`;
+- baseline anterior: **v0.25.77**, PR #113, merge `e7bba0fc7a91bfe6de08e9fbb53aaaad56ec6522`.
+
+## Refinamento visual do Cardápio — v0.25.78
+Após comparação direta entre a proposta visual aprovada e a tela v0.25.77 em produção:
+- o acento vertical dos cards passa de gradiente alaranjado para vermelho-terra sólido `#da693d`;
+- o contorno do botão **Editar** passa a usar a mesma referência `#da693d`;
+- o layout Opção B permanece inalterado;
+- dimensões, altura, nome, preço, categoria, status e responsividade permanecem iguais à v0.25.77.
+
+A correção é exclusivamente CSS, sem JavaScript novo e sem alteração funcional.
 
 ## Cardápio — Opção B aprovada — v0.25.77
 A lista administrativa de produtos foi redesenhada sem alterar a lógica do Cardápio:
 - ícones dos produtos ocultados integralmente na tela **Cardápio**;
 - cada card passa de três colunas para duas áreas: conteúdo à esquerda e preço/ação à direita;
-- barra vertical laranja de 4px cria o destaque visual aprovado sem desperdiçar largura;
+- barra vertical de destaque cria a hierarquia visual aprovada sem desperdiçar largura;
 - nome permanece como elemento principal;
 - categoria e status permanecem na segunda linha;
 - preço recebe pill suave terracota;
-- botão **Editar** fica contornado em laranja, abaixo do preço;
+- botão **Editar** fica abaixo do preço;
 - cards mantêm altura compacta e responsividade em telas estreitas;
 - produtos inativos preservam diferenciação visual própria.
 
@@ -100,7 +109,7 @@ A v0.25.73 permanece ativa:
 - `rota27-whatsapp-inbound`: v4 ACTIVE;
 - `rota27-birthday-campaign`: v3 ACTIVE.
 
-A v0.25.77 **não altera Edge Functions**, schemas ou tabelas. É uma release estritamente de UI/CSS do Cardápio.
+A v0.25.78 **não altera Edge Functions**, schemas ou tabelas. É uma release estritamente de UI/CSS do Cardápio.
 
 ## Preservação
 - nenhuma migration;
@@ -111,9 +120,9 @@ A v0.25.77 **não altera Edge Functions**, schemas ou tabelas. É uma release es
 - sem polling contínuo e sem `MutationObserver` novo.
 
 ## Atualização PWA
-- shell declara `rota27-release-version=0.25.77`;
-- `v02577-menu-option-b.css` é carregado diretamente pelo shell e pelo roadmap loader;
-- cache `rota27-comandas-v0.25.77-r1`;
+- shell declara `rota27-release-version=0.25.78`;
+- `v02577-menu-option-b.css` é carregado com revisão `02578r1` pelo shell e pelo roadmap loader;
+- cache `rota27-comandas-v0.25.78-r1`;
 - não limpar `localStorage` de produção.
 
 ## Regras de operação
@@ -123,4 +132,4 @@ A v0.25.77 **não altera Edge Functions**, schemas ou tabelas. É uma release es
 - mudanças usam branch curta + PR + merge + confirmação do Pages.
 
 ## Rollback
-Baseline anterior: **v0.25.76** / PR #112 / merge `a45c7772716a4f7434fd1a3b8ad413f259fd2d85`.
+Baseline anterior: **v0.25.77** / PR #113 / merge `e7bba0fc7a91bfe6de08e9fbb53aaaad56ec6522`.
