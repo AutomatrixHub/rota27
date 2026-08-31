@@ -4,12 +4,11 @@
   if(window.Rota27V02576EditNoAutofocus)return;
 
   const VERSION='0.25.76';
-  let baseOpen=null;
-
+  const GUARD_MS=240;
   const byId=id=>document.getElementById(id);
 
   function editScope(){
-    const field=byId('editCustomer')||byId('editWhatsapp')||byId('editBirthDate');
+    const field=byId('editTable')||byId('editCustomer')||byId('editWhatsapp')||byId('editBirthDate');
     return field?.closest?.('.sheet-wrap')||field?.closest?.('.sheet')||null;
   }
 
@@ -36,14 +35,40 @@
   function patchOpenEditCommand(){
     const current=window.openEditCommandSheet;
     if(typeof current!=='function'||current.__v02576NoAutofocus)return;
-    baseOpen=current;
+
+    const base=current;
     const patched=function(){
-      const result=baseOpen.apply(this,arguments);
-      neutralizeInitialFocus();
+      const proto=window.HTMLElement?.prototype;
+      const nativeFocus=proto?.focus;
+      let guardedFocus=null;
+
+      removeAutofocus();
+
+      if(proto&&typeof nativeFocus==='function'){
+        guardedFocus=function(){
+          const wrap=byId('editCommandWrap');
+          if(this?.id==='editTable'&&wrap?.classList?.contains('open'))return;
+          return nativeFocus.apply(this,arguments);
+        };
+        try{proto.focus=guardedFocus;}catch{}
+      }
+
+      let result;
+      try{
+        result=base.apply(this,arguments);
+        neutralizeInitialFocus();
+      }finally{
+        if(proto&&guardedFocus){
+          window.setTimeout(()=>{
+            try{if(proto.focus===guardedFocus)proto.focus=nativeFocus;}catch{}
+          },GUARD_MS);
+        }
+      }
       return result;
     };
+
     patched.__v02576NoAutofocus=true;
-    patched.__v02576Base=baseOpen;
+    patched.__v02576Base=base;
     try{window.openEditCommandSheet=patched;}catch{}
     try{openEditCommandSheet=patched;}catch{}
   }
@@ -59,7 +84,7 @@
       if(document.visibilityState==='visible')refresh();
     });
     window.Rota27V02576EditNoAutofocus={version:VERSION,refresh,neutralizeInitialFocus};
-    console.info('[Rota27] v0.25.76 — Editar comanda sem foco automático.');
+    console.info('[Rota27] v0.25.76 — foco automático tardio da edição bloqueado na origem.');
   }
 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
