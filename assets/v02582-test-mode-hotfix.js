@@ -53,10 +53,9 @@
   function repairQueue(){
     if(!active())return false;
     try{if(typeof window.renderCommands==='function')window.renderCommands();}catch(err){console.warn('[Rota27 v0.25.82] renderCommands legado:',err);}
-    const expected=commands().length;
-    const list=byId('commandList');
-    const rendered=list?list.querySelectorAll('.command-card').length:0;
-    if(expected!==rendered||expected&&rendered===0)renderQueueFromState();
+    /* No sandbox, a Fila é reconstruída diretamente do state.commands para não
+       depender de DOM/cache deixado pela cadeia antiga Lista/Mapa. */
+    renderQueueFromState();
     try{window.Rota27V0252?.renderMap?.();}catch{}
     return true;
   }
