@@ -1,0 +1,39 @@
+/* Rota 27 v0.25.82 — hotfix de rolagem do Modo Teste */
+html.v02582-test-scroll,
+html.v02582-test-scroll body{
+  height:auto!important;
+  min-height:100%!important;
+  overflow-x:hidden!important;
+  overflow-y:auto!important;
+  overscroll-behavior-y:auto;
+  -webkit-overflow-scrolling:touch;
+}
+html.v02582-test-scroll body{
+  touch-action:pan-y!important;
+}
+html.v02582-test-scroll body.v02581-test-mode .app,
+html.v02582-test-scroll body.v02581-test-mode main,
+html.v02582-test-scroll body.v02581-test-mode .screen.active{
+  height:auto!important;
+  max-height:none!important;
+  overflow:visible!important;
+  touch-action:pan-y!important;
+}
+html.v02582-test-scroll body.v02581-test-mode .sheet-wrap.open{
+  touch-action:pan-y!important;
+  overscroll-behavior:contain;
+}
+html.v02582-test-scroll body.v02581-test-mode .sheet{
+  overflow-x:hidden!important;
+  overflow-y:auto!important;
+  overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch;
+  touch-action:pan-y!important;
+}
+html.v02582-test-scroll body.v02581-test-mode #r27HelpOverlay.open .r27-help-content,
+html.v02582-test-scroll body.v02581-test-mode #r27HelpOverlay.open .r27-help-panel,
+html.v02582-test-scroll body.v02581-test-mode #r27HelpOverlay.open .r27-help-sheet{
+  overflow-y:auto!important;
+  -webkit-overflow-scrolling:touch;
+  touch-action:pan-y!important;
+}
