@@ -3,11 +3,25 @@
 Última revisão: 30/08/2026
 
 ## Produção
-- versão: **v0.25.78 — Bordas vermelhas refinadas no Cardápio**;
+- versão: **v0.25.79 — Borda vermelha real com cantos arredondados**;
 - branch: `main`;
 - GitHub Pages: `https://automatrixhub.github.io/rota27/`;
-- Service Worker: `rota27-comandas-v0.25.78-r1`;
-- baseline anterior: **v0.25.77**, PR #113, merge `e7bba0fc7a91bfe6de08e9fbb53aaaad56ec6522`.
+- Service Worker: `rota27-comandas-v0.25.79-r1`;
+- baseline anterior: **v0.25.78**, PR #114, merge `e181f6cb4ef22fc3ce7993619524bb4516e7e68c`.
+
+## Borda vermelha arredondada do Cardápio — v0.25.79
+A comparação visual mostrou que a v0.25.78 acertou o tom, mas não o formato do acento vermelho. A causa era estrutural: o vermelho ainda era desenhado como pseudo-elemento interno `::before`, uma faixa retangular recortada pelo card.
+
+A v0.25.79 corrige a causa:
+- remove a pseudo-faixa `::before`;
+- transforma o acento em `border-left: 4px solid #da693d` do próprio `.menu-item`;
+- como a borda faz parte do card, ela acompanha naturalmente o `border-radius: 15px` nos cantos superior e inferior;
+- o padding esquerdo é reduzido na mesma proporção para preservar a posição visual dos textos;
+- `box-sizing:border-box` mantém a dimensão externa dos cards;
+- em telas até 390px, o mesmo ajuste proporcional é aplicado;
+- produtos inativos usam a mesma estrutura, com borda esquerda cinza.
+
+A correção é exclusivamente CSS. Altura, largura, preço, botão **Editar**, tipografia, categoria, status e responsividade permanecem iguais à v0.25.78.
 
 ## Refinamento visual do Cardápio — v0.25.78
 Após comparação direta entre a proposta visual aprovada e a tela v0.25.77 em produção:
@@ -109,7 +123,7 @@ A v0.25.73 permanece ativa:
 - `rota27-whatsapp-inbound`: v4 ACTIVE;
 - `rota27-birthday-campaign`: v3 ACTIVE.
 
-A v0.25.78 **não altera Edge Functions**, schemas ou tabelas. É uma release estritamente de UI/CSS do Cardápio.
+A v0.25.79 **não altera Edge Functions**, schemas ou tabelas. É uma release estritamente de UI/CSS do Cardápio.
 
 ## Preservação
 - nenhuma migration;
@@ -120,9 +134,9 @@ A v0.25.78 **não altera Edge Functions**, schemas ou tabelas. É uma release es
 - sem polling contínuo e sem `MutationObserver` novo.
 
 ## Atualização PWA
-- shell declara `rota27-release-version=0.25.78`;
-- `v02577-menu-option-b.css` é carregado com revisão `02578r1` pelo shell e pelo roadmap loader;
-- cache `rota27-comandas-v0.25.78-r1`;
+- shell declara `rota27-release-version=0.25.79`;
+- `v02577-menu-option-b.css` é carregado com revisão `02579r1` pelo shell e pelo roadmap loader;
+- cache `rota27-comandas-v0.25.79-r1`;
 - não limpar `localStorage` de produção.
 
 ## Regras de operação
@@ -132,4 +146,4 @@ A v0.25.78 **não altera Edge Functions**, schemas ou tabelas. É uma release es
 - mudanças usam branch curta + PR + merge + confirmação do Pages.
 
 ## Rollback
-Baseline anterior: **v0.25.77** / PR #113 / merge `e7bba0fc7a91bfe6de08e9fbb53aaaad56ec6522`.
+Baseline anterior: **v0.25.78** / PR #114 / merge `e181f6cb4ef22fc3ce7993619524bb4516e7e68c`.
