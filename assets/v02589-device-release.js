@@ -11,6 +11,7 @@
   let observer=null;
   let timer=null;
   let applying=false;
+  let currentDeviceId='';
   let deviceMap=new Map();
 
   function inTestMode(){return document.body.classList.contains('v02581-test-mode');}
@@ -71,6 +72,23 @@
     const r=new Date(req).getTime(),a=ack?new Date(ack).getTime():0;
     return Number.isFinite(r)&&r>a;
   }
+  function isStalePending(device){
+    const requested=clean(device?.requested_update_version,40);
+    return pending(device?.requested_update_at,device?.update_request_ack_at)&&requested&&compareVersion(requested,currentRelease())<0;
+  }
+  async function promoteStalePendingRequests(devices){
+    const stale=(Array.isArray(devices)?devices:[]).filter(device=>{
+      const id=clean(device?.device_id,120);
+      return id&&id!==currentDeviceId&&clean(device?.status||'active',20)==='active'&&isStalePending(device);
+    });
+    for(const device of stale){
+      const id=clean(device.device_id,120);
+      try{
+        const result=await controlApi('request_update',{targetDeviceId:id,targetVersion:currentRelease()});
+        if(result?.device)deviceMap.set(id,result.device);
+      }catch(err){console.warn('[Rota27 v0.25.89] atualização de pedido antigo:',id,err?.message||err);}
+    }
+  }
   function applyRows(){
     const list=document.getElementById('v02585DeviceList');if(!list)return;
     applying=true;
@@ -116,7 +134,10 @@
     busy=true;
     try{
       const data=await controlApi('list',{includeRemoved:document.getElementById('v02585ShowRemoved')?.checked===true});
-      deviceMap=new Map((Array.isArray(data?.devices)?data.devices:[]).map(device=>[clean(device?.device_id,120),device]));
+      currentDeviceId=clean(data?.currentDeviceId,120);
+      const devices=Array.isArray(data?.devices)?data.devices:[];
+      deviceMap=new Map(devices.map(device=>[clean(device?.device_id,120),device]));
+      await promoteStalePendingRequests(devices);
       applyRows();
     }catch(err){console.warn('[Rota27 v0.25.89] release UI:',err?.message||err);}
     finally{busy=false;}
