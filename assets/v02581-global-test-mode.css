@@ -117,8 +117,12 @@ body.v02581-test-mode .v0256-map-command-card::before{
   color:#fff;
 }
 
-/* O modo demonstração antigo da Visão Gerencial é substituído pelo modo global. */
-#v020DemoMode{display:none!important}
+/*
+ * O Modo Teste Global substitui integralmente os modos de demonstração
+ * legados da Visão Gerencial. A regra é global: vale com dados reais e teste.
+ */
+#v020DemoMode,
+#v022DemoBox{display:none!important}
 
 @media(max-width:420px){
   #v02581TestBadge{
