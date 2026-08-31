@@ -32,9 +32,7 @@
   const clean=(v,max=180)=>String(v??'').replace(/[\u0000-\u001f\u007f]/g,' ').trim().replace(/\s+/g,' ').slice(0,max);
   const round2=v=>Math.round(Number(v||0)*100)/100;
   const localDateKey=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-  const uid=(prefix,n)=>`${prefix}_${String(n).replace(/[^a-z0-9_-]/gi,'_')}`;
   const realGet=key=>nativeStorage.get?nativeStorage.get.call(localStorage,String(key)):null;
-  const realSet=(key,value)=>nativeStorage.set?.call(localStorage,String(key),String(value));
 
   function toast(message){
     try{if(typeof showToast==='function')showToast(message,false);else console.info('[Rota27]',message);}catch{}
@@ -181,7 +179,7 @@
     const now=new Date();now.setHours(12,0,0,0);
     const payments=['Pix','Crédito','Débito','Dinheiro'];
     let seq=1;
-    for(let offset=-39;offset<=0;offset++){
+    for(let offset=-40;offset<=-1;offset++){
       const d=new Date(now);d.setDate(d.getDate()+offset);
       if(d.getDay()===0)continue;
       const friday=d.getDay()===5,saturday=d.getDay()===6;
