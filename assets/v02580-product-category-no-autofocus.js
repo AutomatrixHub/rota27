@@ -1,9 +1,9 @@
-/* Rota 27 v0.25.80 — Editar produto/categoria sem foco + campo Ícone removido */
+/* Rota 27 v0.25.80-r2 — Produto/categoria sem foco automático + campo Ícone removido */
 (function(){
   'use strict';
   if(window.Rota27V02580ProductCategoryNoAutofocus)return;
 
-  const VERSION='0.25.80';
+  const VERSION='0.25.80-r2';
   const GUARD_MS=220;
   const byId=id=>document.getElementById(id);
 
@@ -90,29 +90,27 @@
 
   function patchProductEditor(){
     const current=window.openMenuItemSheet;
-    if(typeof current!=='function'||current.__v02580NoAutofocus)return;
+    if(typeof current!=='function'||current.__v02580r2NoAutofocus)return;
     const base=current;
-    const patched=function(id=''){
+    const patched=function(){
       removeIconField();
-      if(!String(id||'').trim())return base.apply(this,arguments);
       return guardedOpen.call(this,base,arguments,'menuItemWrap',['menuItemName']);
     };
-    patched.__v02580NoAutofocus=true;
-    patched.__v02580Base=base;
+    patched.__v02580r2NoAutofocus=true;
+    patched.__v02580r2Base=base;
     try{window.openMenuItemSheet=patched;}catch{}
     try{openMenuItemSheet=patched;}catch{}
   }
 
   function patchCategoryEditor(){
     const current=window.openCategorySheet;
-    if(typeof current!=='function'||current.__v02580NoAutofocus)return;
+    if(typeof current!=='function'||current.__v02580r2NoAutofocus)return;
     const base=current;
-    const patched=function(mode='new'){
-      if(mode!=='edit')return base.apply(this,arguments);
+    const patched=function(){
       return guardedOpen.call(this,base,arguments,'categoryWrap',['categoryName']);
     };
-    patched.__v02580NoAutofocus=true;
-    patched.__v02580Base=base;
+    patched.__v02580r2NoAutofocus=true;
+    patched.__v02580r2Base=base;
     try{window.openCategorySheet=patched;}catch{}
     try{openCategorySheet=patched;}catch{}
   }
@@ -129,7 +127,7 @@
       if(document.visibilityState==='visible')refresh();
     });
     window.Rota27V02580ProductCategoryNoAutofocus={version:VERSION,refresh,removeIconField};
-    console.info('[Rota27] v0.25.80 — edição de produto/categoria sem foco automático; campo Ícone removido da UI.');
+    console.info('[Rota27] v0.25.80-r2 — novo/editar produto e nova/editar categoria abrem sem foco automático; campo Ícone permanece removido.');
   }
 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
