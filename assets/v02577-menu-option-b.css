@@ -1,11 +1,11 @@
-/* Rota 27 v0.25.77 — Cardápio Opção B aprovada */
+/* Rota 27 v0.25.78 — Cardápio Opção B, acentos vermelhos refinados */
 
 /*
  * Direção aprovada:
  * - remove integralmente os ícones dos produtos na tela Cardápio;
  * - reorganiza cada card em conteúdo + preço/ação;
- * - cria acento lateral laranja, preço em pill suave e botão Editar contornado;
- * - mantém categoria e estado do produto legíveis sem aumentar a altura.
+ * - mantém a Opção B da v0.25.77;
+ * - refina os acentos para o vermelho-terra da proposta visual aprovada.
  */
 html body #screenMenu .menu-list{
   gap:8px!important;
@@ -34,7 +34,7 @@ html body #screenMenu .menu-item::before{
   top:0!important;
   bottom:0!important;
   width:4px!important;
-  background:linear-gradient(180deg,#df6d34,#e98246)!important;
+  background:#da693d!important;
 }
 
 /* Nenhum ícone de produto permanece visível no Cardápio. */
@@ -112,7 +112,7 @@ html body #screenMenu .menu-edit{
   width:100%!important;
   min-height:32px!important;
   padding:0 10px!important;
-  border:1.5px solid #d96b36!important;
+  border:1.5px solid #da693d!important;
   border-radius:10px!important;
   background:#fffaf5!important;
   color:#b95025!important;
