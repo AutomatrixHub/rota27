@@ -1,7 +1,7 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
 
-const EDGE_VERSION = "rota27-device-control-v0.25.86";
+const EDGE_VERSION = "rota27-device-control-v0.25.87";
 const corsHeaders = {
   "access-control-allow-origin": "*",
   "access-control-allow-headers": "content-type, x-rota27-device-token",
@@ -61,7 +61,7 @@ Deno.serve(async (req) => {
   if (!deviceId) return json(400, { ok: false, error: "deviceId obrigatório." });
 
   const db = createClient(supabaseUrl, serviceRoleKey, { auth: { persistSession: false, autoRefreshToken: false } });
-  const deviceFields = "device_id,device_name,app_version,first_seen_at,last_seen_at,last_cursor,status,retired_at,retired_reason,whatsapp_configured,whatsapp_pending_count,whatsapp_failed_count,whatsapp_last_error,whatsapp_telemetry_at,requested_sync_at,sync_request_ack_at,requested_diagnostic_at,diagnostic_request_ack_at";
+  const deviceFields = "device_id,device_name,app_version,first_seen_at,last_seen_at,last_cursor,status,retired_at,retired_reason,whatsapp_configured,whatsapp_pending_count,whatsapp_failed_count,whatsapp_last_error,whatsapp_telemetry_at,requested_sync_at,sync_request_ack_at,requested_diagnostic_at,diagnostic_request_ack_at,requested_update_at,requested_update_version,update_request_ack_at";
 
   async function getDevice(id: string) {
     const { data, error } = await db.from("rota27_sync_devices").select(deviceFields).eq("store_id", storeId).eq("device_id", id).maybeSingle();
@@ -94,8 +94,10 @@ Deno.serve(async (req) => {
 
       const ackSyncRequestAt = cleanText(body.ackSyncRequestAt, 80);
       const ackDiagnosticRequestAt = cleanText(body.ackDiagnosticRequestAt, 80);
+      const ackUpdateRequestAt = cleanText(body.ackUpdateRequestAt, 80);
       if (ackSyncRequestAt && caller.requested_sync_at && new Date(ackSyncRequestAt).getTime() === new Date(String(caller.requested_sync_at)).getTime()) patch.sync_request_ack_at = now;
       if (ackDiagnosticRequestAt && caller.requested_diagnostic_at && new Date(ackDiagnosticRequestAt).getTime() === new Date(String(caller.requested_diagnostic_at)).getTime()) patch.diagnostic_request_ack_at = now;
+      if (ackUpdateRequestAt && caller.requested_update_at && new Date(ackUpdateRequestAt).getTime() === new Date(String(caller.requested_update_at)).getTime()) patch.update_request_ack_at = now;
 
       const { data: updated, error } = await db.from("rota27_sync_devices").update(patch).eq("store_id", storeId).eq("device_id", deviceId).select(deviceFields).maybeSingle();
       if (error) throw new Error(error.message);
@@ -104,6 +106,8 @@ Deno.serve(async (req) => {
         edgeVersion: EDGE_VERSION,
         requestedSyncAt: pending(updated?.requested_sync_at, updated?.sync_request_ack_at) ? updated?.requested_sync_at : null,
         requestedDiagnosticAt: pending(updated?.requested_diagnostic_at, updated?.diagnostic_request_ack_at) ? updated?.requested_diagnostic_at : null,
+        requestedUpdateAt: pending(updated?.requested_update_at, updated?.update_request_ack_at) ? updated?.requested_update_at : null,
+        requestedUpdateVersion: pending(updated?.requested_update_at, updated?.update_request_ack_at) ? updated?.requested_update_version : null,
       });
     }
 
@@ -116,20 +120,27 @@ Deno.serve(async (req) => {
       return json(200, { ok: true, edgeVersion: EDGE_VERSION, currentDeviceId: deviceId, devices: data || [] });
     }
 
-    if (action === "request_sync" || action === "request_diagnostic") {
+    if (action === "request_sync" || action === "request_diagnostic" || action === "request_update") {
       const targetDeviceId = cleanText(body.targetDeviceId, 120);
       if (!targetDeviceId) return json(400, { ok: false, error: "Aparelho alvo obrigatório.", edgeVersion: EDGE_VERSION });
       const target = await getDevice(targetDeviceId);
       if (!target) return json(404, { ok: false, error: "Aparelho não encontrado.", edgeVersion: EDGE_VERSION });
       if (cleanText(target.status || "active", 20) !== "active") return json(409, { ok: false, error: "Apenas aparelhos ativos podem receber solicitações remotas.", edgeVersion: EDGE_VERSION });
       const now = new Date().toISOString();
-      const patch = action === "request_sync" ? { requested_sync_at: now } : { requested_diagnostic_at: now };
+      let patch: Record<string, unknown>;
+      if (action === "request_sync") patch = { requested_sync_at: now };
+      else if (action === "request_diagnostic") patch = { requested_diagnostic_at: now };
+      else patch = {
+        requested_update_at: now,
+        requested_update_version: cleanText(body.targetVersion || appVersion || "", 40) || null,
+        update_request_ack_at: null,
+      };
       const { data, error } = await db.from("rota27_sync_devices").update(patch).eq("store_id", storeId).eq("device_id", targetDeviceId).select(deviceFields).maybeSingle();
       if (error) throw new Error(error.message);
       return json(200, { ok: true, edgeVersion: EDGE_VERSION, device: data });
     }
 
-    return json(400, { ok: false, error: "Ação inválida. Use agent, list, request_sync ou request_diagnostic.", edgeVersion: EDGE_VERSION });
+    return json(400, { ok: false, error: "Ação inválida. Use agent, list, request_sync, request_diagnostic ou request_update.", edgeVersion: EDGE_VERSION });
   } catch (err) {
     console.error("[rota27-device-control]", err);
     return json(500, { ok: false, error: err instanceof Error ? err.message : "Falha interna.", edgeVersion: EDGE_VERSION });
