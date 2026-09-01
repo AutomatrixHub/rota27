@@ -1,4 +1,4 @@
-/* Rota 27 v0.25.92 — FAB Nova comanda somente em Comandas + padrão global de fechar X */
+/* Rota 27 v0.25.101 — guarda CSS do FAB + padrão global de fechar X */
 /*
  * Guarda declarativa contra regressões de camadas legadas que tentem
  * reexibir #fabNew em Painel, Cardápio, Histórico ou outras telas.

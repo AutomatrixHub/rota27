@@ -20,6 +20,12 @@
 - validada em viewport móvel sem cache anterior: TOPBAR, Ajuda, Lista/Mapa e Nova comanda;
 - GitHub Pages publicado com `VERSION` 0.25.100 e asset removido respondendo 404.
 
+## Candidata — v0.25.101
+- corrige em `v015-dev4.js` a origem que reexibia o FAB no Painel;
+- remove da camada v0.25.92 o wrapper de `showScreen()` e a sincronização compensatória do FAB;
+- preserva a regra CSS defensiva e a responsabilidade de padronizar botões de fechar;
+- sem alterações em dados, Supabase, sincronização ou regras operacionais.
+
 ## Produção homologada — v0.25.99
 - promovida pelo PR #144, merge `975b0b254aa0c922bd2d274c333f353602064f45`;
 - adiciona `text-align:center` diretamente ao componente canônico `#commandsEmpty.commands-empty-list`;
