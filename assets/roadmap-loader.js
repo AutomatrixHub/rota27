@@ -1,7 +1,7 @@
 /* Rota 27 — carregador incremental do roadmap pós-v0.25.46 */
 (function(){
   'use strict';
-  const CURRENT='0.25.97';
+  const CURRENT='0.25.98';
   const HELP='11.0';
   const assets=[
     {type:'js',id:'v02580ProductCategoryNoAutofocusJs',src:'./assets/v02580-product-category-no-autofocus.js?v=02580r1'},
@@ -63,7 +63,7 @@
     {type:'js',id:'v02586DeviceTelemetryJs',src:'./assets/v02586-device-telemetry.js?v=02586r1'},
     {type:'js',id:'v02590UpdateCoordinatorJs',src:'./assets/v02590-update-coordinator.js?v=02590r1'},
     {type:'js',id:'v02587AutoUpdateJs',src:'./assets/v02587-auto-update.js?v=02587r1'},
-    {type:'js',id:'v02588ListEmptyVisibilityJs',src:'./assets/v02588-list-empty-visibility.js?v=02588r1'},
+    {type:'js',id:'v02598CommandEmptyStateJs',src:'./assets/v02598-command-empty-state.js?v=02598r1'},
     {type:'js',id:'v02589DeviceReleaseJs',src:'./assets/v02589-device-release.js?v=02589r1'},
     {type:'js',id:'v02589ReceivableSettlementJs',src:'./assets/v02589-receivable-settlement.js?v=02589r1'},
     {type:'js',id:'v02590DeviceClarityJs',src:'./assets/v02590-device-clarity.js?v=02590r1'},

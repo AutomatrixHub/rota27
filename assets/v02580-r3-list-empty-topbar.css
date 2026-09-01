@@ -1,36 +1,5 @@
 /* Rota 27 v0.25.80-r3 — Lista vazia em paridade com Mapa + topbar compacta */
 
-/* Lista: usa a mesma linguagem visual do estado vazio do Mapa. */
-#screenCommands[data-v0252-view="list"] #commandsEmpty{
-  border:1px dashed var(--line)!important;
-  border-radius:16px!important;
-  background:rgba(255,255,255,.35)!important;
-  padding:25px 18px!important;
-  margin:0 0 10px!important;
-  text-align:center!important;
-  box-shadow:none!important;
-  font-size:0!important;
-  line-height:1!important;
-  color:transparent!important;
-}
-#screenCommands[data-v0252-view="list"] #commandsEmpty::before{
-  content:"Nenhuma comanda aberta";
-  display:block;
-  font-size:14px;
-  line-height:1.25;
-  font-weight:800;
-  color:var(--ink);
-}
-#screenCommands[data-v0252-view="list"] #commandsEmpty::after{
-  content:"Use um dos atalhos acima para abrir a primeira.";
-  display:block;
-  margin-top:5px;
-  font-size:11px;
-  line-height:1.35;
-  font-weight:400;
-  color:var(--muted);
-}
-
 /* Topbar: logo no alto à esquerda, Ajuda no alto à direita e versão embaixo à direita. */
 .topbar{
   padding:calc(4px + env(safe-area-inset-top)) 7px 5px!important;

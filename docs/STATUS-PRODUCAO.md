@@ -9,6 +9,14 @@
 - Service Worker: `rota27-comandas-v0.25.97-r1`;
 - baseline anterior: **v0.25.96**, merge `8b382bff82d103a257cd0b34ecb2c71ca0df93c2`.
 
+## Candidata em homologação — v0.25.98
+- produção permanece em v0.25.97;
+- o shell passa a conter diretamente o estado vazio aprovado da Lista;
+- Lista e Mapa passam a controlar apenas seus próprios estados vazios;
+- removidos `v02580-r4-list-empty-parity.css` e `v02588-list-empty-visibility.js`;
+- removida da v0.25.80 a reconstrução tardia do componente;
+- sem alterações em dados, Supabase, Edge Functions, WhatsApp ou regras operacionais.
+
 ## Produção homologada — v0.25.97
 - promovida pelo PR #140, merge `e26a14274808425507da784527e47607f8171e1f`;
 - corrige a exibição transitória da Topbar legada;
