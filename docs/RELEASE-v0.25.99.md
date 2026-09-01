@@ -1,7 +1,7 @@
 # Rota 27 v0.25.99 — centralização do estado vazio da Lista
 
 ## Estado
-Candidata para homologação. Produção permanece em v0.25.98.
+Produção homologada no Android e promovida pelo PR #144.
 
 ## Correção
 O componente canônico introduzido na v0.25.98 deixou de usar a classe legada `.empty`. Com isso, deixou também de herdar o alinhamento central daquela classe.

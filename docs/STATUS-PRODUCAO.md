@@ -3,17 +3,18 @@
 Última revisão: 31/08/2026
 
 ## Produção
-- versão: **v0.25.98 — estado vazio canônico**;
+- versão: **v0.25.99 — estado vazio centralizado**;
 - branch: `main`;
 - GitHub Pages: `https://automatrixhub.github.io/rota27/`;
-- Service Worker: `rota27-comandas-v0.25.98-r1`;
-- baseline anterior: **v0.25.97**, merge `e26a14274808425507da784527e47607f8171e1f`.
+- Service Worker: `rota27-comandas-v0.25.99-r1`;
+- baseline anterior: **v0.25.98**, merge `751a5e263218608b207356383f2bdae3cfd6061d`.
 
-## Candidata em homologação — v0.25.99
-- produção permanece em v0.25.98;
+## Produção homologada — v0.25.99
+- promovida pelo PR #144, merge `975b0b2`;
 - adiciona `text-align:center` diretamente ao componente canônico `#commandsEmpty.commands-empty-list`;
 - nenhum asset ou wrapper novo;
 - sem alterações em dados, regras operacionais ou integrações.
+- homologada no Android com Lista e Mapa aprovados.
 
 ## Produção homologada — v0.25.98
 - promovida pelo PR #142, merge `751a5e263218608b207356383f2bdae3cfd6061d`;
