@@ -1,6 +1,6 @@
 # Rota 27 — Status de produção
 
-Última revisão: 31/08/2026
+Última revisão: 01/09/2026
 
 ## Produção
 - versão: **v0.25.99 — estado vazio centralizado**;
@@ -8,6 +8,14 @@
 - GitHub Pages: `https://automatrixhub.github.io/rota27/`;
 - Service Worker: `rota27-comandas-v0.25.99-r1`;
 - baseline anterior: **v0.25.98**, merge `751a5e263218608b207356383f2bdae3cfd6061d`.
+
+## Candidata — v0.25.100
+- TOPBAR completa incorporada diretamente ao HTML inicial;
+- removido o bloqueio de visibilidade que aguardava JavaScript;
+- removidas a transformação tardia do subtítulo e a carga dinâmica de CSS;
+- removido o asset redundante `v02580-r3-list-empty-topbar.css` e sua dependência no App Shell;
+- preservado o acionamento da Ajuda para o botão que agora nasce no HTML;
+- sem alterações em dados, Supabase, regras operacionais ou sincronização.
 
 ## Produção homologada — v0.25.99
 - promovida pelo PR #144, merge `975b0b254aa0c922bd2d274c333f353602064f45`;

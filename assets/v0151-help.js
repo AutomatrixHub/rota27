@@ -675,18 +675,22 @@
   }
 
   function createButton(){
-    if(document.getElementById(BUTTON_ID))return;
-    const brand=document.querySelector('.brand');
-    if(!brand)return;
-    const button=document.createElement('button');
-    button.id=BUTTON_ID;
-    button.type='button';
-    button.className='r27-help-button';
-    button.setAttribute('aria-label','Abrir ajuda do Rota 27');
-    button.setAttribute('title','Ajuda');
-    button.innerHTML='<span aria-hidden="true">?</span><small>Ajuda</small>';
+    let button=document.getElementById(BUTTON_ID);
+    if(!button){
+      const brand=document.querySelector('.brand');
+      if(!brand)return;
+      button=document.createElement('button');
+      button.id=BUTTON_ID;
+      button.type='button';
+      button.className='r27-help-button';
+      button.setAttribute('aria-label','Abrir ajuda do Rota 27');
+      button.setAttribute('title','Ajuda');
+      button.innerHTML='<span aria-hidden="true">?</span><small>Ajuda</small>';
+      brand.appendChild(button);
+    }
+    if(button.dataset.r27HelpBound==='1')return;
+    button.dataset.r27HelpBound='1';
     button.addEventListener('click',openHelp);
-    brand.appendChild(button);
   }
 
   function openHelp(){
