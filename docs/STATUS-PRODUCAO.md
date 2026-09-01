@@ -9,6 +9,12 @@
 - Service Worker: `rota27-comandas-v0.25.98-r1`;
 - baseline anterior: **v0.25.97**, merge `e26a14274808425507da784527e47607f8171e1f`.
 
+## Candidata em homologação — v0.25.99
+- produção permanece em v0.25.98;
+- adiciona `text-align:center` diretamente ao componente canônico `#commandsEmpty.commands-empty-list`;
+- nenhum asset ou wrapper novo;
+- sem alterações em dados, regras operacionais ou integrações.
+
 ## Produção homologada — v0.25.98
 - promovida pelo PR #142, merge `751a5e263218608b207356383f2bdae3cfd6061d`;
 - o shell passa a conter diretamente o estado vazio aprovado da Lista;
