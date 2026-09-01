@@ -64,6 +64,13 @@
   .empty .icon{font-size:38px}
   .empty h3{margin:12px 0 6px}
   .empty p{margin:0 0 18px;color:var(--muted)}
+  #commandsEmpty.commands-empty-list{
+    min-height:0;height:auto;margin:0 0 10px;padding:25px 18px;
+    border:1px dashed var(--line);border-radius:16px;background:rgba(255,249,240,.55);
+    box-shadow:none;color:var(--ink);font-size:inherit;line-height:normal
+  }
+  #commandsEmpty.commands-empty-list>strong{display:block;font-size:14px;line-height:1.25;font-weight:800}
+  #commandsEmpty.commands-empty-list>span{display:block;margin-top:5px;color:var(--muted);font-size:11px;line-height:1.35}
   .primary{border:0;background:var(--brand);color:#fff;border-radius:14px;padding:13px 16px;font-weight:850;box-shadow:0 10px 18px rgba(26,22,19,.18)}
   .secondary{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:14px;padding:12px 15px;font-weight:800}
   .danger{background:var(--danger)!important;color:#fff!important;border-color:var(--danger)!important}
@@ -332,10 +339,9 @@
         <div class="stat"><small>Itens lançados</small><strong id="openItems">0</strong></div>
       </div>
       <div id="commandList" class="command-list"></div>
-      <div id="commandsEmpty" class="empty" style="display:none">
-        <div class="icon">🛣️</div><h3>Nenhuma comanda aberta</h3>
-        <p>Abra uma comanda por mesa, balcão ou nome do cliente.</p>
-        <button class="primary" onclick="openNewCommandSheet()">Abrir primeira comanda</button>
+      <div id="commandsEmpty" class="commands-empty-list" style="display:none" aria-hidden="true">
+        <strong>Nenhuma comanda aberta</strong>
+        <span>Use um dos atalhos acima para abrir a primeira.</span>
       </div>
     </section>
 

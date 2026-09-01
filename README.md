@@ -9,6 +9,10 @@ Aplicativo mobile-first, offline-first e multidispositivo para controle rápido 
 - **Service Worker:** `rota27-comandas-v0.25.97-r1`
 - **Baseline anterior:** v0.25.96
 
+## Candidata v0.25.98 — estado vazio canônico
+
+A produção permanece em v0.25.97. A candidata v0.25.98 elimina a reconstrução tardia do quadro **Nenhuma comanda aberta**, remove os antigos assets v0.25.80-r4/v0.25.88 responsáveis pela sobreposição e estabelece componentes independentes para Lista e Mapa.
+
 ## v0.25.97 — estabilização aprovada
 
 Esta candidata não altera dados, Supabase, WhatsApp ou regras operacionais. Ela corrige dois problemas encontrados durante a homologação:
