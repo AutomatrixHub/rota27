@@ -3,11 +3,18 @@
 Última revisão: 01/09/2026
 
 ## Produção
-- versão: **v0.25.107 — observação do App Shell**;
+- versão: **v0.25.108 — primeira exclusão física controlada**;
 - branch: `main`;
 - GitHub Pages: `https://automatrixhub.github.io/rota27/`;
-- Service Worker: `rota27-comandas-v0.25.107-r1`;
-- baseline anterior: **v0.25.106**, merge `41b92ccc5889a94481f5a6761c89c003390bb7ab`.
+- Service Worker: `rota27-comandas-v0.25.108-r1`;
+- baseline anterior: **v0.25.107**, merge `4ccae3247da25755ebf74324e442bdc781428fc1`.
+
+## Produção homologada — v0.25.108
+- exclui fisicamente cinco assets observados fora do App Shell na v0.25.107;
+- confirma ausência de referências de carregamento para os cinco caminhos;
+- preserva `assets/brand/rota27-logo-oficial.png` devido à dependência indireta de `v0182-final.js`;
+- não altera o App Shell funcional, dados, Supabase, sincronização ou regras operacionais;
+- mantém rollback por avanço de versão, restaurando os arquivos em cache novo se necessário.
 
 ## Produção homologada — v0.25.107
 - retira do App Shell seis assets não executados pela produção atual;

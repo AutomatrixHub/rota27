@@ -3,11 +3,15 @@
 Aplicativo mobile-first, offline-first e multidispositivo para controle rápido de comandas da **Rota 27 Bodega**.
 
 ## Produção
-- **Versão:** v0.25.107 — observação do App Shell
+- **Versão:** v0.25.108 — primeira exclusão física controlada
 - **Branch:** `main`
 - **GitHub Pages:** `https://automatrixhub.github.io/rota27/`
-- **Service Worker:** `rota27-comandas-v0.25.107-r1`
-- **Baseline anterior:** v0.25.106
+- **Service Worker:** `rota27-comandas-v0.25.108-r1`
+- **Baseline anterior:** v0.25.107
+
+## v0.25.108 — primeira exclusão física controlada
+
+Após a observação aprovada da v0.25.107, cinco assets de código sem referências de carregamento foram excluídos fisicamente. O logo oficial permanece publicado porque ainda é dependência indireta de `v0182-final.js`; essa cadeia será tratada separadamente. Nenhum comportamento funcional, dado ou integração foi alterado.
 
 ## v0.25.107 — observação do App Shell
 
