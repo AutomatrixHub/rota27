@@ -343,7 +343,7 @@
           <div class="hero-kicker">PARADA OBRIGATÓRIA</div>
           <h1>Rota 27 Bodega</h1>
           <small><span class="brand-subline">Das delícias capixabas •</span><span class="brand-subline">Jardim Camburi</span></small>
-          <span id="v14VersionBadge" class="v14-version-badge">v0.25.103</span>
+          <span id="v14VersionBadge" class="v14-version-badge">v0.25.104</span>
         </div>
         <button id="r27HelpButton" type="button" class="r27-help-button" aria-label="Abrir ajuda do Rota 27" title="Ajuda"><span aria-hidden="true">?</span><small>Ajuda</small></button>
       </div>
@@ -1099,7 +1099,7 @@ function openEditCommandSheet(){
   document.getElementById('editCustomer').value=c.customer||'';
   document.getElementById('editWhatsapp').value=c.whatsappPhone?formatWhatsappPhone(c.whatsappPhone):'';
   document.getElementById('editWhatsappOptIn').checked=c.whatsappOptIn===true;
-  document.getElementById('editCommandWrap').classList.add('open'); setTimeout(()=>document.getElementById('editTable').focus(),120);
+  document.getElementById('editCommandWrap').classList.add('open');
 }
 function setEditQuickTable(v){ document.getElementById('editTable').value=v; }
 function saveCommandEdits(){

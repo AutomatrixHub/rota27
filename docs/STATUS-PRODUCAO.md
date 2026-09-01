@@ -9,6 +9,14 @@
 - Service Worker: `rota27-comandas-v0.25.103-r1`;
 - baseline anterior: **v0.25.102**, merge `38fb4777d91ff1ddca5b6eae4dd70163cc5665fc`.
 
+## Candidata — v0.25.104
+- remove na origem o foco automático do campo Mesa/Local ao abrir **Editar comanda**;
+- exclui `v02576-edit-command-no-autofocus.js`, que existia apenas para neutralizar esse foco por interceptação global;
+- remove o asset do roadmap e do App Shell;
+- preserva foco manual, edição, cancelamento e salvamento;
+- sem alterações em dados, Supabase, sincronização ou regras operacionais;
+- promoção condicionada aos testes funcional e de ausência de erros no navegador.
+
 ## Produção homologada — v0.25.100
 - promovida pelo PR #146, merge `2327d0ee249396b17047d787ed7786bdcb8c5674`;
 - TOPBAR completa incorporada diretamente ao HTML inicial;

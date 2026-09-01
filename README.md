@@ -9,6 +9,10 @@ Aplicativo mobile-first, offline-first e multidispositivo para controle rápido 
 - **Service Worker:** `rota27-comandas-v0.25.103-r1`
 - **Baseline anterior:** v0.25.102
 
+## Candidata v0.25.104 — edição sem compensação de foco
+
+A abertura de **Editar comanda** deixa de agendar foco automático no campo Mesa/Local diretamente no código-base. Com a causa removida, é excluído o asset v0.25.76 que interceptava globalmente `focus()` e executava neutralizações posteriores. O foco manual e toda a edição permanecem disponíveis. A candidata não altera dados, sincronização ou regras operacionais.
+
 ## v0.25.103 — shell visual canônico
 
 A TOPBAR e a barra inferior passam a nascer com estrutura, cores e geometria atuais no próprio arquivo-base. A barra inferior já contém **Painel**, sem reconstruir o antigo botão **Nova**; o módulo antigo apenas liga o comportamento. O estilo compacto da TOPBAR foi transferido da folha tardia para o shell, e o Painel deixou de escrever título e versão antigos durante o carregamento. Promovida pelo PR #152.
