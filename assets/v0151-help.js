@@ -699,8 +699,6 @@
     overlay.classList.add('open');
     overlay.setAttribute('aria-hidden','false');
     document.body.classList.add('r27-help-open');
-    const input=overlay.querySelector('#r27HelpSearch');
-    setTimeout(()=>input?.focus({preventScroll:true}),30);
   }
 
   function closeHelp(){
