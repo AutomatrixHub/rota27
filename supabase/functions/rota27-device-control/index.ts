@@ -1,7 +1,7 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
 
-const EDGE_VERSION = "rota27-device-control-v0.25.87";
+const EDGE_VERSION = "rota27-device-control-v0.25.89";
 const corsHeaders = {
   "access-control-allow-origin": "*",
   "access-control-allow-headers": "content-type, x-rota27-device-token",
@@ -58,10 +58,11 @@ Deno.serve(async (req) => {
   const deviceId = cleanText(body.deviceId, 120);
   const deviceName = cleanText(body.deviceName || "Aparelho", 80);
   const appVersion = cleanText(body.appVersion || "", 40);
+  const releaseVersion = cleanText(body.releaseVersion || "", 40);
   if (!deviceId) return json(400, { ok: false, error: "deviceId obrigatório." });
 
   const db = createClient(supabaseUrl, serviceRoleKey, { auth: { persistSession: false, autoRefreshToken: false } });
-  const deviceFields = "device_id,device_name,app_version,first_seen_at,last_seen_at,last_cursor,status,retired_at,retired_reason,whatsapp_configured,whatsapp_pending_count,whatsapp_failed_count,whatsapp_last_error,whatsapp_telemetry_at,requested_sync_at,sync_request_ack_at,requested_diagnostic_at,diagnostic_request_ack_at,requested_update_at,requested_update_version,update_request_ack_at";
+  const deviceFields = "device_id,device_name,app_version,release_version,first_seen_at,last_seen_at,last_cursor,status,retired_at,retired_reason,whatsapp_configured,whatsapp_pending_count,whatsapp_failed_count,whatsapp_last_error,whatsapp_telemetry_at,requested_sync_at,sync_request_ack_at,requested_diagnostic_at,diagnostic_request_ack_at,requested_update_at,requested_update_version,update_request_ack_at";
 
   async function getDevice(id: string) {
     const { data, error } = await db.from("rota27_sync_devices").select(deviceFields).eq("store_id", storeId).eq("device_id", id).maybeSingle();
@@ -83,6 +84,7 @@ Deno.serve(async (req) => {
         app_version: appVersion || caller.app_version || "",
         last_seen_at: now,
       };
+      if (releaseVersion) patch.release_version = releaseVersion;
       if (Object.keys(telemetry).length) {
         const configured = telemetry.whatsappConfigured;
         patch.whatsapp_configured = configured === true ? true : configured === false ? false : null;
@@ -132,7 +134,7 @@ Deno.serve(async (req) => {
       else if (action === "request_diagnostic") patch = { requested_diagnostic_at: now };
       else patch = {
         requested_update_at: now,
-        requested_update_version: cleanText(body.targetVersion || appVersion || "", 40) || null,
+        requested_update_version: cleanText(body.targetVersion || releaseVersion || appVersion || "", 40) || null,
         update_request_ack_at: null,
       };
       const { data, error } = await db.from("rota27_sync_devices").update(patch).eq("store_id", storeId).eq("device_id", targetDeviceId).select(deviceFields).maybeSingle();
