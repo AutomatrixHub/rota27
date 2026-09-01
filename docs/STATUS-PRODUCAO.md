@@ -3,18 +3,19 @@
 Última revisão: 31/08/2026
 
 ## Produção
-- versão: **v0.25.96 — Topbar atual desde o primeiro paint**;
+- versão: **v0.25.97 — estabilização da TOPBAR e Nova comanda**;
 - branch: `main`;
 - GitHub Pages: `https://automatrixhub.github.io/rota27/`;
-- Service Worker: `rota27-comandas-v0.25.96-r1`;
-- baseline anterior: **v0.25.95**, merge `2ec4cd9401a8e11fb7864cdd9668d4c197e2bd77`.
+- Service Worker: `rota27-comandas-v0.25.97-r1`;
+- baseline anterior: **v0.25.96**, merge `8b382bff82d103a257cd0b34ecb2c71ca0df93c2`.
 
-## Candidata em homologação — v0.25.97
-- produção continua congelada em v0.25.96;
+## Produção homologada — v0.25.97
+- promovida pelo PR #140, merge `e26a14274808425507da784527e47607f8171e1f`;
 - corrige a exibição transitória da Topbar legada;
 - corrige a recursão silenciosa ao abrir Nova comanda;
 - não altera Supabase, Edge Functions, WhatsApp, schemas ou dados;
-- não deve ser promovida antes do teste em celular e da validação de abertura de comanda em Modo Teste.
+- homologada no celular com abertura de comanda e Modo Teste aprovados;
+- observação não bloqueante: a TOPBAR atual pode levar um pequeno intervalo para aparecer, sem exibir a composição antiga.
 
 ## Edição de produto/categoria — v0.25.80
 A base legada ainda forçava foco 120 ms após a abertura das telas administrativas:

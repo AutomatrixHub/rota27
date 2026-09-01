@@ -1,7 +1,7 @@
 # Rota 27 v0.25.97 — candidata de estabilização
 
 ## Estado
-Candidata para homologação. A produção permanece em v0.25.96 até aprovação explícita.
+Produção homologada no Android e promovida pelo PR #140.
 
 ## Problemas observados
 1. A Topbar antiga ainda podia aparecer transitoriamente durante o carregamento.

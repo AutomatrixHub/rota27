@@ -3,19 +3,19 @@
 Aplicativo mobile-first, offline-first e multidispositivo para controle rápido de comandas da **Rota 27 Bodega**.
 
 ## Produção
-- **Versão:** v0.25.96 — Topbar atual desde o primeiro paint
+- **Versão:** v0.25.97 — estabilização da TOPBAR e Nova comanda
 - **Branch:** `main`
 - **GitHub Pages:** `https://automatrixhub.github.io/rota27/`
-- **Service Worker:** `rota27-comandas-v0.25.96-r1`
-- **Baseline anterior:** v0.25.95
+- **Service Worker:** `rota27-comandas-v0.25.97-r1`
+- **Baseline anterior:** v0.25.96
 
-## Candidata v0.25.97 — estabilização para homologação
+## v0.25.97 — estabilização aprovada
 
 Esta candidata não altera dados, Supabase, WhatsApp ou regras operacionais. Ela corrige dois problemas encontrados durante a homologação:
 - impede que a Topbar legada apareça enquanto a interface atual ainda está sendo montada;
 - elimina a recursão entre wrappers históricos de `openNewCommandSheet`, usando diretamente a abertura canônica da Nova comanda.
 
-A v0.25.97 deve permanecer fora de produção até passar pelos testes documentados em `docs/RELEASE-v0.25.97.md`.
+A v0.25.97 foi homologada no Android, inclusive em Modo Teste, e promovida pelo PR #140.
 
 ## v0.25.80 — Edição sem foco + campo Ícone removido
 
