@@ -22,13 +22,17 @@
     return Array.isArray(rows)&&rows.some(isTestCommand);
   }
 
+  function boundaryActive(){
+    return exiting||(!isTestActive()&&hasTestArtifacts());
+  }
+
   function clearTransientTestUi(){
+    const contaminated=hasTestArtifacts();
     document.querySelectorAll('[data-v02582-test-command]').forEach(node=>node.remove());
-    const list=document.getElementById('commandList');
-    if(list&&hasTestArtifacts())list.innerHTML='';
-    const count=document.getElementById('openCount');if(count&&hasTestArtifacts())count.textContent='0';
-    const total=document.getElementById('openTotal');if(total&&hasTestArtifacts())total.textContent='R$ 0,00';
-    const items=document.getElementById('openItems');if(items&&hasTestArtifacts())items.textContent='0';
+    const list=document.getElementById('commandList');if(list&&contaminated)list.innerHTML='';
+    const count=document.getElementById('openCount');if(count&&contaminated)count.textContent='0';
+    const total=document.getElementById('openTotal');if(total&&contaminated)total.textContent='R$ 0,00';
+    const items=document.getElementById('openItems');if(items&&contaminated)items.textContent='0';
   }
 
   function purgeTestCommandsFromMemory(){
@@ -42,16 +46,21 @@
     return removed;
   }
 
-  function scheduleRealRehydrate(reason){
-    if(reloadScheduled)return;
-    exiting=true;
-    reloadScheduled=true;
-    clearTransientTestUi();
-    purgeTestCommandsFromMemory();
-    try{sessionStorage.setItem(EXIT_MARK,JSON.stringify({version:VERSION,at:Date.now(),reason:String(reason||'exit')}));}catch{}
-    /* localStorage real nunca foi sobrescrito pelo sandbox. Um reload único força
-       todas as camadas legadas a reconstruírem state/DOM exclusivamente dessa base. */
-    setTimeout(()=>location.reload(),80);
+  function installSaveBoundary(){
+    let base=null;
+    try{base=window.save||save;}catch{base=window.save;}
+    if(typeof base!=='function'||base.__v02595Boundary)return;
+    const guarded=function(){
+      if(boundaryActive()){
+        console.info('[Rota27 v0.25.95] persistência adiada durante restauração Teste -> Real.');
+        return true;
+      }
+      return base.apply(this,arguments);
+    };
+    guarded.__v02595Boundary=true;
+    guarded.__v02595Base=base;
+    try{window.save=guarded;}catch{}
+    try{save=guarded;}catch{}
   }
 
   function installSyncBoundary(){
@@ -59,7 +68,7 @@
     if(typeof base!=='function'||base.__v02595Boundary)return;
     const wrapped=function(input,init){
       const url=String(input?.url||input||'');
-      if((exiting||(!isTestActive()&&hasTestArtifacts()))&&/\/functions\/v1\/rota27-sync(?:\?|$|\/)/i.test(url)){
+      if(boundaryActive()&&/\/functions\/v1\/rota27-sync(?:\?|$|\/)/i.test(url)){
         console.info('[Rota27 v0.25.95] sync adiado durante restauração Teste -> Real.');
         return Promise.reject(new Error('Sincronização aguardando restauração dos dados reais.'));
       }
@@ -68,6 +77,21 @@
     wrapped.__v02595Boundary=true;
     wrapped.__v02595Base=base;
     window.fetch=wrapped;
+  }
+
+  function scheduleRealRehydrate(reason){
+    if(reloadScheduled)return;
+    exiting=true;
+    reloadScheduled=true;
+    /* O bloqueio de save/sync entra antes de qualquer limpeza do state. */
+    installSaveBoundary();
+    installSyncBoundary();
+    clearTransientTestUi();
+    purgeTestCommandsFromMemory();
+    try{sessionStorage.setItem(EXIT_MARK,JSON.stringify({version:VERSION,at:Date.now(),reason:String(reason||'exit')}));}catch{}
+    /* O localStorage real nunca foi sobrescrito pelo sandbox. Um reload único força
+       todas as camadas legadas a reconstruírem state/DOM exclusivamente dessa base. */
+    setTimeout(()=>location.reload(),80);
   }
 
   function onModeChanged(event){
@@ -86,7 +110,9 @@
   }
 
   function start(){
+    installSaveBoundary();
     installSyncBoundary();
+    /* capture: a barreira reage antes dos listeners normais que re-renderizam a UI. */
     window.addEventListener('rota27:test-mode-changed',onModeChanged,true);
     recoverIfNeeded();
     window.Rota27V02595TestRealBoundary={version:VERSION,hasTestArtifacts,recover:scheduleRealRehydrate};
