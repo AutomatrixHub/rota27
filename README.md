@@ -3,15 +3,15 @@
 Aplicativo mobile-first, offline-first e multidispositivo para controle rápido de comandas da **Rota 27 Bodega**.
 
 ## Produção
-- **Versão candidata:** v0.25.101 — FAB corrigido na origem
+- **Versão:** v0.25.101 — FAB corrigido na origem
 - **Branch:** `main`
 - **GitHub Pages:** `https://automatrixhub.github.io/rota27/`
-- **Service Worker candidato:** `rota27-comandas-v0.25.101-r1`
-- **Baseline de produção:** v0.25.100
+- **Service Worker:** `rota27-comandas-v0.25.101-r1`
+- **Baseline anterior:** v0.25.100
 
 ## v0.25.101 — FAB corrigido na origem
 
-O Painel deixa de forçar a exibição do botão flutuante **Nova comanda**. Com a causa removida, a camada v0.25.92 deixa de interceptar `showScreen()` e de sincronizar o FAB após cada navegação; ela permanece responsável apenas pela padronização dos botões de fechar. A regra CSS defensiva continua ativa.
+O Painel deixa de forçar a exibição do botão flutuante **Nova comanda**. Com a causa removida, a camada v0.25.92 deixa de interceptar `showScreen()` e de sincronizar o FAB após cada navegação; ela permanece responsável apenas pela padronização dos botões de fechar. A regra CSS defensiva continua ativa. Promovida pelo PR #148.
 
 ## v0.25.100 — TOPBAR canônica
 

@@ -3,11 +3,11 @@
 Última revisão: 01/09/2026
 
 ## Produção
-- versão: **v0.25.100 — TOPBAR canônica no primeiro carregamento**;
+- versão: **v0.25.101 — FAB corrigido na origem**;
 - branch: `main`;
 - GitHub Pages: `https://automatrixhub.github.io/rota27/`;
-- Service Worker: `rota27-comandas-v0.25.100-r1`;
-- baseline anterior: **v0.25.99**, merge `975b0b254aa0c922bd2d274c333f353602064f45`.
+- Service Worker: `rota27-comandas-v0.25.101-r1`;
+- baseline anterior: **v0.25.100**, merge `2327d0ee249396b17047d787ed7786bdcb8c5674`.
 
 ## Produção homologada — v0.25.100
 - promovida pelo PR #146, merge `2327d0ee249396b17047d787ed7786bdcb8c5674`;
@@ -20,11 +20,15 @@
 - validada em viewport móvel sem cache anterior: TOPBAR, Ajuda, Lista/Mapa e Nova comanda;
 - GitHub Pages publicado com `VERSION` 0.25.100 e asset removido respondendo 404.
 
-## Candidata — v0.25.101
+## Produção homologada — v0.25.101
+- promovida pelo PR #148, merge `85cffbfbce194af7da8cd90fb3675b317f1b9220`;
 - corrige em `v015-dev4.js` a origem que reexibia o FAB no Painel;
 - remove da camada v0.25.92 o wrapper de `showScreen()` e a sincronização compensatória do FAB;
 - preserva a regra CSS defensiva e a responsabilidade de padronizar botões de fechar;
-- sem alterações em dados, Supabase, sincronização ou regras operacionais.
+- sem alterações em dados, Supabase, sincronização ou regras operacionais;
+- validada em viewport móvel em Comandas, Painel, Cardápio, Histórico e venda;
+- Nova comanda e botão X da Ajuda aprovados, sem erros no navegador;
+- GitHub Pages publicado com `VERSION` 0.25.101 e override legado ausente.
 
 ## Produção homologada — v0.25.99
 - promovida pelo PR #144, merge `975b0b254aa0c922bd2d274c333f353602064f45`;
