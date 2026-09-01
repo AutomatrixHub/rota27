@@ -3,15 +3,15 @@
 Aplicativo mobile-first, offline-first e multidispositivo para controle rápido de comandas da **Rota 27 Bodega**.
 
 ## Produção
-- **Versão:** v0.25.104 — edição sem compensação de foco
+- **Versão:** v0.25.105 — produto e categoria canônicos
 - **Branch:** `main`
 - **GitHub Pages:** `https://automatrixhub.github.io/rota27/`
-- **Service Worker:** `rota27-comandas-v0.25.104-r1`
-- **Baseline anterior:** v0.25.103
+- **Service Worker:** `rota27-comandas-v0.25.105-r1`
+- **Baseline anterior:** v0.25.104
 
-## Candidata v0.25.105 — produto e categoria canônicos
+## v0.25.105 — produto e categoria canônicos
 
-Os editores de produto e categoria deixam de agendar foco/seleção automáticos diretamente no código-base. O campo visual **Ícone**, já removido do produto desde a v0.25.80, passa a nascer como input oculto compatível. Com isso, é eliminada a camada v0.25.80 que interceptava globalmente `focus()` e `select()` e transformava o formulário depois do carregamento.
+Os editores de produto e categoria deixam de agendar foco/seleção automáticos diretamente no código-base. O campo visual **Ícone**, já removido do produto desde a v0.25.80, passa a nascer como input oculto compatível. Com isso, foi eliminada a camada v0.25.80 que interceptava globalmente `focus()` e `select()` e transformava o formulário depois do carregamento. Promovida pelo PR #156.
 
 ## v0.25.104 — edição sem compensação de foco
 

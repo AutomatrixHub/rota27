@@ -3,19 +3,22 @@
 Última revisão: 01/09/2026
 
 ## Produção
-- versão: **v0.25.104 — edição sem compensação de foco**;
+- versão: **v0.25.105 — produto e categoria canônicos**;
 - branch: `main`;
 - GitHub Pages: `https://automatrixhub.github.io/rota27/`;
-- Service Worker: `rota27-comandas-v0.25.104-r1`;
-- baseline anterior: **v0.25.103**, merge `a715368d6d4a9b1d481dae5b4bbba3db3921bad9`.
+- Service Worker: `rota27-comandas-v0.25.105-r1`;
+- baseline anterior: **v0.25.104**, merge `792da68dd87ce8cb14215b82aded35de9341ef80`.
 
-## Candidata — v0.25.105
+## Produção homologada — v0.25.105
+- promovida pelo PR #156, merge `24f5b8e8bc68908d6d8e547d08111631a82d4580`;
 - remove na origem os focos automáticos dos editores de produto e categoria;
 - incorpora ao HTML inicial o campo oculto compatível `menuItemEmoji`;
 - exclui `v02580-product-category-no-autofocus.js` e suas referências;
 - preserva edição manual, categorias, preço, status ativo e o valor histórico do ícone;
 - sem alterações em dados, Supabase, estoque, sincronização ou regras operacionais;
-- promoção condicionada aos testes de produto e categoria em viewport móvel.
+- novo/editar produto e nova/editar categoria aprovados em viewport móvel;
+- foco manual, cancelamento e criação local de produto/categoria aprovados;
+- GitHub Pages publicado com `VERSION` 0.25.105 e asset removido respondendo 404.
 
 ## Produção homologada — v0.25.104
 - promovida pelo PR #154, merge `792da68dd87ce8cb14215b82aded35de9341ef80`;
