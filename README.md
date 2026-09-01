@@ -3,15 +3,15 @@
 Aplicativo mobile-first, offline-first e multidispositivo para controle rápido de comandas da **Rota 27 Bodega**.
 
 ## Produção
-- **Versão:** v0.25.105 — produto e categoria canônicos
+- **Versão:** v0.25.106 — clientes sem foco automático
 - **Branch:** `main`
 - **GitHub Pages:** `https://automatrixhub.github.io/rota27/`
-- **Service Worker:** `rota27-comandas-v0.25.105-r1`
-- **Baseline anterior:** v0.25.104
+- **Service Worker:** `rota27-comandas-v0.25.106-r1`
+- **Baseline anterior:** v0.25.105
 
-## Candidata v0.25.106 — clientes sem foco automático
+## v0.25.106 — clientes sem foco automático
 
-As telas **Novo cliente** e **Editar cliente** deixam de agendar foco automático no campo Nome diretamente no módulo de clientes. Não é adicionada camada de neutralização: o operador escolhe por toque qual campo preencher ou editar.
+As telas **Novo cliente** e **Editar cliente** deixam de agendar foco automático no campo Nome diretamente no módulo de clientes. Não foi adicionada camada de neutralização: o operador escolhe por toque qual campo preencher ou editar. Promovida pelo PR #158.
 
 ## v0.25.105 — produto e categoria canônicos
 

@@ -3,18 +3,22 @@
 Última revisão: 01/09/2026
 
 ## Produção
-- versão: **v0.25.105 — produto e categoria canônicos**;
+- versão: **v0.25.106 — clientes sem foco automático**;
 - branch: `main`;
 - GitHub Pages: `https://automatrixhub.github.io/rota27/`;
-- Service Worker: `rota27-comandas-v0.25.105-r1`;
-- baseline anterior: **v0.25.104**, merge `792da68dd87ce8cb14215b82aded35de9341ef80`.
+- Service Worker: `rota27-comandas-v0.25.106-r1`;
+- baseline anterior: **v0.25.105**, merge `24f5b8e8bc68908d6d8e547d08111631a82d4580`.
 
-## Candidata — v0.25.106
+## Produção homologada — v0.25.106
+- promovida pelo PR #158, merge `41b92ccc5889a94481f5a6761c89c003390bb7ab`;
 - remove diretamente de `v017-core.js` o foco automático do campo Nome;
 - aplica o comportamento tanto a **Novo cliente** quanto a **Editar cliente**;
 - preserva foco manual, validações, cancelamento e salvamento;
 - sem nova camada corretiva e sem alterações em dados, Supabase ou sincronização;
 - atualiza o cache-buster do módulo de clientes para impedir reutilização do JavaScript antigo.
+- Novo cliente e Editar cliente aprovados em viewport móvel sem foco automático;
+- foco manual nos campos, salvamento local e Voltar aprovados;
+- GitHub Pages publicado com `VERSION` 0.25.106 e módulo servido sem o foco legado.
 
 ## Produção homologada — v0.25.105
 - promovida pelo PR #156, merge `24f5b8e8bc68908d6d8e547d08111631a82d4580`;
