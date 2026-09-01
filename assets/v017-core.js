@@ -382,7 +382,7 @@
 
   function openClientEditor(id=''){
     ensureClientsUi();const c=id?findClient(id):null;
-    byId('v017ClientEditTitle').textContent=c?'Editar cliente':'Novo cliente';byId('v017ClientId').value=c?.id||'';byId('v017ClientName').value=c?.name||'';byId('v017ClientPhone').value=c?.whatsappPhone?formatPhone(c.whatsappPhone):'';byId('v017ClientNotes').value=c?.notes||'';byId('v017DeleteClient').style.display=c?'block':'none';byId('v017ClientEditWrap').classList.add('open');setTimeout(()=>byId('v017ClientName').focus(),100);
+    byId('v017ClientEditTitle').textContent=c?'Editar cliente':'Novo cliente';byId('v017ClientId').value=c?.id||'';byId('v017ClientName').value=c?.name||'';byId('v017ClientPhone').value=c?.whatsappPhone?formatPhone(c.whatsappPhone):'';byId('v017ClientNotes').value=c?.notes||'';byId('v017DeleteClient').style.display=c?'block':'none';byId('v017ClientEditWrap').classList.add('open');
   }
 
   function saveClientEditor(){

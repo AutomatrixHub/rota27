@@ -9,6 +9,10 @@ Aplicativo mobile-first, offline-first e multidispositivo para controle rápido 
 - **Service Worker:** `rota27-comandas-v0.25.105-r1`
 - **Baseline anterior:** v0.25.104
 
+## Candidata v0.25.106 — clientes sem foco automático
+
+As telas **Novo cliente** e **Editar cliente** deixam de agendar foco automático no campo Nome diretamente no módulo de clientes. Não é adicionada camada de neutralização: o operador escolhe por toque qual campo preencher ou editar.
+
 ## v0.25.105 — produto e categoria canônicos
 
 Os editores de produto e categoria deixam de agendar foco/seleção automáticos diretamente no código-base. O campo visual **Ícone**, já removido do produto desde a v0.25.80, passa a nascer como input oculto compatível. Com isso, foi eliminada a camada v0.25.80 que interceptava globalmente `focus()` e `select()` e transformava o formulário depois do carregamento. Promovida pelo PR #156.
