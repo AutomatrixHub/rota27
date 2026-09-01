@@ -30,6 +30,13 @@
 - Nova comanda e botão X da Ajuda aprovados, sem erros no navegador;
 - GitHub Pages publicado com `VERSION` 0.25.101 e override legado ausente.
 
+## Candidata — v0.25.102
+- remove o foco automático da busca diretamente em `v0151-help.js`;
+- exclui `v02594-help-no-autofocus.js`, que existia apenas para neutralizar esse foco;
+- remove o asset do roadmap e do App Shell;
+- preserva foco manual, fechamento da Ajuda e restauração de foco;
+- sem alterações em dados, Supabase, sincronização ou regras operacionais.
+
 ## Produção homologada — v0.25.99
 - promovida pelo PR #144, merge `975b0b254aa0c922bd2d274c333f353602064f45`;
 - adiciona `text-align:center` diretamente ao componente canônico `#commandsEmpty.commands-empty-list`;
