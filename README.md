@@ -3,15 +3,15 @@
 Aplicativo mobile-first, offline-first e multidispositivo para controle rápido de comandas da **Rota 27 Bodega**.
 
 ## Produção
-- **Versão:** v0.25.97 — estabilização da TOPBAR e Nova comanda
+- **Versão:** v0.25.98 — estado vazio canônico
 - **Branch:** `main`
 - **GitHub Pages:** `https://automatrixhub.github.io/rota27/`
-- **Service Worker:** `rota27-comandas-v0.25.97-r1`
-- **Baseline anterior:** v0.25.96
+- **Service Worker:** `rota27-comandas-v0.25.98-r1`
+- **Baseline anterior:** v0.25.97
 
-## Candidata v0.25.98 — estado vazio canônico
+## v0.25.98 — estado vazio canônico aprovado
 
-A produção permanece em v0.25.97. A candidata v0.25.98 elimina a reconstrução tardia do quadro **Nenhuma comanda aberta**, remove os antigos assets v0.25.80-r4/v0.25.88 responsáveis pela sobreposição e estabelece componentes independentes para Lista e Mapa.
+A v0.25.98 elimina a reconstrução tardia do quadro **Nenhuma comanda aberta**, remove os antigos assets v0.25.80-r4/v0.25.88 responsáveis pela sobreposição e estabelece componentes independentes para Lista e Mapa. Foi homologada no Android e promovida pelo PR #142.
 
 ## v0.25.97 — estabilização aprovada
 

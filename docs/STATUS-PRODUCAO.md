@@ -3,19 +3,21 @@
 Última revisão: 31/08/2026
 
 ## Produção
-- versão: **v0.25.97 — estabilização da TOPBAR e Nova comanda**;
+- versão: **v0.25.98 — estado vazio canônico**;
 - branch: `main`;
 - GitHub Pages: `https://automatrixhub.github.io/rota27/`;
-- Service Worker: `rota27-comandas-v0.25.97-r1`;
-- baseline anterior: **v0.25.96**, merge `8b382bff82d103a257cd0b34ecb2c71ca0df93c2`.
+- Service Worker: `rota27-comandas-v0.25.98-r1`;
+- baseline anterior: **v0.25.97**, merge `e26a14274808425507da784527e47607f8171e1f`.
 
-## Candidata em homologação — v0.25.98
-- produção permanece em v0.25.97;
+## Produção homologada — v0.25.98
+- promovida pelo PR #142, merge `751a5e263218608b207356383f2bdae3cfd6061d`;
 - o shell passa a conter diretamente o estado vazio aprovado da Lista;
 - Lista e Mapa passam a controlar apenas seus próprios estados vazios;
 - removidos `v02580-r4-list-empty-parity.css` e `v02588-list-empty-visibility.js`;
 - removida da v0.25.80 a reconstrução tardia do componente;
 - sem alterações em dados, Supabase, Edge Functions, WhatsApp ou regras operacionais.
+- homologada no Android, inclusive Lista, Mapa, abertura de comanda e Modo Teste;
+- observação não bloqueante: a TOPBAR atual ainda é o último elemento a concluir a renderização.
 
 ## Produção homologada — v0.25.97
 - promovida pelo PR #140, merge `e26a14274808425507da784527e47607f8171e1f`;
