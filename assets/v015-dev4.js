@@ -152,7 +152,7 @@
     document.querySelectorAll('.navbtn').forEach(el=>el.classList.toggle('active',el===nav));
     hideSaleChrome();
     const fab=byId('fabNew');
-    if(fab)fab.style.display='block';
+    if(fab)fab.style.display='none';
     renderPanel();
     window.scrollTo({top:0,behavior:'auto'});
   }
