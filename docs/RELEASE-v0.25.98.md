@@ -1,7 +1,7 @@
 # Rota 27 v0.25.98 — estado vazio canônico
 
 ## Estado
-Candidata para homologação. Produção permanece em v0.25.97.
+Produção homologada no Android e promovida pelo PR #142.
 
 ## Problemas corrigidos
 1. O quadro legado com ícone de estrada e botão **Abrir primeira comanda** aparecia durante o carregamento.
