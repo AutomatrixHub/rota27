@@ -27,6 +27,7 @@
       subtitle.replaceChildren(first,second);
       subtitle.dataset.v02580r3Split='1';
     }
+    document.body?.classList.add('v02597-topbar-ready');
   }
 
   function ensureR4ListParityCss(){

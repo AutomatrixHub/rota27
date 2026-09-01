@@ -56,11 +56,10 @@
     const wrap=byId('newCommandWrap');
     let opened=false;
     withFocusGuard(()=>{
-      if(typeof previousOpen==='function'){
-        try{previousOpen.apply(this,arguments);opened=!!wrap?.classList.contains('open');}
-        catch(err){console.warn('[Rota27 v0.25.70] opener legado falhou; usando abertura canônica.',err);}
-      }
-      if(!opened)opened=canonicalOpen();
+      /* A abertura v0.25.70 já incorpora os resets necessários. Não volte a
+         chamar a cadeia histórica: wrappers v0.25.37/v0.25.39/v0.25.54 podem
+         apontar novamente para rootedOpen e formar recursão no Android. */
+      opened=canonicalOpen();
     });
     if(opened){
       const active=document.activeElement;
