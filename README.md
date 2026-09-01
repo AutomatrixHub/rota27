@@ -9,6 +9,10 @@ Aplicativo mobile-first, offline-first e multidispositivo para controle rápido 
 - **Service Worker:** `rota27-comandas-v0.25.98-r1`
 - **Baseline anterior:** v0.25.97
 
+## Candidata v0.25.99 — centralização do estado vazio
+
+A produção permanece em v0.25.98. A candidata corrige diretamente no estilo canônico de `base-v013.html` o alinhamento do quadro vazio da Lista, sem criar novo asset ou camada de compatibilidade.
+
 ## v0.25.98 — estado vazio canônico aprovado
 
 A v0.25.98 elimina a reconstrução tardia do quadro **Nenhuma comanda aberta**, remove os antigos assets v0.25.80-r4/v0.25.88 responsáveis pela sobreposição e estabelece componentes independentes para Lista e Mapa. Foi homologada no Android e promovida pelo PR #142.
