@@ -3,15 +3,15 @@
 Aplicativo mobile-first, offline-first e multidispositivo para controle rápido de comandas da **Rota 27 Bodega**.
 
 ## Produção
-- **Versão candidata:** v0.25.102 — Ajuda sem foco na origem
+- **Versão:** v0.25.102 — Ajuda sem foco na origem
 - **Branch:** `main`
 - **GitHub Pages:** `https://automatrixhub.github.io/rota27/`
-- **Service Worker candidato:** `rota27-comandas-v0.25.102-r1`
-- **Baseline de produção:** v0.25.101
+- **Service Worker:** `rota27-comandas-v0.25.102-r1`
+- **Baseline anterior:** v0.25.101
 
 ## v0.25.102 — Ajuda sem foco na origem
 
-A Ajuda-base deixa de focar automaticamente a busca ao abrir. Com isso, foi excluída a camada v0.25.94 que interceptava o clique e agendava três neutralizações de foco. O foco manual da busca e a restauração de foco ao fechar permanecem inalterados.
+A Ajuda-base deixa de focar automaticamente a busca ao abrir. Com isso, foi excluída a camada v0.25.94 que interceptava o clique e agendava três neutralizações de foco. O foco manual da busca e a restauração de foco ao fechar permanecem inalterados. Promovida pelo PR #150.
 
 ## v0.25.101 — FAB corrigido na origem
 

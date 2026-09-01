@@ -3,11 +3,11 @@
 Última revisão: 01/09/2026
 
 ## Produção
-- versão: **v0.25.101 — FAB corrigido na origem**;
+- versão: **v0.25.102 — Ajuda sem foco na origem**;
 - branch: `main`;
 - GitHub Pages: `https://automatrixhub.github.io/rota27/`;
-- Service Worker: `rota27-comandas-v0.25.101-r1`;
-- baseline anterior: **v0.25.100**, merge `2327d0ee249396b17047d787ed7786bdcb8c5674`.
+- Service Worker: `rota27-comandas-v0.25.102-r1`;
+- baseline anterior: **v0.25.101**, merge `85cffbfbce194af7da8cd90fb3675b317f1b9220`.
 
 ## Produção homologada — v0.25.100
 - promovida pelo PR #146, merge `2327d0ee249396b17047d787ed7786bdcb8c5674`;
@@ -30,12 +30,16 @@
 - Nova comanda e botão X da Ajuda aprovados, sem erros no navegador;
 - GitHub Pages publicado com `VERSION` 0.25.101 e override legado ausente.
 
-## Candidata — v0.25.102
+## Produção homologada — v0.25.102
+- promovida pelo PR #150, merge `38fb4777d91ff1ddca5b6eae4dd70163cc5665fc`;
 - remove o foco automático da busca diretamente em `v0151-help.js`;
 - exclui `v02594-help-no-autofocus.js`, que existia apenas para neutralizar esse foco;
 - remove o asset do roadmap e do App Shell;
 - preserva foco manual, fechamento da Ajuda e restauração de foco;
-- sem alterações em dados, Supabase, sincronização ou regras operacionais.
+- sem alterações em dados, Supabase, sincronização ou regras operacionais;
+- abertura sem foco automático, busca manual e restauração de foco aprovadas;
+- Ajuda v11 e botão X aprovados, sem erros no navegador;
+- GitHub Pages publicado com `VERSION` 0.25.102 e asset removido respondendo 404.
 
 ## Produção homologada — v0.25.99
 - promovida pelo PR #144, merge `975b0b254aa0c922bd2d274c333f353602064f45`;
