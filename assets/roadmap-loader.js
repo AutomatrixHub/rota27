@@ -1,7 +1,7 @@
 /* Rota 27 — carregador incremental do roadmap pós-v0.25.46 */
 (function(){
   'use strict';
-  const CURRENT='0.25.90';
+  const CURRENT='0.25.91';
   const HELP='10.0';
   const assets=[
     {type:'js',id:'v02580ProductCategoryNoAutofocusJs',src:'./assets/v02580-product-category-no-autofocus.js?v=02580r1'},
@@ -65,7 +65,9 @@
     {type:'js',id:'v02588ListEmptyVisibilityJs',src:'./assets/v02588-list-empty-visibility.js?v=02588r1'},
     {type:'js',id:'v02589DeviceReleaseJs',src:'./assets/v02589-device-release.js?v=02589r1'},
     {type:'js',id:'v02589ReceivableSettlementJs',src:'./assets/v02589-receivable-settlement.js?v=02589r1'},
-    {type:'js',id:'v02590DeviceClarityJs',src:'./assets/v02590-device-clarity.js?v=02590r1'}
+    {type:'js',id:'v02590DeviceClarityJs',src:'./assets/v02590-device-clarity.js?v=02590r1'},
+    {type:'css',id:'v02591FloatingCloseCss',src:'./assets/v02591-floating-close.css?v=02591r1'},
+    {type:'js',id:'v02591FloatingCloseJs',src:'./assets/v02591-floating-close.js?v=02591r1'}
   ];
   function identity(){
     document.title=`Rota 27 Bodega • Comandas v${CURRENT}`;
