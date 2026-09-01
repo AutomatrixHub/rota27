@@ -3,6 +3,8 @@
   'use strict';
 
   const VERSION='0.25.6';
+  let renderCommandsPatched=false;
+  let mapApiPatched=false;
 
   function byId(id){return document.getElementById(id);}
   function clean(v,max=180){return String(v??'').replace(/[\u0000-\u001f\u007f]/g,' ').trim().replace(/\s+/g,' ').slice(0,max);}
@@ -57,6 +59,7 @@
   }
 
   function patchRenderCommands(){
+    if(renderCommandsPatched)return false;
     const current=window.renderCommands;
     if(typeof current!=='function'||current.__r27v0256Parity)return false;
     const patched=function(){
@@ -67,10 +70,12 @@
     patched.__r27v0256Parity=true;
     try{window.renderCommands=patched;}catch{}
     try{renderCommands=patched;}catch{}
+    renderCommandsPatched=true;
     return true;
   }
 
   function patchMapApi(){
+    if(mapApiPatched)return false;
     const api=window.Rota27V0252;
     if(!api||typeof api.renderMap!=='function'||api.renderMap.__r27v0256Parity)return false;
     const base=api.renderMap;
@@ -81,6 +86,7 @@
     };
     patched.__r27v0256Parity=true;
     api.renderMap=patched;
+    mapApiPatched=true;
     return true;
   }
 
