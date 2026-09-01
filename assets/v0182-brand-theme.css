@@ -92,9 +92,7 @@ html,body{background:var(--bg);color:var(--ink)}
   .logo-shell{width:78px;height:78px}
 }
 
-/* Rota 27 v0.25.96 — topbar atual já no primeiro paint.
- * Esta folha já é carregada no <head> pelo bootstrap, antes dos scripts. Mantemos
- * aqui apenas a geometria crítica que v0.25.80-r3 reaplica depois, evitando FOUC. */
+/* Rota 27 v0.25.100 — topbar canônica já no primeiro paint. */
 .topbar{
   padding:calc(4px + env(safe-area-inset-top)) 7px 5px!important;
 }
@@ -150,22 +148,7 @@ html,body{background:var(--bg);color:var(--ink)}
   line-height:1.18!important;
   color:#5f4a3a!important;
 }
-/* Antes do JS v0.25.80-r3 trocar o texto por dois spans, desenha já a forma final. */
-.topbar .brand-copy>small:not([data-v02580r3-split="1"]){
-  font-size:0!important;
-  line-height:1!important;
-}
-.topbar .brand-copy>small:not([data-v02580r3-split="1"])::before,
-.topbar .brand-copy>small:not([data-v02580r3-split="1"])::after{
-  display:block!important;
-  white-space:nowrap!important;
-  font-size:12px!important;
-  line-height:1.18!important;
-  color:#5f4a3a!important;
-}
-.topbar .brand-copy>small:not([data-v02580r3-split="1"])::before{content:"Das delícias capixabas •"}
-.topbar .brand-copy>small:not([data-v02580r3-split="1"])::after{content:"Jardim Camburi"}
-.topbar .brand-copy>small .v02580r3-subline{
+.topbar .brand-copy>small .brand-subline{
   display:block!important;
   white-space:nowrap!important;
 }
@@ -221,8 +204,6 @@ html,body{background:var(--bg);color:var(--ink)}
     letter-spacing:.145em!important;
   }
   .topbar .brand h1{font-size:21px!important}
-  .topbar .brand-copy>small,
-  .topbar .brand-copy>small:not([data-v02580r3-split="1"])::before,
-  .topbar .brand-copy>small:not([data-v02580r3-split="1"])::after{font-size:11.5px!important}
+  .topbar .brand-copy>small{font-size:11.5px!important}
   .topbar #v14VersionBadge{right:9px!important;bottom:7px!important}
 }

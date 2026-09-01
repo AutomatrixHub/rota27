@@ -1,34 +1,11 @@
-/* Rota 27 v0.25.80-r4 — Produto/categoria sem foco + paridade real do empty state Lista/Mapa */
+/* Rota 27 v0.25.100 — Produto/categoria sem foco (responsabilidade única) */
 (function(){
   'use strict';
   if(window.Rota27V02580ProductCategoryNoAutofocus)return;
 
-  const VERSION='0.25.80-r4';
+  const VERSION='0.25.100';
   const GUARD_MS=220;
   const byId=id=>document.getElementById(id);
-
-  function ensureR3Layout(){
-    if(!byId('v02580R3ListEmptyTopbarCss')){
-      const link=document.createElement('link');
-      link.id='v02580R3ListEmptyTopbarCss';
-      link.rel='stylesheet';
-      link.href='./assets/v02580-r3-list-empty-topbar.css?v=02580r3';
-      document.head.appendChild(link);
-    }
-
-    const subtitle=document.querySelector('.topbar .brand-copy > small');
-    if(subtitle&&subtitle.dataset.v02580r3Split!=='1'){
-      const first=document.createElement('span');
-      const second=document.createElement('span');
-      first.className='v02580r3-subline';
-      second.className='v02580r3-subline';
-      first.textContent='Das delícias capixabas •';
-      second.textContent='Jardim Camburi';
-      subtitle.replaceChildren(first,second);
-      subtitle.dataset.v02580r3Split='1';
-    }
-    document.body?.classList.add('v02597-topbar-ready');
-  }
 
   function removeIconField(){
     const current=byId('menuItemEmoji');
@@ -139,7 +116,6 @@
   }
 
   function refresh(){
-    ensureR3Layout();
     removeIconField();
     patchProductEditor();
     patchCategoryEditor();
@@ -150,8 +126,8 @@
     document.addEventListener('visibilitychange',()=>{
       if(document.visibilityState==='visible')refresh();
     });
-    window.Rota27V02580ProductCategoryNoAutofocus={version:VERSION,refresh,removeIconField,ensureR3Layout};
-    console.info('[Rota27] v0.25.80-r4 — correções de edição e Topbar preservadas; estado vazio pertence ao shell canônico.');
+    window.Rota27V02580ProductCategoryNoAutofocus={version:VERSION,refresh,removeIconField};
+    console.info('[Rota27] v0.25.100 — edição de produto/categoria sem foco automático.');
   }
 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
