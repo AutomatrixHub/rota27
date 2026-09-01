@@ -3,15 +3,15 @@
 Aplicativo mobile-first, offline-first e multidispositivo para controle rápido de comandas da **Rota 27 Bodega**.
 
 ## Produção
-- **Versão:** v0.25.103 — shell visual canônico no primeiro carregamento
+- **Versão:** v0.25.104 — edição sem compensação de foco
 - **Branch:** `main`
 - **GitHub Pages:** `https://automatrixhub.github.io/rota27/`
-- **Service Worker:** `rota27-comandas-v0.25.103-r1`
-- **Baseline anterior:** v0.25.102
+- **Service Worker:** `rota27-comandas-v0.25.104-r1`
+- **Baseline anterior:** v0.25.103
 
-## Candidata v0.25.104 — edição sem compensação de foco
+## v0.25.104 — edição sem compensação de foco
 
-A abertura de **Editar comanda** deixa de agendar foco automático no campo Mesa/Local diretamente no código-base. Com a causa removida, é excluído o asset v0.25.76 que interceptava globalmente `focus()` e executava neutralizações posteriores. O foco manual e toda a edição permanecem disponíveis. A candidata não altera dados, sincronização ou regras operacionais.
+A abertura de **Editar comanda** deixa de agendar foco automático no campo Mesa/Local diretamente no código-base. Com a causa removida, foi excluído o asset v0.25.76 que interceptava globalmente `focus()` e executava neutralizações posteriores. O foco manual e toda a edição permanecem disponíveis. Promovida pelo PR #154, sem alteração de dados, sincronização ou regras operacionais.
 
 ## v0.25.103 — shell visual canônico
 

@@ -3,19 +3,22 @@
 Última revisão: 01/09/2026
 
 ## Produção
-- versão: **v0.25.103 — shell visual canônico no primeiro carregamento**;
+- versão: **v0.25.104 — edição sem compensação de foco**;
 - branch: `main`;
 - GitHub Pages: `https://automatrixhub.github.io/rota27/`;
-- Service Worker: `rota27-comandas-v0.25.103-r1`;
-- baseline anterior: **v0.25.102**, merge `38fb4777d91ff1ddca5b6eae4dd70163cc5665fc`.
+- Service Worker: `rota27-comandas-v0.25.104-r1`;
+- baseline anterior: **v0.25.103**, merge `a715368d6d4a9b1d481dae5b4bbba3db3921bad9`.
 
-## Candidata — v0.25.104
+## Produção homologada — v0.25.104
+- promovida pelo PR #154, merge `792da68dd87ce8cb14215b82aded35de9341ef80`;
 - remove na origem o foco automático do campo Mesa/Local ao abrir **Editar comanda**;
 - exclui `v02576-edit-command-no-autofocus.js`, que existia apenas para neutralizar esse foco por interceptação global;
 - remove o asset do roadmap e do App Shell;
 - preserva foco manual, edição, cancelamento e salvamento;
 - sem alterações em dados, Supabase, sincronização ou regras operacionais;
-- promoção condicionada aos testes funcional e de ausência de erros no navegador.
+- edição abriu sem foco automático e o campo manteve foco manual por toque;
+- fechamento sem alteração aprovado no teste móvel;
+- GitHub Pages publicado com `VERSION` 0.25.104 e asset removido respondendo 404.
 
 ## Produção homologada — v0.25.100
 - promovida pelo PR #146, merge `2327d0ee249396b17047d787ed7786bdcb8c5674`;
