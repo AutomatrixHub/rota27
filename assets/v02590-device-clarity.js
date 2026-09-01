@@ -37,11 +37,9 @@
         label.style.cssText='display:block;margin-top:6px;font-size:12px;font-weight:700;opacity:.65';
         code.insertAdjacentElement('beforebegin',label);
       }
-      const legacy=[...main.querySelectorAll('.v02587-version-line')];
-      if(legacy.length>1)legacy.slice(0,-1).forEach(n=>n.remove());
+      const lines=[...main.querySelectorAll('.v02587-version-line')];
+      if(lines.length>1)lines.slice(0,-1).forEach(n=>n.remove());
     });
-    try{window.Rota27V02589DeviceRelease?.refresh?.();}catch{}
-    try{window.Rota27V02590UpdateCoordinator?.refresh?.();}catch{}
   }
   function schedule(delay=80){clearTimeout(timer);timer=setTimeout(normalize,delay);}
   function watch(){
