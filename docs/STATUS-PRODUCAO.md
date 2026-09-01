@@ -10,7 +10,7 @@
 - baseline anterior: **v0.25.98**, merge `751a5e263218608b207356383f2bdae3cfd6061d`.
 
 ## Produção homologada — v0.25.99
-- promovida pelo PR #144, merge `975b0b2`;
+- promovida pelo PR #144, merge `975b0b254aa0c922bd2d274c333f353602064f45`;
 - adiciona `text-align:center` diretamente ao componente canônico `#commandsEmpty.commands-empty-list`;
 - nenhum asset ou wrapper novo;
 - sem alterações em dados, regras operacionais ou integrações.
