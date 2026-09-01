@@ -343,7 +343,7 @@
           <div class="hero-kicker">PARADA OBRIGATÓRIA</div>
           <h1>Rota 27 Bodega</h1>
           <small><span class="brand-subline">Das delícias capixabas •</span><span class="brand-subline">Jardim Camburi</span></small>
-          <span id="v14VersionBadge" class="v14-version-badge">v0.25.104</span>
+          <span id="v14VersionBadge" class="v14-version-badge">v0.25.105</span>
         </div>
         <button id="r27HelpButton" type="button" class="r27-help-button" aria-label="Abrir ajuda do Rota 27" title="Ajuda"><span aria-hidden="true">?</span><small>Ajuda</small></button>
       </div>
@@ -574,10 +574,8 @@
     <p class="desc">Cadastre ou edite um item que aparece na tela de lançamentos.</p>
     <input type="hidden" id="menuItemId" />
     <div class="field"><label>NOME DO PRODUTO</label><input id="menuItemName" placeholder="Ex.: Cerveja Pilsen 500ml" /></div>
-    <div class="field-row">
-      <div class="field"><label>CATEGORIA</label><select id="menuItemCat"></select></div>
-      <div class="field"><label>ÍCONE</label><input id="menuItemEmoji" maxlength="8" placeholder="🍺" /></div>
-    </div>
+    <div class="field"><label>CATEGORIA</label><select id="menuItemCat"></select></div>
+    <input type="hidden" id="menuItemEmoji" value="🍽️" />
     <div class="category-actions">
       <button class="category-action" type="button" onclick="openCategorySheet('new')">＋ Nova categoria</button>
       <button class="category-action" type="button" onclick="openCategorySheet('edit')">✎ Editar categoria</button>
@@ -1173,7 +1171,7 @@ function openMenuItemSheet(id=''){
   document.getElementById('menuItemPrice').value=p?Number(p.price).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}):'';
   document.getElementById('menuItemEmoji').value=p?.emoji||'🍽️';
   document.getElementById('menuItemActive').checked=p?p.active!==false:true;
-  document.getElementById('menuItemWrap').classList.add('open'); setTimeout(()=>document.getElementById('menuItemName').focus(),120);
+  document.getElementById('menuItemWrap').classList.add('open');
 }
 function openCategoryManager(){
   showScreen('categories');
@@ -1218,7 +1216,6 @@ function openCategorySheet(mode='new',source='product',explicitCategory=''){
     ? `Esta categoria possui <strong>${count} ${count===1?'produto':'produtos'}</strong>. Ao renomear, todos eles serão movidos para o novo nome automaticamente.`
     : 'A nova categoria ficará disponível imediatamente na edição e no cadastro de produtos.';
   document.getElementById('categoryWrap').classList.add('open');
-  setTimeout(()=>{const i=document.getElementById('categoryName');i.focus();i.select();},120);
 }
 function saveCategory(){
   const mode=document.getElementById('categoryMode').value;

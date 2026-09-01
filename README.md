@@ -9,6 +9,10 @@ Aplicativo mobile-first, offline-first e multidispositivo para controle rápido 
 - **Service Worker:** `rota27-comandas-v0.25.104-r1`
 - **Baseline anterior:** v0.25.103
 
+## Candidata v0.25.105 — produto e categoria canônicos
+
+Os editores de produto e categoria deixam de agendar foco/seleção automáticos diretamente no código-base. O campo visual **Ícone**, já removido do produto desde a v0.25.80, passa a nascer como input oculto compatível. Com isso, é eliminada a camada v0.25.80 que interceptava globalmente `focus()` e `select()` e transformava o formulário depois do carregamento.
+
 ## v0.25.104 — edição sem compensação de foco
 
 A abertura de **Editar comanda** deixa de agendar foco automático no campo Mesa/Local diretamente no código-base. Com a causa removida, foi excluído o asset v0.25.76 que interceptava globalmente `focus()` e executava neutralizações posteriores. O foco manual e toda a edição permanecem disponíveis. Promovida pelo PR #154, sem alteração de dados, sincronização ou regras operacionais.

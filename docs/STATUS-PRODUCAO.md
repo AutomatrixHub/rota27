@@ -9,6 +9,14 @@
 - Service Worker: `rota27-comandas-v0.25.104-r1`;
 - baseline anterior: **v0.25.103**, merge `a715368d6d4a9b1d481dae5b4bbba3db3921bad9`.
 
+## Candidata — v0.25.105
+- remove na origem os focos automáticos dos editores de produto e categoria;
+- incorpora ao HTML inicial o campo oculto compatível `menuItemEmoji`;
+- exclui `v02580-product-category-no-autofocus.js` e suas referências;
+- preserva edição manual, categorias, preço, status ativo e o valor histórico do ícone;
+- sem alterações em dados, Supabase, estoque, sincronização ou regras operacionais;
+- promoção condicionada aos testes de produto e categoria em viewport móvel.
+
 ## Produção homologada — v0.25.104
 - promovida pelo PR #154, merge `792da68dd87ce8cb14215b82aded35de9341ef80`;
 - remove na origem o foco automático do campo Mesa/Local ao abrir **Editar comanda**;
