@@ -1,13 +1,17 @@
 # Rota 27 — Status de produção
 
-Última revisão: 31/08/2026
+Última revisão: 01/09/2026
 
 ## Produção
-- versão: **v0.25.80 — Edição sem foco + campo Ícone removido**;
+- versão candidata: **v0.25.97 — Limpeza controlada do App Shell**;
 - branch: `main`;
 - GitHub Pages: `https://automatrixhub.github.io/rota27/`;
-- Service Worker: `rota27-comandas-v0.25.80-r1`;
-- baseline anterior: **v0.25.79**, PR #115, merge `ef27799a6cb14076c1e42476e704a337e09054c3`.
+- Service Worker candidato: `rota27-comandas-v0.25.97-r1`;
+- baseline de produção congelada: **v0.25.96**, tag `production-v0.25.96-freeze`, commit `8b382bff82d103a257cd0b34ecb2c71ca0df93c2`.
+
+## Limpeza controlada do App Shell — v0.25.97
+
+Seis assets sem caminho executável conhecido deixam de integrar o pré-cache do Service Worker. Os arquivos permanecem publicados para observação e rollback. A mudança não altera funcionalidades, dados, sync, WhatsApp, Supabase ou Edge Functions.
 
 ## Edição de produto/categoria — v0.25.80
 A base legada ainda forçava foco 120 ms após a abertura das telas administrativas:
