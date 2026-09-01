@@ -3,11 +3,15 @@
 Aplicativo mobile-first, offline-first e multidispositivo para controle rápido de comandas da **Rota 27 Bodega**.
 
 ## Produção
-- **Versão:** v0.25.102 — Ajuda sem foco na origem
+- **Versão candidata:** v0.25.103 — shell visual canônico no primeiro carregamento
 - **Branch:** `main`
 - **GitHub Pages:** `https://automatrixhub.github.io/rota27/`
-- **Service Worker:** `rota27-comandas-v0.25.102-r1`
-- **Baseline anterior:** v0.25.101
+- **Service Worker candidato:** `rota27-comandas-v0.25.103-r1`
+- **Baseline de produção:** v0.25.102
+
+## v0.25.103 — shell visual canônico
+
+A TOPBAR e a barra inferior passam a nascer com estrutura, cores e geometria atuais no próprio arquivo-base. A barra inferior já contém **Painel**, sem reconstruir o antigo botão **Nova**; o módulo antigo apenas liga o comportamento. O estilo compacto da TOPBAR foi transferido da folha tardia para o shell, e o Painel deixou de escrever título e versão antigos durante o carregamento.
 
 ## v0.25.102 — Ajuda sem foco na origem
 

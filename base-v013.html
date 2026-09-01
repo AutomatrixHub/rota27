@@ -15,19 +15,19 @@
 <title>Rota 27 Bodega • Comandas v0.12</title>
 <style>
   :root{
-    --bg:#eee2cf;
-    --surface:#fbf6ee;
-    --surface-2:#f1e4d2;
-    --ink:#1b1816;
-    --muted:#6f6257;
-    --brand:#1a1613;
-    --brand-2:#c86d3c;
-    --accent:#e2b43f;
-    --accent-2:#f0d48b;
-    --danger:#b6453b;
-    --line:#dccbb8;
-    --ok:#3e7c59;
-    --shadow:0 12px 30px rgba(45,29,16,.12);
+    --bg:#F5E9D5;
+    --surface:#FFF9F0;
+    --surface-2:#F1E4D2;
+    --ink:#111111;
+    --muted:#756656;
+    --brand:#111111;
+    --brand-2:#DF6536;
+    --accent:#DF6536;
+    --accent-2:#F1B18F;
+    --danger:#B5483C;
+    --line:#D9C7A7;
+    --ok:#2F7A4A;
+    --shadow:0 12px 30px rgba(17,17,17,.12);
     --radius:18px;
   }
   *{box-sizing:border-box}
@@ -136,15 +136,15 @@
   .bottomnav{
     position:fixed;left:50%;transform:translateX(-50%);bottom:0;z-index:30;
     width:min(100%,720px);height:calc(82px + env(safe-area-inset-bottom));padding:8px 12px max(10px,env(safe-area-inset-bottom));
-    background:rgba(251,246,238,.99);backdrop-filter:blur(16px);border-top:1px solid #dbc6a6;
-    display:grid;grid-template-columns:repeat(4,1fr);gap:8px;box-shadow:0 -10px 26px rgba(63,41,18,.10)
+    background:rgba(255,249,240,.98);backdrop-filter:blur(16px);border-top:1px solid #D6C1A5;
+    display:grid;grid-template-columns:repeat(4,1fr);gap:8px;box-shadow:0 -10px 26px rgba(17,17,17,.08)
   }
-  .navbtn{border:0;background:transparent;color:var(--muted);border-radius:22px;font-size:12px;font-weight:900;padding:4px 2px 6px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;letter-spacing:-.01em}
-  .navbtn .navicon{display:grid;place-items:center;width:46px;height:46px;border-radius:16px;background:#f3ebdf;box-shadow:inset 0 0 0 1px #e5d6bf, 0 4px 10px rgba(91,62,26,.04);color:#7f5f44;transition:all .2s ease}
+  .navbtn{border:0;background:transparent;color:#746657;border-radius:22px;font-size:12px;font-weight:900;padding:4px 2px 6px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;letter-spacing:-.01em}
+  .navbtn .navicon{display:grid;place-items:center;width:46px;height:46px;border-radius:16px;background:#F3E7D5;box-shadow:inset 0 0 0 1px #DDCBB2,0 4px 10px rgba(17,17,17,.04);color:#6E5B4A;transition:all .2s ease}
   .navbtn .navicon svg{width:24px;height:24px;display:block;stroke:currentColor;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
   .navbtn .navlabel{display:block;line-height:1;color:inherit}
-  .navbtn.active{color:var(--brand);background:#f5e7cf}
-  .navbtn.active .navicon{background:linear-gradient(135deg,#c86d3c,#e2b43f);color:#fff;box-shadow:0 8px 18px rgba(200,109,60,.22)}
+  .navbtn.active{color:#111;background:#F7E4D6}
+  .navbtn.active .navicon{background:linear-gradient(135deg,#DF6536,#C95025);color:#fff;box-shadow:0 8px 18px rgba(223,101,54,.27)}
   .fab{position:fixed;right:max(18px,calc((100vw - 720px)/2 + 18px));bottom:calc(92px + env(safe-area-inset-bottom));z-index:31;border:0;width:60px;height:60px;border-radius:22px;background:var(--brand-2);color:#fff;font-size:31px;box-shadow:0 14px 28px rgba(200,109,60,.34)}
   .sheet-wrap{position:fixed;inset:0;z-index:50;display:none;background:rgba(13,22,17,.45);align-items:flex-end;justify-content:center}
   .sheet-wrap.open{display:flex}
@@ -311,6 +311,26 @@
   @media (min-width:560px){
     .product-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
   }
+  /* Shell visual canônico: disponível antes de qualquer módulo incremental. */
+  .topbar{padding:calc(4px + env(safe-area-inset-top)) 7px 5px!important;background:linear-gradient(180deg,var(--bg) 0%,var(--bg) 78%,rgba(245,233,213,0) 100%)}
+  .topbar .brand{position:relative!important;display:grid!important;grid-template-columns:64px minmax(0,1fr) 60px!important;grid-template-rows:auto!important;align-items:start!important;column-gap:9px!important;min-width:0!important;min-height:0!important;padding:9px 10px!important;border-radius:22px!important;background:linear-gradient(135deg,#FFF9F0 0%,#F4E7D1 100%);border-color:rgba(223,101,54,.42);box-shadow:inset 0 3px 0 rgba(223,101,54,.92),0 10px 24px rgba(17,17,17,.08)}
+  .topbar .logo-shell{grid-column:1!important;grid-row:1!important;justify-self:start!important;align-self:start!important;width:64px!important;height:64px!important;box-sizing:border-box!important;padding:6px!important;margin:0!important;border-radius:15px!important;background:#FFFDF8;box-shadow:inset 0 0 0 1px rgba(17,17,17,.10),0 8px 18px rgba(17,17,17,.10)}
+  .topbar .brand-copy{grid-column:2!important;grid-row:1!important;position:static!important;min-width:0!important;padding:0!important;margin:0!important}
+  .topbar .hero-kicker{margin:0 0 4px!important;font-size:10.5px!important;line-height:1.15!important;letter-spacing:.16em!important;white-space:nowrap!important}
+  .topbar .brand h1{margin:0!important;font-size:22px!important;line-height:1.02!important;color:var(--ink)}
+  .topbar .brand-copy>small{display:block!important;margin-top:5px!important;padding:0!important;font-size:12px!important;line-height:1.18!important;color:#5f4a3a!important}
+  .topbar .brand-copy>small .brand-subline{display:block!important;white-space:nowrap!important}
+  .topbar .brand .r27-help-button{grid-column:3!important;grid-row:1!important;justify-self:end!important;align-self:start!important;width:48px!important;min-width:48px!important;height:48px!important;min-height:48px!important;margin:0!important;padding:5px 6px!important;border-radius:14px!important;box-sizing:border-box!important}
+  .topbar #v14VersionBadge{position:absolute!important;right:10px!important;bottom:8px!important;z-index:3!important;margin:0!important;padding:3px 7px!important;line-height:1!important;background:#F3D5C4;color:#8F4421;border-color:#E4A886}
+  .topbar #v14VersionBadge::after{font-size:10.5px!important;line-height:1!important}
+  @media(max-width:380px){
+    .topbar .brand{grid-template-columns:60px minmax(0,1fr) 56px!important;column-gap:8px!important;padding:8px 9px!important}
+    .topbar .logo-shell{width:60px!important;height:60px!important;padding:5px!important}
+    .topbar .hero-kicker{font-size:10px!important;letter-spacing:.145em!important}
+    .topbar .brand h1{font-size:21px!important}
+    .topbar .brand-copy>small{font-size:11.5px!important}
+    .topbar #v14VersionBadge{right:9px!important;bottom:7px!important}
+  }
 </style>
 </head>
 <body>
@@ -323,7 +343,7 @@
           <div class="hero-kicker">PARADA OBRIGATÓRIA</div>
           <h1>Rota 27 Bodega</h1>
           <small><span class="brand-subline">Das delícias capixabas •</span><span class="brand-subline">Jardim Camburi</span></small>
-          <span id="v14VersionBadge" class="v14-version-badge">v0.25.102</span>
+          <span id="v14VersionBadge" class="v14-version-badge">v0.25.103</span>
         </div>
         <button id="r27HelpButton" type="button" class="r27-help-button" aria-label="Abrir ajuda do Rota 27" title="Ajuda"><span aria-hidden="true">?</span><small>Ajuda</small></button>
       </div>
@@ -422,8 +442,8 @@
 
   <nav class="bottomnav">
     <button class="navbtn active" id="navCommands" onclick="showScreen('commands')"><span class="navicon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 3h10v18l-2-1.5L13 21l-2-1.5L9 21 7 19.5 5 21V5a2 2 0 0 1 2-2Z"/><path d="M9 8h6"/><path d="M9 12h6"/><path d="M9 16h4"/></svg></span><span class="navlabel">Comandas</span></button>
-    <button class="navbtn" id="navNew" onclick="openNewCommandSheet()"><span class="navicon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 5v14"/><path d="M5 12h14"/></svg></span><span class="navlabel">Nova</span></button>
     <button class="navbtn" id="navMenu" onclick="showScreen('menu')"><span class="navicon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 3v8"/><path d="M10 3v8"/><path d="M7 7h3"/><path d="M8.5 11v10"/><path d="M16 3v8c0 1.1-.9 2-2 2h0"/><path d="M14 21V3"/></svg></span><span class="navlabel">Cardápio</span></button>
+    <button class="navbtn" id="navPanel" aria-label="Painel"><span class="navicon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><rect x="14" y="14" width="6" height="6" rx="1"/></svg></span><span class="navlabel">Painel</span></button>
     <button class="navbtn" id="navHistory" onclick="showScreen('history')"><span class="navicon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="13" r="7"/><path d="M12 9v4l2.8 1.8"/><path d="M9 2h6"/><path d="M15.5 4.5 17 6"/></svg></span><span class="navlabel">Histórico</span></button>
   </nav>
 </div>

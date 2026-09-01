@@ -58,12 +58,16 @@
   }
 
   function configureNav(){
-    const nav=byId('navNew');
+    const nav=byId('navPanel')||byId('navNew');
     if(!nav)return null;
-    nav.id='navPanel';
-    nav.removeAttribute('onclick');
-    nav.setAttribute('aria-label','Painel');
-    nav.innerHTML='<span class="navicon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><rect x="14" y="14" width="6" height="6" rx="1"/></svg></span><span class="navlabel">Painel</span>';
+    if(nav.id==='navNew'){
+      nav.id='navPanel';
+      nav.removeAttribute('onclick');
+      nav.setAttribute('aria-label','Painel');
+      nav.innerHTML='<span class="navicon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><rect x="14" y="14" width="6" height="6" rx="1"/></svg></span><span class="navlabel">Painel</span>';
+    }
+    if(nav.dataset.r27PanelBound==='1')return nav;
+    nav.dataset.r27PanelBound='1';
     nav.addEventListener('click',()=>showPanel());
     return nav;
   }
@@ -181,9 +185,6 @@
   }
 
   function applyVersion(){
-    const badge=byId('v14VersionBadge');
-    if(badge)badge.textContent='v0.15 DEV.4';
-    document.title='Rota 27 Bodega • Comandas v0.15 DEV.4';
     window.ROTA27_SYNC_DEV_VERSION=VERSION;
   }
 
