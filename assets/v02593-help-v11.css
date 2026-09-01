@@ -1,0 +1,35 @@
+/* Rota 27 v0.25.93 — Ajuda do Sistema v11.0 */
+#r27HelpOverlay[data-help-v11="1"] .r27-help-v11-banner{
+  margin:0 0 12px;
+  padding:14px 15px;
+  border:1px solid #dfccb0;
+  border-radius:18px;
+  background:linear-gradient(145deg,#fff9f0,#f7ead8);
+  color:#1b1816;
+}
+#r27HelpOverlay[data-help-v11="1"] .r27-help-v11-banner strong{display:block;font-size:17px;line-height:1.2}
+#r27HelpOverlay[data-help-v11="1"] .r27-help-v11-banner p{margin:6px 0 0;color:#6f6053;line-height:1.45}
+#r27HelpOverlay[data-help-v11="1"] .r27-help-v11-kicker{display:inline-flex;margin-bottom:8px;padding:4px 8px;border-radius:999px;background:#111;color:#fff;font-size:10px;font-weight:900;letter-spacing:.06em;text-transform:uppercase}
+#r27HelpOverlay[data-help-v11="1"] .r27-help-v11-map{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin:12px 0}
+#r27HelpOverlay[data-help-v11="1"] .r27-help-v11-map>div{border:1px solid #e6d6bd;border-radius:14px;background:#fffaf2;padding:10px;min-width:0}
+#r27HelpOverlay[data-help-v11="1"] .r27-help-v11-map strong{display:block;font-size:12px;color:#191613}
+#r27HelpOverlay[data-help-v11="1"] .r27-help-v11-map small{display:block;margin-top:3px;color:#77685b;font-size:10px;line-height:1.3}
+#r27HelpOverlay[data-help-v11="1"] .r27-help-v11-path{display:block;margin:9px 0;padding:9px 11px;border-radius:12px;background:#f5eadb;border:1px solid #e2ceb0;color:#554638;font-size:12px;line-height:1.4}
+#r27HelpOverlay[data-help-v11="1"] .r27-help-v11-path b{color:#111}
+#r27HelpOverlay[data-help-v11="1"] .r27-help-v11-new{display:inline-flex;align-items:center;gap:5px;padding:3px 7px;border-radius:999px;background:#111;color:#fff;font-size:9px;font-weight:900;letter-spacing:.04em;vertical-align:middle}
+#r27HelpOverlay[data-help-v11="1"] .r27-help-v11-actions{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 2px}
+#r27HelpOverlay[data-help-v11="1"] .r27-help-v11-actions button{min-height:42px;padding:9px 13px;border:1px solid #d9c7a7;border-radius:12px;background:#fff9f0;color:#111;font-weight:900;font-size:12px}
+#r27HelpOverlay[data-help-v11="1"] .r27-help-v11-actions button.primary{background:#111;border-color:#111;color:#fff}
+#r27HelpOverlay[data-help-v11="1"] .r27-help-v11-status{margin-top:10px;padding:10px 12px;border-radius:12px;background:#eef6ef;color:#2f6d43;font-size:12px;font-weight:800}
+#r27HelpOverlay[data-help-v11="1"] .r27-help-v11-status.test{background:#eeebff;color:#40348d}
+#r27HelpOverlay[data-help-v11="1"] .r27-help-v11-checks{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:10px 0}
+#r27HelpOverlay[data-help-v11="1"] .r27-help-v11-checks>div{padding:9px 10px;border-radius:12px;border:1px solid #eadcc8;background:#fff;color:#5d5045;font-size:11px;line-height:1.35}
+#r27HelpOverlay[data-help-v11="1"] .r27-help-v11-checks b{display:block;color:#111;margin-bottom:2px}
+#r27HelpOverlay[data-help-v11="1"] .r27-help-section[data-v11-feature="new"]>summary{background:linear-gradient(90deg,rgba(218,105,61,.055),transparent)}
+body.v02581-test-mode #r27HelpOverlay[data-help-v11="1"] .r27-help-v11-banner{background:linear-gradient(145deg,#faf9ff,#efedff);border-color:rgba(77,62,145,.23)}
+body.v02581-test-mode #r27HelpOverlay[data-help-v11="1"] .r27-help-v11-path{background:#efedff;border-color:rgba(77,62,145,.2);color:#4f4771}
+body.v02581-test-mode #r27HelpOverlay[data-help-v11="1"] .r27-help-v11-new{background:#40348d}
+@media(max-width:640px){
+  #r27HelpOverlay[data-help-v11="1"] .r27-help-v11-map{grid-template-columns:1fr 1fr}
+  #r27HelpOverlay[data-help-v11="1"] .r27-help-v11-checks{grid-template-columns:1fr}
+}
