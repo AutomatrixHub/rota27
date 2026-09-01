@@ -1,0 +1,44 @@
+/* Rota 27 v0.25.91 — fechamento fixo em listas longas */
+.v02591-floating-close{
+  position:fixed;
+  right:max(16px,calc((100vw - 720px)/2 + 16px));
+  bottom:calc(96px + env(safe-area-inset-bottom));
+  z-index:84;
+  width:52px;
+  height:52px;
+  border:1px solid #d9c7a7;
+  border-radius:18px;
+  background:rgba(255,249,240,.98);
+  color:#1b1816;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:0;
+  font-size:30px;
+  line-height:1;
+  font-weight:500;
+  box-shadow:0 10px 26px rgba(45,29,16,.18);
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+  -webkit-tap-highlight-color:transparent;
+  touch-action:manipulation;
+}
+.v02591-floating-close.show{display:flex}
+.v02591-floating-close:active{transform:scale(.96)}
+#v02591MenuClose{z-index:34}
+#v02591ClientsClose{z-index:84}
+body.v02581-test-mode .v02591-floating-close{
+  border-color:rgba(77,62,145,.28);
+  background:rgba(248,247,255,.98);
+  color:#302765;
+}
+@media(max-width:390px){
+  .v02591-floating-close{
+    right:14px;
+    bottom:calc(94px + env(safe-area-inset-bottom));
+    width:50px;
+    height:50px;
+    border-radius:17px;
+    font-size:28px;
+  }
+}
