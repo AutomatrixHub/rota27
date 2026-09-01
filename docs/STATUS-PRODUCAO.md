@@ -41,6 +41,14 @@
 - Ajuda v11 e botão X aprovados, sem erros no navegador;
 - GitHub Pages publicado com `VERSION` 0.25.102 e asset removido respondendo 404.
 
+## Candidata — v0.25.103
+- incorpora geometria e cores atuais da TOPBAR ao CSS do arquivo-base;
+- incorpora a estrutura final `Comandas / Cardápio / Painel / Histórico` à barra inferior inicial;
+- elimina a conversão tardia de `navNew` para `navPanel` no caminho normal;
+- remove do módulo do Painel as escritas transitórias de título e versão antigos;
+- retira da folha v0.18.2 a geometria da TOPBAR agora pertencente ao shell;
+- sem alterações em dados, Supabase, sincronização ou regras operacionais.
+
 ## Produção homologada — v0.25.99
 - promovida pelo PR #144, merge `975b0b254aa0c922bd2d274c333f353602064f45`;
 - adiciona `text-align:center` diretamente ao componente canônico `#commandsEmpty.commands-empty-list`;
