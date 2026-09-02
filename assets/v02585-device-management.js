@@ -8,6 +8,7 @@
   let showRemoved=false;
   let loading=false;
   let lastDevices=[];
+  let panelObserver=null;
 
   const byId=id=>document.getElementById(id);
   const esc=value=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
@@ -102,6 +103,16 @@
       entry.innerHTML='<button type="button" id="v02585OpenDevices"><span class="v02585-device-entry-icon">▣</span><span><strong>Aparelhos sincronizados</strong><small>Desativar, reativar ou remover aparelhos</small></span><b>›</b></button>';
       operation.appendChild(entry);
     }
+    return true;
+  }
+
+  function watchPanel(){
+    const screen=byId('screenPanel');
+    if(!screen)return false;
+    panelObserver?.disconnect();
+    panelObserver=new MutationObserver(()=>setTimeout(ensureEntry,0));
+    panelObserver.observe(screen,{childList:true});
+    ensureEntry();
     return true;
   }
 
@@ -273,8 +284,8 @@
   });
   document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')setTimeout(ensureEntry,80);});
 
-  function start(){ensureSheet();ensureEntry();setTimeout(ensureEntry,350);setTimeout(ensureEntry,1200);}
+  function start(){ensureSheet();watchPanel();setTimeout(watchPanel,350);setTimeout(watchPanel,1200);}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
 
-  window.Rota27V02585DeviceManagement={version:VERSION,open:openSheet,refresh:loadDevices,ensure:ensureEntry};
+  window.Rota27V02585DeviceManagement={version:VERSION,open:openSheet,refresh:loadDevices,ensure:ensureEntry,watchPanel};
 })();
