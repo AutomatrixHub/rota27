@@ -1,7 +1,7 @@
 /* Rota 27 — carregador incremental do roadmap pós-v0.25.46 */
 (function(){
   'use strict';
-  const CURRENT='0.25.121';
+  const CURRENT='0.25.122';
   const HELP='11.0';
   const assets=[
     {type:'css',id:'v02579RoundedBorderCss',src:'./assets/v02577-menu-option-b.css?v=02579r1'},
@@ -51,7 +51,7 @@
     {type:'js',id:'v02582TestModeHotfixJs',src:'./assets/v02582-test-mode-hotfix.js?v=02582r1'},
     {type:'js',id:'v02595TestRealBoundaryJs',src:'./assets/v02595-test-real-boundary.js?v=02595r1'},
     {type:'css',id:'v02583HistoryPanelParityCss',src:'./assets/v02583-history-panel-parity.css?v=02583r1'},
-    {type:'css',id:'v02584ManagerVisualParityCss',src:'./assets/v02584-manager-visual-parity.css?v=025121r1'},
+    {type:'css',id:'v02584ManagerVisualParityCss',src:'./assets/v02584-manager-visual-parity.css?v=025122r1'},
     {type:'css',id:'v02585DeviceManagementCss',src:'./assets/v02585-device-management.css?v=02585r1'},
     {type:'js',id:'v02585DeviceManagementJs',src:'./assets/v02585-device-management.js?v=02585r1'},
     {type:'js',id:'v02585DeviceManagementStabilityJs',src:'./assets/v02585-device-management-stability.js?v=02585r1'},
