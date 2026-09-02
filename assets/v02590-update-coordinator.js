@@ -21,9 +21,6 @@
   let currentDeviceId='';
   let deviceMap=new Map();
 
-  // Impede o coordenador antigo (v0.25.87) de iniciar nesta e nas próximas releases.
-  window.Rota27V02587AutoUpdate={version:VERSION,superseded:true};
-
   function inTestMode(){return document.body.classList.contains('v02581-test-mode');}
   function currentVersion(){
     return clean(window.Rota27Roadmap?.version||document.querySelector('meta[name="rota27-release-version"]')?.content||VERSION,40)||VERSION;
