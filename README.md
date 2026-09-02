@@ -3,11 +3,15 @@
 Aplicativo mobile-first, offline-first e multidispositivo para controle rápido de comandas da **Rota 27 Bodega**.
 
 ## Produção
-- **Versão:** v0.25.120 — remoção de identidades legadas do Mapa
+- **Versão:** v0.25.121 — filtro mensal na Visão Gerencial
 - **Branch:** `main`
 - **GitHub Pages:** `https://automatrixhub.github.io/rota27/`
-- **Service Worker:** `rota27-comandas-v0.25.120-r1`
-- **Baseline anterior:** v0.25.119
+- **Service Worker:** `rota27-comandas-v0.25.121-r1`
+- **Baseline anterior:** v0.25.120
+
+## v0.25.121 — filtro mensal na Visão Gerencial
+
+Inclui a opção **Mês** na Visão Gerencial. O seletor reúne os fechamentos imutáveis do mês escolhido, atualiza todos os indicadores e compara com o mês calendário anterior quando houver base.
 
 ## v0.25.120 — remoção de identidades legadas do Mapa
 

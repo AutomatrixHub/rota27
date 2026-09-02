@@ -6,6 +6,7 @@
   const LABEL='v0.20.0';
   const TITLE='Rota 27 Bodega • Comandas v0.20.0';
   let period='30';
+  let selectedMonth='';
   let badgeObserver=null;
   let titleObserver=null;
   let helpFooterObserver=null;
@@ -18,6 +19,10 @@
   function localDateKey(d=new Date()){const y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),day=String(d.getDate()).padStart(2,'0');return `${y}-${m}-${day}`;}
   function shiftKey(key,days){const [y,m,d]=String(key).split('-').map(Number);const x=new Date(y,m-1,d);x.setDate(x.getDate()+Number(days||0));return localDateKey(x);}
   function shortDate(key){const p=String(key||'').split('-');return p.length===3?`${p[2]}/${p[1]}`:String(key||'');}
+  function validMonthKey(key){return /^\d{4}-(0[1-9]|1[0-2])$/.test(String(key||''));}
+  function monthBounds(key){const [y,m]=String(key||'').split('-').map(Number);const end=localDateKey(new Date(y,m,0));return {start:`${key}-01`,end};}
+  function previousMonth(key){const [y,m]=String(key||'').split('-').map(Number);const d=new Date(y,m-2,1);return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;}
+  function monthLabel(key){if(!validMonthKey(key))return 'Mês específico';const [y,m]=key.split('-').map(Number);return new Date(y,m-1,1).toLocaleDateString('pt-BR',{month:'long',year:'numeric'});}
   function percentDelta(current,previous){
     const c=Number(current||0),p=Number(previous||0);
     if(!Number.isFinite(c)||!Number.isFinite(p))return null;
@@ -36,6 +41,7 @@
   }
   function ranges(){
     const today=localDateKey();
+    if(period==='month'&&validMonthKey(selectedMonth)){const current=monthBounds(selectedMonth),previous=monthBounds(previousMonth(selectedMonth));return {currentStart:current.start,currentEnd:current.end,previousStart:previous.start,previousEnd:previous.end,label:'Mês específico'};}
     if(period==='all')return {currentStart:'0000-00-00',currentEnd:today,previousStart:null,previousEnd:null,label:'Todo o histórico'};
     const days=Math.max(1,Number(period||30));
     const currentStart=shiftKey(today,-(days-1));
@@ -90,18 +96,21 @@
   function ensureSheet(){
     if(byId('v020ManagerWrap'))return;
     const wrap=document.createElement('div');wrap.id='v020ManagerWrap';wrap.className='sheet-wrap';
-    wrap.innerHTML=`<div class="sheet v020-sheet"><div class="handle"></div><div class="v020-head"><div><h3>Visão Gerencial</h3><p class="desc">Histórico e comparação com base nos fechamentos imutáveis.</p></div><button type="button" id="v020ManagerX" class="v020-x" aria-label="Fechar">×</button></div><div class="v020-periods" id="v020Periods"><button data-period="7">7 dias</button><button data-period="30" class="active">30 dias</button><button data-period="90">90 dias</button><button data-period="all">Todos</button></div><div id="v020ManagerBody"></div></div>`;
+    wrap.innerHTML=`<div class="sheet v020-sheet"><div class="handle"></div><div class="v020-head"><div><h3>Visão Gerencial</h3><p class="desc">Histórico e comparação com base nos fechamentos imutáveis.</p></div><button type="button" id="v020ManagerX" class="v020-x" aria-label="Fechar">×</button></div><div class="v020-periods" id="v020Periods"><button data-period="7">7 dias</button><button data-period="30" class="active">30 dias</button><button data-period="90">90 dias</button><button data-period="all">Todos</button><button data-period="month">Mês</button><label id="v020MonthPicker" class="v020-month-picker" hidden><span>Mês de fechamento</span><input id="v020MonthInput" type="month" aria-label="Escolher mês de fechamento" /></label></div><div id="v020ManagerBody"></div></div>`;
     document.body.appendChild(wrap);
     wrap.addEventListener('click',e=>{if(e.target===wrap)wrap.classList.remove('open');});
     byId('v020ManagerX').addEventListener('click',()=>wrap.classList.remove('open'));
-    byId('v020Periods').querySelectorAll('[data-period]').forEach(btn=>btn.addEventListener('click',()=>{period=btn.dataset.period||'30';byId('v020Periods').querySelectorAll('[data-period]').forEach(x=>x.classList.toggle('active',x===btn));renderManager();}));
+    const periods=byId('v020Periods'),monthInput=byId('v020MonthInput');
+    const syncControls=()=>{periods.querySelectorAll('[data-period]').forEach(x=>x.classList.toggle('active',x.dataset.period===period));byId('v020MonthPicker')?.toggleAttribute('hidden',period!=='month');if(monthInput)monthInput.value=selectedMonth;};
+    periods.querySelectorAll('[data-period]').forEach(btn=>btn.addEventListener('click',()=>{const next=btn.dataset.period||'30';if(next==='month'&&!validMonthKey(selectedMonth)){const latest=closures().slice().sort((a,b)=>String(b?.businessDate||'').localeCompare(String(a?.businessDate||'')))[0];selectedMonth=validMonthKey(String(latest?.businessDate||'').slice(0,7))?String(latest.businessDate).slice(0,7):localDateKey().slice(0,7);}period=next;syncControls();renderManager();if(next==='month')setTimeout(()=>monthInput?.focus(),0);}));
+    monthInput?.addEventListener('change',()=>{const next=String(monthInput.value||'');if(!validMonthKey(next))return;selectedMonth=next;period='month';syncControls();renderManager();});
   }
 
   function renderManager(){
     ensureSheet();const body=byId('v020ManagerBody');if(!body)return;const d=dataset(),a=d.a,p=d.p;
     const baseText=a.turns?`Base confiável: ${a.turns} ${a.turns===1?'fechamento imutável':'fechamentos imutáveis'} no período selecionado.`:'Ainda não existe fechamento imutável dentro do período selecionado.';
     const best=a.best?`${shortDate(a.best.businessDate)} • ${moneyValue(a.best.summary?.revenue||0)}`:'—';
-    const currentRange=period==='all'?d.r.label:`${shortDate(d.r.currentStart)} a ${shortDate(d.r.currentEnd)}`;
+    const currentRange=period==='all'?d.r.label:period==='month'?monthLabel(selectedMonth):`${shortDate(d.r.currentStart)} a ${shortDate(d.r.currentEnd)}`;
     const previousAvailable=d.previous.length>0;
     body.innerHTML=`
       <div class="v020-source ${a.turns?'ok':'warn'}"><strong>${esc(d.r.label)}</strong> • ${esc(currentRange)}<br>${esc(baseText)} Os valores vêm dos snapshots salvos no Fechamento do Turno; dias sem fechamento não são inventados como zero.</div>
@@ -118,7 +127,7 @@
         ${compareCard('Ticket médio',a.avgTicket,p.avgTicket,moneyValue)}
         ${compareCard('Comandas',a.commands,p.commands,v=>String(Number(v||0)))}
         ${compareCard('Itens vendidos',a.units,p.units,v=>String(Number(v||0)))}
-      </div>${previousAvailable?'':`<div class="v020-empty">Ainda não há fechamentos suficientes no período anterior para uma comparação completa.</div>`}</section>
+      </div>${previousAvailable?'':`<div class="v020-empty">Ainda não há fechamentos suficientes no mês/período anterior para uma comparação completa.</div>`}</section>
       <section class="v020-chart-wrap"><div class="v020-chart-head"><h4>Faturamento por turno fechado</h4><small>Melhor dia: ${esc(best)}</small></div><div class="v020-chart">${chartHtml(d.current)}</div></section>
       <div class="v020-grid">
         <section class="v020-panel"><h4>Mais vendidos</h4>${listHtml(a.products,'product')}</section>
@@ -136,7 +145,8 @@
     const d=dataset();if(!d.current.length){try{showToast('Não há fechamentos para exportar neste período.',false);}catch{}return;}
     const lines=['Data;Faturamento;Comandas;Canceladas;Ticket Medio;Itens;Formas de Pagamento'];
     d.current.forEach(c=>{const s=c.summary||{};const payments=(Array.isArray(s.payments)?s.payments:[]).map(p=>`${p.name}: ${Number(p.value||0).toFixed(2)}`).join(' | ');lines.push([c.businessDate,Number(s.revenue||0).toFixed(2),Number(s.closedCount||0),Number(s.cancelled||0),Number(s.avgTicket||0).toFixed(2),Number(s.units||0),payments].map(csvCell).join(';'));});
-    downloadText(`rota27-visao-gerencial-${period}-${localDateKey()}.csv`,'\uFEFF'+lines.join('\r\n'));try{showToast('CSV gerencial gerado.',false);}catch{}
+    const filter=period==='month'&&validMonthKey(selectedMonth)?`mes-${selectedMonth}`:period;
+    downloadText(`rota27-visao-gerencial-${filter}-${localDateKey()}.csv`,'\uFEFF'+lines.join('\r\n'));try{showToast('CSV gerencial gerado.',false);}catch{}
   }
 
   async function openManager(){ensureSheet();byId('v020ManagerWrap').classList.add('open');renderManager();if(navigator.onLine&&window.Rota27V019?.syncTurnClosures){try{await window.Rota27V019.syncTurnClosures();renderManager();renderEntry();}catch{}}}
@@ -152,7 +162,7 @@
 
   function injectHelp(){
     const overlay=byId('r27HelpOverlay');if(!overlay)return false;const content=overlay.querySelector('.r27-help-content');if(!content)return false;
-    if(!byId('r27-help-visao-gerencial')){const section=document.createElement('details');section.id='r27-help-visao-gerencial';section.className='r27-help-section';section.innerHTML=`<summary><span class="r27-help-section-icon">▦</span><span><strong>Visão Gerencial</strong><small>Comparar períodos usando fechamentos confiáveis.</small></span></summary><div class="r27-help-section-body"><div class="r27-help-lead">No <b>Painel</b>, abra <b>Visão Gerencial</b> para acompanhar faturamento, média por dia, ticket, comandas, itens e cancelamentos usando os registros imutáveis do Fechamento do Turno.</div><ol class="r27-help-steps"><li><span>1</span><div><b>Escolha o período</b><br>Use 7, 30, 90 dias ou todo o histórico.</div></li><li><span>2</span><div><b>Compare</b><br>O app confronta faturamento, ticket, comandas e itens com o período anterior equivalente quando existe base.</div></li><li><span>3</span><div><b>Leia tendências</b><br>Veja faturamento por turno, mais vendidos e formas de pagamento.</div></li><li><span>4</span><div><b>Exporte</b><br>Gere CSV dos fechamentos do período selecionado para análise externa.</div></li></ol><div class="r27-help-tip"><b>Importante:</b> dias sem fechamento não são tratados como faturamento zero. A visão só usa registros efetivamente encerrados.</div></div>`;content.appendChild(section);}
+    if(!byId('r27-help-visao-gerencial')){const section=document.createElement('details');section.id='r27-help-visao-gerencial';section.className='r27-help-section';section.innerHTML=`<summary><span class="r27-help-section-icon">▦</span><span><strong>Visão Gerencial</strong><small>Comparar períodos usando fechamentos confiáveis.</small></span></summary><div class="r27-help-section-body"><div class="r27-help-lead">No <b>Painel</b>, abra <b>Visão Gerencial</b> para acompanhar faturamento, média por dia, ticket, comandas, itens e cancelamentos usando os registros imutáveis do Fechamento do Turno.</div><ol class="r27-help-steps"><li><span>1</span><div><b>Escolha o período</b><br>Use 7, 30, 90 dias, todo o histórico ou um mês específico.</div></li><li><span>2</span><div><b>Compare</b><br>O app confronta faturamento, ticket, comandas e itens com o período anterior equivalente; no filtro Mês, a referência é o mês calendário anterior.</div></li><li><span>3</span><div><b>Leia tendências</b><br>Veja faturamento por turno, mais vendidos e formas de pagamento.</div></li><li><span>4</span><div><b>Exporte</b><br>Gere CSV dos fechamentos do período selecionado para análise externa.</div></li></ol><div class="r27-help-tip"><b>Importante:</b> dias sem fechamento não são tratados como faturamento zero. A visão só usa registros efetivamente encerrados.</div></div>`;content.appendChild(section);}
     const footer=overlay.querySelector('.r27-help-footer span');if(footer&&footer.textContent!=='Ajuda v4.4 • v0.20.0')footer.textContent='Ajuda v4.4 • v0.20.0';
     if(footer&&!helpFooterObserver){helpFooterObserver=new MutationObserver(()=>{if(ownVersion()&&footer.textContent!=='Ajuda v4.4 • v0.20.0')footer.textContent='Ajuda v4.4 • v0.20.0';});helpFooterObserver.observe(footer,{childList:true,characterData:true,subtree:true});}
     return true;
@@ -164,6 +174,6 @@
   function tick(){if(!ownVersion())return;protectVersion();ensureSheet();if(byId('screenPanel')?.classList.contains('active'))renderEntry();injectHelp();if(byId('v020ManagerWrap')?.classList.contains('open'))renderManager();}
   function start(){protectVersion();ensureSheet();setTimeout(tick,120);setTimeout(tick,650);setInterval(tick,1500);window.addEventListener('rota27:v019-turn-updated',()=>{renderEntry();if(byId('v020ManagerWrap')?.classList.contains('open'))renderManager();});window.addEventListener('online',tick);window.addEventListener('storage',tick);console.info('[Rota27] v0.20.0 Visão Gerencial carregada.');}
 
-  window.Rota27V020={version:VERSION,openManager,getDataset:()=>clone(dataset())};
+  window.Rota27V020={version:VERSION,openManager,getDataset:()=>clone(dataset()),getSelectedMonth:()=>selectedMonth};
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
 })();

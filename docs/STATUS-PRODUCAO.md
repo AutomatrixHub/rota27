@@ -3,11 +3,18 @@
 Última revisão: 02/09/2026
 
 ## Produção
-- versão: **v0.25.120 — remoção de identidades legadas do Mapa**;
+- versão: **v0.25.121 — filtro mensal na Visão Gerencial**;
 - branch: `main`;
 - GitHub Pages: `https://automatrixhub.github.io/rota27/`;
-- Service Worker: `rota27-comandas-v0.25.120-r1`;
-- baseline anterior: **v0.25.119**, merge `245a53d164fb07a22d0223f854a02d4816b61700`.
+- Service Worker: `rota27-comandas-v0.25.121-r1`;
+- baseline anterior: **v0.25.120**, merge `af44199cd7ad594e8432da20b4f2cb8de2654fa6`.
+
+## Produção pendente de homologação — v0.25.121
+- adiciona o período **Mês** na Visão Gerencial;
+- filtra pela data operacional dos fechamentos imutáveis e reúne todos os fechamentos do mês selecionado;
+- aplica o mesmo recorte a métricas, gráfico, listas e CSV;
+- compara com o mês calendário anterior, quando houver base;
+- não altera comandas, fechamentos, sincronização ou armazenamento local.
 
 ## Produção pendente de homologação — v0.25.120
 - remove `v0253-release.js` e `v0254-release.js`, camadas sem consumidores que apenas atualizavam a versão antiga da Ajuda;

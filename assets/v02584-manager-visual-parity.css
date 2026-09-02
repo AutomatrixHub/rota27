@@ -59,6 +59,11 @@
   line-height:1;
   font-weight:850;
 }
+#v020ManagerWrap .v020-periods{grid-template-columns:repeat(5,minmax(0,1fr))}
+#v020ManagerWrap .v020-periods button{padding:0 5px;font-size:10.5px}
+#v020ManagerWrap .v020-month-picker{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:9px 11px;border:1px solid var(--line);border-radius:14px;background:var(--surface-2);color:var(--muted);font-size:11px;font-weight:850}
+#v020ManagerWrap .v020-month-picker[hidden]{display:none}
+#v020ManagerWrap .v020-month-picker input{min-height:32px;border:1px solid var(--line);border-radius:10px;padding:0 8px;background:var(--surface);color:var(--ink);font:inherit;font-weight:850}
 
 /* Modo Teste Global: mesma gramática das seções principais. */
 #v020ManagerWrap .v02581-manager-test-mode{
