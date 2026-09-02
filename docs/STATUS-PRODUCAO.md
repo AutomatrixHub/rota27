@@ -3,11 +3,17 @@
 Última revisão: 02/09/2026
 
 ## Produção
-- versão: **v0.25.119 — filtro por data específica no Histórico**;
+- versão: **v0.25.120 — remoção de identidades legadas do Mapa**;
 - branch: `main`;
 - GitHub Pages: `https://automatrixhub.github.io/rota27/`;
-- Service Worker: `rota27-comandas-v0.25.119-r1`;
-- baseline anterior: **v0.25.118**, merge `eef95d37504c2305798c8565b664bb048873ca78`.
+- Service Worker: `rota27-comandas-v0.25.120-r1`;
+- baseline anterior: **v0.25.119**, merge `245a53d164fb07a22d0223f854a02d4816b61700`.
+
+## Produção pendente de homologação — v0.25.120
+- remove `v0253-release.js` e `v0254-release.js`, camadas sem consumidores que apenas atualizavam a versão antiga da Ajuda;
+- preserva o núcleo funcional do Mapa (`v0252`), seus estilos e os refinamentos posteriores;
+- remove dois ouvintes de clique/visibilidade redundantes;
+- não altera comandas, vendas, histórico, sincronização ou armazenamento local.
 
 ## Produção pendente de homologação — v0.25.119
 - adiciona o período **Data** na tela Histórico & resultados;

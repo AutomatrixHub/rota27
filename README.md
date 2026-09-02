@@ -3,11 +3,15 @@
 Aplicativo mobile-first, offline-first e multidispositivo para controle rápido de comandas da **Rota 27 Bodega**.
 
 ## Produção
-- **Versão:** v0.25.119 — filtro por data específica no Histórico
+- **Versão:** v0.25.120 — remoção de identidades legadas do Mapa
 - **Branch:** `main`
 - **GitHub Pages:** `https://automatrixhub.github.io/rota27/`
-- **Service Worker:** `rota27-comandas-v0.25.119-r1`
-- **Baseline anterior:** v0.25.118
+- **Service Worker:** `rota27-comandas-v0.25.120-r1`
+- **Baseline anterior:** v0.25.119
+
+## v0.25.120 — remoção de identidades legadas do Mapa
+
+Remove duas camadas antigas que apenas reescreviam a versão exibida na Ajuda. O núcleo, os estilos e a visualização Lista/Mapa permanecem ativos.
 
 ## v0.25.119 — filtro por data específica no Histórico
 
