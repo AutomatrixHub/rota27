@@ -61,9 +61,12 @@
 }
 #v020ManagerWrap .v020-periods{grid-template-columns:repeat(5,minmax(0,1fr))}
 #v020ManagerWrap .v020-periods button{padding:0 5px;font-size:10.5px}
-#v020ManagerWrap .v020-month-picker{grid-column:1/-1;display:grid;grid-template-columns:minmax(0,1fr) 200px;align-items:center;gap:12px;padding:9px 11px;border:1px solid var(--line);border-radius:14px;background:var(--surface-2);color:var(--muted);font-size:11px;font-weight:850}
+#v020ManagerWrap .v020-month-picker{grid-column:1/-1;display:grid;grid-template-columns:minmax(0,1fr) 185px;align-items:center;gap:12px;padding:9px 11px;border:1px solid var(--line);border-radius:14px;background:var(--surface-2);color:var(--muted);font-size:11px;font-weight:850}
 #v020ManagerWrap .v020-month-picker[hidden]{display:none}
-#v020ManagerWrap .v020-month-picker input{box-sizing:border-box;width:200px!important;min-width:0!important;max-width:200px!important;min-height:32px;border:1px solid var(--line);border-radius:10px;padding:0 8px;background:var(--surface);color:var(--ink);font:inherit;font-weight:850}
+#v020ManagerWrap .v020-month-control{position:relative;display:block;width:185px;height:42px;overflow:hidden;border:2px solid var(--ink);border-radius:13px;background:var(--surface);color:var(--ink)}
+#v020ManagerWrap .v020-month-control b{display:block;padding:0 34px 0 12px;line-height:38px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px}
+#v020ManagerWrap .v020-month-control::after{content:'⌄';position:absolute;right:11px;top:8px;font-size:18px;line-height:1;pointer-events:none}
+#v020ManagerWrap .v020-month-control input{position:absolute;inset:0;z-index:1;box-sizing:border-box;width:100%!important;min-width:100%!important;max-width:none!important;height:100%;margin:0;opacity:0;cursor:pointer}
 
 /* Modo Teste Global: mesma gramática das seções principais. */
 #v020ManagerWrap .v02581-manager-test-mode{
@@ -299,7 +302,7 @@ body.v02581-test-mode #v020ManagerWrap .v020-chart-head small{
 }
 
 @media(max-width:420px){
-  #v020ManagerWrap .v020-month-picker{grid-template-columns:minmax(0,1fr) 200px}
+  #v020ManagerWrap .v020-month-picker{grid-template-columns:minmax(0,1fr) 185px}
 }
 
 @media(max-width:380px){
