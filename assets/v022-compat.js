@@ -2,15 +2,12 @@
 (function(){
   'use strict';
   const VERSION='0.22.0';
-  let panelObserver=null,demo=false,originalGetClosures=null;
+  let panelObserver=null;
 
   function byId(id){return document.getElementById(id);}
   function own(){return String(document.querySelector('meta[name="rota27-version"]')?.getAttribute('content')||'')===VERSION;}
   function esc(v){return String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[ch]));}
-  function clone(v){return JSON.parse(JSON.stringify(v));}
-  function toast(msg){try{if(typeof showToast==='function')showToast(msg,false);}catch{}}
   function shortDate(value){const p=String(value||'').split('-');return p.length===3?`${p[2]}/${p[1]}`:String(value||'');}
-  function key(d){const y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),day=String(d.getDate()).padStart(2,'0');return `${y}-${m}-${day}`;}
   function fmtQty(v){return Number(v||0).toLocaleString('pt-BR',{maximumFractionDigits:3});}
 
   function managerHint(){
@@ -84,31 +81,6 @@
     panelObserver.observe(screen,{childList:true});
   }
 
-  function demoRows(){
-    const names=[['Cerveja IPA',18.9],['Pilsen artesanal',16.9],['Queijo artesanal',29.9],['Torresmo',24.9],['Linguiça artesanal',27.9],['Biscoito capixaba',14.9]];
-    const rows=[];
-    for(let off=-179;off<=0;off++){
-      const d=new Date();d.setHours(21,0,0,0);d.setDate(d.getDate()+off);if(d.getDay()===1)continue;
-      const weekend=(d.getDay()===5||d.getDay()===6)?1.3:1,trend=1+(off+179)/179*.14,wave=1+Math.sin((off+19)*.37)*.09;
-      const revenue=Math.round((900+((off+180)%13)*43)*weekend*trend*wave*100)/100;
-      const commands=Math.max(8,Math.round(revenue/(44+((off+180)%6)*2.4))),units=Math.round(commands*(2.1+((off+180)%4)*.18));
-      const pix=Math.round(revenue*.42*100)/100,credit=Math.round(revenue*.31*100)/100,debit=Math.round(revenue*.17*100)/100,cash=Math.round((revenue-pix-credit-debit)*100)/100;
-      rows.push({id:`demo_${key(d)}`,businessDate:key(d),closedAt:d.getTime(),deviceName:'Modo demonstração',demo:true,summary:{revenue,closedCount:commands,cancelled:(off+180)%17===0?1:0,units,avgTicket:revenue/commands,products:names.map((p,i)=>({name:p[0],qty:Math.max(1,Math.round(units/(i+5))),revenue:Math.round(Math.max(1,Math.round(units/(i+5)))*p[1]*100)/100})),payments:[{name:'Pix',value:pix},{name:'Crédito',value:credit},{name:'Débito',value:debit},{name:'Dinheiro',value:cash}]}});
-    }
-    return rows;
-  }
-  const DEMO=demoRows();
-  function installDemoProxy(){if(originalGetClosures||!window.Rota27V019?.getClosures)return;originalGetClosures=window.Rota27V019.getClosures.bind(window.Rota27V019);window.Rota27V019.getClosures=()=>demo?clone(DEMO):originalGetClosures();}
-  function rerenderManager(){const active=document.querySelector('#v020Periods [data-period].active');if(active)active.click();}
-  function ensureDemoUi(){
-    const periods=byId('v020Periods');if(!periods||byId('v022DemoBox'))return;
-    const box=document.createElement('div');box.id='v022DemoBox';box.className='v020-source';box.style.marginTop='10px';
-    box.innerHTML='<strong>Modo demonstração</strong><br><span id="v022DemoText">Opcional: use uma base simulada sem alterar dados reais.</span><br><button type="button" id="v022DemoBtn" style="margin-top:8px;border:0;border-radius:12px;padding:9px 12px;font-weight:800;cursor:pointer;background:#111;color:#fff">Ver dados de demonstração</button>';
-    periods.insertAdjacentElement('afterend',box);
-    byId('v022DemoBtn').onclick=()=>{demo=!demo;byId('v022DemoBtn').textContent=demo?'Voltar aos dados reais':'Ver dados de demonstração';byId('v022DemoText').textContent=demo?'DEMONSTRAÇÃO ATIVA — dados simulados somente em memória. Nada é salvo ou sincronizado.':'Opcional: use uma base simulada sem alterar dados reais.';box.style.background=demo?'#fff5df':'';rerenderManager();toast(demo?'Modo demonstração ativado.':'Dados reais restaurados.');};
-    document.addEventListener('click',e=>{if(demo&&e.target?.closest?.('#v020Export')){e.preventDefault();e.stopImmediatePropagation();toast('Exportação bloqueada no modo demonstração. Volte aos dados reais para gerar CSV.');}},true);
-  }
-
   function ensureHistorySheet(){
     if(byId('v022StockHistoryWrap'))return;
     const w=document.createElement('div');w.id='v022StockHistoryWrap';w.className='sheet-wrap';
@@ -136,7 +108,7 @@
     const footer=overlay.querySelector('.r27-help-footer span');if(footer&&footer.textContent!=='Ajuda v4.6 • v0.22.0')footer.textContent='Ajuda v4.6 • v0.22.0';
   }
 
-  function tick(){if(!own())return;repairPanel();watchPanel();installDemoProxy();ensureDemoUi();ensureHistorySheet();ensureHistoryButton();ensureManagerHelp();}
+  function tick(){if(!own())return;repairPanel();watchPanel();ensureHistorySheet();ensureHistoryButton();ensureManagerHelp();}
   function start(){
     if(!own())return;
     tick();setTimeout(tick,250);setTimeout(tick,900);
