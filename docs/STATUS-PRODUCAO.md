@@ -3,11 +3,18 @@
 Última revisão: 02/09/2026
 
 ## Produção
-- versão: **v0.25.111 — descarte de marcadores de versão inativos**;
+- versão: **v0.25.112 — descarte do replay histórico hibernado**;
 - branch: `main`;
 - GitHub Pages: `https://automatrixhub.github.io/rota27/`;
-- Service Worker: `rota27-comandas-v0.25.111-r1`;
-- baseline anterior: **v0.25.110**, merge `a051e25905e9581e8dfe72f6c043dc89d48cf2f5`.
+- Service Worker: `rota27-comandas-v0.25.112-r1`;
+- baseline anterior: **v0.25.111**, merge `c1071b32ea63e47707d117bf26cbce906f2c07f5`.
+
+## Produção homologada — v0.25.112
+- exclui o executor e o estilo do replay excepcional de mensagens históricas de 25/08;
+- confirma que ambos já estavam fora de `index.html`, roadmap, App Shell e páginas auxiliares desde a v0.25.8;
+- elimina a possibilidade de reativação acidental do reenvio histórico pelo código preservado;
+- mantém a limpeza defensiva de vestígios de interface para clientes com cache antigo;
+- não apaga estado local, dados, Supabase, sincronização, regras operacionais ou assets carregados.
 
 ## Produção homologada — v0.25.111
 - exclui seis marcadores/protetores de versão das releases v0.14 a v0.18;
