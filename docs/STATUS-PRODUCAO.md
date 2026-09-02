@@ -3,11 +3,17 @@
 Última revisão: 02/09/2026
 
 ## Produção
-- versão: **v0.25.125 — Ajuda canônica da cópia fixa**;
+- versão: **v0.25.126 — remoção do autoatualizador substituído**;
 - branch: `main`;
 - GitHub Pages: `https://automatrixhub.github.io/rota27/`;
-- Service Worker: `rota27-comandas-v0.25.125-r1`;
-- baseline anterior: **v0.25.124**, merge `6a5ec53dce8d430ecd7f63825616a3f51500c0c0`.
+- Service Worker: `rota27-comandas-v0.25.126-r1`;
+- baseline anterior: **v0.25.125**, merge `3fa04773d4f4a007aed3cfe6f4fedb6e9d6d26ee`.
+
+## Produção pendente de homologação — v0.25.126
+- remove `v02587-auto-update.js`, coordenador antigo já integralmente substituído pela v0.25.90;
+- remove a injeção transitória do Service Worker que apenas bloqueava esse coordenador antigo;
+- preserva `v02590-update-coordinator.js`, atualização remota, proteção contra loop e gestão de aparelhos;
+- não altera comandas, vendas, histórico, sincronização de dados ou armazenamento local.
 
 ## Produção pendente de homologação — v0.25.125
 - remove `v0255-release.js`, camada antiga sem consumidores que só inseria conteúdo de Ajuda e identidade obsoleta;
