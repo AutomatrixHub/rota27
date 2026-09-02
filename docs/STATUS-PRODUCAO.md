@@ -3,11 +3,17 @@
 Última revisão: 02/09/2026
 
 ## Produção
-- versão: **v0.25.127 — Service Worker sem injeção legada**;
+- versão: **v0.25.128 — remoção de ponte UX legada**;
 - branch: `main`;
 - GitHub Pages: `https://automatrixhub.github.io/rota27/`;
-- Service Worker: `rota27-comandas-v0.25.127-r1`;
-- baseline anterior: **v0.25.126**, merge `d3ea72917f76cd67040e581169f684b7c9cd9a17`.
+- Service Worker: `rota27-comandas-v0.25.128-r1`;
+- baseline anterior: **v0.25.127**, merge `6548c53c83570e5873bd9071d4ce48bf86609a92`.
+
+## Produção pendente de homologação — v0.25.128
+- remove `v02550-ui-stability.js`, ponte que apenas carregava o módulo v0.25.51;
+- preserva `v02551-ux-hotfix.js`, já carregado diretamente no bootstrap e no roadmap;
+- retira o arquivo não executado do App Shell;
+- não altera comandas, produtos, carrinho, Painel, sincronização ou dados armazenados.
 
 ## Produção pendente de homologação — v0.25.127
 - remove a injeção transitória do Service Worker que carregava novamente os módulos v0.25.90;
