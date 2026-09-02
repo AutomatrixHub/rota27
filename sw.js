@@ -1,5 +1,5 @@
-const CACHE_NAME = 'rota27-comandas-v0.25.132-r1';
-const RELEASE_VERSION = '0.25.132';
+const CACHE_NAME = 'rota27-comandas-v0.25.133-r1';
+const RELEASE_VERSION = '0.25.133';
 const APP_SHELL = [
   './','./index.html','./sandbox.html','./base-v013.html',
   './assets/v014.css','./assets/v014.js','./assets/v014-dev3.css','./assets/v014-dev3.js','./assets/v014-rc2-category-fix.js','./assets/v014-final.js',
@@ -23,7 +23,6 @@ const APP_SHELL = [
   './assets/v0255-map-card.css','./assets/v0255-map-card.js','./assets/v0255-fixed-whatsapp-copy.js',
   './assets/v0256-map-list-parity.css','./assets/v0256-map-list-parity.js','./assets/v0256-release.js',
   './assets/v0259-category-reference.css','./assets/v0259-category-reference.js',
-  './assets/v02510-turn-summary-current-name.js','./assets/v02511-history-rank-current-name.js',
   './assets/v02512-receivables.css','./assets/v02512-receivables.js','./assets/v02512-overdue-turn.js','./assets/v02512-receivables-safety.js',
   './assets/v02513-client-picker.css','./assets/v02513-client-picker.js',
   './assets/v02517-client-birthday.js','./assets/v02518-client-birthday-on-open.js','./assets/v02519-command-cards.css',

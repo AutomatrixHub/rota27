@@ -38,8 +38,6 @@
     loadCss('v02569MenuCategoryOrderCss','./assets/v02569-menu-category-order.css?v=02569r1');
     const scripts=[
       ['v0259CategoryReferenceJs','./assets/v0259-category-reference.js?v=0259r1'],
-      ['v02510TurnSummaryCurrentNameJs','./assets/v02510-turn-summary-current-name.js?v=02510r1'],
-      ['v02511HistoryRankCurrentNameJs','./assets/v02511-history-rank-current-name.js?v=02511r1'],
       ['v02512ReceivablesJs','./assets/v02512-receivables.js?v=02512r1'],
       ['v02512OverdueTurnJs','./assets/v02512-overdue-turn.js?v=02516r1'],
       ['v02512ReceivablesSafetyJs','./assets/v02512-receivables-safety.js?v=02512r1'],
