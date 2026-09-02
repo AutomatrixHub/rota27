@@ -8,7 +8,9 @@
   const MODE_7D='7d';
   const MODE_30D='30d';
   const MODE_ALL='all';
+  const MODE_DATE='date';
   let historyMode=MODE_CURRENT;
+  let historyDate='';
   let historySearch='';
   let baseRenderHistory=null;
   let baseSave=null;
@@ -98,6 +100,10 @@
       if(mode===MODE_ALL)return true;
       return k>=start&&k<=today;
     }).sort((a,b)=>closedAt(b)-closedAt(a));
+  }
+  function rowsForSpecificDate(key){
+    if(!validDateKey(key))return [];
+    return (state?.history||[]).filter(isRevenue).filter(c=>commandBusinessDate(c)===key).sort((a,b)=>closedAt(b)-closedAt(a));
   }
 
   function analytics(rows){
@@ -212,11 +218,13 @@
   function periodRows(){
     if(historyMode===MODE_CURRENT)return rowsForCurrent();
     if(historyMode===MODE_LAST)return rowsForClosure(latestClosure());
+    if(historyMode===MODE_DATE)return rowsForSpecificDate(historyDate);
     return rowsForRange(historyMode);
   }
   function periodLabel(){
     if(historyMode===MODE_CURRENT)return `Turno atual • ${dateLabel(currentBusinessDate())}`;
     if(historyMode===MODE_LAST){const c=latestClosure();return c?`Último turno • ${dateLabel(c.businessDate)}`:'Último turno';}
+    if(historyMode===MODE_DATE)return historyDate?`Data específica • ${dateLabel(historyDate)}`:'Data específica';
     return historyMode===MODE_7D?'Últimos 7 dias operacionais':historyMode===MODE_30D?'Últimos 30 dias operacionais':'Todo o histórico operacional';
   }
   function matchesSearch(c){
@@ -238,6 +246,12 @@
     const all=periods.querySelector('[data-period="all"]');if(all)all.dataset.v02563Mode=MODE_ALL;
     const yesterday=byId('v02521YesterdayBtn');
     if(yesterday){yesterday.textContent='Último turno';yesterday.dataset.v02563Mode=MODE_LAST;}
+    let dateButton=byId('v02563DateBtn');
+    if(!dateButton){
+      dateButton=document.createElement('button');dateButton.type='button';dateButton.id='v02563DateBtn';dateButton.dataset.v02563Mode=MODE_DATE;dateButton.textContent='Data';periods.appendChild(dateButton);
+      const picker=document.createElement('label');picker.id='v02563DatePicker';picker.className='v02563-date-picker';picker.innerHTML='<span>Data específica</span><input id="v02563DateInput" type="date" aria-label="Escolher data específica" />';periods.insertAdjacentElement('afterend',picker);
+    }
+    const input=byId('v02563DateInput');if(input){input.value=historyDate;input.closest('.v02563-date-picker')?.toggleAttribute('hidden',historyMode!==MODE_DATE);}
     [...periods.querySelectorAll('button')].forEach(b=>b.classList.toggle('active',b.dataset.v02563Mode===historyMode));
   }
   function renderHistoryOperational(){
@@ -277,7 +291,7 @@
       const c=latestClosure();if(!c)return {title:'Último turno fechado',subtitle:'Nenhum fechamento disponível.',date:'',revenue:0,closedCount:0,avgTicket:0,units:0,cancelled:0,payments:[],products:[]};
       const s=c.summary||{};return {title:'Último turno fechado',subtitle:`Turno operacional • fechado ${new Date(Number(c.closedAt||0)).toLocaleDateString('pt-BR')} às ${new Date(Number(c.closedAt||0)).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}`,date:c.businessDate,revenue:Number(s.revenue||0),closedCount:Number(s.closedCount||0),avgTicket:Number(s.avgTicket||0),units:Number(s.units||0),cancelled:Number(s.cancelled||0),payments:Array.isArray(s.payments)?s.payments:[],products:Array.isArray(s.products)?s.products:[]};
     }
-    const rows=periodRows(),a=analytics(rows);return {title:'Resumo operacional do período',subtitle:periodLabel(),date:'',revenue:a.revenue,closedCount:a.commands,avgTicket:a.avgTicket,units:a.units,cancelled:0,payments:a.payments,products:[...a.products.values()]};
+    const rows=periodRows(),a=analytics(rows);return {title:historyMode===MODE_DATE?'Resumo da data específica':'Resumo operacional do período',subtitle:periodLabel(),date:historyMode===MODE_DATE?historyDate:'',revenue:a.revenue,closedCount:a.commands,avgTicket:a.avgTicket,units:a.units,cancelled:0,payments:a.payments,products:[...a.products.values()]};
   }
   function renderTurnSummary(){
     const box=byId('v018TurnSummary');if(!box)return false;
@@ -298,12 +312,21 @@
     try{window.renderHistory=wrapped;renderHistory=wrapped;}catch{}
   }
   function handleCapture(e){
-    const btn=e.target.closest?.('#v14HistoryToolbar [data-period],#v02521YesterdayBtn');
+    const btn=e.target.closest?.('#v14HistoryToolbar [data-period],#v02521YesterdayBtn,#v02563DateBtn');
     if(btn){
       const mode=btn.dataset.v02563Mode||(btn.id==='v02521YesterdayBtn'?MODE_LAST:btn.dataset.period);
-      if([MODE_CURRENT,MODE_LAST,MODE_7D,MODE_30D,MODE_ALL].includes(mode)){
-        e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();historyMode=mode;renderHistoryOperational();return;
+      if([MODE_CURRENT,MODE_LAST,MODE_7D,MODE_30D,MODE_ALL,MODE_DATE].includes(mode)){
+        e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();
+        if(mode===MODE_DATE&&!validDateKey(historyDate))historyDate=currentBusinessDate();
+        historyMode=mode;renderHistoryOperational();
+        if(mode===MODE_DATE)setTimeout(()=>byId('v02563DateInput')?.focus(),0);
+        return;
       }
+    }
+    if(e.type==='change'&&e.target?.id==='v02563DateInput'){
+      const selected=String(e.target.value||'');
+      if(validDateKey(selected)){e.stopPropagation();e.stopImmediatePropagation();historyDate=selected;historyMode=MODE_DATE;renderHistoryOperational();}
+      return;
     }
     if(e.type==='input'&&e.target?.id==='v14HistorySearch'){
       e.stopPropagation();e.stopImmediatePropagation();historySearch=e.target.value||'';renderHistoryOperational();
@@ -318,13 +341,14 @@
     installSaveBridge();normalizeOperationalFields();installPanelBridge();installHistoryBridge();
     document.addEventListener('click',handleCapture,true);
     document.addEventListener('input',handleCapture,true);
+    document.addEventListener('change',handleCapture,true);
     window.addEventListener('rota27:v018-summary-rendered',renderTurnSummary);
     ['rota27:v017-domain-updated','rota27:v02512-receivables-updated','rota27:v02537-internal-updated','rota27:v021-stock-updated','rota27:v022-purchases-updated'].forEach(name=>window.addEventListener(name,refresh));
     window.addEventListener('storage',refresh);window.addEventListener('online',refresh);window.addEventListener('offline',refresh);
     document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')refresh();});
     document.addEventListener('click',e=>{if(e.target.closest?.('#navPanel'))requestAnimationFrame(decoratePanel);if(e.target.closest?.('#navHistory'))requestAnimationFrame(()=>{ensureHistoryControls();renderHistoryOperational();});});
     requestAnimationFrame(refresh);
-    window.Rota27V02563Operational={version:VERSION,refresh,decoratePanel,renderHistory:renderHistoryOperational,currentBusinessDate,currentSummary,commandBusinessDate};
+    window.Rota27V02563Operational={version:VERSION,refresh,decoratePanel,renderHistory:renderHistoryOperational,currentBusinessDate,currentSummary,commandBusinessDate,filteredHistoryRows:()=>periodRows().filter(matchesSearch),historyLabel:periodLabel};
     console.info('[Rota27] v0.25.63 — coerência operacional de turnos ativa.');
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();

@@ -3,11 +3,17 @@
 Última revisão: 02/09/2026
 
 ## Produção
-- versão: **v0.25.116 — retirada do laboratório v0.15 isolado**;
+- versão: **v0.25.119 — filtro por data específica no Histórico**;
 - branch: `main`;
 - GitHub Pages: `https://automatrixhub.github.io/rota27/`;
-- Service Worker: `rota27-comandas-v0.25.116-r1`;
-- baseline anterior: **v0.25.115**, merge `bed0b0ceda1591ec162db469a9b6d6492990d8bc`.
+- Service Worker: `rota27-comandas-v0.25.119-r1`;
+- baseline anterior: **v0.25.118**, merge `eef95d37504c2305798c8565b664bb048873ca78`.
+
+## Produção pendente de homologação — v0.25.119
+- adiciona o período **Data** na tela Histórico & resultados;
+- usa a data operacional da abertura da comanda, inclusive quando o fechamento físico ocorreu depois da meia-noite;
+- aplica o mesmo recorte aos cartões, rankings, lista detalhada e exportação CSV;
+- não altera comandas, vendas, fechamento, sincronização ou dados armazenados.
 
 ## Produção homologada — v0.25.116
 - exclui `v015-preview.html` e três scripts do laboratório v0.15 isolado;

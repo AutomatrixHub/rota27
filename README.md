@@ -3,11 +3,15 @@
 Aplicativo mobile-first, offline-first e multidispositivo para controle rápido de comandas da **Rota 27 Bodega**.
 
 ## Produção
-- **Versão:** v0.25.116 — retirada do laboratório v0.15 isolado
+- **Versão:** v0.25.119 — filtro por data específica no Histórico
 - **Branch:** `main`
 - **GitHub Pages:** `https://automatrixhub.github.io/rota27/`
-- **Service Worker:** `rota27-comandas-v0.25.116-r1`
-- **Baseline anterior:** v0.25.115
+- **Service Worker:** `rota27-comandas-v0.25.119-r1`
+- **Baseline anterior:** v0.25.118
+
+## v0.25.119 — filtro por data específica no Histórico
+
+O Histórico passa a ter a opção **Data**, que abre um calendário para detalhar uma data operacional. Os totais, rankings, lista de comandas e exportação CSV usam o mesmo recorte selecionado.
 
 ## v0.25.116 — retirada do laboratório v0.15 isolado
 
