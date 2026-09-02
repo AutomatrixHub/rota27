@@ -3,11 +3,15 @@
 Aplicativo mobile-first, offline-first e multidispositivo para controle rápido de comandas da **Rota 27 Bodega**.
 
 ## Produção
-- **Versão:** v0.25.122 — campo mensal ampliado
+- **Versão:** v0.25.123 — seletor mensal compacto
 - **Branch:** `main`
 - **GitHub Pages:** `https://automatrixhub.github.io/rota27/`
-- **Service Worker:** `rota27-comandas-v0.25.122-r1`
-- **Baseline anterior:** v0.25.121
+- **Service Worker:** `rota27-comandas-v0.25.123-r1`
+- **Baseline anterior:** v0.25.122
+
+## v0.25.123 — seletor mensal compacto
+
+Reduz o campo mensal para uma largura fixa e equilibrada de 200 px, mantendo mês e ano visíveis sem ocupar a maior parte da linha.
 
 ## v0.25.122 — campo mensal ampliado
 
