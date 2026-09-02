@@ -68,7 +68,6 @@
       ['v02543WhatsAppDeliveryStatusJs','./assets/v02543-whatsapp-delivery-status.js?v=02543r1'],
       ['v02544ClientCardDetailsJs','./assets/v02544-client-card-details.js?v=02544r1'],
       ['v02545CommandListCompactJs','./assets/v02545-command-list-compact.js?v=02545r1'],
-      ['v02546AttentionPanelJs','./assets/v02546-attention-panel.js?v=02546r1'],
       ['v02569MenuCategoryOrderJs','./assets/v02569-menu-category-order.js?v=02569r1']
     ];
     scripts.forEach(([id,src])=>{if(document.getElementById(id))return;const script=document.createElement('script');script.id=id;script.src=src;script.async=false;document.body.appendChild(script);});

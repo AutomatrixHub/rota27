@@ -3,11 +3,17 @@
 Última revisão: 02/09/2026
 
 ## Produção
-- versão: **v0.25.128 — remoção de ponte UX legada**;
+- versão: **v0.25.129 — remoção de encadeamento UX obsoleto**;
 - branch: `main`;
 - GitHub Pages: `https://automatrixhub.github.io/rota27/`;
-- Service Worker: `rota27-comandas-v0.25.128-r1`;
-- baseline anterior: **v0.25.127**, merge `6548c53c83570e5873bd9071d4ce48bf86609a92`.
+- Service Worker: `rota27-comandas-v0.25.129-r1`;
+- baseline anterior: **v0.25.128**, merge `1a2209a5068cb42a6c40d683d99367457755cec5`.
+
+## Produção pendente de homologação — v0.25.129
+- remove `v02546-attention-panel.js`, ponte que só apontava para a v0.25.50 já removida;
+- retira a chamada correspondente de `v0256-release.js` e do App Shell;
+- preserva `v02546-attention-panel.css` e `v02551-ux-hotfix.js`, responsáveis pelo painel visual e pela UX ativa;
+- não altera comandas, Painel, carrinho, sincronização ou dados armazenados.
 
 ## Produção pendente de homologação — v0.25.128
 - remove `v02550-ui-stability.js`, ponte que apenas carregava o módulo v0.25.51;
