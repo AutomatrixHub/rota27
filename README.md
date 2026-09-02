@@ -3,11 +3,15 @@
 Aplicativo mobile-first, offline-first e multidispositivo para controle rápido de comandas da **Rota 27 Bodega**.
 
 ## Produção
-- **Versão:** v0.25.111 — descarte de marcadores de versão inativos
+- **Versão:** v0.25.112 — descarte do replay histórico hibernado
 - **Branch:** `main`
 - **GitHub Pages:** `https://automatrixhub.github.io/rota27/`
-- **Service Worker:** `rota27-comandas-v0.25.111-r1`
-- **Baseline anterior:** v0.25.110
+- **Service Worker:** `rota27-comandas-v0.25.112-r1`
+- **Baseline anterior:** v0.25.111
+
+## v0.25.112 — descarte do replay histórico hibernado
+
+O executor e a interface do replay excepcional de 25/08 foram excluídos fisicamente. Eles estavam fora da produção desde a v0.25.8, mas ainda continham uma lista fixa de mensagens e um destino WhatsApp histórico. A proteção atual continua removendo apenas vestígios visuais que possam vir de caches antigos; nenhum estado local é apagado.
 
 ## v0.25.111 — descarte de marcadores de versão inativos
 
