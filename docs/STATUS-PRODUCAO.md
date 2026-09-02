@@ -3,11 +3,16 @@
 Última revisão: 02/09/2026
 
 ## Produção
-- versão: **v0.25.123 — seletor mensal compacto**;
+- versão: **v0.25.124 — seletor mensal estável no Android**;
 - branch: `main`;
 - GitHub Pages: `https://automatrixhub.github.io/rota27/`;
-- Service Worker: `rota27-comandas-v0.25.123-r1`;
-- baseline anterior: **v0.25.122**, merge `2c152a99616e1f786b08388bef43e289658d6e59`.
+- Service Worker: `rota27-comandas-v0.25.124-r1`;
+- baseline anterior: **v0.25.123**, merge `5a339528c4dddabf65fe209424ec8e1693e9870f`.
+
+## Produção pendente de homologação — v0.25.124
+- usa um controle visual fixo de 185 px sobre o seletor mensal nativo;
+- evita que particularidades de largura do Android alterem o layout;
+- não altera o recorte mensal, métricas, comparação, CSV ou dados operacionais.
 
 ## Produção pendente de homologação — v0.25.123
 - limita o seletor mensal da Visão Gerencial a 200 px;

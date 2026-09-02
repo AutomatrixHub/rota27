@@ -3,11 +3,15 @@
 Aplicativo mobile-first, offline-first e multidispositivo para controle rápido de comandas da **Rota 27 Bodega**.
 
 ## Produção
-- **Versão:** v0.25.123 — seletor mensal compacto
+- **Versão:** v0.25.124 — seletor mensal estável no Android
 - **Branch:** `main`
 - **GitHub Pages:** `https://automatrixhub.github.io/rota27/`
-- **Service Worker:** `rota27-comandas-v0.25.123-r1`
-- **Baseline anterior:** v0.25.122
+- **Service Worker:** `rota27-comandas-v0.25.124-r1`
+- **Baseline anterior:** v0.25.123
+
+## v0.25.124 — seletor mensal estável no Android
+
+Substitui a aparência variável do campo nativo por um controle visual compacto de 185 px, que abre o seletor mensal do Android sem permitir expansão inesperada.
 
 ## v0.25.123 — seletor mensal compacto
 
