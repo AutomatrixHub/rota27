@@ -3,11 +3,17 @@
 Última revisão: 02/09/2026
 
 ## Produção
-- versão: **v0.25.113 — remoção do logo PNG órfão**;
+- versão: **v0.25.114 — remoção do preview DEV.3 órfão**;
 - branch: `main`;
 - GitHub Pages: `https://automatrixhub.github.io/rota27/`;
-- Service Worker: `rota27-comandas-v0.25.113-r1`;
-- baseline anterior: **v0.25.112**, merge `303f9a12c7cdb27db06fae2babd50eaa81a274f4`.
+- Service Worker: `rota27-comandas-v0.25.114-r1`;
+- baseline anterior: **v0.25.113**, merge `ef6810013311f1075959600a3d6a4b9985457a24`.
+
+## Produção homologada — v0.25.114
+- exclui `v014-preview.html`, preview DEV.3 sem rota ou dependência de carregamento atual;
+- preserva `v014-rc.html`, que continua carregando sua cadeia própria RC.2;
+- preserva `v015-preview.html`, ainda referenciado por scripts de laboratório histórico;
+- não altera dados, Supabase, sincronização, regras operacionais ou assets carregados.
 
 ## Produção homologada — v0.25.113
 - exclui `assets/logo-rota27.png`, PNG histórico de 106 KB sem referência de carregamento;
