@@ -187,6 +187,14 @@
 
   function scheduleYesterday(delay=0){if(!yesterdayMode)return;clearTimeout(rerenderTimer);rerenderTimer=setTimeout(renderYesterday,delay);}
 
+  function syncSearchToBaseHistory(){
+    const input=byId('v14HistorySearch');
+    if(!input)return;
+    const empty=byId('historyEmpty')?.querySelector('p');
+    if(empty)empty.textContent='Altere o período ou a busca para ver outros resultados.';
+    input.dispatchEvent(new Event('input',{bubbles:true}));
+  }
+
   function wrapRenderHistory(){
     if(baseRenderHistory||typeof window.renderHistory!=='function')return;
     baseRenderHistory=window.renderHistory;
@@ -198,7 +206,10 @@
 
   function bindEvents(){
     document.addEventListener('click',e=>{
-      if(e.target.closest?.('#v14HistoryToolbar [data-period]')){yesterdayMode=false;byId('v02521YesterdayBtn')?.classList.remove('active');const note=ensureNote();if(note)note.hidden=true;}
+      if(e.target.closest?.('#v14HistoryToolbar [data-period]')){
+        yesterdayMode=false;byId('v02521YesterdayBtn')?.classList.remove('active');const note=ensureNote();if(note)note.hidden=true;
+        setTimeout(syncSearchToBaseHistory,0);
+      }
       if(yesterdayMode&&e.target.closest?.('[data-screen="history"],[data-target="history"],#navHistory'))scheduleYesterday(130);
     });
     document.addEventListener('input',e=>{
