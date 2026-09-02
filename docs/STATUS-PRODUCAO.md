@@ -3,11 +3,17 @@
 Última revisão: 02/09/2026
 
 ## Produção
-- versão: **v0.25.126 — remoção do autoatualizador substituído**;
+- versão: **v0.25.127 — Service Worker sem injeção legada**;
 - branch: `main`;
 - GitHub Pages: `https://automatrixhub.github.io/rota27/`;
-- Service Worker: `rota27-comandas-v0.25.126-r1`;
-- baseline anterior: **v0.25.125**, merge `3fa04773d4f4a007aed3cfe6f4fedb6e9d6d26ee`.
+- Service Worker: `rota27-comandas-v0.25.127-r1`;
+- baseline anterior: **v0.25.126**, merge `d3ea72917f76cd67040e581169f684b7c9cd9a17`.
+
+## Produção pendente de homologação — v0.25.127
+- remove a injeção transitória do Service Worker que carregava novamente os módulos v0.25.90;
+- mantém o roadmap como origem única do coordenador de atualização e da clareza de aparelhos;
+- remove a reescrita redundante de versão, selo e rodapé de Ajuda;
+- não altera comandas, vendas, histórico, sincronização, gestão de aparelhos ou armazenamento local.
 
 ## Produção pendente de homologação — v0.25.126
 - remove `v02587-auto-update.js`, coordenador antigo já integralmente substituído pela v0.25.90;

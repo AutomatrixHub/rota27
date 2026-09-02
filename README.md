@@ -3,11 +3,15 @@
 Aplicativo mobile-first, offline-first e multidispositivo para controle rápido de comandas da **Rota 27 Bodega**.
 
 ## Produção
-- **Versão:** v0.25.126 — remoção do autoatualizador substituído
+- **Versão:** v0.25.127 — Service Worker sem injeção legada
 - **Branch:** `main`
 - **GitHub Pages:** `https://automatrixhub.github.io/rota27/`
-- **Service Worker:** `rota27-comandas-v0.25.126-r1`
-- **Baseline anterior:** v0.25.125
+- **Service Worker:** `rota27-comandas-v0.25.127-r1`
+- **Baseline anterior:** v0.25.126
+
+## v0.25.127 — Service Worker sem injeção legada
+
+Remove a ponte temporária que injetava duas vezes os módulos v0.25.90 no carregador. O roadmap atual continua como única origem de módulos e identidade da release.
 
 ## v0.25.126 — remoção do autoatualizador substituído
 

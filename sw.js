@@ -1,5 +1,5 @@
-const CACHE_NAME = 'rota27-comandas-v0.25.126-r1';
-const RELEASE_VERSION = '0.25.126';
+const CACHE_NAME = 'rota27-comandas-v0.25.127-r1';
+const RELEASE_VERSION = '0.25.127';
 const APP_SHELL = [
   './','./index.html','./sandbox.html','./base-v013.html',
   './assets/v014.css','./assets/v014.js','./assets/v014-dev3.css','./assets/v014-dev3.js','./assets/v014-rc2-category-fix.js','./assets/v014-final.js',
@@ -38,23 +38,6 @@ const APP_SHELL = [
   './manifest.webmanifest','./icons/apple-touch-icon.png','./icons/icon-192.png','./icons/icon-512.png','./icons/icon-192-maskable.png','./icons/icon-512-maskable.png','./icons/favicon-32.png'
 ];
 
-const ROADMAP_SUFFIX = `\n;(function(){
-  function bootV02590(){
-    try{
-      var meta=document.querySelector('meta[name="rota27-release-version"]');if(meta)meta.content='${RELEASE_VERSION}';
-      if(window.Rota27Roadmap)window.Rota27Roadmap.version='${RELEASE_VERSION}';
-      var style=document.getElementById('v02590ReleaseIdentity');
-      if(!style){style=document.createElement('style');style.id='v02590ReleaseIdentity';document.head.appendChild(style);}
-      style.textContent='#v14VersionBadge::after{content:"v${RELEASE_VERSION}"!important}';
-      var footer=document.querySelector('#r27HelpOverlay .r27-help-footer span');if(footer)footer.textContent='Ajuda v11.0 • Rota 27 v${RELEASE_VERSION}';
-      [['v02590UpdateCoordinatorJs','./assets/v02590-update-coordinator.js?v=02590r1'],['v02590DeviceClarityJs','./assets/v02590-device-clarity.js?v=02590r1']].forEach(function(pair){
-        if(document.getElementById(pair[0]))return;var s=document.createElement('script');s.id=pair[0];s.src=pair[1];s.async=false;document.body.appendChild(s);
-      });
-    }catch(err){console.warn('[Rota27 v0.25.90] bootstrap hotfix:',err);}
-  }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bootV02590,{once:true});else bootV02590();
-})();`;
-
 self.addEventListener('install',event=>{event.waitUntil(caches.open(CACHE_NAME).then(cache=>cache.addAll(APP_SHELL)));self.skipWaiting();});
 self.addEventListener('activate',event=>{event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key!==CACHE_NAME).map(key=>caches.delete(key)))));self.clients.claim();});
 self.addEventListener('message',event=>{
@@ -72,7 +55,7 @@ async function roadmapResponse(request){
   const headers=new Headers(base.headers);
   headers.set('content-type','application/javascript; charset=utf-8');
   headers.delete('content-length');
-  return new Response(source+ROADMAP_SUFFIX,{status:base.status,statusText:base.statusText,headers});
+  return new Response(source,{status:base.status,statusText:base.statusText,headers});
 }
 
 self.addEventListener('fetch',event=>{
