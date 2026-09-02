@@ -172,15 +172,15 @@
       `
     },
     {
-      id:'visao-gerencial',icon:'▥',title:'Visão Gerencial',summary:'7, 30, 90 dias ou todo o histórico, com comparação confiável.',
-      search:'visão gerencial 7 dias 30 dias 90 dias todos faturamento ticket media comandas itens comparação periodo melhor dia formas pagamento',
+      id:'visao-gerencial',icon:'▥',title:'Visão Gerencial',summary:'Períodos ou um mês de fechamento, com base confiável.',
+      search:'visão gerencial 7 dias 30 dias 90 dias todos mês fechamento faturamento ticket media comandas itens comparação periodo melhor dia formas pagamento',
       body:`
         <div class="r27-help-v11-path"><b>Onde abrir:</b> Painel → Visão Gerencial.</div>
         <p>Os indicadores gerenciais usam os <b>fechamentos imutáveis de turno</b> como base confiável. Dias sem fechamento não são inventados como faturamento zero.</p>
         <ul>
-          <li>Escolha <b>7 dias, 30 dias, 90 dias ou Todos</b>.</li>
+          <li>Escolha <b>7 dias, 30 dias, 90 dias, Todos ou Mês</b>. Em <b>Mês</b>, o calendário reúne somente os fechamentos daquele mês.</li>
           <li>Veja faturamento, média por turno fechado, ticket médio, comandas, itens e cancelamentos.</li>
-          <li>Compare com o período anterior quando houver base suficiente.</li>
+          <li>Compare com o período anterior quando houver base suficiente; em <b>Mês</b>, a referência é o mês calendário anterior.</li>
           <li>Consulte faturamento por turno, produtos mais vendidos e formas de pagamento.</li>
           <li>É também o ponto principal para ativar/desativar o <b>Modo Teste Global</b>.</li>
         </ul>
