@@ -3,11 +3,15 @@
 Aplicativo mobile-first, offline-first e multidispositivo para controle rápido de comandas da **Rota 27 Bodega**.
 
 ## Produção
-- **Versão:** v0.25.128 — remoção de ponte UX legada
+- **Versão:** v0.25.129 — remoção de encadeamento UX obsoleto
 - **Branch:** `main`
 - **GitHub Pages:** `https://automatrixhub.github.io/rota27/`
-- **Service Worker:** `rota27-comandas-v0.25.128-r1`
-- **Baseline anterior:** v0.25.127
+- **Service Worker:** `rota27-comandas-v0.25.129-r1`
+- **Baseline anterior:** v0.25.128
+
+## v0.25.129 — remoção de encadeamento UX obsoleto
+
+Remove a chamada v0.25.46 que ainda apontava para a ponte UX já removida. O painel visual e a UX v0.25.51 permanecem ativos.
 
 ## v0.25.128 — remoção de ponte UX legada
 
