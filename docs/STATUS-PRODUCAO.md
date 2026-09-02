@@ -3,11 +3,18 @@
 Última revisão: 01/09/2026
 
 ## Produção
-- versão: **v0.25.108 — primeira exclusão física controlada**;
+- versão: **v0.25.109 — encerramento da cadeia visual histórica**;
 - branch: `main`;
 - GitHub Pages: `https://automatrixhub.github.io/rota27/`;
-- Service Worker: `rota27-comandas-v0.25.108-r1`;
-- baseline anterior: **v0.25.107**, merge `4ccae3247da25755ebf74324e442bdc781428fc1`.
+- Service Worker: `rota27-comandas-v0.25.109-r1`;
+- baseline anterior: **v0.25.108**, merge `b5cdf1859223a8b0aa931bf71edd76112a53b789`.
+
+## Produção homologada — v0.25.109
+- exclui `assets/v0182-final.js`, que não integrava `index.html`, roadmap ou App Shell;
+- exclui sua única dependência, `assets/brand/rota27-logo-oficial.png`;
+- preserva a identidade visual atual, cuja logo está embutida em `base-v013.html`;
+- não altera dados, Supabase, sincronização, regras operacionais ou assets carregados;
+- mantém rollback por avanço de versão, restaurando a cadeia em cache novo se necessário.
 
 ## Produção homologada — v0.25.108
 - exclui fisicamente cinco assets observados fora do App Shell na v0.25.107;
