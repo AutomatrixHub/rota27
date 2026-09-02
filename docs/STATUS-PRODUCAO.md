@@ -3,11 +3,17 @@
 Última revisão: 02/09/2026
 
 ## Produção
-- versão: **v0.25.115 — remoção de scripts de teste obsoletos**;
+- versão: **v0.25.116 — retirada do laboratório v0.15 isolado**;
 - branch: `main`;
 - GitHub Pages: `https://automatrixhub.github.io/rota27/`;
-- Service Worker: `rota27-comandas-v0.25.115-r1`;
-- baseline anterior: **v0.25.114**, merge `930637ef862da3b1c879bcafceae858351314dba`.
+- Service Worker: `rota27-comandas-v0.25.116-r1`;
+- baseline anterior: **v0.25.115**, merge `bed0b0ceda1591ec162db469a9b6d6492990d8bc`.
+
+## Produção homologada — v0.25.116
+- exclui `v015-preview.html` e três scripts do laboratório v0.15 isolado;
+- confirma que a branch requerida não existe mais no remoto;
+- preserva o histórico Git e assets funcionais carregados pela aplicação;
+- não altera dados, Supabase, sincronização, regras operacionais ou assets carregados.
 
 ## Produção homologada — v0.25.115
 - exclui sete scripts de preview v0.18–v0.21 sem referências de execução;
