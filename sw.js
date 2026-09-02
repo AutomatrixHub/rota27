@@ -1,5 +1,5 @@
-const CACHE_NAME = 'rota27-comandas-v0.25.134-r1';
-const RELEASE_VERSION = '0.25.134';
+const CACHE_NAME = 'rota27-comandas-v0.25.135-r1';
+const RELEASE_VERSION = '0.25.135';
 const APP_SHELL = [
   './','./index.html','./sandbox.html','./base-v013.html',
   './assets/v014.css','./assets/v014.js','./assets/v014-dev3.css','./assets/v014-dev3.js','./assets/v014-rc2-category-fix.js','./assets/v014-final.js',
@@ -11,7 +11,7 @@ const APP_SHELL = [
   './assets/v0181.css','./assets/v0181-audit.js','./assets/v0181-help.js',
   './assets/v0182-brand-theme.css?v=025103r1','./assets/v0183-capixaba-help.css','./assets/v0183-final.js',
   './assets/v019-turn-close.css','./assets/v019-turn-close.js','./assets/v02515-turn-close.js','./assets/v02516-repair.js',
-  './assets/v020-manager-dashboard.css','./assets/v020-manager-dashboard.js','./assets/v020-preview-demo.js',
+  './assets/v020-manager-dashboard.css','./assets/v020-manager-dashboard.js',
   './assets/v021-stock.css','./assets/v021-stock.js',
   './assets/v022-stock-preflight.js','./assets/v022-stock-release.js','./assets/v022-stock-manager-view.css','./assets/v022-stock-manager-view.js','./assets/v022-stock-view-bridge.js','./assets/v022-purchases.css','./assets/v022-purchases.js','./assets/v022-compat.js','./assets/v022-manager-view.css','./assets/v022-manager-view.js',
   './assets/v023-inventory.css','./assets/v023-inventory.js',
