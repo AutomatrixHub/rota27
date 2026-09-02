@@ -9,6 +9,7 @@
     const original=a.toast.bind(a);
     a.toast=function(message,...args){
       const text=String(message??'').trim();
+      if(/^0 convite\(s\) enviado\(s\)\.$/i.test(text))return original('Nenhum novo convite foi enviado. Quem já recebeu este evento não recebe novamente.',...args);
       const m=text.match(/^(\d+) convite\(s\) enviado\(s\)(?:\s*•\s*(\d+) falha\(s\))?\.$/i);
       if(m){
         const accepted=Number(m[1]||0),failed=Number(m[2]||0);
