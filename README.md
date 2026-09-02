@@ -3,11 +3,15 @@
 Aplicativo mobile-first, offline-first e multidispositivo para controle rápido de comandas da **Rota 27 Bodega**.
 
 ## Produção
-- **Versão:** v0.25.121 — filtro mensal na Visão Gerencial
+- **Versão:** v0.25.122 — campo mensal ampliado
 - **Branch:** `main`
 - **GitHub Pages:** `https://automatrixhub.github.io/rota27/`
-- **Service Worker:** `rota27-comandas-v0.25.121-r1`
-- **Baseline anterior:** v0.25.120
+- **Service Worker:** `rota27-comandas-v0.25.122-r1`
+- **Baseline anterior:** v0.25.121
+
+## v0.25.122 — campo mensal ampliado
+
+Amplia o seletor de mês da Visão Gerencial para exibir o mês e o ano completos em aparelhos Android.
 
 ## v0.25.121 — filtro mensal na Visão Gerencial
 

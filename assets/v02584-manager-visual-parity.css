@@ -63,7 +63,7 @@
 #v020ManagerWrap .v020-periods button{padding:0 5px;font-size:10.5px}
 #v020ManagerWrap .v020-month-picker{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:9px 11px;border:1px solid var(--line);border-radius:14px;background:var(--surface-2);color:var(--muted);font-size:11px;font-weight:850}
 #v020ManagerWrap .v020-month-picker[hidden]{display:none}
-#v020ManagerWrap .v020-month-picker input{min-height:32px;border:1px solid var(--line);border-radius:10px;padding:0 8px;background:var(--surface);color:var(--ink);font:inherit;font-weight:850}
+#v020ManagerWrap .v020-month-picker input{flex:0 1 270px;width:270px;min-width:220px;min-height:32px;border:1px solid var(--line);border-radius:10px;padding:0 8px;background:var(--surface);color:var(--ink);font:inherit;font-weight:850}
 
 /* Modo Teste Global: mesma gramática das seções principais. */
 #v020ManagerWrap .v02581-manager-test-mode{
@@ -296,6 +296,11 @@ body.v02581-test-mode #v020ManagerWrap .v020-chart-head small{
     border-radius:0;
   }
   #v020ManagerWrap .v020-grid{grid-template-columns:1fr}
+}
+
+@media(max-width:420px){
+  #v020ManagerWrap .v020-month-picker{align-items:stretch;flex-direction:column;gap:6px}
+  #v020ManagerWrap .v020-month-picker input{flex:0 0 auto;width:100%;min-width:0;box-sizing:border-box}
 }
 
 @media(max-width:380px){

@@ -3,11 +3,15 @@
 Última revisão: 02/09/2026
 
 ## Produção
-- versão: **v0.25.121 — filtro mensal na Visão Gerencial**;
+- versão: **v0.25.122 — campo mensal ampliado**;
 - branch: `main`;
 - GitHub Pages: `https://automatrixhub.github.io/rota27/`;
-- Service Worker: `rota27-comandas-v0.25.121-r1`;
-- baseline anterior: **v0.25.120**, merge `af44199cd7ad594e8432da20b4f2cb8de2654fa6`.
+- Service Worker: `rota27-comandas-v0.25.122-r1`;
+- baseline anterior: **v0.25.121**, merge `ec5e660161505d834872b14158be7ad6ee1e0d07`.
+
+## Produção pendente de homologação — v0.25.122
+- amplia o seletor mensal da Visão Gerencial para comportar mês e ano completos;
+- não altera o recorte mensal, métricas, comparação, CSV ou dados operacionais.
 
 ## Produção pendente de homologação — v0.25.121
 - adiciona o período **Mês** na Visão Gerencial;
