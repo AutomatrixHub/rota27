@@ -3,11 +3,17 @@
 Última revisão: 02/09/2026
 
 ## Produção
-- versão: **v0.25.114 — remoção do preview DEV.3 órfão**;
+- versão: **v0.25.115 — remoção de scripts de teste obsoletos**;
 - branch: `main`;
 - GitHub Pages: `https://automatrixhub.github.io/rota27/`;
-- Service Worker: `rota27-comandas-v0.25.114-r1`;
-- baseline anterior: **v0.25.113**, merge `ef6810013311f1075959600a3d6a4b9985457a24`.
+- Service Worker: `rota27-comandas-v0.25.115-r1`;
+- baseline anterior: **v0.25.114**, merge `930637ef862da3b1c879bcafceae858351314dba`.
+
+## Produção homologada — v0.25.115
+- exclui sete scripts de preview v0.18–v0.21 sem referências de execução;
+- todos exigiam branches históricas ausentes do remoto e versões incompatíveis com a `main` atual;
+- preserva os assets e os comportamentos funcionais dessas versões ainda carregados pela aplicação;
+- não altera dados, Supabase, sincronização, regras operacionais ou assets carregados.
 
 ## Produção homologada — v0.25.114
 - exclui `v014-preview.html`, preview DEV.3 sem rota ou dependência de carregamento atual;
