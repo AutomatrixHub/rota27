@@ -1,7 +1,7 @@
 /* Rota 27 — carregador incremental do roadmap pós-v0.25.46 */
 (function(){
   'use strict';
-  const CURRENT='0.25.113';
+  const CURRENT='0.25.114';
   const HELP='11.0';
   const assets=[
     {type:'css',id:'v02579RoundedBorderCss',src:'./assets/v02577-menu-option-b.css?v=02579r1'},
