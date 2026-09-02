@@ -3,11 +3,18 @@
 Última revisão: 02/09/2026
 
 ## Produção
-- versão: **v0.25.112 — descarte do replay histórico hibernado**;
+- versão: **v0.25.113 — remoção do logo PNG órfão**;
 - branch: `main`;
 - GitHub Pages: `https://automatrixhub.github.io/rota27/`;
-- Service Worker: `rota27-comandas-v0.25.112-r1`;
-- baseline anterior: **v0.25.111**, merge `c1071b32ea63e47707d117bf26cbce906f2c07f5`.
+- Service Worker: `rota27-comandas-v0.25.113-r1`;
+- baseline anterior: **v0.25.112**, merge `303f9a12c7cdb27db06fae2babd50eaa81a274f4`.
+
+## Produção homologada — v0.25.113
+- exclui `assets/logo-rota27.png`, PNG histórico de 106 KB sem referência de carregamento;
+- confirma ausência em HTML, páginas auxiliares, loader dinâmico e App Shell;
+- preserva `v014-rc2.js`, que continua atendendo à página auxiliar `v014-rc.html`;
+- mantém a identidade visual atual, cuja logo é incorporada diretamente no HTML-base;
+- não altera dados, Supabase, sincronização, regras operacionais ou assets carregados.
 
 ## Produção homologada — v0.25.112
 - exclui o executor e o estilo do replay excepcional de mensagens históricas de 25/08;
