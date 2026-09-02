@@ -58,10 +58,15 @@
   }
 
   function productMeta(c,id){
-    const m=c?.itemMeta?.[id];
-    if(m)return {id:String(id),name:String(m.name||'Produto'),category:String(m.cat||m.category||m.categoryName||'Outros'),price:Number(m.price||0)};
-    const p=(state?.catalog||[]).find(x=>String(x?.id||'')===String(id));
-    return p?{id:String(id),name:String(p.name||'Produto'),category:String(p.cat||p.category||'Outros'),price:Number(p.price||0)}:{id:String(id),name:'Produto',category:'Outros',price:0};
+    const m=c?.itemMeta?.[id]||{};
+    const p=(state?.catalog||[]).find(x=>String(x?.id||'')===String(id))||null;
+    /* O catálogo fornece o nome atual; o snapshot da venda preserva preço e categoria históricos. */
+    return {
+      id:String(id),
+      name:String(p?.name||m.name||'Produto'),
+      category:String(m.cat||m.category||m.categoryName||p?.cat||p?.category||'Outros'),
+      price:Number.isFinite(Number(m.price))?Number(m.price):Number(p?.price||0)
+    };
   }
   function recordTotal(c){
     if(Number.isFinite(Number(c?.total)))return Number(c.total);
