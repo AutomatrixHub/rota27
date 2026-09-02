@@ -1,7 +1,7 @@
 /* Rota 27 — carregador incremental do roadmap pós-v0.25.46 */
 (function(){
   'use strict';
-  const CURRENT='0.25.139';
+  const CURRENT='0.25.140';
   const HELP='11.0';
   const assets=[
     {type:'css',id:'v02579RoundedBorderCss',src:'./assets/v02577-menu-option-b.css?v=02579r1'},
@@ -54,7 +54,6 @@
     {type:'css',id:'v02584ManagerVisualParityCss',src:'./assets/v02584-manager-visual-parity.css?v=025124r1'},
     {type:'css',id:'v02585DeviceManagementCss',src:'./assets/v02585-device-management.css?v=02585r1'},
     {type:'js',id:'v02585DeviceManagementJs',src:'./assets/v02585-device-management.js?v=02585r1'},
-    {type:'js',id:'v02585DeviceManagementStabilityJs',src:'./assets/v02585-device-management-stability.js?v=02585r1'},
     {type:'css',id:'v02586DeviceTelemetryCss',src:'./assets/v02586-device-telemetry.css?v=02586r1'},
     {type:'js',id:'v02586DeviceTelemetryJs',src:'./assets/v02586-device-telemetry.js?v=02586r1'},
     {type:'js',id:'v02590UpdateCoordinatorJs',src:'./assets/v02590-update-coordinator.js?v=02590r1'},
