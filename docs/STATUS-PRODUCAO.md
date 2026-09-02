@@ -3,11 +3,18 @@
 Última revisão: 02/09/2026
 
 ## Produção
-- versão: **v0.25.110 — remoção de órfãos confirmados**;
+- versão: **v0.25.111 — descarte de marcadores de versão inativos**;
 - branch: `main`;
 - GitHub Pages: `https://automatrixhub.github.io/rota27/`;
-- Service Worker: `rota27-comandas-v0.25.110-r1`;
-- baseline anterior: **v0.25.109**, merge `09f1a03ee1c908a18ea29668d6f834d9ed66a429`.
+- Service Worker: `rota27-comandas-v0.25.111-r1`;
+- baseline anterior: **v0.25.110**, merge `a051e25905e9581e8dfe72f6c043dc89d48cf2f5`.
+
+## Produção homologada — v0.25.111
+- exclui seis marcadores/protetores de versão das releases v0.14 a v0.18;
+- confirma ausência de carregamento em HTML, roadmap, App Shell e páginas auxiliares;
+- preserva as menções documentais como histórico, sem depender dos arquivos físicos;
+- não altera dados, Supabase, sincronização, regras operacionais ou assets carregados;
+- mantém rollback por avanço de versão, restaurando os arquivos em cache novo se necessário.
 
 ## Produção homologada — v0.25.110
 - exclui quatro scripts órfãos: RC v0.15, selo v0.18.1, fechamento v0.25.14 e polimento v0.25.22;
