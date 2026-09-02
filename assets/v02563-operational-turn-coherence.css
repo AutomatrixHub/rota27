@@ -12,4 +12,10 @@
 .v02563-last-metrics strong{display:block;margin-top:3px;font-size:15px}
 .v02563-summary-note{margin-top:10px;padding:9px 10px;border-radius:11px;background:#f2eadc;color:#6f6257;font-size:10px;line-height:1.35}
 #v14HistoryToolbar .v14-periods button[data-v02563-mode="current"],#v02521YesterdayBtn[data-v02563-mode="last"]{font-weight:900}
+#v14HistoryToolbar .v14-periods{grid-template-columns:repeat(6,minmax(0,1fr))!important}
+#v14HistoryToolbar .v14-periods button{font-size:10px!important;padding:0 2px}
+.v02563-date-picker{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 11px;border:1px solid var(--line);border-radius:13px;background:#fff8ee;color:#75685d;font-size:11px;font-weight:800}
+.v02563-date-picker span{white-space:nowrap}
+.v02563-date-picker input{min-height:31px;border:1px solid #dec8aa;border-radius:9px;padding:0 8px;background:#fff;color:#2d2118;font:inherit;font-weight:800}
+.v02563-date-picker[hidden]{display:none}
 @media(max-width:380px){.v02563-last-head{align-items:flex-start}.v02563-last-head button{padding:9px 10px}.v02563-last-metrics{grid-template-columns:1fr 1fr 1fr}}

@@ -554,7 +554,7 @@
   }
 
   function exportSalesCsv() {
-    const rows = filteredHistory();
+    const rows = window.Rota27V02563Operational?.filteredHistoryRows?.() || filteredHistory();
     if (!rows.length) {
       notify('Não há vendas no filtro atual para exportar.');
       return;
@@ -583,7 +583,8 @@
         ].map(v => csvEscape(v)).join(';'));
       });
     });
-    downloadText(`rota27-vendas-${historyPeriod}-${formatFileDate()}.csv`, '\uFEFF' + lines.join('\r\n'), 'text/csv;charset=utf-8');
+    const period = window.Rota27V02563Operational?.historyLabel?.().replace(/[^a-z0-9]+/gi, '-').replace(/^-|-$/g, '').toLowerCase() || historyPeriod;
+    downloadText(`rota27-vendas-${period}-${formatFileDate()}.csv`, '\uFEFF' + lines.join('\r\n'), 'text/csv;charset=utf-8');
     notify('Arquivo CSV de vendas gerado.');
   }
 

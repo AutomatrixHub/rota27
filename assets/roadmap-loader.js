@@ -1,7 +1,7 @@
 /* Rota 27 — carregador incremental do roadmap pós-v0.25.46 */
 (function(){
   'use strict';
-  const CURRENT='0.25.118';
+  const CURRENT='0.25.119';
   const HELP='11.0';
   const assets=[
     {type:'css',id:'v02579RoundedBorderCss',src:'./assets/v02577-menu-option-b.css?v=02579r1'},
@@ -25,8 +25,8 @@
     {type:'js',id:'v02567BirthdayVisualStateJs',src:'./assets/v02567-birthday-visual-state.js?v=02567r1'},
     {type:'css',id:'v02564MobileRuntimeCss',src:'./assets/v02564-mobile-runtime-hotfix.css?v=02564r1'},
     {type:'js',id:'v02564MobileRuntimeJs',src:'./assets/v02564-mobile-runtime-hotfix.js?v=02564r1'},
-    {type:'css',id:'v02563OperationalTurnCss',src:'./assets/v02563-operational-turn-coherence.css?v=02563r1'},
-    {type:'js',id:'v02563OperationalTurnJs',src:'./assets/v02563-operational-turn-coherence.js?v=02563r1'},
+    {type:'css',id:'v02563OperationalTurnCss',src:'./assets/v02563-operational-turn-coherence.css?v=025119r1'},
+    {type:'js',id:'v02563OperationalTurnJs',src:'./assets/v02563-operational-turn-coherence.js?v=025119r1'},
     {type:'css',id:'v02562CostAlertsCss',src:'./assets/v02562-cost-margin-alerts.css?v=02562r1'},
     {type:'js',id:'v02562CostAlertsJs',src:'./assets/v02562-cost-margin-alerts.js?v=02562r1'},
     {type:'css',id:'v02561TurnPreflightCss',src:'./assets/v02561-turn-preflight.css?v=02561r1'},
