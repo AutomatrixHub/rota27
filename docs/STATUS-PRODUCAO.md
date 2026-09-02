@@ -1,13 +1,20 @@
 # Rota 27 — Status de produção
 
-Última revisão: 01/09/2026
+Última revisão: 02/09/2026
 
 ## Produção
-- versão: **v0.25.109 — encerramento da cadeia visual histórica**;
+- versão: **v0.25.110 — remoção de órfãos confirmados**;
 - branch: `main`;
 - GitHub Pages: `https://automatrixhub.github.io/rota27/`;
-- Service Worker: `rota27-comandas-v0.25.109-r1`;
-- baseline anterior: **v0.25.108**, merge `b5cdf1859223a8b0aa931bf71edd76112a53b789`.
+- Service Worker: `rota27-comandas-v0.25.110-r1`;
+- baseline anterior: **v0.25.109**, merge `09f1a03ee1c908a18ea29668d6f834d9ed66a429`.
+
+## Produção homologada — v0.25.110
+- exclui quatro scripts órfãos: RC v0.15, selo v0.18.1, fechamento v0.25.14 e polimento v0.25.22;
+- confirma que eles não integram `index.html`, roadmap, App Shell nem páginas auxiliares;
+- preserva os módulos ativos de fechamento `v02515-turn-close.js` e `v02522r3-closure-render.js`;
+- não altera dados, Supabase, sincronização, regras operacionais ou assets carregados;
+- mantém rollback por avanço de versão, restaurando os arquivos em cache novo se necessário.
 
 ## Produção homologada — v0.25.109
 - exclui `assets/v0182-final.js`, que não integrava `index.html`, roadmap ou App Shell;
