@@ -21,6 +21,21 @@
     if(table)delete table.dataset.v02537Previous;
   }
 
+  /*
+   * A camada de consumo interno esconde estes campos por classe. Mantemos os
+   * marcadores junto da abertura canônica, após a interface do WhatsApp ser
+   * atualizada, para não depender do antigo hotfix v0.25.39.
+   */
+  function markInternalClientFields(){
+    const customer=byId('newCustomer')?.closest('.field');
+    const whatsapp=byId('newWhatsapp')?.closest('.field');
+    const consent=byId('newWhatsappOptIn')?.closest('.wa-consent')||byId('newWhatsappOptIn')?.closest('label');
+    const birthday=byId('newBirthDate')?.closest('.field')||byId('v02518NewBirthField');
+    const waState=byId('newWaConfigState');
+    [customer,whatsapp,consent,birthday,waState].forEach(node=>node?.classList.add('v02537-client-only'));
+    (byId('newCommandWrap')?.querySelector(':scope > .sheet')||byId('newCommandWrap')?.querySelector('.sheet'))?.classList.remove('v02537-client-only');
+  }
+
   function canonicalOpen(){
     const wrap=byId('newCommandWrap');
     if(!wrap)return false;
@@ -33,6 +48,7 @@
     resetInternalMode();
     wrap.querySelectorAll('[autofocus]').forEach(el=>el.removeAttribute('autofocus'));
     try{if(typeof updateWhatsappConfigUI==='function')updateWhatsappConfigUI();}catch(err){console.warn('[Rota27 v0.25.70] WhatsApp UI:',err);}
+    markInternalClientFields();
     wrap.classList.add('open');
     const active=document.activeElement;
     if(active&&active!==document.body&&wrap.contains(active)&&typeof active.blur==='function')active.blur();
@@ -98,7 +114,7 @@
     identity();install();
     document.addEventListener('click',capture,true);
     document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){identity();install();}});
-    window.Rota27V02570NewCommand={version:VERSION,refresh:install,open:rootedOpen,canonicalOpen};
+    window.Rota27V02570NewCommand={version:VERSION,refresh:install,open:rootedOpen,canonicalOpen,markInternalClientFields};
     console.info('[Rota27] v0.25.70 — abertura canônica de Nova comanda ativa.');
   }
 
