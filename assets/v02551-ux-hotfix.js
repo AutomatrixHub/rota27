@@ -193,7 +193,6 @@
     document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')requestAnimationFrame(refresh);});
     const api={version:VERSION,renderQuick,todayRanking,recentRanking,renderAttention,attentionSignals,normalizeCartbar,refresh};
     window.Rota27V02551UX=api;
-    window.Rota27V02550UI=api;
     console.info('[Rota27] v0.25.51 — UX estabilizada sem render concorrente.');
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
