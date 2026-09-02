@@ -49,7 +49,6 @@
       ['v02518ClientBirthdayOnOpenJs','./assets/v02518-client-birthday-on-open.js?v=02518r1'],
       ['v02520BirthdayCampaignJs','./assets/v02520-birthday-campaign.js?v=02520r1'],
       ['v02521HistoryUxJs','./assets/v02521-history-ux.js?v=02521r1'],
-      ['v02521HistorySearchBridgeJs','./assets/v02521-history-search-bridge.js?v=02521r1'],
       ['v02522R3ClosureRenderJs','./assets/v02522r3-closure-render.js?v=02523r1'],
       ['v02527ProductIconsJs','./assets/v02527-product-icons.js?v=02527r1'],
       ['v02533MenuHeaderPolishJs','./assets/v02533-menu-header-polish.js?v=02533r1'],

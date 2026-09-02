@@ -1,5 +1,5 @@
-const CACHE_NAME = 'rota27-comandas-v0.25.131-r1';
-const RELEASE_VERSION = '0.25.131';
+const CACHE_NAME = 'rota27-comandas-v0.25.132-r1';
+const RELEASE_VERSION = '0.25.132';
 const APP_SHELL = [
   './','./index.html','./sandbox.html','./base-v013.html',
   './assets/v014.css','./assets/v014.js','./assets/v014-dev3.css','./assets/v014-dev3.js','./assets/v014-rc2-category-fix.js','./assets/v014-final.js',
@@ -28,7 +28,7 @@ const APP_SHELL = [
   './assets/v02513-client-picker.css','./assets/v02513-client-picker.js',
   './assets/v02517-client-birthday.js','./assets/v02518-client-birthday-on-open.js','./assets/v02519-command-cards.css',
   './assets/v02520-birthday-campaign.css','./assets/v02520-birthday-campaign.js',
-  './assets/v02521-history-ux.css','./assets/v02521-history-ux.js','./assets/v02521-history-search-bridge.js',
+  './assets/v02521-history-ux.css','./assets/v02521-history-ux.js',
   './assets/v02522-closure-polish.css','./assets/v02522r3-closure-render.js','./assets/v02524-history-finish.css','./assets/v02525-panel-finish.css','./assets/v02526-menu-finish.css',
   './assets/v02527-product-icons.css','./assets/v02527-product-icons.js','./assets/v02528-product-icons-soft.css','./assets/v02529-menu-category-legibility.css','./assets/v02531-product-icons-panel.css',
   './assets/v02533-menu-header-polish.css','./assets/v02533-menu-header-polish.js','./assets/v02534-menu-actions-polish.css','./assets/v02534-menu-actions-polish.js','./assets/v02535-edit-command-birthday.js','./assets/v02536-receivables-card.css',
