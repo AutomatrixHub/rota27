@@ -3,11 +3,16 @@
 Última revisão: 02/09/2026
 
 ## Produção
-- versão: **v0.25.122 — campo mensal ampliado**;
+- versão: **v0.25.123 — seletor mensal compacto**;
 - branch: `main`;
 - GitHub Pages: `https://automatrixhub.github.io/rota27/`;
-- Service Worker: `rota27-comandas-v0.25.122-r1`;
-- baseline anterior: **v0.25.121**, merge `ec5e660161505d834872b14158be7ad6ee1e0d07`.
+- Service Worker: `rota27-comandas-v0.25.123-r1`;
+- baseline anterior: **v0.25.122**, merge `2c152a99616e1f786b08388bef43e289658d6e59`.
+
+## Produção pendente de homologação — v0.25.123
+- limita o seletor mensal da Visão Gerencial a 200 px;
+- preserva o mês e ano completos em um campo proporcional;
+- não altera o recorte mensal, métricas, comparação, CSV ou dados operacionais.
 
 ## Produção pendente de homologação — v0.25.122
 - amplia o seletor mensal da Visão Gerencial para comportar mês e ano completos;
