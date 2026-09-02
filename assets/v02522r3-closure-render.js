@@ -97,7 +97,6 @@
     refreshIfOpen();
     const api={version:VERSION,render:renderCanonical,openHistory,syncAndRender,settle:settleAfterLegacy};
     window.Rota27V02523ClosureRender=api;
-    window.Rota27V02522R3ClosureRender=api;
     console.info('[Rota27] v0.25.23 — acabamento visual resiliente de Fechamentos carregado.');
   }
 
