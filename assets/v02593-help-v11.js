@@ -118,8 +118,9 @@
           <li>Ative <b>Receber lançamentos</b>.</li>
           <li>O aparelho onde o lançamento ocorreu precisa ter a integração de WhatsApp configurada.</li>
           <li>A tela de aparelhos mostra fila agregada: pendências e falhas/retry.</li>
-          <li>Existe também um destino fixo adicional definido pela operação; o sistema evita duplicidade quando os destinos coincidirem.</li>
+          <li>Existe também uma cópia fixa adicional da operação, em <b>+55 27 99776-9279</b>. Ela não aparece como campo editável; se coincidir com o WhatsApp do gerente, o sistema evita duplicidade.</li>
         </ul>
+        <div class="r27-help-tip"><strong>Importante:</strong> a cópia fixa usa o mesmo envio agrupado. O aparelho que fez o lançamento precisa estar com a integração de WhatsApp configurada e com internet.</div>
         <div class="r27-help-example"><span class="r27-help-example-label">Se não chegou</span><p>Confira se o aparelho do lançamento está online, se mostra <b>WhatsApp: configurado</b> e se a fila possui pendência ou falha.</p></div>
       `
     },

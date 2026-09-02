@@ -3,11 +3,15 @@
 Aplicativo mobile-first, offline-first e multidispositivo para controle rápido de comandas da **Rota 27 Bodega**.
 
 ## Produção
-- **Versão:** v0.25.124 — seletor mensal estável no Android
+- **Versão:** v0.25.125 — Ajuda canônica da cópia fixa
 - **Branch:** `main`
 - **GitHub Pages:** `https://automatrixhub.github.io/rota27/`
-- **Service Worker:** `rota27-comandas-v0.25.124-r1`
-- **Baseline anterior:** v0.25.123
+- **Service Worker:** `rota27-comandas-v0.25.125-r1`
+- **Baseline anterior:** v0.25.124
+
+## v0.25.125 — Ajuda canônica da cópia fixa
+
+Remove a camada legada que apenas inseria uma seção antiga de Ajuda. A orientação sobre a cópia fixa de WhatsApp passa a ficar na Ajuda atual; o envio operacional e a fila permanecem inalterados.
 
 ## v0.25.124 — seletor mensal estável no Android
 

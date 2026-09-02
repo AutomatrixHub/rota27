@@ -3,11 +3,17 @@
 Última revisão: 02/09/2026
 
 ## Produção
-- versão: **v0.25.124 — seletor mensal estável no Android**;
+- versão: **v0.25.125 — Ajuda canônica da cópia fixa**;
 - branch: `main`;
 - GitHub Pages: `https://automatrixhub.github.io/rota27/`;
-- Service Worker: `rota27-comandas-v0.25.124-r1`;
-- baseline anterior: **v0.25.123**, merge `5a339528c4dddabf65fe209424ec8e1693e9870f`.
+- Service Worker: `rota27-comandas-v0.25.125-r1`;
+- baseline anterior: **v0.25.124**, merge `6a5ec53dce8d430ecd7f63825616a3f51500c0c0`.
+
+## Produção pendente de homologação — v0.25.125
+- remove `v0255-release.js`, camada antiga sem consumidores que só inseria conteúdo de Ajuda e identidade obsoleta;
+- incorpora na Ajuda atual a orientação sobre a cópia fixa adicional e a prevenção de duplicidade;
+- preserva sem alterações `v0255-fixed-whatsapp-copy.js`, responsável pelo envio operacional;
+- não altera comandas, vendas, histórico, sincronização, fila ou dados armazenados.
 
 ## Produção pendente de homologação — v0.25.124
 - usa um controle visual fixo de 185 px sobre o seletor mensal nativo;
