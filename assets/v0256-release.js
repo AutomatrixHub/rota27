@@ -41,7 +41,6 @@
       ['v02512ReceivablesJs','./assets/v02512-receivables.js?v=02512r1'],
       ['v02512OverdueTurnJs','./assets/v02512-overdue-turn.js?v=02516r1'],
       ['v02512ReceivablesSafetyJs','./assets/v02512-receivables-safety.js?v=02512r1'],
-      ['v02513ClientPickerJs','./assets/v02513-client-picker.js?v=02513r1'],
       ['v02516RepairJs','./assets/v02516-repair.js?v=02516r1'],
       ['v02517ClientBirthdayJs','./assets/v02517-client-birthday.js?v=02517r1'],
       ['v02518ClientBirthdayOnOpenJs','./assets/v02518-client-birthday-on-open.js?v=02518r1'],
