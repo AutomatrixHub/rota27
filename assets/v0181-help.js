@@ -43,8 +43,6 @@
       btn.addEventListener('click',()=>{details.hidden=false;details.open=true;details.scrollIntoView({behavior:'smooth',block:'start'});});
       chips.appendChild(btn);
     }
-    const footer=overlay.querySelector('.r27-help-footer span');
-    if(footer)footer.textContent='Ajuda v4.1 • v0.18.1';
     return true;
   }
 

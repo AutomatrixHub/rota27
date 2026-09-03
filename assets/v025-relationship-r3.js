@@ -188,7 +188,6 @@
     const box=document.createElement('div');box.dataset.v025R3Help='1';
     box.innerHTML='<h4>Quando um preferido chega novamente</h4><p>Se um produto foi recebido nos últimos 7 dias, ainda tem estoque controlado disponível e é o preferido de um cliente recorrente que ainda não voltou depois do recebimento, ele pode aparecer como <strong>Preferido chegou recentemente</strong>.</p><p>Esse sinal não cria campanha: o proprietário escolhe cliente por cliente. Se o estoque acabar, a oportunidade deixa de aparecer.</p><div class="r27-help-tip"><strong>Por que isso é útil:</strong> transforma um recebimento real em uma lembrança pessoal, sem disparo em massa e sem prometer promoção.</div>';
     body.appendChild(box);
-    const footer=document.querySelector('#r27HelpOverlay .r27-help-footer span');if(footer)footer.textContent='Ajuda v5.1 • Rota 27 v0.25.0';
     return true;
   }
 
