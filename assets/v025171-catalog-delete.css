@@ -1,0 +1,16 @@
+/* Rota 27 v0.25.171 — ação destrutiva isolada no editor de produto */
+#menuItemWrap .sheet-actions:has(#v025171DeleteProduct){
+  flex-wrap:wrap;
+}
+#menuItemWrap .v025171-delete-product{
+  width:100%;
+  min-height:44px;
+  margin:2px 0 4px;
+  border:1px solid #c75b3b;
+  border-radius:13px;
+  background:#fff7f3;
+  color:#9e351d;
+  font:inherit;
+  font-weight:850;
+}
+#menuItemWrap .v025171-delete-product:active{transform:scale(.985);}
