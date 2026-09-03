@@ -160,7 +160,7 @@
     return true;
   }
   function tick(){ensureSheet();if(byId('screenPanel')?.classList.contains('active'))renderEntry();injectHelp();if(byId('v020ManagerWrap')?.classList.contains('open'))renderManager();}
-  function start(){ensureSheet();setTimeout(tick,120);setTimeout(tick,650);setInterval(tick,1500);window.addEventListener('rota27:v019-turn-updated',()=>{renderEntry();if(byId('v020ManagerWrap')?.classList.contains('open'))renderManager();});window.addEventListener('online',tick);window.addEventListener('storage',tick);console.info('[Rota27] v0.20.0 Visão Gerencial carregada.');}
+  function start(){ensureSheet();setTimeout(tick,120);setTimeout(tick,650);setTimeout(tick,1200);window.addEventListener('rota27:v019-turn-updated',()=>{renderEntry();if(byId('v020ManagerWrap')?.classList.contains('open'))renderManager();});window.addEventListener('online',tick);window.addEventListener('storage',tick);window.addEventListener('pageshow',tick);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')tick();});console.info('[Rota27] v0.20.0 Visão Gerencial carregada.');}
 
   window.Rota27V020={version:VERSION,openManager,getDataset:()=>clone(dataset()),getSelectedMonth:()=>selectedMonth};
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
