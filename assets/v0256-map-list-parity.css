@@ -104,5 +104,3 @@
 .v0256-map-command-card>.v0252-slot-secondary,
 .v0256-map-command-card>.v0252-slot-meta,
 .v0256-map-command-card>.v0252-slot-updated{display:none!important}
-
-#v14VersionBadge::after{content:"v0.25.6"!important}

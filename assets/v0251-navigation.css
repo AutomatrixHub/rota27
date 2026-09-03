@@ -115,22 +115,6 @@
 .v0251-dot.ok{background:#2e8a5d}
 .v0251-dot.warn{background:#c58a20}
 
-/* Identidade pública da candidata. Carregada por último para prevalecer sobre
- * camadas legadas que ainda escrevem suas próprias versões no badge. */
-#v14VersionBadge{
-  font-size:0!important;
-  color:transparent!important;
-  white-space:nowrap;
-}
-#v14VersionBadge::after{
-  content:"v0.25.1";
-  display:inline-block;
-  font-size:12px;
-  line-height:1;
-  font-weight:900;
-  color:#8F4421;
-}
-
 @media (max-width:520px){
   .v0251-card{
     grid-template-columns:42px minmax(0,1fr) auto;

@@ -39,6 +39,3 @@
   border-color:#c99b78!important;
   box-shadow:0 2px 7px rgba(17,17,17,.08)!important;
 }
-
-/* Identidade pública da revisão. */
-#v14VersionBadge::after{content:"v0.25.3"!important}
