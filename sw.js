@@ -1,5 +1,5 @@
-const CACHE_NAME = 'rota27-comandas-v0.25.169-r1';
-const RELEASE_VERSION = '0.25.169';
+const CACHE_NAME = 'rota27-comandas-v0.25.170-r1';
+const RELEASE_VERSION = '0.25.170';
 const APP_SHELL = [
   './','./index.html','./sandbox.html','./base-v013.html',
   './assets/v014.css','./assets/v014.js','./assets/v014-dev3.css','./assets/v014-dev3.js','./assets/v014-rc2-category-fix.js','./assets/v014-final.js',
