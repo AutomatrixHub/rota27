@@ -3,8 +3,6 @@
   'use strict';
 
   const VERSION='0.24.0';
-  const LABEL='v0.24.0';
-  const TITLE='Rota 27 Bodega • Comandas v0.24.0';
 
   const ORDERS_KEY='rota27_v022_purchase_orders_v1';
   const RECEIPTS_KEY='rota27_v022_purchase_receipts_v1';
@@ -379,10 +377,10 @@
   function injectHelp(){
     const overlay=byId('r27HelpOverlay'),content=overlay?.querySelector('.r27-help-content');if(!content)return false;
     if(!byId('r27-help-custos')){const d=document.createElement('details');d.id='r27-help-custos';d.className='r27-help-section';d.innerHTML=`<summary><span class="r27-help-section-icon">R$</span><span><strong>Custos & Margem</strong><small>Registre custo real e entenda a margem bruta estimada.</small></span></summary><div class="r27-help-section-body"><div class="r27-help-lead">O Rota 27 só calcula valores financeiros quando existe <b>custo de aquisição informado</b>. O preço de venda nunca é usado como custo.</div><ol class="r27-help-steps"><li><span>1</span><div><b>Informe o custo previsto</b><br>Na reposição, o custo é opcional e ajuda a estimar o pedido.</div></li><li><span>2</span><div><b>Confirme o custo real no recebimento</b><br>Informe o custo unitário do que chegou. O frete também é opcional.</div></li><li><span>3</span><div><b>Veja a margem</b><br>A Central Custos & Margem compara o preço de venda atual com o último custo efetivo registrado.</div></li><li><span>4</span><div><b>Use como apoio gerencial</b><br>Valor de estoque e margem são estimativas operacionais, não contabilidade nem DRE.</div></li></ol><div class="r27-help-tip"><b>Importante:</b> produtos sem custo continuam aparecendo como Sem custo registrado e ficam fora das estimativas financeiras.</div></div>`;const inv=byId('r27-help-inventario');if(inv)inv.insertAdjacentElement('afterend',d);else content.appendChild(d);}
-    const footer=overlay.querySelector('.r27-help-footer span');if(footer)footer.textContent='Ajuda v4.8 • v0.24.0';return true;
+    return true;
   }
-  function applyReleaseUi(){const b=byId('v14VersionBadge');if(b&&b.textContent!==LABEL)b.textContent=LABEL;if(document.title!==TITLE)document.title=TITLE;try{window.ROTA27_RELEASE_VERSION=VERSION;window.ROTA27_SYNC_DEV_VERSION=VERSION;}catch{}injectHelp();}
-  function enhance(){applyReleaseUi();injectEntryButtons();if(byId('v022PurchasesWrap')?.classList.contains('open')){enhanceRestock();enhanceOrders();enhanceReceive();injectEntryButtons();}if(byId('v021StockWrap')?.classList.contains('open'))injectEntryButtons();if(byId('v024CostsWrap')?.classList.contains('open'))renderManager();}
+  function ensureHelp(){injectHelp();}
+  function enhance(){ensureHelp();injectEntryButtons();if(byId('v022PurchasesWrap')?.classList.contains('open')){enhanceRestock();enhanceOrders();enhanceReceive();injectEntryButtons();}if(byId('v021StockWrap')?.classList.contains('open'))injectEntryButtons();if(byId('v024CostsWrap')?.classList.contains('open'))renderManager();}
 
   function onClickCapture(e){
     const target=e.target?.closest?.('button,[data-action]');if(!target)return;
@@ -397,7 +395,7 @@
     if(target.matches('#v022PurchasesWrap [data-tab]')||target.dataset?.action==='receive')setTimeout(enhance,0);
   }
   function start(){
-    ensureSheet();applyReleaseUi();document.addEventListener('click',onClickCapture,true);document.addEventListener('click',onClickBubble,false);document.addEventListener('input',e=>{if(e.target?.id==='v022Search')setTimeout(enhance,0);});window.addEventListener('rota27:v022-purchases-updated',()=>setTimeout(enhance,0));window.addEventListener('rota27:v021-stock-updated',()=>setTimeout(enhance,0));window.addEventListener('rota27:v023-inventory-updated',()=>setTimeout(enhance,0));window.addEventListener('rota27:v017-domain-updated',()=>setTimeout(enhance,0));window.addEventListener('storage',()=>setTimeout(enhance,0));document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')setTimeout(enhance,0);});setTimeout(enhance,120);setTimeout(enhance,700);console.info('[Rota27] v0.24.0 Custos & Margem carregado.');
+    ensureSheet();ensureHelp();document.addEventListener('click',onClickCapture,true);document.addEventListener('click',onClickBubble,false);document.addEventListener('input',e=>{if(e.target?.id==='v022Search')setTimeout(enhance,0);});window.addEventListener('rota27:v022-purchases-updated',()=>setTimeout(enhance,0));window.addEventListener('rota27:v021-stock-updated',()=>setTimeout(enhance,0));window.addEventListener('rota27:v023-inventory-updated',()=>setTimeout(enhance,0));window.addEventListener('rota27:v017-domain-updated',()=>setTimeout(enhance,0));window.addEventListener('storage',()=>setTimeout(enhance,0));document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')setTimeout(enhance,0);});setTimeout(enhance,120);setTimeout(enhance,700);console.info('[Rota27] v0.24.0 Custos & Margem carregado.');
   }
 
   window.Rota27V024={version:VERSION,open:openCosts,getCostRecords:()=>clone(costRecords()),getLastCost:(productId,supplierId=null)=>clone(lastCost(productId,supplierId)),getStats:()=>clone(stats())};
