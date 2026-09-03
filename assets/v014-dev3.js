@@ -786,18 +786,11 @@
     if (byId('v14BackupWrap')?.classList.contains('open')) prepareBackupSheet();
   }
 
-  function updateDevBadge() {
-    const badge = byId('v14VersionBadge');
-    if (badge) badge.textContent = 'v0.14 DEV.3';
-    document.title = document.title.replace(/v0\.14 DEV(?:\.\d+(?:\.\d+)?)?/i, 'v0.14 DEV.3');
-  }
-
   function init() {
     try {
       patchImport();
       patchCategoryManager();
       patchBackup();
-      updateDevBadge();
       console.info(`[Rota27] hardening carregado (${DEV3_VERSION}).`);
     } catch (err) {
       console.error('[Rota27] Falha ao inicializar DEV.3:', err);
