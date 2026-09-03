@@ -550,12 +550,6 @@
     byId('v15SyncConfigBtn').addEventListener('click',openSheet);renderSyncStatus();
   }
 
-  function updateIdentity() {
-    const badge=byId('v14VersionBadge'); if(badge)badge.textContent='v0.15 DEV.1';
-    document.title='Rota 27 Bodega • Comandas v0.15 DEV.1';
-    window.ROTA27_RELEASE_VERSION=VERSION;
-  }
-
   function startSchedulers() {
     window.addEventListener('online',()=>scheduleSyncSoon());
     document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')scheduleSyncSoon();});
@@ -567,12 +561,11 @@
     window.v15SyncNow=syncNow;
     window.v15PublishSyncBase=publishThisDevice;
     window.v15AdoptSharedBase=adoptSharedBase;
-    window.ROTA27_SYNC_DEV_VERSION=VERSION;
   }
 
   function init() {
     try {
-      patchSave(); insertCard(); ensureSheet(); updateIdentity(); startSchedulers(); expose();
+      patchSave(); insertCard(); ensureSheet(); startSchedulers(); expose();
       previousState=cloneCoreState(state);
       if(config.enabled&&config.initialized&&navigator.onLine)setTimeout(()=>syncNow(),1200);
       console.info(`[Rota27] sincronização multidispositivo carregada (${VERSION}).`);
