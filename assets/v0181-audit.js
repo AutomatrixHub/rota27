@@ -264,7 +264,7 @@
     window.addEventListener('online',()=>setTimeout(reconcile,500));
     window.addEventListener('storage',e=>{if(e.key===SYNC_KEY||e.key===STORE_KEY){store=loadStore();renderAuditSheet();notifyChanged();}});
     document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){captureCurrent();reconcile();}});
-    setInterval(()=>{wrapSave();wrapRenderers();captureCurrent();reconcile();},RECONCILE_MS);
+    setInterval(()=>{if(document.visibilityState!=='visible')return;wrapSave();wrapRenderers();captureCurrent();reconcile();},RECONCILE_MS);
     console.info('[Rota27] v0.18.1 auditoria operacional carregada.');
   }
 
