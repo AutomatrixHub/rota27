@@ -3,29 +3,13 @@
   'use strict';
 
   const VERSION='0.18.3';
-  const LABEL='v0.18.3';
-  const TITLE='Rota 27 Bodega • Comandas v0.18.3';
   const CARD_STYLE_ID='r27-v0183-card-refine';
   const LOGO_BG='#C3B59B';
-  let badgeObserver=null;
-  let titleObserver=null;
 
   function normalize(value){
     return String(value||'')
       .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
       .toLowerCase().trim();
-  }
-
-  function ownsVersion(){
-    return String(document.querySelector('meta[name="rota27-version"]')?.getAttribute('content')||'')===VERSION;
-  }
-
-  function applyVersion(){
-    if(!ownsVersion())return;
-    const badge=document.getElementById('v14VersionBadge');
-    if(badge&&badge.textContent!==LABEL)badge.textContent=LABEL;
-    if(document.title!==TITLE)document.title=TITLE;
-    try{window.ROTA27_SYNC_DEV_VERSION=VERSION;}catch{}
   }
 
   function preserveBaseLogo(){
@@ -110,27 +94,13 @@
       reorderChildrenByLabel(demo,':scope > div',['comandas','cardapio','painel','historico']);
       const compare=overlay.querySelector('#r27-help-mapa-app .r27-help-compare');
       reorderChildrenByLabel(compare,':scope > div',['comandas','cardapio','painel','historico']);
-      const footer=overlay.querySelector('.r27-help-footer span');if(footer&&ownsVersion())footer.textContent='Ajuda v4.2 • v0.18.3';
       const content=overlay.querySelector('.r27-help-content');if(content)content.scrollTop=0;
       overlay.dataset.r27V0183Help='1';
     }
     return true;
   }
 
-  function protectVersion(){
-    if(!ownsVersion()){
-      if(badgeObserver){badgeObserver.disconnect();badgeObserver=null;}
-      if(titleObserver){titleObserver.disconnect();titleObserver=null;}
-      return;
-    }
-    applyVersion();
-    const badge=document.getElementById('v14VersionBadge');
-    const title=document.querySelector('title');
-    if(badge&&!badgeObserver){badgeObserver=new MutationObserver(applyVersion);badgeObserver.observe(badge,{childList:true,characterData:true,subtree:true});}
-    if(title&&!titleObserver){titleObserver=new MutationObserver(applyVersion);titleObserver.observe(title,{childList:true,characterData:true,subtree:true});}
-  }
-
-  function apply(){protectVersion();preserveBaseLogo();injectCardRefinementStyles();reorderBottomNavigation();refineHelp();}
+  function apply(){preserveBaseLogo();injectCardRefinementStyles();reorderBottomNavigation();refineHelp();}
 
   function start(){
     apply();
@@ -142,10 +112,8 @@
       }
     });
     observer.observe(document.documentElement,{childList:true,subtree:true});
-    setTimeout(apply,80);setTimeout(apply,500);setTimeout(applyVersion,3500);
+    setTimeout(apply,80);setTimeout(apply,500);
     window.addEventListener('pageshow',()=>setTimeout(apply,0));
-    window.addEventListener('online',()=>setTimeout(applyVersion,0));
-    window.addEventListener('offline',()=>setTimeout(applyVersion,0));
   }
 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});
