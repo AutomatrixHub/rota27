@@ -1,7 +1,7 @@
 /* Rota 27 — carregador incremental do roadmap pós-v0.25.46 */
 (function(){
   'use strict';
-  const CURRENT='0.25.147';
+  const CURRENT='0.25.148';
   const HELP='11.0';
   const assets=[
     {type:'css',id:'v02579RoundedBorderCss',src:'./assets/v02577-menu-option-b.css?v=02579r1'},
@@ -68,13 +68,26 @@
     {type:'css',id:'v02593HelpV11Css',src:'./assets/v02593-help-v11.css?v=02593r1'},
     {type:'js',id:'v02593HelpV11Js',src:'./assets/v02593-help-v11.js?v=025125r1'}
   ];
+  let identityObserver=null,identityQueued=false;
   function identity(){
-    document.title=`Rota 27 Bodega • Comandas v${CURRENT}`;
-    const meta=document.querySelector('meta[name="rota27-release-version"]');if(meta)meta.content=CURRENT;
+    const title=`Rota 27 Bodega • Comandas v${CURRENT}`;
+    if(document.title!==title)document.title=title;
+    const meta=document.querySelector('meta[name="rota27-release-version"]');if(meta&&meta.content!==CURRENT)meta.content=CURRENT;
     let style=document.getElementById('rota27RoadmapReleaseIdentity');
     if(!style){style=document.createElement('style');style.id='rota27RoadmapReleaseIdentity';document.head.appendChild(style);}
-    style.textContent=`#v14VersionBadge::after{content:"v${CURRENT}"!important}`;
+    const css=`#v14VersionBadge::after{content:"v${CURRENT}"!important}`;
+    if(style.textContent!==css)style.textContent=css;
+    if(style!==document.head.lastElementChild)document.head.appendChild(style);
     const footer=document.querySelector('#r27HelpOverlay .r27-help-footer span');if(footer)footer.textContent=`Ajuda v${HELP} • Rota 27 v${CURRENT}`;
+  }
+  function protectIdentity(){
+    if(identityObserver||!document.head)return;
+    identityObserver=new MutationObserver(()=>{
+      if(identityQueued)return;
+      identityQueued=true;
+      Promise.resolve().then(()=>{identityQueued=false;identity();});
+    });
+    identityObserver.observe(document.head,{childList:true,subtree:true,characterData:true,attributes:true,attributeFilter:['content']});
   }
   function load(a){
     if(document.getElementById(a.id))return;
@@ -82,6 +95,6 @@
     const n=document.createElement('script');n.id=a.id;n.src=a.src;n.async=false;document.body.appendChild(n);
   }
   function refresh(){identity();assets.forEach(load);}
-  function start(){refresh();document.addEventListener('click',e=>{if(e.target.closest?.('#r27HelpBtn,#r27HelpButton,[data-help]'))setTimeout(identity,100);});document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')refresh();});window.Rota27Roadmap={version:CURRENT,refresh,assets:assets.map(a=>a.id)};console.info(`[Rota27] roadmap loader v${CURRENT} carregado.`);}
+  function start(){refresh();protectIdentity();document.addEventListener('click',e=>{if(e.target.closest?.('#r27HelpBtn,#r27HelpButton,[data-help]'))setTimeout(identity,100);});document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')refresh();});window.Rota27Roadmap={version:CURRENT,refresh,assets:assets.map(a=>a.id)};console.info(`[Rota27] roadmap loader v${CURRENT} carregado.`);}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
 })();
