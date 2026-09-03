@@ -2,7 +2,6 @@
 (function(){
   'use strict';
 
-  const VERSION='0.15-dev.4';
   const SYNC_CONFIG_KEY='rota27_sync_config_v1';
   let baseShowScreen=null;
   let refreshTimer=null;
@@ -184,15 +183,10 @@
     },3000);
   }
 
-  function applyVersion(){
-    window.ROTA27_SYNC_DEV_VERSION=VERSION;
-  }
-
   function start(){
     ensurePanel();
     configureNav();
     patchShowScreen();
-    applyVersion();
     refreshWhenVisible();
     window.addEventListener('online',()=>{if(byId('screenPanel')?.classList.contains('active'))renderPanel();});
     window.addEventListener('offline',()=>{if(byId('screenPanel')?.classList.contains('active'))renderPanel();});
