@@ -1,14 +1,6 @@
 /* Rota 27 v0.25.46 — Hoje precisa de atenção */
 (function(){
   'use strict';
-  const VERSION='0.25.46';
-  function updateIdentity(){
-    document.title='Rota 27 Bodega • Comandas v0.25.46';
-    const meta=document.querySelector('meta[name="rota27-release-version"]');if(meta)meta.content=VERSION;
-    let style=document.getElementById('v02546ReleaseIdentity');
-    if(!style){style=document.createElement('style');style.id='v02546ReleaseIdentity';style.textContent='#v14VersionBadge::after{content:"v0.25.46"!important}';document.head.appendChild(style);}
-  }
-  function updateHelpIdentity(){const overlay=document.getElementById('r27HelpOverlay');const footer=overlay?.querySelector('.r27-help-footer span');if(footer)footer.textContent='Ajuda v7.8 • Rota 27 v0.25.46';}
   function removeReplayUi(){document.getElementById('v0257ReplayCard')?.remove();document.getElementById('v0257ReplayCss')?.remove();document.getElementById('v0257ReplayJs')?.remove();}
   function loadCss(id,href){if(document.getElementById(id)||document.querySelector(`link[href*="${href.split('?')[0].split('/').pop()}"]`))return;const link=document.createElement('link');link.id=id;link.rel='stylesheet';link.href=href;document.head.appendChild(link);}
   function loadReleaseAssets(){
@@ -65,11 +57,10 @@
     ];
     scripts.forEach(([id,src])=>{if(document.getElementById(id))return;const script=document.createElement('script');script.id=id;script.src=src;script.async=false;document.body.appendChild(script);});
   }
-  function handleClick(e){if(e.target.closest?.('#r27HelpBtn,[data-help]'))setTimeout(updateHelpIdentity,120);}
   function start(){
-    updateIdentity();updateHelpIdentity();removeReplayUi();loadReleaseAssets();document.addEventListener('click',handleClick);
-    document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){updateIdentity();updateHelpIdentity();removeReplayUi();loadReleaseAssets();}});
-    const releaseApi={version:VERSION,updateIdentity,updateHelpIdentity,removeReplayUi,loadReleaseAssets,replayHibernated:true};
+    removeReplayUi();loadReleaseAssets();
+    document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){removeReplayUi();loadReleaseAssets();}});
+    const releaseApi={version:'0.25.46',removeReplayUi,loadReleaseAssets,replayHibernated:true};
     window.Rota27V02546Release=releaseApi;
     console.info('[Rota27] v0.25.46 — Hoje precisa de atenção.');
   }
