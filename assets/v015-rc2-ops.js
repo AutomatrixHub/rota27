@@ -161,23 +161,15 @@
     if(btn)btn.addEventListener('click',openSync,{once:true});
   }
 
-  function applyVersion(){
-    const badge=byId('v14VersionBadge');
-    if(badge)badge.textContent='v0.15 RC.2.1';
-    document.title='Rota 27 Bodega • Comandas v0.15 RC.2.1';
-    window.ROTA27_SYNC_DEV_VERSION=VERSION;
-  }
-
   function start(){
     patchCreateCommand();
     patchNavigation();
-    applyVersion();
     renderExceptionBanner();
     setTimeout(restoreOperationalContext,120);
     clearInterval(statusTimer);
-    statusTimer=setInterval(()=>{applyVersion();renderExceptionBanner();},3000);
-    window.addEventListener('online',()=>{browserOffline=false;applyVersion();renderExceptionBanner();});
-    window.addEventListener('offline',()=>{browserOffline=true;applyVersion();renderExceptionBanner();});
+    statusTimer=setInterval(renderExceptionBanner,3000);
+    window.addEventListener('online',()=>{browserOffline=false;renderExceptionBanner();});
+    window.addEventListener('offline',()=>{browserOffline=true;renderExceptionBanner();});
     window.addEventListener('storage',event=>{if(event.key===SYNC_KEY)renderExceptionBanner();});
     console.info('[Rota27] melhorias operacionais carregadas (v0.15 RC.2.1).');
   }
