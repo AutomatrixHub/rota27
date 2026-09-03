@@ -116,8 +116,6 @@
       section.innerHTML='<summary><span class="r27-help-section-icon">⚙</span><span><strong>Onde ficam Clientes e configurações</strong><small>Cardápio para produtos; Painel para administrar o negócio.</small></span><span class="r27-help-chevron">⌄</span></summary><div class="r27-help-section-body"><p>Na v0.25.1, o <strong>Cardápio</strong> ficou dedicado a produtos, categorias, preços, importação e exportação.</p><h4>Clientes & Fidelização</h4><p>Abra <strong>Painel → Relacionamento → Clientes & Fidelização</strong>. O cadastro de clientes e a Central de relacionamento continuam no mesmo fluxo, apenas em um local mais coerente.</p><h4>Configurações & Integrações</h4><p>Abra <strong>Painel → Configurações & Integrações</strong> para configurar <strong>WhatsApp da comanda</strong>, <strong>WhatsApp do gerente</strong> e <strong>Sincronização entre aparelhos</strong>.</p><div class="r27-help-tip"><strong>Regra simples:</strong> Comandas = atender; Cardápio = o que é vendido; Painel = administrar; Histórico = o que aconteceu.</div></div>';
       content.appendChild(section);
     }
-    const footer=overlay.querySelector('.r27-help-footer span');
-    if(footer)footer.textContent='Ajuda v5.2 • Rota 27 v0.25.1';
     return true;
   }
 

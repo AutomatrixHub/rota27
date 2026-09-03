@@ -239,8 +239,6 @@
       section.innerHTML='<summary><span class="r27-help-section-icon">▦</span><span><strong>Mapa rápido de comandas</strong><small>Outra forma de encontrar uma mesa, balcão, parklet ou cliente sem rolar a lista.</small></span><span class="r27-help-chevron">⌄</span></summary><div class="r27-help-section-body"><p>Na tela <strong>Comandas</strong>, use o seletor <strong>Lista / Mapa</strong>. A Lista continua igual à versão anterior; o Mapa organiza apenas as comandas abertas em grupos compactos.</p><h4>Como o mapa organiza</h4><p><strong>Mesas</strong>, <strong>Balcão</strong>, <strong>Parklet</strong>, <strong>Clientes</strong> sem mesa/local e <strong>Outros locais</strong>. Basta tocar em um bloco para abrir a comanda.</p><h4>Abertura rápida</h4><p>No topo do Mapa existem atalhos <strong>+ Mesa</strong>, <strong>+ Balcão</strong>, <strong>+ Parklet</strong> e <strong>+ Cliente</strong>. Eles abrem a mesma tela segura de Nova comanda, apenas adiantando o contexto.</p><div class="r27-help-tip"><strong>Importante:</strong> o Mapa não cria uma segunda comanda nem altera a sincronização. É somente outra visualização dos mesmos dados.</div></div>';
       content.appendChild(section);
     }
-    const footer=overlay.querySelector('.r27-help-footer span');
-    if(footer)footer.textContent='Ajuda v5.3 • Rota 27 v0.25.2';
     return true;
   }
 

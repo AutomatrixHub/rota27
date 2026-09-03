@@ -105,7 +105,6 @@
       d.innerHTML='<summary><span class="r27-help-section-icon">▦</span><span><strong>Visão Gerencial</strong><small>Comparar períodos usando fechamentos confiáveis.</small></span></summary><div class="r27-help-section-body"><div class="r27-help-lead">No <b>Painel</b>, abra <b>Visão Gerencial</b> para acompanhar faturamento, média por turno, ticket, comandas, itens, produtos e formas de pagamento.</div><ol class="r27-help-steps"><li><span>1</span><div><b>Escolha o período</b><br>Use 7, 30, 90 dias ou todo o histórico.</div></li><li><span>2</span><div><b>Compare</b><br>Quando há base anterior, o app mostra a variação percentual.</div></li><li><span>3</span><div><b>Leia a tendência</b><br>O gráfico usa apenas turnos realmente fechados.</div></li><li><span>4</span><div><b>Demonstre sem contaminar</b><br>O Modo demonstração usa dados simulados somente em memória.</div></li></ol></div>';
       content.appendChild(d);
     }
-    const footer=overlay.querySelector('.r27-help-footer span');if(footer&&footer.textContent!=='Ajuda v4.6 • v0.22.0')footer.textContent='Ajuda v4.6 • v0.22.0';
   }
 
   function tick(){if(!own())return;repairPanel();watchPanel();ensureHistorySheet();ensureHistoryButton();ensureManagerHelp();}

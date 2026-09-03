@@ -170,8 +170,6 @@
     ensureChip(chips,'whatsapp-gerente','Gerente');
     ensureChip(chips,'respostas-clientes','Respostas');
 
-    const footer=overlay.querySelector('.r27-help-footer span');
-    if(footer)footer.textContent=`Ajuda v3 • produção v${VERSION}`;
 
     overlay.querySelectorAll('.r27-help-section').forEach(setSearch);
     return true;
