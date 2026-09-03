@@ -20,15 +20,7 @@
   const validPhone=v=>{const p=phone(v);return p.length>=12&&p.length<=15;};
   const toast=msg=>{try{api()?.toast?.(msg)}catch{try{showToast(msg,false)}catch{}}};
 
-  function identity(){
-    document.title=`Rota 27 Bodega • Comandas v${VERSION}`;
-    const meta=document.querySelector('meta[name="rota27-release-version"]');if(meta)meta.content=VERSION;
-    let style=byId('v02574ReleaseIdentity');
-    if(!style){style=document.createElement('style');style.id='v02574ReleaseIdentity';document.head.appendChild(style);}
-    style.textContent=`#v14VersionBadge::after{content:"v${VERSION}"!important}`;
-  }
-
-  function clients(){
+ function clients(){
     try{return Array.isArray(api()?.clients?.())?api().clients():Array.isArray(state?.clients)?state.clients:[];}catch{return [];}
   }
   function findClient(name,rawPhone,id=''){
@@ -358,14 +350,14 @@
   }
 
   async function start(){
-    identity();ensureHint();bind();patchCreateCommand();ensureClientEditorConsent();
+    ensureHint();bind();patchCreateCommand();ensureClientEditorConsent();
     await syncConsents();
     migrateLegacyConsents();
     refreshNewCommandConsent();decorateClientEditor();
     window.addEventListener('online',()=>syncConsents().then(()=>{migrateLegacyConsents();refreshNewCommandConsent();decorateClientEditor();}));
     window.addEventListener('pageshow',()=>setTimeout(()=>syncConsents().then(()=>{refreshNewCommandConsent();decorateClientEditor();}),250));
     window.addEventListener('rota27:v017-domain-updated',()=>setTimeout(()=>syncConsents().then(()=>{migrateLegacyConsents();refreshNewCommandConsent();decorateClientEditor();}),50));
-    document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){identity();patchCreateCommand();syncConsents().then(()=>{refreshNewCommandConsent();decorateClientEditor();});}});
+    document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){patchCreateCommand();syncConsents().then(()=>{refreshNewCommandConsent();decorateClientEditor();});}});
     window.Rota27V02574WhatsappConsent={version:VERSION,get:client=>bestRecord(client),sync:syncConsents,refresh:refreshNewCommandConsent,migrate:migrateLegacyConsents};
     console.info('[Rota27] v0.25.74 — consentimento persistente de WhatsApp ativo.');
   }

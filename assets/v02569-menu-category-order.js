@@ -10,15 +10,7 @@
   function text(v){return String(v??'').trim();}
   function key(v){return text(v).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLocaleLowerCase('pt-BR');}
   function same(a,b){return key(a)===key(b);}
-  function identity(){
-    document.title=`Rota 27 Bodega • Comandas v${VERSION}`;
-    const meta=document.querySelector('meta[name="rota27-release-version"]');if(meta)meta.content=VERSION;
-    let style=document.getElementById('v02569ReleaseIdentity');
-    if(!style){style=document.createElement('style');style.id='v02569ReleaseIdentity';document.head.appendChild(style);}
-    style.textContent=`#v14VersionBadge::after{content:"v${VERSION}"!important}`;
-  }
-
-  function historySignature(){
+ function historySignature(){
     const rows=Array.isArray(state?.history)?state.history:[];
     const first=rows[0]||{},last=rows[rows.length-1]||{};
     return `${rows.length}|${first.id||''}|${first.closedAt||''}|${first.updatedAt||''}|${last.id||''}|${last.closedAt||''}`;
@@ -115,17 +107,17 @@
   }
 
   function refresh(){
-    identity();patch();
+    patch();
     if(document.getElementById('screenMenu')?.classList.contains('active'))renderMenuV02569();
     if(document.getElementById('screenSale')?.classList.contains('active')&&typeof renderSale==='function')renderSale();
   }
 
   function start(){
-    identity();patch();
+    patch();
     const search=document.getElementById('searchMenu');
     if(search&&!search.dataset.v02569){search.dataset.v02569='1';search.addEventListener('input',()=>renderMenuV02569());}
-    document.addEventListener('click',e=>{if(e.target.closest?.('#navMenu'))setTimeout(()=>{identity();patch();renderMenuV02569();},0);});
-    document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){identity();patch();}});
+    document.addEventListener('click',e=>{if(e.target.closest?.('#navMenu'))setTimeout(()=>{patch();renderMenuV02569();},0);});
+    document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){patch();}});
     window.Rota27V02569MenuCategoryOrder={version:VERSION,refresh,usageByCategory,saleCategories,menuCategories};
     console.info('[Rota27] v0.25.71 — categorias prioritárias Todos, Cervejas, Bebidas, Charcutaria e Vinhos.');
   }

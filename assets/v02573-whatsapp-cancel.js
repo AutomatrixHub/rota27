@@ -18,15 +18,7 @@
   const normalizePhone=v=>{try{if(typeof normalizeWhatsappPhone==='function')return normalizeWhatsappPhone(v);}catch{}let d=String(v||'').replace(/\D/g,'').replace(/^0+/,'');if(d.length===10||d.length===11)d='55'+d;return d;};
   const validPhone=v=>{const d=normalizePhone(v);return d.length>=12&&d.length<=15;};
 
-  function identity(){
-    document.title=`Rota 27 Bodega • Comandas v${VERSION}`;
-    const meta=document.querySelector('meta[name="rota27-release-version"]');if(meta)meta.content=VERSION;
-    let style=document.getElementById('v02573ReleaseIdentity');
-    if(!style){style=document.createElement('style');style.id='v02573ReleaseIdentity';document.head.appendChild(style);}
-    style.textContent=`#v14VersionBadge::after{content:"v${VERSION}"!important}`;
-  }
-
-  function readOutbox(){const rows=readJson(OUTBOX_KEY,[]);return Array.isArray(rows)?rows:[];}
+ function readOutbox(){const rows=readJson(OUTBOX_KEY,[]);return Array.isArray(rows)?rows:[];}
   function saveOutbox(rows){writeJson(OUTBOX_KEY,(Array.isArray(rows)?rows:[]).slice(-MAX_OUTBOX));}
   function readSent(){const rows=readJson(SENT_KEY,[]);return Array.isArray(rows)?rows:[];}
   function wasSent(commandId){return readSent().some(x=>String(x?.commandId||'')===String(commandId||''));}
@@ -195,7 +187,6 @@
   }
 
   function start(){
-    identity();
     document.addEventListener('click',captureCancellation,true);
     document.addEventListener('click',e=>{
       if(e.target?.closest?.('#v0151CancelCommandBtn'))queueMicrotask(decorateCancelConfirm);
