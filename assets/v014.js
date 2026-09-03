@@ -955,20 +955,12 @@
     byId('v14BackupWrap').classList.add('open');
   }
 
-  function addVersionBadge() {
-    const brand = document.querySelector('.brand-copy');
-    if (!brand || byId('v14VersionBadge')) return;
-    brand.insertAdjacentHTML('beforeend', `<span id="v14VersionBadge" class="v14-version-badge">v0.14 DEV</span>`);
-  }
-
   function installOverrides() {
     enhanceHistoryScreen();
     enhanceMenu();
     enhancePayment();
     createSheets();
     ensureQuickProductsContainer();
-    addVersionBadge();
-
     renderHistory = enhancedRenderHistory;
     renderMenu = patchedRenderMenu;
     renderProducts = patchedRenderProducts;

@@ -1,7 +1,7 @@
 /* Rota 27 — carregador incremental do roadmap pós-v0.25.46 */
 (function(){
   'use strict';
-  const CURRENT='0.25.163';
+  const CURRENT='0.25.164';
   const HELP='11.0';
   const assets=[
     {type:'css',id:'v02579RoundedBorderCss',src:'./assets/v02577-menu-option-b.css?v=02579r1'},
@@ -73,9 +73,13 @@
     const title=`Rota 27 Bodega • Comandas v${CURRENT}`;
     if(document.title!==title)document.title=title;
     const meta=document.querySelector('meta[name="rota27-release-version"]');if(meta&&meta.content!==CURRENT)meta.content=CURRENT;
+    const brand=document.querySelector('.brand-copy');
+    let badge=document.getElementById('v14VersionBadge');
+    if(!badge&&brand){badge=document.createElement('span');badge.id='v14VersionBadge';badge.className='v14-version-badge';brand.appendChild(badge);}
+    if(badge&&badge.textContent!==`v${CURRENT}`)badge.textContent=`v${CURRENT}`;
     let style=document.getElementById('rota27RoadmapReleaseIdentity');
     if(!style){style=document.createElement('style');style.id='rota27RoadmapReleaseIdentity';document.head.appendChild(style);}
-    const css=`#v14VersionBadge::after{content:"v${CURRENT}"!important}`;
+    const css=`#v14VersionBadge{font-size:0!important;color:transparent!important;white-space:nowrap!important}#v14VersionBadge::after{content:"v${CURRENT}"!important;display:inline-block!important;visibility:visible!important;font-size:10.5px!important;line-height:1!important;font-weight:900!important;color:#8F4421!important}`;
     if(style.textContent!==css)style.textContent=css;
     if(style!==document.head.lastElementChild)document.head.appendChild(style);
     const footer=document.querySelector('#r27HelpOverlay .r27-help-footer span');if(footer)footer.textContent=`Ajuda v${HELP} • Rota 27 v${CURRENT}`;
