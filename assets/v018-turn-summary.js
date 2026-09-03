@@ -170,8 +170,10 @@
     window.addEventListener('storage',()=>schedule());
     window.addEventListener('rota27:v017-domain-updated',()=>schedule());
     window.addEventListener('rota27:v0181-audit-updated',()=>schedule());
+    window.addEventListener('rota27:v019-turn-updated',()=>schedule());
+    window.addEventListener('pageshow',()=>schedule());
     document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')schedule();});
-    setInterval(()=>{wrapRenders();render();},10000);
+    setTimeout(()=>{wrapRenders();render();},1200);
     console.info('[Rota27] v0.18.1 Resumo do Turno com auditoria carregado.');
   }
 
