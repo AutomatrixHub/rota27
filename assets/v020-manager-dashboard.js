@@ -3,19 +3,13 @@
   'use strict';
 
   const VERSION='0.20.0';
-  const LABEL='v0.20.0';
-  const TITLE='Rota 27 Bodega • Comandas v0.20.0';
   let period='30';
   let selectedMonth='';
-  let badgeObserver=null;
-  let titleObserver=null;
-  let helpFooterObserver=null;
 
   function byId(id){return document.getElementById(id);}
   function esc(v){if(typeof escapeHtml==='function')return escapeHtml(String(v??''));return String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));}
   function moneyValue(v){try{return typeof money==='function'?money(Number(v||0)):Number(v||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});}catch{return 'R$ 0,00';}}
   function clone(v){return JSON.parse(JSON.stringify(v==null?null:v));}
-  function ownVersion(){return String(document.querySelector('meta[name="rota27-version"]')?.getAttribute('content')||'')===VERSION;}
   function localDateKey(d=new Date()){const y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),day=String(d.getDate()).padStart(2,'0');return `${y}-${m}-${day}`;}
   function shiftKey(key,days){const [y,m,d]=String(key).split('-').map(Number);const x=new Date(y,m-1,d);x.setDate(x.getDate()+Number(days||0));return localDateKey(x);}
   function shortDate(key){const p=String(key||'').split('-');return p.length===3?`${p[2]}/${p[1]}`:String(key||'');}
@@ -163,16 +157,10 @@
   function injectHelp(){
     const overlay=byId('r27HelpOverlay');if(!overlay)return false;const content=overlay.querySelector('.r27-help-content');if(!content)return false;
     if(!byId('r27-help-visao-gerencial')){const section=document.createElement('details');section.id='r27-help-visao-gerencial';section.className='r27-help-section';section.innerHTML=`<summary><span class="r27-help-section-icon">▦</span><span><strong>Visão Gerencial</strong><small>Comparar períodos usando fechamentos confiáveis.</small></span></summary><div class="r27-help-section-body"><div class="r27-help-lead">No <b>Painel</b>, abra <b>Visão Gerencial</b> para acompanhar faturamento, média por dia, ticket, comandas, itens e cancelamentos usando os registros imutáveis do Fechamento do Turno.</div><ol class="r27-help-steps"><li><span>1</span><div><b>Escolha o período</b><br>Use 7, 30, 90 dias, todo o histórico ou um mês específico.</div></li><li><span>2</span><div><b>Compare</b><br>O app confronta faturamento, ticket, comandas e itens com o período anterior equivalente; no filtro Mês, a referência é o mês calendário anterior.</div></li><li><span>3</span><div><b>Leia tendências</b><br>Veja faturamento por turno, mais vendidos e formas de pagamento.</div></li><li><span>4</span><div><b>Exporte</b><br>Gere CSV dos fechamentos do período selecionado para análise externa.</div></li></ol><div class="r27-help-tip"><b>Importante:</b> dias sem fechamento não são tratados como faturamento zero. A visão só usa registros efetivamente encerrados.</div></div>`;content.appendChild(section);}
-    const footer=overlay.querySelector('.r27-help-footer span');if(footer&&footer.textContent!=='Ajuda v4.4 • v0.20.0')footer.textContent='Ajuda v4.4 • v0.20.0';
-    if(footer&&!helpFooterObserver){helpFooterObserver=new MutationObserver(()=>{if(ownVersion()&&footer.textContent!=='Ajuda v4.4 • v0.20.0')footer.textContent='Ajuda v4.4 • v0.20.0';});helpFooterObserver.observe(footer,{childList:true,characterData:true,subtree:true});}
     return true;
   }
-
-  function applyVersion(){if(!ownVersion())return;const badge=byId('v14VersionBadge');if(badge&&badge.textContent!==LABEL)badge.textContent=LABEL;if(document.title!==TITLE)document.title=TITLE;try{window.ROTA27_RELEASE_VERSION=VERSION;window.ROTA27_SYNC_DEV_VERSION=VERSION;}catch{}}
-  function protectVersion(){applyVersion();if(!ownVersion())return;const badge=byId('v14VersionBadge'),title=document.querySelector('title');if(badge&&!badgeObserver){badgeObserver=new MutationObserver(applyVersion);badgeObserver.observe(badge,{childList:true,characterData:true,subtree:true});}if(title&&!titleObserver){titleObserver=new MutationObserver(applyVersion);titleObserver.observe(title,{childList:true,characterData:true,subtree:true});}}
-
-  function tick(){if(!ownVersion())return;protectVersion();ensureSheet();if(byId('screenPanel')?.classList.contains('active'))renderEntry();injectHelp();if(byId('v020ManagerWrap')?.classList.contains('open'))renderManager();}
-  function start(){protectVersion();ensureSheet();setTimeout(tick,120);setTimeout(tick,650);setInterval(tick,1500);window.addEventListener('rota27:v019-turn-updated',()=>{renderEntry();if(byId('v020ManagerWrap')?.classList.contains('open'))renderManager();});window.addEventListener('online',tick);window.addEventListener('storage',tick);console.info('[Rota27] v0.20.0 Visão Gerencial carregada.');}
+  function tick(){ensureSheet();if(byId('screenPanel')?.classList.contains('active'))renderEntry();injectHelp();if(byId('v020ManagerWrap')?.classList.contains('open'))renderManager();}
+  function start(){ensureSheet();setTimeout(tick,120);setTimeout(tick,650);setInterval(tick,1500);window.addEventListener('rota27:v019-turn-updated',()=>{renderEntry();if(byId('v020ManagerWrap')?.classList.contains('open'))renderManager();});window.addEventListener('online',tick);window.addEventListener('storage',tick);console.info('[Rota27] v0.20.0 Visão Gerencial carregada.');}
 
   window.Rota27V020={version:VERSION,openManager,getDataset:()=>clone(dataset()),getSelectedMonth:()=>selectedMonth};
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
