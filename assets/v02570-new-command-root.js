@@ -6,15 +6,7 @@
   const byId=id=>document.getElementById(id);
   let previousOpen=null;
 
-  function identity(){
-    document.title=`Rota 27 Bodega • Comandas v${VERSION}`;
-    const meta=document.querySelector('meta[name="rota27-release-version"]');if(meta)meta.content=VERSION;
-    let style=byId('v02570ReleaseIdentity');
-    if(!style){style=document.createElement('style');style.id='v02570ReleaseIdentity';document.head.appendChild(style);}
-    style.textContent=`#v14VersionBadge::after{content:"v${VERSION}"!important}`;
-  }
-
-  function resetInternalMode(){
+ function resetInternalMode(){
     const wrap=byId('newCommandWrap'),check=byId('v02537InternalCheck'),table=byId('newTable');
     if(check)check.checked=false;
     wrap?.classList.remove('v02537-internal-mode');
@@ -111,9 +103,9 @@
   }
 
   function start(){
-    identity();install();
+    install();
     document.addEventListener('click',capture,true);
-    document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){identity();install();}});
+    document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){install();}});
     window.Rota27V02570NewCommand={version:VERSION,refresh:install,open:rootedOpen,canonicalOpen,markInternalClientFields};
     console.info('[Rota27] v0.25.70 — abertura canônica de Nova comanda ativa.');
   }

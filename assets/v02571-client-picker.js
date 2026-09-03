@@ -12,15 +12,7 @@
   let opened=false;
   let syncing=false;
 
-  function identity(){
-    document.title=`Rota 27 Bodega • Comandas v${VERSION}`;
-    const meta=document.querySelector('meta[name="rota27-release-version"]');if(meta)meta.content=VERSION;
-    let style=byId('v02571ReleaseIdentity');
-    if(!style){style=document.createElement('style');style.id='v02571ReleaseIdentity';document.head.appendChild(style);}
-    style.textContent=`#v14VersionBadge::after{content:"v${VERSION}"!important}`;
-  }
-
-  function sourceClients(){
+ function sourceClients(){
     let rows=[];
     try{rows=Array.isArray(api()?.clients?.())?api().clients():Array.isArray(state?.clients)?state.clients:[];}catch{}
     const map=new Map();
@@ -147,12 +139,12 @@
   }
 
   function refresh(){
-    identity();bind();suppressNative();
+    bind();suppressNative();
     if(opened)render(byId('newCustomer')?.value||'');
   }
 
   function start(){
-    identity();bind();suppressNative();
+    bind();suppressNative();
     window.addEventListener('rota27:v017-domain-updated',()=>{suppressNative();if(opened)render(byId('newCustomer')?.value||'');});
     window.addEventListener('storage',()=>{suppressNative();if(opened)render(byId('newCustomer')?.value||'');});
     document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')refresh();});

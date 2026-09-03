@@ -4,15 +4,7 @@
   const VERSION='0.25.72';
   const byId=id=>document.getElementById(id);
 
-  function identity(){
-    document.title=`Rota 27 Bodega • Comandas v${VERSION}`;
-    const meta=document.querySelector('meta[name="rota27-release-version"]');if(meta)meta.content=VERSION;
-    let style=byId('v02572ReleaseIdentity');
-    if(!style){style=document.createElement('style');style.id='v02572ReleaseIdentity';document.head.appendChild(style);}
-    style.textContent=`#v14VersionBadge::after{content:"v${VERSION}"!important}`;
-  }
-
-  function removeLegacyDatalist(){
+ function removeLegacyDatalist(){
     const dl=byId('v017ClientSuggestions');
     if(dl)dl.remove();
   }
@@ -57,13 +49,11 @@
   }
 
   function refresh(){
-    identity();
     refreshClientPicker();
     panelCleanup();
   }
 
   function start(){
-    identity();
     refreshClientPicker();
     panelCleanup();
 
