@@ -3,8 +3,6 @@
   'use strict';
 
   const VERSION='0.22.0';
-  const LABEL='v0.22.0';
-  const TITLE='Rota 27 Bodega • Comandas v0.22.0';
 
   const SUPPLIERS_KEY='rota27_v022_suppliers_v1';
   const ORDERS_KEY='rota27_v022_purchase_orders_v1';
@@ -773,31 +771,19 @@
       const stock=byId('r27-help-estoque');
       if(stock)stock.insertAdjacentElement('afterend',d);else content.appendChild(d);
     }
-    const footer=overlay.querySelector('.r27-help-footer span');
-    if(footer)footer.textContent='Ajuda v4.6 • v0.22.0';
     return true;
-  }
-
-  function applyVersion(){
-    const m=document.querySelector('meta[name="rota27-version"]');
-    if(m)m.setAttribute('content',VERSION);
-    const b=byId('v14VersionBadge');
-    if(b&&b.textContent!==LABEL)b.textContent=LABEL;
-    if(document.title!==TITLE)document.title=TITLE;
-    try{window.ROTA27_RELEASE_VERSION=VERSION;window.ROTA27_SYNC_DEV_VERSION=VERSION;}catch{}
   }
   function refresh(){
     try{renderPanelEntry();}catch{}
     try{if(byId('v022PurchasesWrap')?.classList.contains('open'))renderMain();}catch{}
     try{injectHelp();}catch{}
-    try{applyVersion();}catch{}
     try{window.dispatchEvent(new CustomEvent('rota27:v022-purchases-updated'));}catch{}
   }
   function start(){
     ensureMainSheet();ensureSupplierSheet();ensureReceiveSheet();
-    applyVersion();renderPanelEntry();injectHelp();
-    setTimeout(()=>{applyVersion();renderPanelEntry();injectHelp();},250);
-    setTimeout(()=>{applyVersion();renderPanelEntry();injectHelp();},1000);
+    renderPanelEntry();injectHelp();
+    setTimeout(()=>{renderPanelEntry();injectHelp();},250);
+    setTimeout(()=>{renderPanelEntry();injectHelp();},1000);
     window.addEventListener('rota27:v021-stock-updated',refresh);
     window.addEventListener('rota27:v017-domain-updated',refresh);
     window.addEventListener('storage',refresh);
