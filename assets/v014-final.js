@@ -54,16 +54,8 @@
     }
   }
 
-  function applyReleaseIdentity() {
-    window.ROTA27_RELEASE_VERSION = RELEASE_VERSION;
-    const badge = byId('v14VersionBadge');
-    if (badge) badge.textContent = 'v0.14';
-    document.title = 'Rota 27 Bodega • Comandas v0.14';
-    window.v14DownloadBackup = downloadFinalBackup;
-  }
-
   function init() {
-    applyReleaseIdentity();
+    window.v14DownloadBackup = downloadFinalBackup;
     console.info(`[Rota27] release final carregada (${RELEASE_VERSION}).`);
   }
 
