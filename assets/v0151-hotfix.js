@@ -207,16 +207,11 @@
     try{showToast('Comanda cancelada.',false);}catch{}
   }
 
-  function applyVersion(){
-    const badge=byId('v14VersionBadge');if(badge)badge.textContent='v0.15.1';
-    document.title='Rota 27 Bodega • Comandas v0.15.1';
-  }
-
   function start(){
-    patchWhatsappConfig();wrapOperationalViews();ensureCancelConfirm();ensureCancelButton();applyVersion();flushCancelQueue();purgeCancelled();
-    setInterval(()=>{patchWhatsappConfig();wrapOperationalViews();ensureCancelButton();flushCancelQueue();purgeCancelled();applyVersion();},4000);
+    patchWhatsappConfig();wrapOperationalViews();ensureCancelConfirm();ensureCancelButton();flushCancelQueue();purgeCancelled();
+    setInterval(()=>{patchWhatsappConfig();wrapOperationalViews();ensureCancelButton();flushCancelQueue();purgeCancelled();},4000);
     window.addEventListener('online',()=>{correctWhatsappEndpoint(false);flushCancelQueue();setTimeout(()=>{try{resumeWhatsappOutbox();}catch{}},400);});
-    window.addEventListener('pageshow',()=>{correctWhatsappEndpoint(false);flushCancelQueue();applyVersion();});
+    window.addEventListener('pageshow',()=>{correctWhatsappEndpoint(false);flushCancelQueue();});
     console.info('[Rota27] hotfix v0.15.1 carregado.');
   }
 
