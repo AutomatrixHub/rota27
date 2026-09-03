@@ -1,7 +1,7 @@
 /* Rota 27 — carregador incremental do roadmap pós-v0.25.46 */
 (function(){
   'use strict';
-  const CURRENT='0.25.168';
+  const CURRENT='0.25.169';
   const HELP='11.0';
   const assets=[
     {type:'css',id:'v02599HistoryEmphasisCss',src:'./assets/v02599-history-emphasis.css?v=02599r1'},
