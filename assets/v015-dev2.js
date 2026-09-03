@@ -94,15 +94,14 @@
   function start(){
     applyGuard();
     // Não observamos class/disabled: isso causava um ciclo de mutações em alguns Androids.
-    // Atualizamos em eventos relevantes e em intervalo leve apenas enquanto o sheet está aberto.
+    // Atualizamos após as interações e nos eventos relevantes, sem polling visual contínuo.
     document.addEventListener('click',event=>{
       const t=event.target;
-      if(t&&((t.id==='v15SyncConfigBtn')||(t.closest&&t.closest('#v15SyncCard'))||(t.closest&&t.closest('#v15SyncWrap'))))scheduleApply(0);
+      if(t&&((t.id==='v15SyncConfigBtn')||(t.closest&&t.closest('#v15SyncCard'))||(t.closest&&t.closest('#v15SyncWrap'))))scheduleApply(60);
     },{passive:true});
     window.addEventListener('online',()=>scheduleApply(0));
     window.addEventListener('offline',()=>scheduleApply(0));
     window.addEventListener('storage',event=>{if(event.key===CONFIG_KEY)scheduleApply(0);});
-    setInterval(()=>{if(byId('v15SyncWrap')?.classList.contains('open'))applyGuard();},1200);
     console.info('[Rota27] proteção de bootstrap carregada (DEV.3, sem sobrescrever versão global).');
   }
 
