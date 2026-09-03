@@ -227,21 +227,6 @@
 .v0252-map-empty strong{display:block;font-size:14px}
 .v0252-map-empty span{display:block;margin-top:5px;color:var(--muted,#6f6257);font-size:11px}
 
-/* Identidade pública da candidata. */
-#v14VersionBadge{
-  font-size:0!important;
-  color:transparent!important;
-  white-space:nowrap;
-}
-#v14VersionBadge::after{
-  content:"v0.25.2";
-  display:inline-block;
-  font-size:12px;
-  line-height:1;
-  font-weight:900;
-  color:#8F4421;
-}
-
 @media (min-width:521px){
   .v0252-zone-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
 }

@@ -41,6 +41,3 @@
 .v0252-slot:active::before{
   transform:scaleY(.97);
 }
-
-/* Identidade pública da revisão. */
-#v14VersionBadge::after{content:"v0.25.4"!important}

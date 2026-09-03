@@ -1,5 +1,5 @@
-const CACHE_NAME = 'rota27-comandas-v0.25.165-r1';
-const RELEASE_VERSION = '0.25.165';
+const CACHE_NAME = 'rota27-comandas-v0.25.166-r1';
+const RELEASE_VERSION = '0.25.166';
 const APP_SHELL = [
   './','./index.html','./sandbox.html','./base-v013.html',
   './assets/v014.css','./assets/v014.js','./assets/v014-dev3.css','./assets/v014-dev3.js','./assets/v014-rc2-category-fix.js','./assets/v014-final.js',
@@ -15,8 +15,8 @@ const APP_SHELL = [
   './assets/v021-stock.css','./assets/v021-stock.js',
   './assets/v022-stock-preflight.js','./assets/v022-stock-release.js','./assets/v022-stock-manager-view.css','./assets/v022-stock-manager-view.js','./assets/v022-purchases.css','./assets/v022-purchases.js','./assets/v022-compat.js','./assets/v022-manager-view.css','./assets/v022-manager-view.js',
   './assets/v023-inventory.css','./assets/v023-inventory.js',
-  './assets/v024-costs.css','./assets/v024-costs.js','./assets/v024-draft-edit.css','./assets/v024-draft-edit.js','./assets/v024-release-identity.css',
-  './assets/v025-relationship.css','./assets/v025-relationship-r2.css','./assets/v025-relationship-r3.css','./assets/v025-relationship.js','./assets/v025-relationship-r3.js','./assets/v025-release-identity.css',
+  './assets/v024-costs.css','./assets/v024-costs.js','./assets/v024-draft-edit.css','./assets/v024-draft-edit.js',
+  './assets/v025-relationship.css','./assets/v025-relationship-r2.css','./assets/v025-relationship-r3.css','./assets/v025-relationship.js','./assets/v025-relationship-r3.js',
   './assets/v0251-navigation.css','./assets/v0251-navigation.js',
   './assets/v0252-command-map.css','./assets/v0252-command-map.js','./assets/v0252-panel-polish.css','./assets/v0252-panel-polish.js',
   './assets/v0253-map-visual.css','./assets/v0254-map-accent.css',
