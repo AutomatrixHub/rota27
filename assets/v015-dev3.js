@@ -40,10 +40,6 @@
     rebuildQuickButtons('newCommandWrap','setQuickTable');
     rebuildQuickButtons('editCommandWrap','setEditQuickTable');
 
-    const badge=document.getElementById('v14VersionBadge');
-    if(badge)badge.textContent='v0.15 DEV.3';
-    document.title='Rota 27 Bodega • Comandas v0.15 DEV.3';
-    window.ROTA27_SYNC_DEV_VERSION='0.15-dev.3';
     console.info('[Rota27] atalhos completos de mesa/local carregados (v0.15 DEV.3).');
   }
 
