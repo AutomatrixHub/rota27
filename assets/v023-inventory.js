@@ -3,8 +3,6 @@
   'use strict';
 
   const VERSION='0.23.0';
-  const LABEL='v0.23.0';
-  const TITLE='Rota 27 Bodega • Comandas v0.23.0';
   const INV_KEY='rota27_v023_inventories_v1';
   const OUTBOX_KEY='rota27_v023_inventory_outbox_v1';
   const CURSOR_KEY='rota27_v023_inventory_cursor_v1';
@@ -250,7 +248,7 @@
     byId('v023BackHistory').onclick=()=>{mode='history';render();};byId('v023Csv').onclick=()=>exportCsv(inv);byId('v023ContinueDetail')?.addEventListener('click',()=>{activeProductId=inv.items.find(i=>!counted(i))?.productId||inv.items[0]?.productId||null;mode='count';render();});
   }
 
-  function render(){ensureSheet();renderNotice();if(mode==='count')renderCount();else if(mode==='summary')renderSummary();else if(mode==='history')renderHistory();else if(mode==='detail')renderDetail();else renderHome();applyReleaseUi();}
+  function render(){ensureSheet();renderNotice();if(mode==='count')renderCount();else if(mode==='summary')renderSummary();else if(mode==='history')renderHistory();else if(mode==='detail')renderDetail();else renderHome();ensureHelp();}
 
   function inventoryHint(){const open=openInventorySession(),last=lastFinalized();if(open){const s=sessionStats(open);return `${s.done}/${s.total} produtos conferidos • continuar ${open.code}.`;}if(last)return `Última conferência ${fmtDate(last.finalizedAt)} • ${sessionStats(last).divergent} divergência${sessionStats(last).divergent===1?'':'s'}.`;return 'Nenhuma conferência física realizada ainda.';}
   function decorateStock(){
@@ -262,13 +260,13 @@
   function injectHelp(){
     const overlay=byId('r27HelpOverlay'),content=overlay?.querySelector('.r27-help-content');if(!content)return false;
     if(!byId('r27-help-inventario')){const d=document.createElement('details');d.id='r27-help-inventario';d.className='r27-help-section';d.innerHTML=`<summary><span class="r27-help-section-icon">◎</span><span><strong>Inventário & Conferência</strong><small>Compare o estoque do sistema com a contagem física.</small></span></summary><div class="r27-help-section-body"><div class="r27-help-lead">No <b>Estoque Essencial</b>, toque em <b>Inventário</b>. A contagem não altera nenhum saldo até você revisar e confirmar a finalização.</div><ol class="r27-help-steps"><li><span>1</span><div><b>Inicie a conferência</b><br>O app guarda um snapshot do saldo esperado dos produtos controlados.</div></li><li><span>2</span><div><b>Conte o físico</b><br>Digite a quantidade encontrada. Use Igual ao sistema ou Sem unidade para acelerar.</div></li><li><span>3</span><div><b>Revise as diferenças</b><br>Faltas e sobras ficam destacadas antes de qualquer alteração.</div></li><li><span>4</span><div><b>Confirme</b><br>Somente as divergências viram Ajustes de inventário, uma única vez por produto.</div></li></ol><div class="r27-help-tip"><b>Importante:</b> faça a conferência em um período sem vendas, entradas ou outras movimentações. Se o estoque mudar durante a contagem, o Rota 27 bloqueia a finalização para proteger o saldo.</div></div>`;const stock=byId('r27-help-estoque'),purchases=byId('r27-help-compras');if(purchases)purchases.insertAdjacentElement('afterend',d);else if(stock)stock.insertAdjacentElement('afterend',d);else content.appendChild(d);}
-    const footer=overlay.querySelector('.r27-help-footer span');if(footer)footer.textContent='Ajuda v4.7 • v0.23.0';return true;
+    return true;
   }
-  function applyReleaseUi(){const b=byId('v14VersionBadge');if(b&&b.textContent!==LABEL)b.textContent=LABEL;if(document.title!==TITLE)document.title=TITLE;try{window.ROTA27_RELEASE_VERSION=VERSION;window.ROTA27_SYNC_DEV_VERSION=VERSION;}catch{}injectHelp();}
-  function refresh(){wrapStockOpen();if(byId('v021StockWrap')?.classList.contains('open'))setTimeout(decorateStock,0);if(byId('v023InventoryWrap')?.classList.contains('open'))render();applyReleaseUi();try{window.dispatchEvent(new CustomEvent('rota27:v023-inventory-updated'));}catch{}}
+  function ensureHelp(){injectHelp();}
+  function refresh(){wrapStockOpen();if(byId('v021StockWrap')?.classList.contains('open'))setTimeout(decorateStock,0);if(byId('v023InventoryWrap')?.classList.contains('open'))render();ensureHelp();try{window.dispatchEvent(new CustomEvent('rota27:v023-inventory-updated'));}catch{}}
 
   function start(){
-    ensureSheet();wrapStockOpen();applyReleaseUi();setTimeout(()=>{wrapStockOpen();decorateStock();applyReleaseUi();},120);setTimeout(()=>{decorateStock();applyReleaseUi();},700);
+    ensureSheet();wrapStockOpen();ensureHelp();setTimeout(()=>{wrapStockOpen();decorateStock();ensureHelp();},120);setTimeout(()=>{decorateStock();ensureHelp();},700);
     window.addEventListener('rota27:v021-stock-updated',refresh);window.addEventListener('rota27:v022-purchases-updated',refresh);window.addEventListener('rota27:v017-domain-updated',refresh);window.addEventListener('storage',refresh);window.addEventListener('online',()=>{refresh();syncNow(true);});window.addEventListener('offline',refresh);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){refresh();syncNow();}});
     if(navigator.onLine)syncNow();console.info('[Rota27] v0.23.0 Inventário & Conferência carregado.');
   }
