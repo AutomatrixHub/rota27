@@ -1,11 +1,11 @@
 /* Rota 27 — carregador incremental do roadmap pós-v0.25.46 */
 (function(){
   'use strict';
-  const CURRENT='0.25.176';
+  const CURRENT='0.25.177';
   const HELP='11.0';
   const assets=[
     {type:'js',id:'v025175CatalogImportCommitJs',src:'./assets/v025175-catalog-import-commit.js?v=025175r1'},
-    {type:'js',id:'v025174CatalogEditorIntegrityJs',src:'./assets/v025174-catalog-editor-integrity.js?v=025174r1'},
+    {type:'js',id:'v025174CatalogEditorIntegrityJs',src:'./assets/v025174-catalog-editor-integrity.js?v=025177r1'},
     {type:'js',id:'v025173MenuEditorReturnJs',src:'./assets/v025173-menu-editor-return.js?v=025173r1'},
     {type:'js',id:'v025172MenuSaveReturnJs',src:'./assets/v025172-menu-save-return.js?v=025172r1'},
     {type:'css',id:'v025171CatalogDeleteCss',src:'./assets/v025171-catalog-delete.css?v=025171r1'},
