@@ -1,7 +1,7 @@
 /* Rota 27 — carregador incremental do roadmap pós-v0.25.46 */
 (function(){
   'use strict';
-  const CURRENT='0.25.177';
+  const CURRENT='0.25.178';
   const HELP='11.0';
   const assets=[
     {type:'js',id:'v025175CatalogImportCommitJs',src:'./assets/v025175-catalog-import-commit.js?v=025175r1'},
@@ -106,6 +106,6 @@
     const n=document.createElement('script');n.id=a.id;n.src=a.src;n.async=false;document.body.appendChild(n);
   }
   function refresh(){identity();assets.forEach(load);}
-  function start(){refresh();protectIdentity();document.addEventListener('click',e=>{if(e.target.closest?.('#r27HelpBtn,#r27HelpButton,[data-help]'))setTimeout(identity,100);});document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')refresh();});window.Rota27Roadmap={version:CURRENT,refresh,assets:assets.map(a=>a.id)};console.info(`[Rota27] roadmap loader v${CURRENT} carregado.`);}
+  function start(){refresh();protectIdentity();requestAnimationFrame(()=>document.body?.classList.add('r27-bootstrap-ready'));document.addEventListener('click',e=>{if(e.target.closest?.('#r27HelpBtn,#r27HelpButton,[data-help]'))setTimeout(identity,100);});document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')refresh();});window.Rota27Roadmap={version:CURRENT,refresh,assets:assets.map(a=>a.id)};console.info(`[Rota27] roadmap loader v${CURRENT} carregado.`);}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
 })();

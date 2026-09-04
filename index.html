@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#F5E9D5" />
   <!-- rota27-version permanece 0.22.0 como gate de compatibilidade das camadas v0.21/v0.22. -->
   <meta name="rota27-version" content="0.22.0" />
-  <meta name="rota27-release-version" content="0.25.177" />
+  <meta name="rota27-release-version" content="0.25.178" />
   <meta name="rota27-fixed-copy-whatsapp" content="5527997769279" />
   <title>Rota 27 Bodega • Comandas</title>
   <style>
@@ -28,7 +28,8 @@
         html=html.replace(/<title>[\s\S]*?<\/title>/i,'<title>Rota 27 Bodega • Comandas</title>');
         html=html.replace('</head>',
           '<meta name="rota27-version" content="0.22.0" />'+
-          '<meta name="rota27-release-version" content="0.25.177" />'+
+          '<meta name="rota27-release-version" content="0.25.178" />'+
+          '<style id="rota27BootstrapGate">body{opacity:0!important}body.r27-bootstrap-ready{opacity:1!important;transition:opacity .12s ease}</style>'+
           '<meta name="rota27-fixed-copy-whatsapp" content="5527997769279" />'+
           '<link rel="stylesheet" href="./assets/v014.css" />'+
           '<link rel="stylesheet" href="./assets/v014-dev3.css" />'+
@@ -139,7 +140,8 @@
           '<script id="v02573WhatsappCancelJs" src="./assets/v02573-whatsapp-cancel.js?v=02573r1"><\/script>'+
           '<script id="v02574WhatsappConsentJs" src="./assets/v02574-whatsapp-consent.js?v=02574r1"><\/script>'+
           '<script id="v02598CommandEmptyStateJs" src="./assets/v02598-command-empty-state.js?v=02598r1"><\/script>'+
-          '<script src="./assets/roadmap-loader.js?v=025177r1"><\/script>'+
+          '<script src="./assets/roadmap-loader.js?v=025178r1"><\/script>'+
+          '<script>setTimeout(function(){document.body&&document.body.classList.add("r27-bootstrap-ready");},4000);<\/script>'+
           '</body>');
         document.open();document.write(html);document.close();
       }catch(err){
