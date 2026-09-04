@@ -190,7 +190,7 @@ Deno.serve(async (req) => {
 
   async function updateTargetStatus(targetDeviceId: string, status: "active" | "retired" | "removed", reason = "") {
     if (!targetDeviceId) return { row: null, error: "Aparelho alvo obrigatório." };
-    if (targetDeviceId === deviceId) return { row: null, error: "Este aparelho não pode ser desativado ou removido por ele mesmo.\" };
+    if (targetDeviceId === deviceId) return { row: null, error: "Este aparelho não pode ser desativado ou removido por ele mesmo." };
 
     const patch = status === "active"
       ? { status: "active", retired_at: null, retired_reason: null }
@@ -331,7 +331,7 @@ Deno.serve(async (req) => {
             });
           }
           const retry = await existingEvent(rawEventId);
-          if (!retry && await latestSeq() > 0) {
+          if (!retry && (await latestSeq()) > 0) {
             return json(409, {
               ok: false,
               code: "initial_snapshot_already_exists",
