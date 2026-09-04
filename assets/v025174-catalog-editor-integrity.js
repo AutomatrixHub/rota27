@@ -64,7 +64,8 @@
         let id=`p${Date.now().toString(36)}`;while((state.catalog||[]).some(row=>String(row?.id)===id))id+='x';
         state.catalog.push({id,name,cat:category,price,emoji,active});
       }
-      save();
+      const committed=window.v15CommitCoreMutation?.('catalog-editor')===true;
+      if(!committed)save();
       wrap?.classList.remove('open');
       try{showScreen('menu');}catch{}
       try{renderMenu();}catch{}
