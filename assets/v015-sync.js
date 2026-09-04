@@ -218,6 +218,38 @@
     try { window.save = patched; } catch {}
   }
 
+  /*
+   * Operações de catálogo não podem depender da cadeia visual de save(). Algumas
+   * camadas legadas protegem o retorno do Modo Teste e podem adiar esse save,
+   * deixando a tela atualizada apenas em memória. Este commit usa a base local
+   * já capturada pela sincronização e registra o diff na mesma outbox.
+   */
+  function canCommitRealCoreState() {
+    try {
+      if (window.Rota27V02581TestMode?.isActive?.() === true || document.body?.classList.contains('v02581-test-mode')) return false;
+      if (window.Rota27V02595TestRealBoundary?.hasTestArtifacts?.()) return false;
+    } catch {}
+    return true;
+  }
+
+  function commitCoreMutation(reason='core-mutation') {
+    if (!canCommitRealCoreState()) return false;
+    const after = cloneCoreState(typeof state !== 'undefined' ? state : {});
+    const before = previousState || after;
+    const alreadyCaptured = sameJson(before, after);
+    try {
+      if (baseSave) baseSave();
+      else if (typeof save === 'function') save();
+      else return false;
+    } catch (error) {
+      console.error('[Rota27 v0.15] Falha ao persistir alteração de núcleo:', reason, error);
+      return false;
+    }
+    if (!applyingRemote && !alreadyCaptured) captureStateDiff(before, after);
+    previousState = after;
+    return true;
+  }
+
   function storeCoreState(snapshot) {
     if (!snapshot || typeof snapshot !== 'object') return false;
     const before = cloneCoreState(state);
@@ -561,6 +593,7 @@
     window.v15SyncNow=syncNow;
     window.v15PublishSyncBase=publishThisDevice;
     window.v15AdoptSharedBase=adoptSharedBase;
+    window.v15CommitCoreMutation=commitCoreMutation;
   }
 
   function init() {
