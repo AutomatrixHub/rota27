@@ -82,7 +82,7 @@ function canonicalizeTurnClosed(eventType: string, eventId: string, entityId: st
   }
   const shiftStartedAt = Math.trunc(shiftStartedAtRaw);
   const canonicalId = `turn_${businessDate}_${shiftStartedAt}`;
-  const closure = { ...closureRaw, id: canonicalId, businessDate, shiftStartedAt };
+  const closure = { ...closureRaw, businessDate, shiftStartedAt };
   return {
     eventId: `turn_closed_${canonicalId}`,
     entityId: canonicalId,
