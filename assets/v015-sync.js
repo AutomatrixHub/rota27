@@ -1,17 +1,19 @@
-/* Rota 27 v0.15 DEV.1 — sincronização multidispositivo
+/* Rota 27 v0.15 DEV.1 — sincronização multidispositivo | integridade v0.25.182
  * Offline-first: mudanças locais entram em uma outbox; o backend compartilha eventos idempotentes entre aparelhos.
- * A v0.14 em produção permanece intacta. Esta camada só é carregada no preview v0.15.
+ * Snapshots completos são exclusivos do bootstrap explícito e nunca substituem estado durante a sincronização normal.
  */
 (function () {
   'use strict';
 
-  const VERSION = '0.15-dev.1';
+  const MODULE_VERSION = '0.15-dev.1';
+  const RELEASE_FALLBACK = '0.25.182';
   const CONFIG_KEY = 'rota27_sync_config_v1';
   const PRE_ADOPT_BACKUP_KEY = 'rota27_sync_pre_adopt_backup_v1';
+  const LEGACY_SNAPSHOT_BACKUP_KEY = 'rota27_sync_legacy_snapshot_quarantine_v1';
   const DEFAULT_STORE_ID = 'rota27-bodega';
   const SYNC_INTERVAL_MS = 15000;
   const SYNC_DEBOUNCE_MS = 1400;
-  const MAX_OUTBOX = 1200;
+  const OUTBOX_WARN_THRESHOLD = 1200;
   const MAX_CONFLICTS = 30;
 
   let config = loadConfig();
@@ -35,6 +37,12 @@
   }
   function cleanText(v, max=160) { return String(v ?? '').trim().replace(/\s+/g, ' ').slice(0,max); }
   function validUrl(v) { return /^https:\/\/.+\/functions\/v1\/rota27-sync\/?$/i.test(String(v||'').trim()); }
+  function releaseVersion() {
+    const roadmap = cleanText(window.Rota27Roadmap?.version || '', 40);
+    if (roadmap) return roadmap;
+    const meta = cleanText(document.querySelector('meta[name="rota27-release-version"]')?.content || '', 40);
+    return meta || RELEASE_FALLBACK;
+  }
   function statusText(ts) {
     if (!ts) return 'Nunca';
     const d = new Date(Number(ts));
@@ -63,7 +71,7 @@
       deviceId: cleanText(raw.deviceId || newId('dev'), 120),
       deviceName: cleanText(raw.deviceName || defaultDeviceName(), 80),
       cursor: Math.max(0, Number(raw.cursor || 0)),
-      outbox: Array.isArray(raw.outbox) ? raw.outbox.slice(-MAX_OUTBOX) : [],
+      outbox: Array.isArray(raw.outbox) ? raw.outbox.slice() : [],
       conflicts: Array.isArray(raw.conflicts) ? raw.conflicts.slice(-MAX_CONFLICTS) : [],
       lastSyncAt: Number(raw.lastSyncAt || 0),
       lastError: cleanText(raw.lastError || '', 300),
@@ -101,6 +109,70 @@
   function sanitizeSnapshot() {
     return coreStateFrom(typeof state !== 'undefined' ? state : {});
   }
+  function eventTypeOf(event) { return String(event?.eventType || event?.event_type || ''); }
+  function snapshotReason(event) { return cleanText(event?.payload?.reason || '', 60); }
+  function isAutomaticSnapshot(event) {
+    return eventTypeOf(event) === 'state_snapshot' && snapshotReason(event) !== 'initial-publish';
+  }
+
+  function addConflict(event, message) {
+    config.conflicts.push({
+      id:newId('conflict'), seq:Number(event?.seq||0), eventType:String(event?.event_type||event?.eventType||''),
+      entityId:String(event?.entity_id||event?.entityId||''), message:cleanText(message,260), at:Date.now()
+    });
+    config.conflicts = config.conflicts.slice(-MAX_CONFLICTS);
+  }
+
+  function compactSafeOutbox(rows) {
+    const source = Array.isArray(rows) ? rows : [];
+    const lastIndex = new Map();
+    source.forEach((event,index) => {
+      const type = eventTypeOf(event);
+      const entityId = String(event?.entityId || event?.entity_id || '');
+      if (type === 'catalog_upsert' || type === 'catalog_delete') lastIndex.set(`catalog:${entityId}`, index);
+      else if (type === 'categories_replace') lastIndex.set('categories', index);
+    });
+    return source.filter((event,index) => {
+      const type = eventTypeOf(event);
+      const entityId = String(event?.entityId || event?.entity_id || '');
+      if (type === 'catalog_upsert' || type === 'catalog_delete') return lastIndex.get(`catalog:${entityId}`) === index;
+      if (type === 'categories_replace') return lastIndex.get('categories') === index;
+      return true;
+    });
+  }
+
+  function quarantineLegacyAutomaticSnapshots() {
+    const original = Array.isArray(config.outbox) ? config.outbox.slice() : [];
+    const unsafe = original.filter(isAutomaticSnapshot);
+    if (!unsafe.length) return true;
+    const safe = original.filter(event => !isAutomaticSnapshot(event));
+    config.outbox = safe;
+    try {
+      persistConfig();
+      let previous = null;
+      try { previous = JSON.parse(localStorage.getItem(LEGACY_SNAPSHOT_BACKUP_KEY) || 'null'); } catch {}
+      const archived = Array.isArray(previous?.events) ? previous.events : [];
+      const merged = [...archived, ...unsafe];
+      const unique = [];
+      const ids = new Set();
+      merged.forEach(event => {
+        const id = String(event?.eventId || event?.event_id || newId('legacy'));
+        if (ids.has(id)) return;
+        ids.add(id); unique.push(event);
+      });
+      localStorage.setItem(LEGACY_SNAPSHOT_BACKUP_KEY, JSON.stringify({
+        savedAt:nowIso(), version:releaseVersion(), events:unique
+      }));
+    } catch (error) {
+      config.outbox = original;
+      try { persistConfig(); } catch {}
+      config.lastError = 'Existe um snapshot automático legado na fila e não foi possível preservá-lo com segurança. Libere espaço no navegador e tente novamente.';
+      return false;
+    }
+    addConflict({eventType:'state_snapshot'}, `${unsafe.length} snapshot(s) automático(s) legado(s) foram isolados para impedir sobrescrita de dados mais novos. A cópia original foi preservada neste aparelho.`);
+    persistConfig();
+    return true;
+  }
 
   function queueEvent(eventType, entityId, payload) {
     if (!config.enabled || !config.initialized || applyingRemote) return;
@@ -111,15 +183,16 @@
       payload: clone(payload || {}),
       deviceId: config.deviceId,
       createdAt: nowIso(),
-      appVersion: VERSION
+      appVersion: releaseVersion()
     };
     config.outbox.push(event);
-    if (config.outbox.length > MAX_OUTBOX) {
-      config.outbox = [{
-        eventId: newId('sync'), eventType:'state_snapshot', entityId:'state',
-        payload:{ state:sanitizeSnapshot(), reason:'outbox-compacted' },
-        deviceId:config.deviceId, createdAt:nowIso(), appVersion:VERSION
-      }];
+    if (config.outbox.length > OUTBOX_WARN_THRESHOLD) {
+      const compacted = compactSafeOutbox(config.outbox);
+      config.outbox = compacted;
+      const alreadyWarned = config.conflicts.some(x => String(x?.message||'').includes('Fila local acima do limite de referência'));
+      if (config.outbox.length > OUTBOX_WARN_THRESHOLD && !alreadyWarned) {
+        addConflict({eventType:'outbox'}, `Fila local acima do limite de referência (${config.outbox.length} eventos). Nenhum evento foi descartado nem convertido em snapshot; mantenha o aparelho online até concluir a sincronização.`);
+      }
     }
     persistConfig();
     scheduleSyncSoon();
@@ -162,10 +235,6 @@
     if (!config.enabled || !config.initialized || applyingRemote) return;
     const changed = countChanges(before, after);
     if (!changed) return;
-    if (changed > 40) {
-      queueEvent('state_snapshot','state',{state:after,reason:'large-local-change'});
-      return;
-    }
 
     const bCommands = idMap(before.commands), aCommands = idMap(after.commands);
     const bHistory = idMap(before.history), aHistory = idMap(after.history);
@@ -247,8 +316,6 @@
     }
     if (!applyingRemote && !alreadyCaptured) captureStateDiff(before, after);
     previousState = after;
-    /* Importação é uma ação em lote explícita: publique sem aguardar o debounce
-       normal, para que outro aparelho já possa receber o novo catálogo. */
     if (reason === 'catalog-import') setTimeout(() => syncNow(), 0);
     return true;
   }
@@ -267,23 +334,20 @@
     return !sameJson(before, previousState);
   }
 
-  function addConflict(event, message) {
-    config.conflicts.push({
-      id:newId('conflict'), seq:Number(event?.seq||0), eventType:String(event?.event_type||event?.eventType||''),
-      entityId:String(event?.entity_id||event?.entityId||''), message:cleanText(message,260), at:Date.now()
-    });
-    config.conflicts = config.conflicts.slice(-MAX_CONFLICTS);
-  }
-
   function findOpenCommand(id) { return state.commands?.find(c => String(c.id) === String(id)); }
   function findHistory(id) { return state.history?.find(c => String(c.id) === String(id)); }
 
-  function applyRemoteEvent(event) {
+  function applyRemoteEvent(event, options={}) {
     const type = String(event.event_type || event.eventType || '');
     const id = String(event.entity_id || event.entityId || '');
     const payload = event.payload && typeof event.payload === 'object' ? event.payload : {};
 
-    if (type === 'state_snapshot') return storeCoreState(payload.state || {});
+    if (type === 'state_snapshot') {
+      const reason = cleanText(payload.reason || '', 60);
+      if (options.allowBootstrapSnapshot === true && reason === 'initial-publish') return storeCoreState(payload.state || {});
+      if (reason !== 'initial-publish') addConflict(event,'Snapshot automático remoto ignorado por segurança; o estado atual foi preservado e o replay de eventos de domínio continua normalmente.');
+      return false;
+    }
 
     if (type === 'command_opened') {
       if (findHistory(id)) return false;
@@ -362,7 +426,7 @@
     try {
       const response = await fetch(config.functionUrl, {
         method:'POST', headers:{'content-type':'application/json','x-rota27-device-token':config.deviceToken},
-        body:JSON.stringify({...body,deviceId:config.deviceId,deviceName:config.deviceName,storeId:config.storeId,appVersion:VERSION}),
+        body:JSON.stringify({...body,deviceId:config.deviceId,deviceName:config.deviceName,storeId:config.storeId,appVersion:releaseVersion()}),
         signal:ctrl.signal
       });
       const data = await response.json().catch(()=>({}));
@@ -373,7 +437,7 @@
 
   async function refreshServerStatus() {
     if (!validUrl(config.functionUrl) || config.deviceToken.length < 16) return null;
-    const data = await api({action:'status'});
+    const data = await api({action:'status',afterSeq:config.cursor});
     config.latestServerSeq = Number(data.latestSeq || 0);
     config.latestSnapshotSeq = Number(data.latestSnapshotSeq || 0);
     config.devices = Array.isArray(data.devices) ? data.devices.slice(0,20) : [];
@@ -382,9 +446,10 @@
   }
 
   async function pushOutbox() {
+    if (!quarantineLegacyAutomaticSnapshots()) throw new Error(config.lastError || 'Snapshot automático legado aguardando preservação segura.');
     while (config.outbox.length) {
       const batch = config.outbox.slice(0,100);
-      await api({action:'push',events:batch});
+      await api({action:'push',events:batch,afterSeq:config.cursor});
       const ids = new Set(batch.map(x=>x.eventId));
       config.outbox = config.outbox.filter(x=>!ids.has(x.eventId));
       persistConfig();
@@ -392,18 +457,19 @@
   }
 
   async function pullEvents(options={}) {
-    const afterSeq = options.fromZero ? 0 : Number(config.cursor || 0);
+    const fromZero = options.fromZero === true;
+    const afterSeq = fromZero ? 0 : Number(config.cursor || 0);
     let cursor = afterSeq;
     let changed = false;
     for (let page=0; page<20; page++) {
-      const data = await api({action:'pull',afterSeq:cursor,limit:300,preferSnapshot:options.fromZero === true});
+      const data = await api({action:'pull',afterSeq:cursor,limit:300,preferSnapshot:fromZero});
       const events = Array.isArray(data.events) ? data.events : [];
       applyingRemote = true;
       try {
         for (const event of events) {
           cursor = Math.max(cursor, Number(event.seq || 0));
           if (String(event.device_id || '') === config.deviceId) continue;
-          if (applyRemoteEvent(event)) changed = true;
+          if (applyRemoteEvent(event,{allowBootstrapSnapshot:fromZero})) changed = true;
         }
         if (changed) {
           if (baseSave) baseSave(); else if (typeof save === 'function') save();
@@ -461,17 +527,28 @@
     if (token.length < 16) { setSheetStatus('O token do dispositivo parece inválido.','error'); return; }
     if (!name) { setSheetStatus('Informe um nome para identificar este aparelho.','error'); return; }
     config.functionUrl=url; config.deviceToken=token; config.deviceName=name; config.enabled=true;
-    persistConfig(); setSheetStatus('Configuração salva. Agora publique uma base inicial ou adote a base compartilhada.','ok');
+    persistConfig(); setSheetStatus('Configuração salva. Adote a base compartilhada neste aparelho; a publicação inicial só é permitida em uma loja ainda vazia.','ok');
     refreshServerStatus().catch(err=>{config.lastError=cleanText(err.message,300);persistConfig();renderSyncSheet();});
   }
 
   async function publishThisDevice() {
-    if (!window.confirm('Publicar ESTE aparelho como base inicial compartilhada?\n\nUse esta opção somente no aparelho que contém o conjunto de dados que deve virar a referência inicial.')) return;
+    try {
+      const status = await refreshServerStatus();
+      if (Number(status?.latestSeq || 0) > 0) {
+        setSheetStatus('A base compartilhada já existe. Por segurança, este aparelho não pode republicá-la; use “Adotar base compartilhada”.','warn');
+        renderSyncSheet();
+        return;
+      }
+    } catch (err) {
+      setSheetStatus(cleanText(err?.message || 'Não foi possível confirmar se a base compartilhada está vazia.',300),'error');
+      return;
+    }
+    if (!window.confirm('Publicar ESTE aparelho como base inicial compartilhada?\n\nEsta operação só deve ocorrer uma vez, quando a loja compartilhada ainda está vazia.')) return;
     config.enabled=true; config.initialized=true; config.cursor=Math.max(0,config.cursor);
-    config.outbox.push({eventId:newId('sync'),eventType:'state_snapshot',entityId:'state',payload:{state:sanitizeSnapshot(),reason:'initial-publish'},deviceId:config.deviceId,createdAt:nowIso(),appVersion:VERSION});
+    config.outbox.push({eventId:newId('sync'),eventType:'state_snapshot',entityId:'state',payload:{state:sanitizeSnapshot(),reason:'initial-publish'},deviceId:config.deviceId,createdAt:nowIso(),appVersion:releaseVersion()});
     persistConfig();
     await syncNow();
-    if (!config.lastError) setSheetStatus('Base deste aparelho publicada. Outros aparelhos já podem adotar a base compartilhada.','ok');
+    if (!config.lastError) setSheetStatus('Base inicial publicada. Outros aparelhos já podem adotar a base compartilhada.','ok');
     renderSyncSheet();
   }
 
@@ -479,13 +556,13 @@
     if (!window.confirm('Adotar a base compartilhada neste aparelho?\n\nAntes de substituir os dados operacionais locais, o Rota 27 guardará uma cópia de segurança no navegador.')) return;
     try {
       const status = await refreshServerStatus();
-      if (!Number(status?.latestSnapshotSeq || 0)) { setSheetStatus('Ainda não existe uma base compartilhada publicada. Publique primeiro o aparelho principal.','warn'); return; }
-      localStorage.setItem(PRE_ADOPT_BACKUP_KEY, JSON.stringify({savedAt:nowIso(),version:VERSION,state:clone(state)}));
+      if (!Number(status?.latestSnapshotSeq || 0)) { setSheetStatus('Ainda não existe uma base inicial confiável publicada.','warn'); return; }
+      localStorage.setItem(PRE_ADOPT_BACKUP_KEY, JSON.stringify({savedAt:nowIso(),version:releaseVersion(),state:clone(state)}));
       config.enabled=true; config.initialized=true; config.cursor=0; config.outbox=[]; config.conflicts=[];
       persistConfig();
       await pullEvents({fromZero:true});
       config.lastSyncAt=Date.now(); config.lastError=''; persistConfig();
-      setSheetStatus('Base compartilhada adotada. Este aparelho agora participa da sincronização.','ok');
+      setSheetStatus('Base compartilhada adotada por bootstrap confiável + replay de eventos. Este aparelho agora participa da sincronização.','ok');
       renderSyncSheet();
     } catch (err) { config.lastError=cleanText(err.message,300);persistConfig();setSheetStatus(config.lastError,'error'); }
   }
@@ -505,7 +582,7 @@
   function currentStatus() {
     if (!config.enabled) return {kind:'off',label:'Desativada neste aparelho'};
     if (!validUrl(config.functionUrl) || config.deviceToken.length < 16) return {kind:'error',label:'Configuração incompleta'};
-    if (!config.initialized) return {kind:'wait',label:'Aguardando base inicial'};
+    if (!config.initialized) return {kind:'wait',label:'Aguardando adoção da base'};
     if (config.lastError) return {kind:'error',label:config.lastError};
     if (syncing) return {kind:'wait',label:'Sincronizando agora…'};
     if (config.outbox.length) return {kind:'wait',label:`${config.outbox.length} alteração(ões) aguardando envio`};
@@ -549,7 +626,7 @@
     const wrap=document.createElement('div');
     wrap.id='v15SyncWrap';wrap.className='sheet-wrap';
     wrap.innerHTML=`<div class="sheet"><div class="handle"></div><h3>Sincronização entre aparelhos</h3><p class="desc">Compartilhe comandas, histórico e cardápio mantendo o funcionamento offline.</p>
-      <div class="v15-sync-sheet-note"><strong>DEV.1 — implantação segura.</strong> Primeiro publique um aparelho como base. Nos demais, use “Adotar base compartilhada”. Alterações locais ficam em fila quando não houver internet.</div>
+      <div class="v15-sync-sheet-note"><strong>Integridade v0.25.182.</strong> Snapshots completos são usados somente para a primeira base. A sincronização diária usa eventos incrementais e não substitui todo o estado.</div>
       <div class="field"><label>URL da Edge Function de sincronização</label><input id="v15SyncUrl" type="url" placeholder="https://...supabase.co/functions/v1/rota27-sync" autocomplete="off"><small class="field-help">A função de sincronização é separada da função do WhatsApp.</small></div>
       <div class="field"><label>Token do dispositivo</label><input id="v15SyncToken" type="password" autocomplete="off" placeholder="Token compartilhado com a Edge Function"></div>
       <div class="field"><label>Nome deste aparelho</label><input id="v15DeviceName" type="text" maxlength="80" placeholder="Ex.: iPhone Balcão"></div>
@@ -557,8 +634,8 @@
       <button type="button" class="primary" id="v15SaveConfigBtn" style="width:100%">Salvar configuração</button>
       <div id="v15SyncSheetStatus" class="v15-sync-status"></div>
       <div class="v15-sync-state"><div><small>Identificador</small><b id="v15StateDevice"></b></div><div><small>Cursor remoto</small><b id="v15StateCursor"></b></div><div><small>Fila local</small><b id="v15StatePending"></b></div><div><small>Última sync</small><b id="v15StateLast"></b></div></div>
-      <div class="v15-sync-sheet-note"><strong id="v15InitState"></strong><br>Se este for o primeiro aparelho, publique a base. Em um aparelho novo, adote a base compartilhada; uma cópia local é criada antes da substituição.</div>
-      <div class="v15-sync-actions"><button type="button" id="v15PublishBtn">Publicar este aparelho como base</button><button type="button" id="v15AdoptBtn">Adotar base compartilhada</button><button type="button" id="v15SyncNowBtn" class="primary">Sincronizar agora</button><button type="button" id="v15DisableBtn" class="danger">Desativar neste aparelho</button></div>
+      <div class="v15-sync-sheet-note"><strong id="v15InitState"></strong><br>Em aparelho novo, use “Adotar base compartilhada”. Uma cópia local é criada antes da substituição e depois os eventos posteriores ao bootstrap são reaplicados em ordem.</div>
+      <div class="v15-sync-actions"><button type="button" id="v15PublishBtn">Publicar base inicial</button><button type="button" id="v15AdoptBtn">Adotar base compartilhada</button><button type="button" id="v15SyncNowBtn" class="primary">Sincronizar agora</button><button type="button" id="v15DisableBtn" class="danger">Desativar neste aparelho</button></div>
       <div id="v15ConflictBox" class="v15-sync-conflict" style="display:none"></div>
       <div class="v15-device-list" id="v15DeviceList"></div>
       <div class="sheet-actions"><button type="button" class="secondary" id="v15CloseSyncBtn">Fechar</button><button type="button" class="primary" id="v15RefreshStatusBtn">Atualizar status</button></div>
@@ -597,14 +674,16 @@
     window.v15PublishSyncBase=publishThisDevice;
     window.v15AdoptSharedBase=adoptSharedBase;
     window.v15CommitCoreMutation=commitCoreMutation;
+    window.Rota27V015Sync={moduleVersion:MODULE_VERSION,releaseVersion:releaseVersion(),quarantineLegacyAutomaticSnapshots};
   }
 
   function init() {
     try {
+      quarantineLegacyAutomaticSnapshots();
       patchSave(); insertCard(); ensureSheet(); startSchedulers(); expose();
       previousState=cloneCoreState(state);
       if(config.enabled&&config.initialized&&navigator.onLine)setTimeout(()=>syncNow(),1200);
-      console.info(`[Rota27] sincronização multidispositivo carregada (${VERSION}).`);
+      console.info(`[Rota27] sincronização ${MODULE_VERSION} • integridade da release ${releaseVersion()} carregada.`);
     } catch(err) { console.error('[Rota27 v0.15] Falha ao inicializar sincronização:',err); }
   }
 
