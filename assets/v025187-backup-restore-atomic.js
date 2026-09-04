@@ -1,9 +1,9 @@
-/* Rota 27 v0.25.187 — restauração atômica de backup */
+/* Rota 27 v0.25.188 — restauração atômica de backup */
 (function(){
   'use strict';
   if(window.Rota27V025187BackupRestoreAtomic)return;
 
-  const VERSION='0.25.187';
+  const VERSION='0.25.188';
   const CORE_KEY='rota27_comandas_v01';
   const SYNC_KEY='rota27_sync_config_v1';
   const WA_KEY='rota27_whatsapp_config_v1';
@@ -11,6 +11,8 @@
   const RUNTIME_PATTERNS=[/(?:^|_)outbox(?:_|$)/i,/(?:^|_)cursor(?:_|$)/i,/sync_config/i,/whatsapp_config/i,/pre_adopt/i,/pre_restore/i,/sandbox/i];
   let mode='normal';
   let boundInput=null;
+  let bindObserver=null;
+  let bindTimer=null;
 
   const byId=id=>document.getElementById(id);
   const isLocalhost=()=>/^(localhost|127\.0\.0\.1|\[::1\])$/i.test(location.hostname||'');
@@ -113,10 +115,27 @@
     };
     return true;
   }
+  function watchUntilBound(){
+    if(bind())return true;
+    if(!bindTimer)bindTimer=setInterval(()=>{
+      if(!bind())return;
+      clearInterval(bindTimer);bindTimer=null;
+      bindObserver?.disconnect();bindObserver=null;
+    },250);
+    if(!bindObserver&&document.body){
+      bindObserver=new MutationObserver(()=>{
+        if(!bind())return;
+        bindObserver?.disconnect();bindObserver=null;
+        if(bindTimer){clearInterval(bindTimer);bindTimer=null;}
+      });
+      bindObserver.observe(document.body,{childList:true,subtree:true});
+    }
+    return false;
+  }
   function start(){
-    bind();setTimeout(bind,100);setTimeout(bind,600);
-    document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')setTimeout(bind,0);});
-    window.Rota27V025187BackupRestoreAtomic={version:VERSION,applyPackageAtomic,snapshotRotaStorage};
+    watchUntilBound();
+    document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')watchUntilBound();});
+    window.Rota27V025187BackupRestoreAtomic={version:VERSION,applyPackageAtomic,snapshotRotaStorage,bind:watchUntilBound};
     console.info(`[Rota27] restauração atômica de backup v${VERSION} carregada.`);
   }
 
