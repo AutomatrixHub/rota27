@@ -1,7 +1,7 @@
 /* Rota 27 v0.25.174 — integridade do editor de produtos */
 (function(){
   'use strict';
-  const VERSION='0.25.174';
+  const VERSION='0.25.177';
   let saving=false;
 
   const byId=id=>document.getElementById(id);
@@ -26,6 +26,10 @@
     const current=isEditing?product(id):null;
     if(isEditing&&!current){notify('Produto não encontrado. Atualize a lista e tente novamente.');return;}
     saving=false;
+    /* O botão é o mesmo elemento reutilizado pelo modal. Após um salvamento
+       bem-sucedido ele fica bloqueado; ao iniciar outra operação, libere-o. */
+    const saveButton=editor()?.querySelector('button[onclick*="saveMenuItem"]');
+    if(saveButton){saveButton.disabled=false;saveButton.removeAttribute('aria-disabled');}
     setEditorProductId(current?.id||'');
     byId('menuItemTitle').textContent=current?'Editar produto':'Novo produto';
     byId('menuItemName').value=current?.name||'';
