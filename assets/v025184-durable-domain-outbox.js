@@ -1,13 +1,15 @@
-/* Rota 27 v0.25.184 — durabilidade das filas de domínio */
+/* Rota 27 v0.25.185 — durabilidade das filas de domínio */
 (function(){
   'use strict';
   if(window.Rota27V025184DurableDomainOutbox)return;
 
-  const VERSION='0.25.184';
+  const VERSION='0.25.185';
   const TARGETS=new Map([
     ['rota27_v017_domain_outbox_v1',{maxBatch:100,label:'clientes/configuração gerencial'}],
+    ['rota27_v019_turn_outbox_v1',{maxBatch:50,label:'fechamento de turno'}],
     ['rota27_v021_stock_outbox_v1',{maxBatch:80,label:'estoque'}],
     ['rota27_v022_purchase_outbox_v1',{maxBatch:80,label:'compras'}],
+    ['rota27_v023_inventory_outbox_v1',{maxBatch:80,label:'inventário'}],
     ['rota27_v02512_receivable_outbox_v1',{maxBatch:100,label:'a receber'}],
     ['rota27_v02537_internal_marker_outbox_v1',{maxBatch:20,label:'consumo interno'}]
   ]);
