@@ -1,7 +1,7 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
 
-const EDGE_VERSION = "rota27-sync-v0.25.85";
+const EDGE_VERSION = "rota27-sync-v0.25.181";
 const ALLOWED_TYPES = new Set([
   "state_snapshot",
   "command_opened",
@@ -67,6 +67,27 @@ function clampInt(value: unknown, min: number, max: number, fallback: number) {
 function payloadSize(value: unknown) {
   try { return new TextEncoder().encode(JSON.stringify(value ?? {})).length; }
   catch { return Number.MAX_SAFE_INTEGER; }
+}
+
+function canonicalizeTurnClosed(eventType: string, eventId: string, entityId: string, payload: Record<string, unknown>) {
+  if (eventType !== "turn_closed") return { eventId, entityId, payload };
+  const closureRaw = (payload as Record<string, any>)?.closure;
+  if (!closureRaw || typeof closureRaw !== "object") return { eventId, entityId, payload };
+  const businessDate = cleanText(closureRaw.businessDate, 10);
+  const shiftStartedAtRaw = Number(
+    closureRaw.shiftStartedAt || closureRaw.summary?.firstOpenedAt || closureRaw.summary?.shiftStart || 0,
+  );
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(businessDate) || !Number.isFinite(shiftStartedAtRaw) || shiftStartedAtRaw <= 0) {
+    return { eventId, entityId, payload };
+  }
+  const shiftStartedAt = Math.trunc(shiftStartedAtRaw);
+  const canonicalId = `turn_${businessDate}_${shiftStartedAt}`;
+  const closure = { ...closureRaw, businessDate, shiftStartedAt };
+  return {
+    eventId: `turn_closed_${canonicalId}`,
+    entityId: canonicalId,
+    payload: { ...payload, closure },
+  };
 }
 
 Deno.serve(async (req) => {
@@ -272,15 +293,19 @@ Deno.serve(async (req) => {
       if (events.length > 200) return json(400, { ok: false, error: "Máximo de 200 eventos por envio." });
       if (payloadSize(events) > 1024 * 1024) return json(413, { ok: false, error: "Lote de sincronização acima de 1 MB." });
 
-      const rows = [];
+      const rows: Record<string, unknown>[] = [];
       for (const raw of events) {
-        const eventId = cleanText(raw?.eventId, 160);
+        const rawEventId = cleanText(raw?.eventId, 160);
         const eventType = cleanText(raw?.eventType, 40);
-        const entityId = cleanText(raw?.entityId, 160);
-        const payload = raw?.payload && typeof raw.payload === "object" ? raw.payload : {};
-        if (!eventId || !ALLOWED_TYPES.has(eventType)) return json(400, { ok: false, error: `Evento inválido: ${eventType || "sem tipo"}.` });
+        const rawEntityId = cleanText(raw?.entityId, 160);
+        const rawPayload = raw?.payload && typeof raw.payload === "object" ? raw.payload as Record<string, unknown> : {};
+        if (!rawEventId || !ALLOWED_TYPES.has(eventType)) return json(400, { ok: false, error: `Evento inválido: ${eventType || "sem tipo"}.` });
+        const canonical = canonicalizeTurnClosed(eventType, rawEventId, rawEntityId, rawPayload);
+        const eventId = canonical.eventId;
+        const entityId = canonical.entityId;
+        const payload = canonical.payload;
         if (payloadSize(payload) > 256 * 1024) return json(413, { ok: false, error: `Payload muito grande no evento ${eventId}.` });
-        rows.push({
+        const row = {
           store_id: storeId,
           event_id: eventId,
           device_id: deviceId,
@@ -289,7 +314,10 @@ Deno.serve(async (req) => {
           payload,
           app_version: cleanText(raw?.appVersion || appVersion, 40),
           client_created_at: raw?.createdAt ? new Date(String(raw.createdAt)).toISOString() : null,
-        });
+        };
+        const existingIndex = rows.findIndex((candidate: any) => candidate.event_id === eventId);
+        if (existingIndex >= 0) rows[existingIndex] = row;
+        else rows.push(row);
       }
 
       const { error } = await db

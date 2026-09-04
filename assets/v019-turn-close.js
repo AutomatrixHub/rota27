@@ -5,7 +5,7 @@
     if(document.getElementById('v02515TurnCloseJs'))return;
     const script=document.createElement('script');
     script.id='v02515TurnCloseJs';
-    script.src='./assets/v02515-turn-close.js?v=02516r1';
+    script.src='./assets/v02515-turn-close.js?v=025181r1';
     script.async=false;
     document.body.appendChild(script);
   }

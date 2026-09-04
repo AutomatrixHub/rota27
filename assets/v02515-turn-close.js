@@ -1,7 +1,8 @@
-/* Rota 27 v0.25.15 — data operacional do turno pela abertura da comanda */
+/* Rota 27 v0.25.15 — data operacional do turno pela abertura da comanda | integridade v0.25.181 */
 (function(){
   'use strict';
-  const VERSION='0.25.15';
+  const MODULE_VERSION='0.25.15';
+  const RELEASE_FALLBACK='0.25.181';
   const STORE_KEY='rota27_v019_turn_closures_v1';
   const OUTBOX_KEY='rota27_v019_turn_outbox_v1';
   const CURSOR_KEY='rota27_v019_turn_cursor_v1';
@@ -9,7 +10,7 @@
   const CANCEL_OUTBOX_KEY='rota27_cancel_outbox_v0151';
   const SYNC_CONFIG_KEY='rota27_sync_config_v1';
   const RECENT_WINDOW_MS=36*60*60*1000;
-  let syncing=false,renderTimer=null;
+  let syncing=false,closing=false,renderTimer=null;
 
   const byId=id=>document.getElementById(id);
   const clone=v=>JSON.parse(JSON.stringify(v==null?null:v));
@@ -27,13 +28,50 @@
   function writeJson(key,value){try{localStorage.setItem(key,JSON.stringify(value));return true;}catch{return false;}}
   function readArray(key){const v=readJson(key,[]);return Array.isArray(v)?v:[];}
   function notify(msg){try{typeof showToast==='function'?showToast(msg,false):console.info('[Rota27]',msg);}catch{}}
+  function releaseVersion(){
+    const roadmap=clean(window.Rota27Roadmap?.version||'',40);
+    if(roadmap)return roadmap;
+    const meta=clean(document.querySelector('meta[name="rota27-release-version"]')?.content||'',40);
+    return meta||RELEASE_FALLBACK;
+  }
+  function closureShiftStartedAt(c){
+    const raw=Number(c?.shiftStartedAt||c?.summary?.firstOpenedAt||c?.summary?.shiftStart||0);
+    return Number.isFinite(raw)&&raw>0?Math.trunc(raw):0;
+  }
+  function closureKey(c){
+    const businessDate=String(c?.businessDate||'').trim();
+    const shiftStartedAt=closureShiftStartedAt(c);
+    return validDateKey(businessDate)&&shiftStartedAt>0?`${businessDate}_${shiftStartedAt}`:'';
+  }
+  function canonicalClosureId(c){const key=closureKey(c);return key?`turn_${key}`:String(c?.id||'');}
+  function sameClosureWindow(a,b){
+    const ak=closureKey(a),bk=closureKey(b);
+    if(ak&&bk)return ak===bk;
+    return !!a?.id&&!!b?.id&&String(a.id)===String(b.id);
+  }
 
-  function readClosures(){return readArray(STORE_KEY).filter(x=>x&&x.id&&x.businessDate).sort((a,b)=>Number(b.closedAt||0)-Number(a.closedAt||0));}
+  function readClosures(){
+    const rows=readArray(STORE_KEY).filter(x=>x&&x.id&&x.businessDate).sort((a,b)=>Number(a.closedAt||0)-Number(b.closedAt||0));
+    const seen=new Set(),unique=[];
+    rows.forEach(row=>{
+      const key=closureKey(row)||`id:${row.id}`;
+      if(seen.has(key))return;
+      seen.add(key);unique.push(row);
+    });
+    return unique.sort((a,b)=>Number(b.closedAt||0)-Number(a.closedAt||0));
+  }
   function writeClosures(rows){return writeJson(STORE_KEY,(Array.isArray(rows)?rows:[]).slice(0,900));}
   function closuresForDate(key=localDateKey()){return readClosures().filter(x=>String(x.businessDate)===String(key));}
   function lastClosure(key=localDateKey()){return closuresForDate(key)[0]||null;}
   function shiftCutoff(key){const last=lastClosure(key);return last?Number(last.closedAt||0):startOfDay(key)-1;}
-  function addClosure(row){const rows=readClosures();if(rows.some(x=>String(x.id)===String(row.id)))return false;rows.push(clone(row));rows.sort((a,b)=>Number(b.closedAt||0)-Number(a.closedAt||0));return writeClosures(rows);}
+  function addClosure(row){
+    const incoming=clone(row);
+    const canonicalId=canonicalClosureId(incoming);
+    if(canonicalId)incoming.id=canonicalId;
+    const rows=readClosures();
+    if(rows.some(x=>sameClosureWindow(x,incoming)))return false;
+    rows.push(incoming);rows.sort((a,b)=>Number(b.closedAt||0)-Number(a.closedAt||0));return writeClosures(rows);
+  }
 
   function openedAt(c){
     const t=Number(c?.createdAt||c?.openedAt||0);
@@ -131,7 +169,11 @@
   function deviceMeta(){const c=syncConfig();return{deviceId:clean(c.deviceId||'local',120)||'local',deviceName:clean(c.deviceName||'Este aparelho',80)||'Este aparelho',storeId:clean(c.storeId||'rota27-bodega',80)||'rota27-bodega'};}
   function readOutbox(){return readArray(OUTBOX_KEY);}
   function writeOutbox(rows){writeJson(OUTBOX_KEY,(Array.isArray(rows)?rows:[]).slice(-180));}
-  function eventForClosure(c){const dm=deviceMeta();return{eventId:`turn_closed_${c.id}`,eventType:'turn_closed',entityId:c.id,payload:{closure:clone(c)},deviceId:dm.deviceId,createdAt:new Date(Number(c.closedAt||Date.now())).toISOString(),appVersion:VERSION};}
+  function eventForClosure(c){
+    const dm=deviceMeta(),normalized=clone(c),canonicalId=canonicalClosureId(c)||String(c?.id||'');
+    normalized.id=canonicalId;
+    return{eventId:`turn_closed_${canonicalId}`,eventType:'turn_closed',entityId:canonicalId,payload:{closure:normalized},deviceId:dm.deviceId,createdAt:new Date(Number(c.closedAt||Date.now())).toISOString(),appVersion:releaseVersion()};
+  }
   function queueClosure(c){const evt=eventForClosure(c),rows=readOutbox().filter(x=>String(x.eventId)!==evt.eventId);rows.push(evt);writeOutbox(rows);}
   function getCursor(){return Math.max(0,Number(localStorage.getItem(CURSOR_KEY)||0));}
   function setCursor(v){localStorage.setItem(CURSOR_KEY,String(Math.max(0,Number(v||0))));}
@@ -139,12 +181,17 @@
     const c=syncConfig();if(!syncReady())throw new Error('Sincronização não configurada neste aparelho.');
     const ctrl=new AbortController(),timer=setTimeout(()=>ctrl.abort(),12000);
     try{
-      const r=await fetch(String(c.functionUrl).replace(/\/+$/,''),{method:'POST',headers:{'content-type':'application/json','x-rota27-device-token':String(c.deviceToken)},body:JSON.stringify({...body,deviceId:c.deviceId,deviceName:c.deviceName||'Aparelho',storeId:c.storeId||'rota27-bodega',appVersion:VERSION}),signal:ctrl.signal});
+      const r=await fetch(String(c.functionUrl).replace(/\/+$/,''),{method:'POST',headers:{'content-type':'application/json','x-rota27-device-token':String(c.deviceToken)},body:JSON.stringify({...body,deviceId:c.deviceId,deviceName:c.deviceName||'Aparelho',storeId:c.storeId||'rota27-bodega',appVersion:releaseVersion()}),signal:ctrl.signal});
       const data=await r.json().catch(()=>({}));if(!r.ok||data.ok!==true)throw new Error(data.error||`HTTP ${r.status}`);return data;
     }finally{clearTimeout(timer);}
   }
   async function pushOutbox(){let rows=readOutbox();while(rows.length){const batch=rows.slice(0,50);await syncApi({action:'push',events:batch});const sent=new Set(batch.map(x=>String(x.eventId)));rows=readOutbox().filter(x=>!sent.has(String(x.eventId)));writeOutbox(rows);}}
-  function applyRemote(evt){const raw=evt?.payload?.closure;if(!raw||typeof raw!=='object'||!raw.businessDate)return false;const incoming={...clone(raw),id:String(raw.id||`turn_${raw.businessDate}_${raw.closedAt||evt.seq}`),businessDate:String(raw.businessDate)};if(readClosures().some(x=>String(x.id)===incoming.id))return false;return addClosure(incoming);}
+  function applyRemote(evt){
+    const raw=evt?.payload?.closure;if(!raw||typeof raw!=='object'||!raw.businessDate)return false;
+    const incoming={...clone(raw),businessDate:String(raw.businessDate)};
+    incoming.id=canonicalClosureId(incoming)||String(raw.id||`turn_${raw.businessDate}_${raw.closedAt||evt.seq}`);
+    return addClosure(incoming);
+  }
   async function pullEvents(){let cursor=getCursor(),changed=false;for(let page=0;page<40;page++){const data=await syncApi({action:'pull',afterSeq:cursor,limit:500,preferSnapshot:false}),events=Array.isArray(data.events)?data.events:[];for(const evt of events){cursor=Math.max(cursor,Number(evt.seq||0));if(String(evt.event_type||evt.eventType)==='turn_closed'&&applyRemote(evt))changed=true;}cursor=Math.max(cursor,Number(data.cursor||cursor));setCursor(cursor);if(!data.hasMore||!events.length)break;}return changed;}
   async function syncTurnNow(){if(syncing||!navigator.onLine||!syncReady())return false;syncing=true;try{await pushOutbox();const changed=await pullEvents();writeJson(META_KEY,{...readJson(META_KEY,{}),lastSyncAt:Date.now(),lastError:''});if(changed)refresh();return true;}catch(err){writeJson(META_KEY,{...readJson(META_KEY,{}),lastError:clean(err?.message||'Falha ao sincronizar fechamento.',260)});return false;}finally{syncing=false;renderTurnCard();renderOpenSheets();}}
 
@@ -172,18 +219,32 @@
     if(blocked.length){gate.className='v019-gate block';gate.innerHTML=`<strong>Não é possível fechar ainda.</strong><br>${esc(dateText)}<br>${blocked.map(esc).join('<br>')}`;confirm.disabled=true;confirm.textContent='Resolver pendências';}
     else if(!hasMovement){gate.className='v019-gate ok';gate.textContent=last?`${dateText} Último turno desta data fechado às ${new Date(Number(last.closedAt)).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}.`:`${dateText} Ainda não há movimento para fechar.`;confirm.disabled=true;confirm.textContent='Sem movimento';}
     else{gate.className='v019-gate ok';gate.textContent=`${dateText} ${last?'Novo turno desta data conferido.':'Conferência concluída.'}`;confirm.disabled=false;confirm.textContent='Fechar turno agora';}
+    if(closing){confirm.disabled=true;confirm.textContent='Conferindo…';}
     body.innerHTML=`<div class="v019-preview-metrics">${metric('Faturamento',moneyValue(summary.revenue))}${metric('Fechadas',String(summary.closedCount))}${metric('Canceladas',String(summary.cancelled))}${metric('Ticket médio',moneyValue(summary.avgTicket))}${metric('Itens vendidos',String(summary.units))}${metric('Em aberto',`${summary.openCount} • ${moneyValue(summary.openValue)}`)}</div><div class="v019-preview-grid"><div class="v019-preview-panel"><h4>Formas de pagamento</h4>${paymentsHtml(summary.payments)}</div><div class="v019-preview-panel"><h4>Mais vendidos</h4>${productsHtml(summary.products)}</div></div><div class="v019-final-note">Uma comanda aberta antes da meia-noite continua no turno daquela data mesmo que seja fechada às 01h ou 02h. Se houver novo turno no mesmo dia, apenas comandas abertas depois do fechamento anterior entram nele.</div>`;
   }
   async function openCloseSheet(){ensureCloseSheet();byId('v019CloseWrap').classList.add('open');byId('v019CloseGate').textContent='Conferindo o turno…';if(navigator.onLine&&syncReady()){try{if(typeof window.v15SyncNow==='function')await window.v15SyncNow();await syncTurnNow();}catch{}}renderCloseSheet();}
   async function finalizeClose(){
-    if(navigator.onLine&&syncReady()){try{if(typeof window.v15SyncNow==='function')await window.v15SyncNow();}catch{}}
-    const summary=buildSummary(),blocked=blockers(summary);
-    if(blocked.length||summary.closedCount===0){renderCloseSheet();return;}
-    if(!window.confirm(`Fechar o turno operacional de ${dateLabel(summary.businessDate)}?\n\nFaturamento: ${moneyValue(summary.revenue)}\nComandas fechadas: ${summary.closedCount}\n\nA data do turno é definida pela abertura das comandas.`))return;
-    const businessDate=summary.businessDate,dm=deviceMeta(),closedAt=Date.now(),id=`turn_${businessDate}_${closedAt}`;
-    const closure={id,businessDate,shiftStartedAt:Number(summary.firstOpenedAt||summary.shiftStart||startOfDay(businessDate)),closedAt,closedAtIso:new Date(closedAt).toISOString(),timezoneOffsetMinutes:new Date().getTimezoneOffset(),deviceId:dm.deviceId,deviceName:dm.deviceName,storeId:dm.storeId,appVersion:VERSION,schemaVersion:3,summary:clone(summary)};
-    if(!addClosure(closure)){notify('Não foi possível registrar o fechamento.');return;}
-    queueClosure(closure);byId('v019CloseWrap')?.classList.remove('open');notify(`Turno de ${dateLabel(businessDate)} fechado.`);renderTurnCard();renderHistorySheet();if(navigator.onLine&&syncReady())syncTurnNow();window.dispatchEvent(new CustomEvent('rota27:v019-turn-updated',{detail:{closure:clone(closure)}}));
+    if(closing)return;
+    closing=true;renderCloseSheet();
+    try{
+      if(navigator.onLine&&syncReady()){
+        try{if(typeof window.v15SyncNow==='function')await window.v15SyncNow();await syncTurnNow();}catch{}
+      }
+      const summary=buildSummary(),blocked=blockers(summary);
+      if(blocked.length||summary.closedCount===0){renderCloseSheet();return;}
+      const businessDate=summary.businessDate;
+      const shiftStartedAt=Number(summary.firstOpenedAt||summary.shiftStart||startOfDay(businessDate));
+      const candidate={businessDate,shiftStartedAt};
+      if(readClosures().some(x=>sameClosureWindow(x,candidate))){notify('Este turno já foi fechado em outro aparelho.');renderCloseSheet();return;}
+      if(!window.confirm(`Fechar o turno operacional de ${dateLabel(summary.businessDate)}?\n\nFaturamento: ${moneyValue(summary.revenue)}\nComandas fechadas: ${summary.closedCount}\n\nA data do turno é definida pela abertura das comandas.`))return;
+      const dm=deviceMeta(),closedAt=Date.now(),id=canonicalClosureId(candidate)||`turn_${businessDate}_${shiftStartedAt}`;
+      const closure={id,businessDate,shiftStartedAt,closedAt,closedAtIso:new Date(closedAt).toISOString(),timezoneOffsetMinutes:new Date().getTimezoneOffset(),deviceId:dm.deviceId,deviceName:dm.deviceName,storeId:dm.storeId,appVersion:releaseVersion(),schemaVersion:3,summary:clone(summary)};
+      if(!addClosure(closure)){notify('Este turno já foi registrado.');renderCloseSheet();return;}
+      queueClosure(closure);byId('v019CloseWrap')?.classList.remove('open');notify(`Turno de ${dateLabel(businessDate)} fechado.`);renderTurnCard();renderHistorySheet();if(navigator.onLine&&syncReady())syncTurnNow();window.dispatchEvent(new CustomEvent('rota27:v019-turn-updated',{detail:{closure:clone(closure)}}));
+    }finally{
+      closing=false;
+      if(byId('v019CloseWrap')?.classList.contains('open'))renderCloseSheet();
+    }
   }
   function renderHistorySheet(){
     ensureHistorySheet();const status=byId('v019HistoryStatus'),list=byId('v019HistoryList'),rows=readClosures(),outbox=readOutbox(),meta=readJson(META_KEY,{});if(!status||!list)return;
@@ -217,8 +278,8 @@
     window.addEventListener('online',()=>{syncTurnNow();refresh();});window.addEventListener('offline',refresh);window.addEventListener('storage',refresh);window.addEventListener('rota27:v017-domain-updated',refresh);window.addEventListener('rota27:v0181-audit-updated',refresh);window.addEventListener('rota27:v02512-receivables-updated',refresh);
     document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){refresh();if(navigator.onLine)syncTurnNow();}});
     if(navigator.onLine)syncTurnNow();
-    window.Rota27V019={version:VERSION,openCloseTurn:openCloseSheet,openTurnHistory:openHistorySheet,syncTurnClosures:syncTurnNow,getClosures:()=>clone(readClosures()),todayClosure:()=>clone(lastClosure(localDateKey())),isTodayClosed:()=>false,buildSummary,currentBusinessDate,commandBusinessDate};
-    console.info('[Rota27] v0.25.15 — data operacional do turno pela abertura da comanda carregada.');
+    window.Rota27V019={version:MODULE_VERSION,releaseVersion:releaseVersion(),openCloseTurn:openCloseSheet,openTurnHistory:openHistorySheet,syncTurnClosures:syncTurnNow,getClosures:()=>clone(readClosures()),todayClosure:()=>clone(lastClosure(localDateKey())),isTodayClosed:()=>false,buildSummary,currentBusinessDate,commandBusinessDate};
+    console.info(`[Rota27] módulo de fechamento v${MODULE_VERSION} • integridade da release ${releaseVersion()} carregada.`);
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
 })();
