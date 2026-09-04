@@ -50,7 +50,15 @@
     return !!a?.id&&!!b?.id&&String(a.id)===String(b.id);
   }
 
-  function readClosures(){return readArray(STORE_KEY).filter(x=>x&&x.id&&x.businessDate).sort((a,b)=>Number(b.closedAt||0)-Number(a.closedAt||0));}
+  function readClosures(){
+    const rows=readArray(STORE_KEY).filter(x=>x&&x.id&&x.businessDate).sort((a,b)=>Number(b.closedAt||0)-Number(a.closedAt||0));
+    const seen=new Set();
+    return rows.filter(row=>{
+      const key=closureKey(row)||`id:${row.id}`;
+      if(seen.has(key))return false;
+      seen.add(key);return true;
+    });
+  }
   function writeClosures(rows){return writeJson(STORE_KEY,(Array.isArray(rows)?rows:[]).slice(0,900));}
   function closuresForDate(key=localDateKey()){return readClosures().filter(x=>String(x.businessDate)===String(key));}
   function lastClosure(key=localDateKey()){return closuresForDate(key)[0]||null;}
