@@ -247,6 +247,9 @@
     }
     if (!applyingRemote && !alreadyCaptured) captureStateDiff(before, after);
     previousState = after;
+    /* Importação é uma ação em lote explícita: publique sem aguardar o debounce
+       normal, para que outro aparelho já possa receber o novo catálogo. */
+    if (reason === 'catalog-import') setTimeout(() => syncNow(), 0);
     return true;
   }
 
@@ -583,8 +586,8 @@
   }
 
   function startSchedulers() {
-    window.addEventListener('online',()=>scheduleSyncSoon());
-    document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')scheduleSyncSoon();});
+    window.addEventListener('online',()=>syncNow());
+    document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')syncNow();});
     clearInterval(intervalTimer); intervalTimer=setInterval(()=>{if(config.enabled&&config.initialized&&navigator.onLine)syncNow();},SYNC_INTERVAL_MS);
   }
 
