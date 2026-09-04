@@ -24,6 +24,11 @@
 
   const byId=id=>document.getElementById(id);
   const isLocalhost=()=>/^(localhost|127\.0\.0\.1|\[::1\])$/i.test(location.hostname||'');
+  const currentRelease=()=>String(
+    window.Rota27Roadmap?.version||
+    document.querySelector('meta[name="rota27-release-version"]')?.content||
+    VERSION
+  ).trim().replace(/^v/i,'')||VERSION;
   const nowStamp=()=>{
     const d=new Date(),p=n=>String(n).padStart(2,'0');
     return `${d.getFullYear()}${p(d.getMonth()+1)}${p(d.getDate())}-${p(d.getHours())}${p(d.getMinutes())}${p(d.getSeconds())}`;
@@ -82,7 +87,7 @@
       app:APP,
       schema:SCHEMA,
       kind:'full-backup',
-      release:VERSION,
+      release:currentRelease(),
       exportedAt:new Date().toISOString(),
       reason,
       summary,
@@ -99,7 +104,7 @@
 
   function downloadBackup(reason='manual'){
     const pkg=buildPackage(reason);
-    downloadJson(`rota27-backup-completo-v${VERSION}-${nowStamp()}.json`,pkg);
+    downloadJson(`rota27-backup-completo-v${pkg.release}-${nowStamp()}.json`,pkg);
     setStatus(`Backup completo gerado: ${pkg.summary.stores} áreas locais, ${pkg.summary.history} registros no histórico e ${pkg.summary.catalog} produtos.`,'ok');
     toast('Backup completo gerado com sucesso.');
     return pkg;
