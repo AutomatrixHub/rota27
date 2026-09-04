@@ -1,7 +1,7 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
 
-const EDGE_VERSION = "rota27-sync-v0.25.181";
+const EDGE_VERSION = "rota27-sync-v0.25.182";
 const ALLOWED_TYPES = new Set([
   "state_snapshot",
   "command_opened",
@@ -132,13 +132,16 @@ Deno.serve(async (req) => {
   }
 
   async function heartbeat(cursor = 0) {
+    const existing = await getDevice(deviceId);
+    const requestedCursor = Math.max(0, Number(cursor || 0));
+    const currentCursor = Math.max(0, Number(existing?.last_cursor || 0));
     const row = {
       store_id: storeId,
       device_id: deviceId,
       device_name: deviceName || "Aparelho",
       app_version: appVersion,
       last_seen_at: new Date().toISOString(),
-      last_cursor: Math.max(0, Number(cursor || 0)),
+      last_cursor: Math.max(currentCursor, requestedCursor),
     };
     const { error } = await db.from("rota27_sync_devices").upsert(row, { onConflict: "store_id,device_id" });
     if (error) throw new Error(`Falha ao atualizar aparelho: ${error.message}`);
@@ -159,14 +162,25 @@ Deno.serve(async (req) => {
   async function latestSnapshotSeq() {
     const { data, error } = await db
       .from("rota27_sync_events")
-      .select("seq")
+      .select("seq,payload")
       .eq("store_id", storeId)
       .eq("event_type", "state_snapshot")
       .order("seq", { ascending: false })
-      .limit(1)
+      .limit(100);
+    if (error) throw new Error(error.message);
+    const trusted = (data || []).find((row: any) => cleanText(row?.payload?.reason, 60) === "initial-publish");
+    return Number(trusted?.seq || 0);
+  }
+
+  async function existingEvent(eventId: string) {
+    const { data, error } = await db
+      .from("rota27_sync_events")
+      .select("seq,event_id")
+      .eq("store_id", storeId)
+      .eq("event_id", eventId)
       .maybeSingle();
     if (error) throw new Error(error.message);
-    return Number(data?.seq || 0);
+    return data || null;
   }
 
   async function updateTargetStatus(targetDeviceId: string, status: "active" | "retired" | "removed", reason = "") {
@@ -300,6 +314,28 @@ Deno.serve(async (req) => {
         const rawEntityId = cleanText(raw?.entityId, 160);
         const rawPayload = raw?.payload && typeof raw.payload === "object" ? raw.payload as Record<string, unknown> : {};
         if (!rawEventId || !ALLOWED_TYPES.has(eventType)) return json(400, { ok: false, error: `Evento inválido: ${eventType || "sem tipo"}.` });
+
+        if (eventType === "state_snapshot") {
+          const reason = cleanText((rawPayload as any)?.reason, 60);
+          if (reason !== "initial-publish") {
+            return json(409, {
+              ok: false,
+              code: "unsafe_snapshot_rejected",
+              error: "Snapshot automático legado bloqueado para impedir sobrescrita de dados mais novos. Reabra/atualize o Rota 27 neste aparelho e sincronize novamente.",
+              edgeVersion: EDGE_VERSION,
+            });
+          }
+          const retry = await existingEvent(rawEventId);
+          if (!retry && await latestSeq() > 0) {
+            return json(409, {
+              ok: false,
+              code: "initial_snapshot_already_exists",
+              error: "A base compartilhada já existe. Um novo snapshot inicial não pode substituir a loja atual; use a adoção da base compartilhada.",
+              edgeVersion: EDGE_VERSION,
+            });
+          }
+        }
+
         const canonical = canonicalizeTurnClosed(eventType, rawEventId, rawEntityId, rawPayload);
         const eventId = canonical.eventId;
         const entityId = canonical.entityId;
