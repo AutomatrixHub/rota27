@@ -1,4 +1,4 @@
-/* Rota 27 v0.15 DEV.1 — sincronização multidispositivo | integridade v0.25.182
+/* Rota 27 v0.15 DEV.1 — sincronização multidispositivo | integridade v0.25.183
  * Offline-first: mudanças locais entram em uma outbox; o backend compartilha eventos idempotentes entre aparelhos.
  * Snapshots completos são exclusivos do bootstrap explícito e nunca substituem estado durante a sincronização normal.
  */
@@ -6,7 +6,7 @@
   'use strict';
 
   const MODULE_VERSION = '0.15-dev.1';
-  const RELEASE_FALLBACK = '0.25.182';
+  const RELEASE_FALLBACK = '0.25.183';
   const CONFIG_KEY = 'rota27_sync_config_v1';
   const PRE_ADOPT_BACKUP_KEY = 'rota27_sync_pre_adopt_backup_v1';
   const LEGACY_SNAPSHOT_BACKUP_KEY = 'rota27_sync_legacy_snapshot_quarantine_v1';
@@ -462,13 +462,15 @@
     let cursor = afterSeq;
     let changed = false;
     for (let page=0; page<20; page++) {
-      const data = await api({action:'pull',afterSeq:cursor,limit:300,preferSnapshot:fromZero});
+      const requestedAfter = cursor;
+      const data = await api({action:'pull',afterSeq:requestedAfter,limit:300,preferSnapshot:fromZero});
       const events = Array.isArray(data.events) ? data.events : [];
+      const serverCursor = Math.max(requestedAfter, Number(data.cursor || requestedAfter));
       applyingRemote = true;
       try {
         for (const event of events) {
           cursor = Math.max(cursor, Number(event.seq || 0));
-          if (String(event.device_id || '') === config.deviceId) continue;
+          if (!fromZero && String(event.device_id || '') === config.deviceId) continue;
           if (applyRemoteEvent(event,{allowBootstrapSnapshot:fromZero})) changed = true;
         }
         if (changed) {
@@ -476,10 +478,12 @@
           previousState = cloneCoreState(state);
         }
       } finally { applyingRemote = false; }
+      cursor = Math.max(cursor, serverCursor);
       config.cursor = Math.max(config.cursor, cursor);
       config.latestServerSeq = Math.max(config.latestServerSeq, Number(data.latestSeq || cursor));
       persistConfig();
-      if (!data.hasMore || !events.length) break;
+      if (!data.hasMore) break;
+      if (!events.length && cursor <= requestedAfter) break;
     }
     if (changed) renderAfterRemote();
     return changed;
@@ -626,7 +630,7 @@
     const wrap=document.createElement('div');
     wrap.id='v15SyncWrap';wrap.className='sheet-wrap';
     wrap.innerHTML=`<div class="sheet"><div class="handle"></div><h3>Sincronização entre aparelhos</h3><p class="desc">Compartilhe comandas, histórico e cardápio mantendo o funcionamento offline.</p>
-      <div class="v15-sync-sheet-note"><strong>Integridade v0.25.182.</strong> Snapshots completos são usados somente para a primeira base. A sincronização diária usa eventos incrementais e não substitui todo o estado.</div>
+      <div class="v15-sync-sheet-note"><strong>Integridade v0.25.183.</strong> Snapshots completos são usados somente para a primeira base. A sincronização diária usa eventos incrementais e não substitui todo o estado.</div>
       <div class="field"><label>URL da Edge Function de sincronização</label><input id="v15SyncUrl" type="url" placeholder="https://...supabase.co/functions/v1/rota27-sync" autocomplete="off"><small class="field-help">A função de sincronização é separada da função do WhatsApp.</small></div>
       <div class="field"><label>Token do dispositivo</label><input id="v15SyncToken" type="password" autocomplete="off" placeholder="Token compartilhado com a Edge Function"></div>
       <div class="field"><label>Nome deste aparelho</label><input id="v15DeviceName" type="text" maxlength="80" placeholder="Ex.: iPhone Balcão"></div>
