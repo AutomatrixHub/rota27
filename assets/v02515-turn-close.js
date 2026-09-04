@@ -51,13 +51,14 @@
   }
 
   function readClosures(){
-    const rows=readArray(STORE_KEY).filter(x=>x&&x.id&&x.businessDate).sort((a,b)=>Number(b.closedAt||0)-Number(a.closedAt||0));
-    const seen=new Set();
-    return rows.filter(row=>{
+    const rows=readArray(STORE_KEY).filter(x=>x&&x.id&&x.businessDate).sort((a,b)=>Number(a.closedAt||0)-Number(b.closedAt||0));
+    const seen=new Set(),unique=[];
+    rows.forEach(row=>{
       const key=closureKey(row)||`id:${row.id}`;
-      if(seen.has(key))return false;
-      seen.add(key);return true;
+      if(seen.has(key))return;
+      seen.add(key);unique.push(row);
     });
+    return unique.sort((a,b)=>Number(b.closedAt||0)-Number(a.closedAt||0));
   }
   function writeClosures(rows){return writeJson(STORE_KEY,(Array.isArray(rows)?rows:[]).slice(0,900));}
   function closuresForDate(key=localDateKey()){return readClosures().filter(x=>String(x.businessDate)===String(key));}
