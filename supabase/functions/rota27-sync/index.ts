@@ -69,6 +69,11 @@ function payloadSize(value: unknown) {
   catch { return Number.MAX_SAFE_INTEGER; }
 }
 
+function visiblePullEvent(event: any) {
+  if (cleanText(event?.event_type, 40) !== "state_snapshot") return true;
+  return cleanText(event?.payload?.reason, 60) === "initial-publish";
+}
+
 function canonicalizeTurnClosed(eventType: string, eventId: string, entityId: string, payload: Record<string, unknown>) {
   if (eventType !== "turn_closed") return { eventId, entityId, payload };
   const closureRaw = (payload as Record<string, any>)?.closure;
@@ -185,7 +190,7 @@ Deno.serve(async (req) => {
 
   async function updateTargetStatus(targetDeviceId: string, status: "active" | "retired" | "removed", reason = "") {
     if (!targetDeviceId) return { row: null, error: "Aparelho alvo obrigatório." };
-    if (targetDeviceId === deviceId) return { row: null, error: "Este aparelho não pode ser desativado ou removido por ele mesmo." };
+    if (targetDeviceId === deviceId) return { row: null, error: "Este aparelho não pode ser desativado ou removido por ele mesmo.\" };
 
     const patch = status === "active"
       ? { status: "active", retired_at: null, retired_reason: null }
@@ -384,17 +389,26 @@ Deno.serve(async (req) => {
         }
       }
 
-      const { data, error } = await db
-        .from("rota27_sync_events")
-        .select("seq,event_id,device_id,event_type,entity_id,payload,app_version,client_created_at,created_at")
-        .eq("store_id", storeId)
-        .gt("seq", effectiveAfter)
-        .order("seq", { ascending: true })
-        .limit(limit);
-      if (error) throw new Error(error.message);
+      let scanAfter = effectiveAfter;
+      let lastReturned = effectiveAfter;
+      let events: any[] = [];
+      for (let scan = 0; scan < 20; scan++) {
+        const { data, error } = await db
+          .from("rota27_sync_events")
+          .select("seq,event_id,device_id,event_type,entity_id,payload,app_version,client_created_at,created_at")
+          .eq("store_id", storeId)
+          .gt("seq", scanAfter)
+          .order("seq", { ascending: true })
+          .limit(limit);
+        if (error) throw new Error(error.message);
+        const rawEvents = data || [];
+        if (!rawEvents.length) break;
+        lastReturned = Number(rawEvents[rawEvents.length - 1]?.seq || scanAfter);
+        events = rawEvents.filter(visiblePullEvent);
+        if (events.length || rawEvents.length < limit) break;
+        scanAfter = lastReturned;
+      }
 
-      const events = data || [];
-      const lastReturned = events.length ? Number(events[events.length - 1].seq || effectiveAfter) : effectiveAfter;
       const latest = await latestSeq();
       await heartbeat(lastReturned);
       return json(200, {
