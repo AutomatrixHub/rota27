@@ -1,9 +1,9 @@
-/* Rota 27 v0.25.189 — reconciliação estrutural de dados locais com o sync */
+/* Rota 27 v0.25.191 — reconciliação estrutural de dados locais com o sync */
 (function(){
   'use strict';
   if(window.Rota27V025189SyncReconcile)return;
 
-  const VERSION='0.25.189';
+  const VERSION='0.25.191';
   const SYNC_KEY='rota27_sync_config_v1';
   const MARKER_KEY='rota27_v025189_reconcile_cursor_v1';
   const TOMBSTONE_KEY='rota27_v025189_client_delete_ledger_v1';
@@ -80,7 +80,7 @@
     }finally{clearTimeout(timeout);}
   }
 
-  function remoteIndex(){return {eventIds:new Set(),byTypeEntity:new Map(),clientsByPhone:new Map(),manager:null,lastSeq:0};}
+  function remoteIndex(){return {eventIds:new Set(),byTypeEntity:new Map(),clientsByPhone:new Map(),turnClosuresByWindow:new Map(),manager:null,lastSeq:0};}
   function indexRemote(idx,event){
     const type=eventType(event),entity=eventEntity(event),seq=num(event?.seq),id=eventId(event);
     idx.lastSeq=Math.max(idx.lastSeq,seq);if(id)idx.eventIds.add(id);
@@ -91,6 +91,10 @@
     }
     if(type==='client_delete'&&entity){
       const key=`client_upsert|${entity}`,old=idx.byTypeEntity.get(key);if(!old||num(old.seq)<seq)idx.byTypeEntity.set(key,event);
+    }
+    if(type==='turn_closed'){
+      const key=closureWindowKey(payloadObject(event));
+      if(key){const old=idx.turnClosuresByWindow.get(key);if(!old||num(old.seq)<seq)idx.turnClosuresByWindow.set(key,event);}
     }
     if(type==='manager_config_replace'&&(!idx.manager||num(idx.manager.seq)<seq))idx.manager=event;
   }
@@ -128,7 +132,8 @@
     return ids;
   }
   function closureShiftStartedAt(c){const raw=num(c?.shiftStartedAt||c?.summary?.firstOpenedAt||c?.summary?.shiftStart);return raw>0?Math.trunc(raw):0;}
-  function canonicalClosureId(c){const date=String(c?.businessDate||'').trim(),shift=closureShiftStartedAt(c);return /^\d{4}-\d{2}-\d{2}$/.test(date)&&shift>0?`turn_${date}_${shift}`:String(c?.id||'');}
+  function closureWindowKey(c){const date=String(c?.businessDate||'').trim(),shift=closureShiftStartedAt(c);return /^\d{4}-\d{2}-\d{2}$/.test(date)&&shift>0?`${date}_${shift}`:'';}
+  function canonicalClosureId(c){const key=closureWindowKey(c);return key?`turn_${key}`:String(c?.id||'');}
 
   function buildCandidates(idx){
     const out=[];
@@ -177,7 +182,9 @@
 
     const superseded=supersededClosureIds(),closures=readJson(CLOSURES_KEY,[]);(Array.isArray(closures)?closures:[]).forEach(c=>{
       if(!c?.id||!c?.businessDate||c?.repairId||c?.repairedFrom||superseded.has(String(c.id)))return;
-      const canonical=canonicalClosureId(c);if(!canonical)return;const id=`turn_closed_${canonical}`;if(idx.eventIds.has(id))return;
+      const windowKey=closureWindowKey(c),canonical=canonicalClosureId(c);if(!canonical)return;
+      if(windowKey&&idx.turnClosuresByWindow.has(windowKey))return;
+      const id=`turn_closed_${canonical}`;if(idx.eventIds.has(id))return;
       const normalized={...clone(c),id:canonical};out.push(makeEvent('turn_closed',canonical,{closure:normalized},id,iso(c.closedAt)));
     });
     return out;
