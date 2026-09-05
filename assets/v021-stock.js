@@ -3,7 +3,6 @@
   'use strict';
   const VERSION='0.21.0';
   const CFG_KEY='rota27_v021_stock_cfg_v1', MOV_KEY='rota27_v021_stock_mov_v1', OUTBOX_KEY='rota27_v021_stock_outbox_v1', CURSOR_KEY='rota27_v021_stock_cursor_v1', META_KEY='rota27_v021_stock_meta_v1', SYNC_KEY='rota27_sync_config_v1';
-  const MAX_MOV=6000, MAX_OUTBOX=900;
   let filter='attention', search='', syncing=false, baseAddProduct=null, baseFinalize=null, selectedProductId=null, selectedMoveProductId=null;
 
   function byId(id){return document.getElementById(id);}
@@ -20,9 +19,9 @@
   function configs(){const x=readJson(CFG_KEY,{});return x&&typeof x==='object'&&!Array.isArray(x)?x:{};}
   function readConfigs(){return configs();}
   function movements(){const x=readJson(MOV_KEY,[]);return Array.isArray(x)?x:[];}
-  function saveMovements(rows){writeJson(MOV_KEY,(Array.isArray(rows)?rows:[]).slice(-MAX_MOV));}
+  function saveMovements(rows){writeJson(MOV_KEY,Array.isArray(rows)?rows:[]);}
   function outbox(){const x=readJson(OUTBOX_KEY,[]);return Array.isArray(x)?x:[];}
-  function saveOutbox(rows){writeJson(OUTBOX_KEY,(Array.isArray(rows)?rows:[]).slice(-MAX_OUTBOX));}
+  function saveOutbox(rows){writeJson(OUTBOX_KEY,Array.isArray(rows)?rows:[]);}
   function meta(){const x=readJson(META_KEY,{});return x&&typeof x==='object'?x:{};}
   function patchMeta(p){writeJson(META_KEY,{...meta(),...p});}
   function syncConfig(){const x=readJson(SYNC_KEY,{});return x&&typeof x==='object'?x:{};}
