@@ -1,17 +1,21 @@
-/* Rota 27 v0.25.185 — durabilidade das filas de domínio */
+/* Rota 27 v0.25.195 — durabilidade das filas de domínio */
 (function(){
   'use strict';
   if(window.Rota27V025184DurableDomainOutbox)return;
 
-  const VERSION='0.25.185';
+  const VERSION='0.25.195';
   const TARGETS=new Map([
+    ['rota27_cancel_outbox_v0151',{maxBatch:25,label:'cancelamento de comandas'}],
     ['rota27_v017_domain_outbox_v1',{maxBatch:100,label:'clientes/configuração gerencial'}],
+    ['rota27_v017_manager_outbox_v1',{maxBatch:300,label:'WhatsApp do gerente'}],
     ['rota27_v019_turn_outbox_v1',{maxBatch:50,label:'fechamento de turno'}],
     ['rota27_v021_stock_outbox_v1',{maxBatch:80,label:'estoque'}],
     ['rota27_v022_purchase_outbox_v1',{maxBatch:80,label:'compras'}],
     ['rota27_v023_inventory_outbox_v1',{maxBatch:80,label:'inventário'}],
+    ['rota27_v0255_fixed_copy_outbox_v1',{maxBatch:300,label:'cópia fixa do WhatsApp'}],
     ['rota27_v02512_receivable_outbox_v1',{maxBatch:100,label:'a receber'}],
-    ['rota27_v02537_internal_marker_outbox_v1',{maxBatch:20,label:'consumo interno'}]
+    ['rota27_v02537_internal_marker_outbox_v1',{maxBatch:20,label:'consumo interno'}],
+    ['rota27_v02573_cancel_whatsapp_outbox_v1',{maxBatch:20,label:'aviso WhatsApp de cancelamento'}]
   ]);
 
   const originalSetItem=Storage.prototype.setItem;
@@ -22,11 +26,11 @@
     try{
       const rows=JSON.parse(raw);
       if(!Array.isArray(rows))return null;
-      if(rows.some(row=>!row||typeof row!=='object'||!String(row.eventId||row.event_id||'')))return null;
+      if(rows.some(row=>!row||typeof row!=='object'||!String(row.eventId||row.event_id||row.id||'')))return null;
       return rows;
     }catch{return null;}
   }
-  function idOf(row){return String(row?.eventId||row?.event_id||'');}
+  function idOf(row){return String(row?.eventId||row?.event_id||row?.id||'');}
   function mergeKeepingOldOrder(previous,next,restoreIds){
     const nextById=new Map(next.map(row=>[idOf(row),row]));
     const restore=new Set(restoreIds);
