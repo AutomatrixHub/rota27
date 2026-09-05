@@ -1,13 +1,15 @@
-/* Rota 27 v0.15.1 — corrige endpoint do WhatsApp e adiciona cancelamento seguro de comanda */
+/* Rota 27 v0.25.196 — corrige endpoint do WhatsApp e adiciona cancelamento seguro de comanda */
 (function(){
   'use strict';
 
-  const VERSION='0.25.195';
+  const VERSION='0.25.196';
   const WA_KEY='rota27_whatsapp_config_v1';
   const SYNC_KEY='rota27_sync_config_v1';
   const CORE_KEY='rota27_comandas_v01';
   const CANCEL_QUEUE_KEY='rota27_cancel_outbox_v0151';
   const CANCEL_FLUSH_BATCH=25;
+  const STAGE_PREPARED='prepared';
+  const STAGE_COMMITTED='committed';
   let baseRenderCommands=null;
   let baseOpenCommand=null;
   let baseRenderSale=null;
@@ -18,7 +20,6 @@
   function now(){return Date.now();}
   function appState(){try{return typeof state!=='undefined'?state:null;}catch{return null;}}
   function current(){try{return typeof currentCommand==='function'?currentCommand():null;}catch{return null;}}
-  function activeId(){try{return typeof activeCommandId!=='undefined'?activeCommandId:'';}catch{return '';}}
   function label(c){try{return typeof commandLabel==='function'?commandLabel(c):[c?.table,c?.customer].filter(Boolean).join(' • ');}catch{return 'Comanda';}}
   function itemCount(c){try{return typeof commandItems==='function'?commandItems(c):Object.values(c?.items||{}).reduce((s,q)=>s+Number(q||0),0);}catch{return 0;}}
   function total(c){try{return typeof commandTotal==='function'?commandTotal(c):0;}catch{return 0;}}
@@ -159,24 +160,108 @@
     const rows=cancelQueue();
     return saveCancelQueue(rows.filter(row=>String(row?.id||'')!==String(rowId||'')));
   }
-  function queueCancelSync(command,cancelledAt=now()){
+  function rowStage(row){
+    const stage=String(row?.stage||'');
+    if(stage===STAGE_PREPARED||stage===STAGE_COMMITTED)return stage;
+    return '';
+  }
+  function coreCancellationState(commandId){
+    const raw=localStorage.getItem(CORE_KEY);
+    if(raw==null)return {known:false,committed:false};
+    try{
+      const core=JSON.parse(raw);
+      if(!core||!Array.isArray(core.commands))return {known:false,committed:false};
+      const command=core.commands.find(item=>String(item?.id||'')===String(commandId||''));
+      return {known:true,committed:!command||command?.cancelled===true};
+    }catch{return {known:false,committed:false};}
+  }
+  function queueCancelPrepared(command,cancelledAt=now()){
     const commandId=String(command?.id||'');
     if(!commandId)return {ok:false,row:null,created:false};
     const rows=cancelQueue();
-    const existing=rows.find(row=>String(row?.commandId||'')===commandId);
-    if(existing)return {ok:true,row:existing,created:false};
+    const existingIndex=rows.findIndex(row=>String(row?.commandId||'')===commandId);
+    if(existingIndex>=0){
+      const currentRow=rows[existingIndex];
+      if(rowStage(currentRow)===STAGE_COMMITTED)return {ok:true,row:currentRow,created:false};
+      const at=Math.max(1,Number(currentRow?.patch?.cancelledAt||cancelledAt||now()));
+      const refreshed={
+        ...currentRow,
+        id:String(currentRow?.id||`cancel_command_${commandId}`),
+        commandId,
+        stage:STAGE_PREPARED,
+        preparedAt:Number(currentRow?.preparedAt||at),
+        createdAt:String(currentRow?.createdAt||new Date(at).toISOString()),
+        patch:{cancelled:true,cancelledAt:at,updatedAt:at},
+        commandSnapshot:clone(currentRow?.commandSnapshot||command)
+      };
+      rows[existingIndex]=refreshed;
+      if(!saveCancelQueue(rows))return {ok:false,row:null,created:false};
+      return {ok:true,row:refreshed,created:false};
+    }
     const at=Math.max(1,Number(cancelledAt||now()));
     const row={
       id:`cancel_command_${commandId}`,
       commandId,
+      stage:STAGE_PREPARED,
+      preparedAt:at,
+      committedAt:0,
       createdAt:new Date(at).toISOString(),
-      patch:{cancelled:true,cancelledAt:at,updatedAt:at}
+      patch:{cancelled:true,cancelledAt:at,updatedAt:at},
+      commandSnapshot:clone(command)
     };
     if(!saveCancelQueue([...rows,row]))return {ok:false,row:null,created:false};
     return {ok:true,row,created:true};
   }
+  function commitCancelRow(rowId,command,cancelledAt){
+    const rows=cancelQueue(),idx=rows.findIndex(row=>String(row?.id||'')===String(rowId||''));
+    if(idx<0)return false;
+    const currentRow=rows[idx],at=Math.max(1,Number(cancelledAt||currentRow?.patch?.cancelledAt||now()));
+    rows[idx]={
+      ...currentRow,
+      stage:STAGE_COMMITTED,
+      committedAt:Number(currentRow?.committedAt||now()),
+      patch:{cancelled:true,cancelledAt:at,updatedAt:at},
+      commandSnapshot:clone(currentRow?.commandSnapshot||command||null)
+    };
+    return saveCancelQueue(rows);
+  }
+
+  function emitDurableCancellation(command,cancelledAt){
+    if(!command)return;
+    try{window.dispatchEvent(new CustomEvent('rota27:command-cancelled-durable',{detail:{command:clone(command),cancelledAt:Number(cancelledAt||0)}}));}catch{}
+  }
+
+  function reconcileCancelQueue(emitRecovered=false){
+    const rows=cancelQueue();
+    if(!rows.length)return [];
+    const next=[],recover=[];
+    let changed=false;
+    for(const row of rows){
+      const commandId=String(row?.commandId||'');
+      if(!commandId){changed=true;continue;}
+      const state=coreCancellationState(commandId);
+      if(!state.known){next.push(row);continue;}
+      if(!state.committed){
+        changed=true;
+        continue;
+      }
+      const stage=rowStage(row);
+      const committed=stage===STAGE_COMMITTED?row:{
+        ...row,
+        id:String(row?.id||`cancel_command_${commandId}`),
+        stage:STAGE_COMMITTED,
+        committedAt:Number(row?.committedAt||now())
+      };
+      if(stage!==STAGE_COMMITTED)changed=true;
+      next.push(committed);
+      if(emitRecovered&&committed?.commandSnapshot)recover.push(committed);
+    }
+    if(changed&&!saveCancelQueue(next))return [];
+    return recover;
+  }
 
   async function pushCancel(row){
+    if(rowStage(row)!==STAGE_COMMITTED)return false;
     const cfg=readJson(SYNC_KEY,{});
     if(cfg.enabled!==true||cfg.initialized!==true)return false;
     if(!/^https:\/\/.+\/functions\/v1\/rota27-sync\/?$/i.test(String(cfg.functionUrl||'')))return false;
@@ -192,7 +277,9 @@
 
   async function flushCancelQueue(){
     if(cancelFlushing||!navigator.onLine)return false;
-    const initial=cancelQueue();if(!initial.length)return true;
+    reconcileCancelQueue(false);
+    const initial=cancelQueue().filter(row=>rowStage(row)===STAGE_COMMITTED);
+    if(!initial.length)return true;
     cancelFlushing=true;
     try{
       const batch=initial.slice(0,CANCEL_FLUSH_BATCH),sent=new Set();
@@ -200,24 +287,14 @@
       if(sent.size){
         const currentRows=cancelQueue();
         if(!saveCancelQueue(currentRows.filter(row=>!sent.has(String(row?.id||''))))){
-          console.warn('[Rota27 v0.25.195] Não foi possível confirmar a remoção de cancelamentos já enviados; os eventos serão repetidos de forma idempotente.');
+          console.warn('[Rota27 v0.25.196] Não foi possível confirmar a remoção de cancelamentos já enviados; os eventos serão repetidos de forma idempotente.');
           return false;
         }
       }
-      const remaining=cancelQueue();
+      const remaining=cancelQueue().filter(row=>rowStage(row)===STAGE_COMMITTED);
       if(remaining.length&&navigator.onLine&&sent.size===batch.length)setTimeout(flushCancelQueue,350);
       return remaining.length===0;
     }finally{cancelFlushing=false;}
-  }
-
-  function coreCommandMissing(commandId){
-    const core=readJson(CORE_KEY,null);
-    if(!core||!Array.isArray(core.commands))return false;
-    return !core.commands.some(command=>String(command?.id||'')===String(commandId||''));
-  }
-
-  function emitDurableCancellation(command,cancelledAt){
-    try{window.dispatchEvent(new CustomEvent('rota27:command-cancelled-durable',{detail:{command:clone(command),cancelledAt:Number(cancelledAt||0)}}));}catch{}
   }
 
   function purgeCancelled(){
@@ -234,7 +311,7 @@
     const c=current();if(!c)return;
     const s=appState();if(!s||!Array.isArray(s.commands))return;
     const id=String(c.id),cancelledAt=now(),originalCommand=clone(c);
-    const queued=queueCancelSync(originalCommand,cancelledAt);
+    const queued=queueCancelPrepared(originalCommand,cancelledAt);
     if(!queued.ok){
       try{showToast('Não foi possível registrar o cancelamento com segurança. Libere espaço no aparelho e tente novamente.',true);}catch{}
       return;
@@ -247,21 +324,24 @@
     let persisted=false;
     try{
       if(typeof save==='function')save();
-      persisted=coreCommandMissing(id);
+      const state=coreCancellationState(id);
+      persisted=state.known&&state.committed;
     }catch{}
 
     if(!persisted){
       s.commands=previousCommands;
       s.whatsappOutbox=previousWhatsappOutbox;
       try{if(typeof save==='function')save();}catch{}
-      if(queued.created)removeCancelQueueRow(queued.row?.id);
+      if(rowStage(queued.row)!==STAGE_COMMITTED)removeCancelQueueRow(queued.row?.id);
       try{if(typeof resumeWhatsappOutbox==='function')setTimeout(resumeWhatsappOutbox,100);}catch{}
       try{showToast('O cancelamento não foi confirmado porque o estado local não pôde ser salvo.',true);}catch{}
       return;
     }
 
+    const committed=commitCancelRow(queued.row?.id,originalCommand,cancelledAt);
+    if(!committed)console.warn('[Rota27 v0.25.196] Cancelamento persistido localmente; promoção da fila será retomada na próxima reconciliação.');
     emitDurableCancellation(originalCommand,cancelledAt);
-    setTimeout(flushCancelQueue,0);
+    setTimeout(()=>{reconcileCancelQueue(false);flushCancelQueue();},0);
     try{activeCommandId=null;}catch{}
     byId('v0151CancelConfirm')?.classList.remove('open');
     byId('editCommandWrap')?.classList.remove('open');
@@ -270,12 +350,18 @@
     try{showToast('Comanda cancelada.',false);}catch{}
   }
 
+  function recoverAndFlush(){
+    const recovered=reconcileCancelQueue(true);
+    if(recovered.length)setTimeout(()=>recovered.forEach(row=>emitDurableCancellation(row.commandSnapshot,row?.patch?.cancelledAt||row?.committedAt)),0);
+    setTimeout(flushCancelQueue,0);
+  }
+
   function start(){
-    patchWhatsappConfig();wrapOperationalViews();ensureCancelConfirm();ensureCancelButton();flushCancelQueue();purgeCancelled();
-    setInterval(()=>{patchWhatsappConfig();wrapOperationalViews();ensureCancelButton();flushCancelQueue();purgeCancelled();},4000);
-    window.addEventListener('online',()=>{correctWhatsappEndpoint(false);flushCancelQueue();setTimeout(()=>{try{resumeWhatsappOutbox();}catch{}},400);});
-    window.addEventListener('pageshow',()=>{correctWhatsappEndpoint(false);flushCancelQueue();});
-    console.info('[Rota27] hotfix v0.25.195 carregado.');
+    patchWhatsappConfig();wrapOperationalViews();ensureCancelConfirm();ensureCancelButton();purgeCancelled();recoverAndFlush();
+    setInterval(()=>{patchWhatsappConfig();wrapOperationalViews();ensureCancelButton();purgeCancelled();recoverAndFlush();},4000);
+    window.addEventListener('online',()=>{correctWhatsappEndpoint(false);recoverAndFlush();setTimeout(()=>{try{resumeWhatsappOutbox();}catch{}},400);});
+    window.addEventListener('pageshow',()=>{correctWhatsappEndpoint(false);recoverAndFlush();});
+    console.info('[Rota27] hotfix v0.25.196 carregado.');
   }
 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
