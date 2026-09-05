@@ -45,6 +45,7 @@
     if(!id)return false;
     const next=store(),old=next.records[id]||null,at=Math.max(Number(old?.cancelledAt||0),Number(cancelledAt||0),1);
     const newer=!old||at>Number(old.cancelledAt||0);
+    if(old&&!newer&&(!snapshot||old.commandSnapshot))return true;
     next.records[id]={
       ...(old||{}),
       commandId:id,
