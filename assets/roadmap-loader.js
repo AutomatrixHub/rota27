@@ -1,10 +1,11 @@
 /* Rota 27 — carregador incremental do roadmap pós-v0.25.46 */
 (function(){
   'use strict';
-  const CURRENT='0.25.188';
+  const CURRENT='0.25.189';
   const HELP='11.0';
   const assets=[
     {type:'js',id:'v025188BusinessStoreRetentionJs',src:'./assets/v025188-business-store-retention.js?v=025188r1'},
+    {type:'js',id:'v025189SyncReconcileJs',src:'./assets/v025189-sync-reconcile.js?v=025189r1'},
     {type:'js',id:'v025187BackupRestoreAtomicJs',src:'./assets/v025187-backup-restore-atomic.js?v=025188r1'},
     {type:'js',id:'v025186SyncPaginationGuardJs',src:'./assets/v025186-sync-pagination-guard.js?v=025186r1'},
     {type:'js',id:'v025184DurableDomainOutboxJs',src:'./assets/v025184-durable-domain-outbox.js?v=025185r1'},
