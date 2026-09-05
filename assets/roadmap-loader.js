@@ -1,14 +1,14 @@
 /* Rota 27 — carregador incremental do roadmap pós-v0.25.46 */
 (function(){
   'use strict';
-  const CURRENT='0.25.193';
+  const CURRENT='0.25.194';
   const HELP='11.0';
   const assets=[
     {type:'js',id:'v025193ClientDomainConvergenceJs',src:'./assets/v025193-client-domain-convergence.js?v=025193r1'},
     {type:'js',id:'v025188BusinessStoreRetentionJs',src:'./assets/v025188-business-store-retention.js?v=025188r1'},
     {type:'js',id:'v025189SyncReconcileJs',src:'./assets/v025189-sync-reconcile.js?v=025192r1'},
     {type:'js',id:'v025190ReconcileGuardJs',src:'./assets/v025190-reconcile-guard.js?v=025192r1'},
-    {type:'js',id:'v025187BackupRestoreAtomicJs',src:'./assets/v025187-backup-restore-atomic.js?v=025188r1'},
+    {type:'js',id:'v025187BackupRestoreAtomicJs',src:'./assets/v025187-backup-restore-atomic.js?v=025194r1'},
     {type:'js',id:'v025186SyncPaginationGuardJs',src:'./assets/v025186-sync-pagination-guard.js?v=025186r1'},
     {type:'js',id:'v025184DurableDomainOutboxJs',src:'./assets/v025184-durable-domain-outbox.js?v=025185r1'},
     {type:'js',id:'v025175CatalogImportCommitJs',src:'./assets/v025175-catalog-import-commit.js?v=025175r1'},

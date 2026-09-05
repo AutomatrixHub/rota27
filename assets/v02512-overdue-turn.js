@@ -1,7 +1,7 @@
-/* Rota 27 v0.25.15 — compatibilidade A receber com data operacional pela abertura */
+/* Rota 27 v0.25.194 — compatibilidade A receber com data operacional pela abertura */
 (function(){
   'use strict';
-  const VERSION='0.25.15';
+  const VERSION='0.25.194';
   const RECEIVABLE_STORE='rota27_v02512_receivables_v1';
   const RECEIVABLE_OUTBOX='rota27_v02512_receivable_outbox_v1';
   const SYNC_CONFIG='rota27_sync_config_v1';
@@ -24,7 +24,13 @@
   }
   function queueHistoryCorrection(commandId,historyRecord,adminAt){
     if(!historyRecord)return;const c=cfg(),out=Array.isArray(c.outbox)?c.outbox:[],eventId=`history_upsert_businessdate_${commandId}`;
-    if(!out.some(x=>String(x.eventId)===eventId)){out.push({eventId,eventType:'history_upsert',entityId:String(commandId),payload:{command:clone(historyRecord)},deviceId:c.deviceId||'local',createdAt:new Date(adminAt).toISOString(),appVersion:VERSION});c.outbox=out.slice(-1200);write(SYNC_CONFIG,c);}setTimeout(()=>{try{window.v15SyncNow?.();}catch{}},0);
+    if(!out.some(x=>String(x.eventId)===eventId)){
+      out.push({eventId,eventType:'history_upsert',entityId:String(commandId),payload:{command:clone(historyRecord)},deviceId:c.deviceId||'local',createdAt:new Date(adminAt).toISOString(),appVersion:VERSION});
+      // A outbox principal não possui limite destrutivo. O v015-sync faz apenas
+      // compactação idempotente e remove eventos somente depois de confirmação do servidor.
+      c.outbox=out;write(SYNC_CONFIG,c);
+    }
+    setTimeout(()=>{try{window.v15SyncNow?.();}catch{}},0);
   }
   function patchHistory(commandId,businessDate,adminAt){
     const idx=(state.history||[]).findIndex(h=>String(h.id)===String(commandId));if(idx<0)return null;

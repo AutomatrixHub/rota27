@@ -1,9 +1,9 @@
-/* Rota 27 v0.25.188 — restauração atômica de backup */
+/* Rota 27 v0.25.194 — restauração atômica de backup */
 (function(){
   'use strict';
   if(window.Rota27V025187BackupRestoreAtomic)return;
 
-  const VERSION='0.25.188';
+  const VERSION='0.25.194';
   const CORE_KEY='rota27_comandas_v01';
   const SYNC_KEY='rota27_sync_config_v1';
   const WA_KEY='rota27_whatsapp_config_v1';
@@ -30,7 +30,22 @@
   function pauseRuntimeAfterRestore(){
     try{
       const cfg=JSON.parse(localStorage.getItem(SYNC_KEY)||'{}')||{};
-      if(Object.keys(cfg).length){cfg.enabled=false;cfg.initialized=false;cfg.lastError='Sincronização pausada após restauração local.';localStorage.setItem(SYNC_KEY,JSON.stringify(cfg));}
+      if(Object.keys(cfg).length){
+        // Credenciais e identidade do aparelho permanecem para permitir reativação
+        // consciente. Todo o estado transitório pertence à base anterior e não pode
+        // atravessar a restauração, especialmente a outbox ainda não publicada.
+        cfg.enabled=false;
+        cfg.initialized=false;
+        cfg.cursor=0;
+        cfg.outbox=[];
+        cfg.conflicts=[];
+        cfg.lastSyncAt=0;
+        cfg.latestServerSeq=0;
+        cfg.latestSnapshotSeq=0;
+        cfg.devices=[];
+        cfg.lastError='Sincronização pausada após restauração local.';
+        localStorage.setItem(SYNC_KEY,JSON.stringify(cfg));
+      }
     }catch{localStorage.removeItem(SYNC_KEY);}
     localStorage.removeItem(WA_KEY);
     allKeys().filter(k=>isRotaKey(k)&&isRuntimeKey(k)&&k!==SYNC_KEY).forEach(k=>localStorage.removeItem(k));
