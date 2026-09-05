@@ -205,7 +205,7 @@
         }
       }
       const remaining=cancelQueue();
-      if(remaining.length&&navigator.onLine)setTimeout(flushCancelQueue,350);
+      if(remaining.length&&navigator.onLine&&sent.size===batch.length)setTimeout(flushCancelQueue,350);
       return remaining.length===0;
     }finally{cancelFlushing=false;}
   }
