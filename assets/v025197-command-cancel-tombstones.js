@@ -5,13 +5,17 @@
 
   const VERSION='0.25.197';
   const TOMBSTONE_KEY='rota27_v025197_command_cancel_tombstones_v1';
+  const SCAN_KEY='rota27_v025197_command_cancel_scan_outbox_marker_v1';
   const CANCEL_QUEUE_KEY='rota27_cancel_outbox_v0151';
   const CORE_KEY='rota27_comandas_v01';
   const SYNC_KEY='rota27_sync_config_v1';
   const PUSH_BATCH=50;
   const RECONCILE_MS=5000;
+  const REMOTE_SCAN_INTERVAL_MS=30000;
+  const REMOTE_SCAN_PAGES=8;
   const previousSetItem=Storage.prototype.setItem;
   let flushing=false;
+  let scanning=false;
   let timer=null;
 
   function clone(value){return JSON.parse(JSON.stringify(value==null?null:value));}
@@ -58,6 +62,16 @@
     };
     return saveStore(next);
   }
+  function markObservedOnServer(commandId,cancelledAt,key){
+    const id=String(commandId||'').trim();
+    if(!id)return false;
+    if(!upsertTombstone(id,cancelledAt,null))return false;
+    const next=store(),current=next.records[id];
+    if(!current||Number(current.cancelledAt||0)>Number(cancelledAt||0))return true;
+    const now=Date.now();
+    next.records[id]={...current,serverConfirmedAt:now,confirmedBackendKey:key,updatedAt:Math.max(Number(current.updatedAt||0),now)};
+    return saveStore(next);
+  }
   function filterCoreState(core){
     if(!core||typeof core!=='object'||Array.isArray(core))return {core,changed:false};
     const ids=tombstoneIds();
@@ -74,27 +88,71 @@
     }
     return {core:next,changed};
   }
+  function harvestCancelledCoreState(core){
+    if(!core||!Array.isArray(core.commands))return 0;
+    let count=0;
+    for(const command of core.commands){
+      if(command?.cancelled!==true||!command?.id)continue;
+      const at=cancellationAt(command,Number(command.updatedAt||Date.now()));
+      if(upsertTombstone(command.id,at,command))count++;
+    }
+    return count;
+  }
   function filterCoreRaw(raw){
     try{
       const parsed=JSON.parse(String(raw));
+      harvestCancelledCoreState(parsed);
       const result=filterCoreState(parsed);
       return result.changed?JSON.stringify(result.core):String(raw);
     }catch{return String(raw);}
   }
+  function runtimeState(){
+    try{if(typeof state!=='undefined'&&state)return state;}catch{}
+    try{return window.state||null;}catch{return null;}
+  }
+  function enforceRuntime(){
+    const live=runtimeState();
+    if(!live||typeof live!=='object')return false;
+    const ids=tombstoneIds();
+    if(!ids.size)return false;
+    let changed=false;
+    if(Array.isArray(live.commands)){
+      const commands=live.commands.filter(command=>!ids.has(String(command?.id||'')));
+      if(commands.length!==live.commands.length){live.commands=commands;changed=true;}
+    }
+    if(Array.isArray(live.whatsappOutbox)){
+      const whatsappOutbox=live.whatsappOutbox.filter(row=>!ids.has(String(row?.commandId||'')));
+      if(whatsappOutbox.length!==live.whatsappOutbox.length){live.whatsappOutbox=whatsappOutbox;changed=true;}
+    }
+    if(changed){
+      try{if(typeof renderCommands==='function')renderCommands();}catch{}
+      try{window.dispatchEvent(new CustomEvent('rota27:command-cancel-tombstones-updated'));}catch{}
+    }
+    return changed;
+  }
 
   Storage.prototype.setItem=function(key,value){
     if(String(key)!==CORE_KEY)return previousSetItem.apply(this,arguments);
-    return previousSetItem.call(this,key,filterCoreRaw(value));
+    const filtered=filterCoreRaw(value);
+    const changed=String(filtered)!==String(value);
+    const result=previousSetItem.call(this,key,filtered);
+    if(changed)queueMicrotask(enforceRuntime);
+    return result;
   };
 
   function enforceLocal(){
     const raw=localStorage.getItem(CORE_KEY);
-    if(raw==null)return false;
+    if(raw==null){enforceRuntime();return false;}
     let parsed;
-    try{parsed=JSON.parse(raw);}catch{return false;}
+    try{parsed=JSON.parse(raw);}catch{enforceRuntime();return false;}
+    harvestCancelledCoreState(parsed);
     const result=filterCoreState(parsed);
-    if(!result.changed)return false;
-    try{localStorage.setItem(CORE_KEY,JSON.stringify(result.core));return true;}catch{return false;}
+    let persisted=false;
+    if(result.changed){
+      try{localStorage.setItem(CORE_KEY,JSON.stringify(result.core));persisted=true;}catch{}
+    }
+    enforceRuntime();
+    return persisted;
   }
   function corePresence(commandId){
     const raw=localStorage.getItem(CORE_KEY);
@@ -132,6 +190,70 @@
   }
   window.addEventListener('rota27:command-cancelled-durable',captureCancellation);
 
+  async function request(cfg,body){
+    const ctrl=new AbortController(),timeout=setTimeout(()=>ctrl.abort(),12000);
+    try{
+      const response=await fetch(String(cfg.functionUrl).replace(/\/+$/,''),{
+        method:'POST',
+        headers:{'content-type':'application/json','x-rota27-device-token':String(cfg.deviceToken)},
+        body:JSON.stringify({...body,deviceId:cfg.deviceId,deviceName:cfg.deviceName||'Aparelho',storeId:cfg.storeId||'rota27-bodega',appVersion:VERSION}),
+        signal:ctrl.signal
+      });
+      const data=await response.json().catch(()=>({}));
+      if(!response.ok||data.ok!==true)return null;
+      return data;
+    }catch{return null;}finally{clearTimeout(timeout);}
+  }
+  function scanState(cfg){
+    const key=backendKey(cfg),raw=readJson(SCAN_KEY,{});
+    if(!raw||typeof raw!=='object'||Array.isArray(raw)||String(raw.backendKey||'')!==key)return {backendKey:key,cursor:0,completeAt:0,lastScanAt:0};
+    return {backendKey:key,cursor:Math.max(0,Number(raw.cursor||0)),completeAt:Math.max(0,Number(raw.completeAt||0)),lastScanAt:Math.max(0,Number(raw.lastScanAt||0))};
+  }
+  function saveScanState(next){return writeJson(SCAN_KEY,next);}
+  function remoteEventCancellation(event,cfg){
+    const type=String(event?.event_type||event?.eventType||'');
+    if(type!=='command_patch')return false;
+    const patch=event?.payload?.patch;
+    if(!patch||patch.cancelled!==true)return false;
+    const id=String(event?.entity_id||event?.entityId||'').trim();
+    if(!id)return false;
+    const created=Date.parse(String(event?.created_at||event?.createdAt||''));
+    const at=cancellationAt(patch,Number.isFinite(created)?created:Date.now());
+    return markObservedOnServer(id,at,backendKey(cfg));
+  }
+  async function scanRemote(){
+    if(scanning||!navigator.onLine)return false;
+    const cfg=syncConfig();
+    if(!syncReady(cfg))return false;
+    let scan=scanState(cfg);
+    const now=Date.now();
+    if(scan.completeAt>0&&scan.lastScanAt>now-REMOTE_SCAN_INTERVAL_MS)return true;
+    scanning=true;
+    try{
+      let cursor=scan.cursor,complete=false;
+      for(let page=0;page<REMOTE_SCAN_PAGES;page++){
+        const data=await request(cfg,{action:'pull',afterSeq:cursor,limit:500,preferSnapshot:false});
+        if(!data)return false;
+        const events=Array.isArray(data.events)?data.events:[];
+        let maxSeq=cursor;
+        for(const event of events){
+          maxSeq=Math.max(maxSeq,Number(event?.seq||0));
+          remoteEventCancellation(event,cfg);
+        }
+        const nextCursor=Math.max(cursor,maxSeq,Number(data.cursor||0));
+        cursor=nextCursor;
+        complete=data.hasMore!==true;
+        scan={backendKey:backendKey(cfg),cursor,completeAt:complete?Date.now():0,lastScanAt:Date.now()};
+        if(!saveScanState(scan))return false;
+        if(complete)break;
+        if(!events.length&&nextCursor<=maxSeq)break;
+      }
+      enforceLocal();
+      if(!complete)setTimeout(()=>scanRemote(),400);
+      return true;
+    }finally{scanning=false;}
+  }
+
   async function pushBatch(cfg,records){
     const events=records.map(record=>({
       eventId:String(record.eventId||`cancel_command_${record.commandId}`),
@@ -142,20 +264,7 @@
       createdAt:new Date(Number(record.cancelledAt||Date.now())).toISOString(),
       appVersion:VERSION
     }));
-    const ctrl=new AbortController(),timeout=setTimeout(()=>ctrl.abort(),12000);
-    try{
-      const response=await fetch(String(cfg.functionUrl).replace(/\/+$/,''),{
-        method:'POST',
-        headers:{'content-type':'application/json','x-rota27-device-token':String(cfg.deviceToken)},
-        body:JSON.stringify({
-          action:'push',events,afterSeq:Number(cfg.cursor||0),deviceId:cfg.deviceId,
-          deviceName:cfg.deviceName||'Aparelho',storeId:cfg.storeId||'rota27-bodega',appVersion:VERSION
-        }),
-        signal:ctrl.signal
-      });
-      const data=await response.json().catch(()=>({}));
-      return response.ok&&data.ok===true;
-    }catch{return false;}finally{clearTimeout(timeout);}
+    return !!(await request(cfg,{action:'push',events,afterSeq:Number(cfg.cursor||0)}));
   }
   function markConfirmed(records,key){
     const next=store(),now=Date.now();
@@ -191,6 +300,7 @@
   function reconcile(){
     harvestCancelQueue();
     enforceLocal();
+    scanRemote();
     flush();
   }
   function schedule(delay=150){
@@ -202,13 +312,14 @@
     setInterval(reconcile,RECONCILE_MS);
     window.addEventListener('online',()=>schedule(100));
     window.addEventListener('pageshow',()=>schedule(150));
-    window.addEventListener('storage',event=>{if([CORE_KEY,CANCEL_QUEUE_KEY,TOMBSTONE_KEY,SYNC_KEY].includes(String(event.key||'')))schedule(50);});
+    window.addEventListener('storage',event=>{if([CORE_KEY,CANCEL_QUEUE_KEY,TOMBSTONE_KEY,SCAN_KEY,SYNC_KEY].includes(String(event.key||'')))schedule(50);});
     document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')schedule(100);});
     window.Rota27V025197CommandCancelTombstones={
       version:VERSION,
       key:TOMBSTONE_KEY,
       reconcile,
       flush,
+      scanRemote,
       pending:()=>Object.values(store().records).filter(record=>!Number(record.serverConfirmedAt||0)).length
     };
     console.info(`[Rota27] tombstones de cancelamento v${VERSION} ativos.`);
