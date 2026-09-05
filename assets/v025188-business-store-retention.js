@@ -1,15 +1,15 @@
-/* Rota 27 v0.25.188 — preservação de registros históricos locais */
+/* Rota 27 v0.25.200 — preservação de registros históricos locais */
 (function(){
   'use strict';
   if(window.Rota27V025188BusinessStoreRetention)return;
 
-  const VERSION='0.25.188';
+  const VERSION='0.25.200';
   const TARGETS=new Map([
-    ['rota27_v019_turn_closures_v1',{limit:900,mode:'head',label:'fechamentos'}],
-    ['rota27_v021_stock_mov_v1',{limit:6000,mode:'tail',label:'movimentos de estoque'}],
+    ['rota27_v019_turn_closures_v1',{limit:900,mode:'head',immutable:true,label:'fechamentos'}],
+    ['rota27_v021_stock_mov_v1',{limit:6000,mode:'tail',immutable:true,label:'movimentos de estoque'}],
     ['rota27_v022_suppliers_v1',{limit:400,mode:'tail',label:'fornecedores'}],
     ['rota27_v022_purchase_orders_v1',{limit:3000,mode:'tail',label:'pedidos de compra'}],
-    ['rota27_v022_purchase_receipts_v1',{limit:6000,mode:'tail',label:'recebimentos de compra'}],
+    ['rota27_v022_purchase_receipts_v1',{limit:6000,mode:'tail',immutable:true,label:'recebimentos de compra'}],
     ['rota27_v023_inventories_v1',{limit:300,mode:'tail',label:'inventários'}]
   ]);
   const REPAIR_KEY='rota27_v02516_turn_repair_state_v1';
@@ -56,7 +56,7 @@
   function protectedValue(key,rawValue,storage){
     const target=TARGETS.get(key);if(!target)return null;
     const previous=parseRows(storage.getItem(key)),next=parseRows(String(rawValue));
-    if(!previous||!next||previous.length<target.limit||next.length!==target.limit)return null;
+    if(!previous||!next||!previous.length)return null;
 
     const nextIds=new Set(next.map(idOf));
     let removed=previous.filter(row=>!nextIds.has(idOf(row)));
@@ -66,6 +66,13 @@
       removed=removed.filter(row=>!superseded.has(idOf(row)));
     }
     if(!removed.length)return null;
+
+    // Fechamentos, movimentos e recebimentos são fatos de negócio imutáveis.
+    // Nesses livros, qualquer gravação parcial deve preservar IDs anteriores,
+    // independentemente do tamanho usado pelo escritor legado. Restaurações
+    // explícitas continuam válidas porque o restaurador remove a chave antes
+    // de gravar o conteúdo do backup, portanto não existe estado anterior aqui.
+    if(target.immutable!==true&&(previous.length<target.limit||next.length!==target.limit))return null;
 
     const restoreIds=removed.map(idOf);
     const merged=target.mode==='head'?mergeHead(previous,next,restoreIds):mergeTail(previous,next,restoreIds);
