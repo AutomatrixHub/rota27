@@ -1,5 +1,5 @@
-const CACHE_NAME = 'rota27-comandas-v0.25.193-r1';
-const RELEASE_VERSION = '0.25.193';
+const CACHE_NAME = 'rota27-comandas-v0.25.194-r1';
+const RELEASE_VERSION = '0.25.194';
 const APP_SHELL = [
   './','./index.html','./sandbox.html','./base-v013.html',
   './assets/v014.css','./assets/v014.js','./assets/v014-dev3.css','./assets/v014-dev3.js','./assets/v014-rc2-category-fix.js','./assets/v014-final.js',
@@ -47,8 +47,15 @@ self.addEventListener('message',event=>{
 
 async function roadmapResponse(request){
   const cache=await caches.open(CACHE_NAME);
-  let base=await cache.match('./assets/roadmap-loader.js');
-  if(!base){try{base=await fetch(request,{cache:'reload'});}catch{base=null;}}
+  let base=null;
+  try{
+    const fresh=await fetch(request,{cache:'no-store'});
+    if(fresh.ok){
+      base=fresh;
+      try{await cache.put(request,fresh.clone());}catch{}
+    }
+  }catch{}
+  if(!base)base=await cache.match(request,{ignoreSearch:true})||await cache.match('./assets/roadmap-loader.js');
   if(!base)return new Response('',{status:503,headers:{'content-type':'application/javascript; charset=utf-8'}});
   const source=await base.text();
   const headers=new Headers(base.headers);
