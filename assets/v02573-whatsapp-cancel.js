@@ -204,7 +204,7 @@
     const snapshot=event?.detail?.command;
     if(!snapshot)return;
     const eligible=isCancellationWhatsappEligible(snapshot);
-    if(!eligible)return;
+    if(!eligible||wasSent(snapshot.id))return;
     if(queueCancellation(snapshot))return;
     try{if(typeof showToast==='function')showToast('Comanda cancelada, mas o aviso de WhatsApp não pôde ser enfileirado neste aparelho.',true);}catch{}
   }
