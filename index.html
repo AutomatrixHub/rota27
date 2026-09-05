@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#F5E9D5" />
   <!-- rota27-version permanece 0.22.0 como gate de compatibilidade das camadas v0.21/v0.22. -->
   <meta name="rota27-version" content="0.22.0" />
-  <meta name="rota27-release-version" content="0.25.193" />
+  <meta name="rota27-release-version" content="0.25.194" />
   <meta name="rota27-fixed-copy-whatsapp" content="5527997769279" />
   <title>Rota 27 Bodega • Comandas</title>
   <style>
@@ -25,11 +25,11 @@
         const res=await fetch('./base-v013.html',{cache:'no-store'});
         if(!res.ok)throw new Error('Não foi possível carregar a base do aplicativo');
         let html=await res.text();
-        html=html.replace(/(<span id="v14VersionBadge"[^>]*>)[^<]*(<\/span>)/, '$1v0.25.193$2');
+        html=html.replace(/(<span id="v14VersionBadge"[^>]*>)[^<]*(<\/span>)/, '$1v0.25.194$2');
         html=html.replace(/<title>[\s\S]*?<\/title>/i,'<title>Rota 27 Bodega • Comandas</title>');
         html=html.replace('</head>',
           '<meta name="rota27-version" content="0.22.0" />'+
-          '<meta name="rota27-release-version" content="0.25.193" />'+
+          '<meta name="rota27-release-version" content="0.25.194" />'+
           '<style id="rota27BootstrapGate">body{opacity:0!important}body.r27-bootstrap-ready{opacity:1!important;transition:opacity .12s ease}</style>'+
           '<meta name="rota27-fixed-copy-whatsapp" content="5527997769279" />'+
           '<link rel="stylesheet" href="./assets/v014.css" />'+
@@ -132,7 +132,7 @@
           '<script src="./assets/v0256-map-list-parity.js?v=02597r1"><\/script>'+
           '<script id="v02551UxHotfixJs" src="./assets/v02551-ux-hotfix.js?v=02551r1"><\/script>'+
           '<script id="v02552CommandMapSimplifyJs" src="./assets/v02552-command-map-simplify.js?v=02552r1"><\/script>'+
-          '<script src="./assets/v0256-release.js?v=025180r1"><\/script>'+
+          '<script src="./assets/v0256-release.js?v=025194r1"><\/script>'+
           '<script id="v02563OperationalTurnJs" src="./assets/v02563-operational-turn-coherence.js?v=025119r1"><\/script>'+
           '<script id="v02564MobileRuntimeJs" src="./assets/v02564-mobile-runtime-hotfix.js?v=02564r1"><\/script>'+
           '<script id="v02565BirthdayGreetingJs" src="./assets/v02565-birthday-greeting.js?v=02565r1"><\/script>'+
@@ -145,7 +145,7 @@
           '<script id="v02573WhatsappCancelJs" src="./assets/v02573-whatsapp-cancel.js?v=02573r1"><\/script>'+
           '<script id="v02574WhatsappConsentJs" src="./assets/v02574-whatsapp-consent.js?v=02574r1"><\/script>'+
           '<script id="v02598CommandEmptyStateJs" src="./assets/v02598-command-empty-state.js?v=02598r1"><\/script>'+
-          '<script src="./assets/roadmap-loader.js?v=025193r1"><\/script>'+
+          '<script src="./assets/roadmap-loader.js?v=025194r1"><\/script>'+
           '<script>setTimeout(function(){document.body&&document.body.classList.add("r27-bootstrap-ready");},4000);<\/script>'+
           '</body>');
         document.open();document.write(html);document.close();
