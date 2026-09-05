@@ -61,9 +61,10 @@
     previous.forEach(row=>{const id=idOf(row);if(id&&!superseded.has(id)&&!oldById.has(id))oldById.set(id,row);});
     const out=[],seen=new Set();let frozen=0,blockedSuperseded=0;
     const addNext=row=>{
-      const id=idOf(row);if(!id||seen.has(id))return;
+      const id=idOf(row);if(!id)return;
       if(superseded.has(id)){blockedSuperseded++;return;}
       const old=oldById.get(id);
+      if(seen.has(id)){if(old&&!sameRow(old,row))frozen++;return;}
       if(old){if(!sameRow(old,row))frozen++;out.push(old);}else out.push(row);
       seen.add(id);
     };
