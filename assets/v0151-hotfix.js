@@ -2,18 +2,20 @@
 (function(){
   'use strict';
 
-  const VERSION='0.15.1';
+  const VERSION='0.25.195';
   const WA_KEY='rota27_whatsapp_config_v1';
   const SYNC_KEY='rota27_sync_config_v1';
+  const CORE_KEY='rota27_comandas_v01';
   const CANCEL_QUEUE_KEY='rota27_cancel_outbox_v0151';
+  const CANCEL_FLUSH_BATCH=25;
   let baseRenderCommands=null;
   let baseOpenCommand=null;
   let baseRenderSale=null;
   let baseSaveWhatsappConfig=null;
+  let cancelFlushing=false;
 
   function byId(id){return document.getElementById(id);}
   function now(){return Date.now();}
-  function uid(){return globalThis.crypto?.randomUUID?crypto.randomUUID():'c_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,10);}
   function appState(){try{return typeof state!=='undefined'?state:null;}catch{return null;}}
   function current(){try{return typeof currentCommand==='function'?currentCommand():null;}catch{return null;}}
   function activeId(){try{return typeof activeCommandId!=='undefined'?activeCommandId:'';}catch{return '';}}
@@ -21,9 +23,10 @@
   function itemCount(c){try{return typeof commandItems==='function'?commandItems(c):Object.values(c?.items||{}).reduce((s,q)=>s+Number(q||0),0);}catch{return 0;}}
   function total(c){try{return typeof commandTotal==='function'?commandTotal(c):0;}catch{return 0;}}
   function moneyValue(v){try{return typeof money==='function'?money(v):Number(v||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});}catch{return 'R$ 0,00';}}
+  function clone(v){return JSON.parse(JSON.stringify(v==null?null:v));}
 
   function readJson(key,fallback={}){try{return JSON.parse(localStorage.getItem(key)||'')||fallback;}catch{return fallback;}}
-  function writeJson(key,value){try{localStorage.setItem(key,JSON.stringify(value));}catch{}}
+  function writeJson(key,value){try{localStorage.setItem(key,JSON.stringify(value));return true;}catch{return false;}}
 
   function correctWhatsappEndpoint(showFeedback=false){
     try{
@@ -150,13 +153,27 @@
     s.whatsappOutbox=(s.whatsappOutbox||[]).filter(b=>String(b?.commandId)!==String(commandId));
   }
 
-  function cancelQueue(){return readJson(CANCEL_QUEUE_KEY,[]);}
-  function saveCancelQueue(rows){writeJson(CANCEL_QUEUE_KEY,Array.isArray(rows)?rows:[]);}
-  function queueCancelSync(command){
+  function cancelQueue(){const rows=readJson(CANCEL_QUEUE_KEY,[]);return Array.isArray(rows)?rows:[];}
+  function saveCancelQueue(rows){return writeJson(CANCEL_QUEUE_KEY,Array.isArray(rows)?rows:[]);}
+  function removeCancelQueueRow(rowId){
     const rows=cancelQueue();
-    rows.push({id:'cancel_'+uid(),commandId:String(command.id),createdAt:new Date().toISOString(),patch:{cancelled:true,cancelledAt:Number(command.cancelledAt||now()),updatedAt:Number(command.updatedAt||now())}});
-    saveCancelQueue(rows.slice(-100));
-    flushCancelQueue();
+    return saveCancelQueue(rows.filter(row=>String(row?.id||'')!==String(rowId||'')));
+  }
+  function queueCancelSync(command,cancelledAt=now()){
+    const commandId=String(command?.id||'');
+    if(!commandId)return {ok:false,row:null,created:false};
+    const rows=cancelQueue();
+    const existing=rows.find(row=>String(row?.commandId||'')===commandId);
+    if(existing)return {ok:true,row:existing,created:false};
+    const at=Math.max(1,Number(cancelledAt||now()));
+    const row={
+      id:`cancel_command_${commandId}`,
+      commandId,
+      createdAt:new Date(at).toISOString(),
+      patch:{cancelled:true,cancelledAt:at,updatedAt:at}
+    };
+    if(!saveCancelQueue([...rows,row]))return {ok:false,row:null,created:false};
+    return {ok:true,row,created:true};
   }
 
   async function pushCancel(row){
@@ -174,11 +191,33 @@
   }
 
   async function flushCancelQueue(){
-    if(!navigator.onLine)return;
-    const rows=cancelQueue();if(!rows.length)return;
-    const keep=[];
-    for(const row of rows){if(!(await pushCancel(row)))keep.push(row);}
-    saveCancelQueue(keep);
+    if(cancelFlushing||!navigator.onLine)return false;
+    const initial=cancelQueue();if(!initial.length)return true;
+    cancelFlushing=true;
+    try{
+      const batch=initial.slice(0,CANCEL_FLUSH_BATCH),sent=new Set();
+      for(const row of batch){if(await pushCancel(row))sent.add(String(row?.id||''));}
+      if(sent.size){
+        const currentRows=cancelQueue();
+        if(!saveCancelQueue(currentRows.filter(row=>!sent.has(String(row?.id||''))))){
+          console.warn('[Rota27 v0.25.195] Não foi possível confirmar a remoção de cancelamentos já enviados; os eventos serão repetidos de forma idempotente.');
+          return false;
+        }
+      }
+      const remaining=cancelQueue();
+      if(remaining.length&&navigator.onLine&&sent.size===batch.length)setTimeout(flushCancelQueue,350);
+      return remaining.length===0;
+    }finally{cancelFlushing=false;}
+  }
+
+  function coreCommandMissing(commandId){
+    const core=readJson(CORE_KEY,null);
+    if(!core||!Array.isArray(core.commands))return false;
+    return !core.commands.some(command=>String(command?.id||'')===String(commandId||''));
+  }
+
+  function emitDurableCancellation(command,cancelledAt){
+    try{window.dispatchEvent(new CustomEvent('rota27:command-cancelled-durable',{detail:{command:clone(command),cancelledAt:Number(cancelledAt||0)}}));}catch{}
   }
 
   function purgeCancelled(){
@@ -193,12 +232,36 @@
 
   function confirmCancel(){
     const c=current();if(!c)return;
-    const id=String(c.id);
-    c.cancelled=true;c.cancelledAt=now();c.updatedAt=now();c.whatsappOptIn=false;
+    const s=appState();if(!s||!Array.isArray(s.commands))return;
+    const id=String(c.id),cancelledAt=now(),originalCommand=clone(c);
+    const queued=queueCancelSync(originalCommand,cancelledAt);
+    if(!queued.ok){
+      try{showToast('Não foi possível registrar o cancelamento com segurança. Libere espaço no aparelho e tente novamente.',true);}catch{}
+      return;
+    }
+
+    const previousCommands=clone(s.commands),previousWhatsappOutbox=clone(Array.isArray(s.whatsappOutbox)?s.whatsappOutbox:[]);
     clearWhatsappForCommand(id);
-    queueCancelSync(c);
-    const s=appState();if(s)s.commands=(s.commands||[]).filter(x=>String(x?.id)!==id);
-    try{if(typeof save==='function')save();}catch{}
+    s.commands=(s.commands||[]).filter(x=>String(x?.id||'')!==id);
+
+    let persisted=false;
+    try{
+      if(typeof save==='function')save();
+      persisted=coreCommandMissing(id);
+    }catch{}
+
+    if(!persisted){
+      s.commands=previousCommands;
+      s.whatsappOutbox=previousWhatsappOutbox;
+      try{if(typeof save==='function')save();}catch{}
+      if(queued.created)removeCancelQueueRow(queued.row?.id);
+      try{if(typeof resumeWhatsappOutbox==='function')setTimeout(resumeWhatsappOutbox,100);}catch{}
+      try{showToast('O cancelamento não foi confirmado porque o estado local não pôde ser salvo.',true);}catch{}
+      return;
+    }
+
+    emitDurableCancellation(originalCommand,cancelledAt);
+    setTimeout(flushCancelQueue,0);
     try{activeCommandId=null;}catch{}
     byId('v0151CancelConfirm')?.classList.remove('open');
     byId('editCommandWrap')?.classList.remove('open');
@@ -212,7 +275,7 @@
     setInterval(()=>{patchWhatsappConfig();wrapOperationalViews();ensureCancelButton();flushCancelQueue();purgeCancelled();},4000);
     window.addEventListener('online',()=>{correctWhatsappEndpoint(false);flushCancelQueue();setTimeout(()=>{try{resumeWhatsappOutbox();}catch{}},400);});
     window.addEventListener('pageshow',()=>{correctWhatsappEndpoint(false);flushCancelQueue();});
-    console.info('[Rota27] hotfix v0.15.1 carregado.');
+    console.info('[Rota27] hotfix v0.25.195 carregado.');
   }
 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();

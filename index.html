@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#F5E9D5" />
   <!-- rota27-version permanece 0.22.0 como gate de compatibilidade das camadas v0.21/v0.22. -->
   <meta name="rota27-version" content="0.22.0" />
-  <meta name="rota27-release-version" content="0.25.194" />
+  <meta name="rota27-release-version" content="0.25.195" />
   <meta name="rota27-fixed-copy-whatsapp" content="5527997769279" />
   <title>Rota 27 Bodega • Comandas</title>
   <style>
@@ -25,11 +25,11 @@
         const res=await fetch('./base-v013.html',{cache:'no-store'});
         if(!res.ok)throw new Error('Não foi possível carregar a base do aplicativo');
         let html=await res.text();
-        html=html.replace(/(<span id="v14VersionBadge"[^>]*>)[^<]*(<\/span>)/, '$1v0.25.194$2');
+        html=html.replace(/(<span id="v14VersionBadge"[^>]*>)[^<]*(<\/span>)/, '$1v0.25.195$2');
         html=html.replace(/<title>[\s\S]*?<\/title>/i,'<title>Rota 27 Bodega • Comandas</title>');
         html=html.replace('</head>',
           '<meta name="rota27-version" content="0.22.0" />'+
-          '<meta name="rota27-release-version" content="0.25.194" />'+
+          '<meta name="rota27-release-version" content="0.25.195" />'+
           '<style id="rota27BootstrapGate">body{opacity:0!important}body.r27-bootstrap-ready{opacity:1!important;transition:opacity .12s ease}</style>'+
           '<meta name="rota27-fixed-copy-whatsapp" content="5527997769279" />'+
           '<link rel="stylesheet" href="./assets/v014.css" />'+
@@ -93,12 +93,12 @@
           '<script src="./assets/v015-dev4.js?v=025103r1"><\/script>'+
           '<script src="./assets/v015-rc2-ops.js"><\/script>'+
           '<script src="./assets/v015-rc3-items.js?v=02551r1"><\/script>'+
-          '<script src="./assets/v0151-hotfix.js?v=0151"><\/script>'+
+          '<script src="./assets/v0151-hotfix.js?v=025195r1"><\/script>'+
           '<script src="./assets/v0151-help.js?v=025102r1"><\/script>'+
           '<script src="./assets/v0171-help-update.js?v=0220"><\/script>'+
           '<script src="./assets/v016-help-polish.js?v=0220"><\/script>'+
           '<script id="v025186SyncPaginationGuardJs" src="./assets/v025186-sync-pagination-guard.js?v=025186r1"><\/script>'+
-          '<script id="v025184DurableDomainOutboxJs" src="./assets/v025184-durable-domain-outbox.js?v=025185r1"><\/script>'+
+          '<script id="v025184DurableDomainOutboxJs" src="./assets/v025184-durable-domain-outbox.js?v=025195r1"><\/script>'+
           '<script id="v025188BusinessStoreRetentionJs" src="./assets/v025188-business-store-retention.js?v=025188r1"><\/script>'+
           '<script id="v025193ClientDomainConvergenceJs" src="./assets/v025193-client-domain-convergence.js?v=025193r1"><\/script>'+
           '<script src="./assets/v017-core.js?v=025106r1"><\/script>'+
@@ -142,10 +142,10 @@
           '<script id="v02570NewCommandRootJs" src="./assets/v02570-new-command-root.js?v=02597r1"><\/script>'+
           '<script id="v02571ClientPickerJs" src="./assets/v02571-client-picker.js?v=02571r1"><\/script>'+
           '<script id="v02572PanelClientStabilityJs" src="./assets/v02572-panel-client-stability.js?v=02572r1"><\/script>'+
-          '<script id="v02573WhatsappCancelJs" src="./assets/v02573-whatsapp-cancel.js?v=02573r1"><\/script>'+
+          '<script id="v02573WhatsappCancelJs" src="./assets/v02573-whatsapp-cancel.js?v=025195r1"><\/script>'+
           '<script id="v02574WhatsappConsentJs" src="./assets/v02574-whatsapp-consent.js?v=02574r1"><\/script>'+
           '<script id="v02598CommandEmptyStateJs" src="./assets/v02598-command-empty-state.js?v=02598r1"><\/script>'+
-          '<script src="./assets/roadmap-loader.js?v=025194r1"><\/script>'+
+          '<script src="./assets/roadmap-loader.js?v=025195r1"><\/script>'+
           '<script>setTimeout(function(){document.body&&document.body.classList.add("r27-bootstrap-ready");},4000);<\/script>'+
           '</body>');
         document.open();document.write(html);document.close();

@@ -1,7 +1,7 @@
 /* Rota 27 — carregador incremental do roadmap pós-v0.25.46 */
 (function(){
   'use strict';
-  const CURRENT='0.25.194';
+  const CURRENT='0.25.195';
   const HELP='11.0';
   const assets=[
     {type:'js',id:'v025193ClientDomainConvergenceJs',src:'./assets/v025193-client-domain-convergence.js?v=025193r1'},
@@ -10,7 +10,7 @@
     {type:'js',id:'v025190ReconcileGuardJs',src:'./assets/v025190-reconcile-guard.js?v=025192r1'},
     {type:'js',id:'v025187BackupRestoreAtomicJs',src:'./assets/v025187-backup-restore-atomic.js?v=025194r1'},
     {type:'js',id:'v025186SyncPaginationGuardJs',src:'./assets/v025186-sync-pagination-guard.js?v=025186r1'},
-    {type:'js',id:'v025184DurableDomainOutboxJs',src:'./assets/v025184-durable-domain-outbox.js?v=025185r1'},
+    {type:'js',id:'v025184DurableDomainOutboxJs',src:'./assets/v025184-durable-domain-outbox.js?v=025195r1'},
     {type:'js',id:'v025175CatalogImportCommitJs',src:'./assets/v025175-catalog-import-commit.js?v=025175r1'},
     {type:'js',id:'v025174CatalogEditorIntegrityJs',src:'./assets/v025174-catalog-editor-integrity.js?v=025177r1'},
     {type:'js',id:'v025173MenuEditorReturnJs',src:'./assets/v025173-menu-editor-return.js?v=025173r1'},
@@ -22,7 +22,7 @@
     {type:'css',id:'v02575CardapioCompactEditCss',src:'./assets/v02575-cardapio-compact-edit.css?v=02576r1'},
     {type:'css',id:'v02574WhatsappConsentCss',src:'./assets/v02574-whatsapp-consent.css?v=02574r1'},
     {type:'js',id:'v02574WhatsappConsentJs',src:'./assets/v02574-whatsapp-consent.js?v=02574r1'},
-    {type:'js',id:'v02573WhatsappCancelJs',src:'./assets/v02573-whatsapp-cancel.js?v=02573r1'},
+    {type:'js',id:'v02573WhatsappCancelJs',src:'./assets/v02573-whatsapp-cancel.js?v=025195r1'},
     {type:'css',id:'v02572PanelClientStabilityCss',src:'./assets/v02572-panel-client-stability.css?v=02572r1'},
     {type:'js',id:'v02572PanelClientStabilityJs',src:'./assets/v02572-panel-client-stability.js?v=02572r1'},
     {type:'css',id:'v02571ClientPickerCss',src:'./assets/v02571-client-picker.css?v=02571r1'},

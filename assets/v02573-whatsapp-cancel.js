@@ -1,12 +1,12 @@
-/* Rota 27 v0.25.73 — aviso de cancelamento de comanda pelo WhatsApp */
+/* Rota 27 v0.25.195 — aviso de cancelamento de comanda pelo WhatsApp */
 (function(){
   'use strict';
 
-  const VERSION='0.25.73';
+  const VERSION='0.25.195';
   const OUTBOX_KEY='rota27_v02573_cancel_whatsapp_outbox_v1';
   const SENT_KEY='rota27_v02573_cancel_whatsapp_sent_v1';
   const WA_KEY='rota27_whatsapp_config_v1';
-  const MAX_OUTBOX=120;
+  const FLUSH_BATCH=20;
   const MAX_SENT=300;
   let flushing=false;
   let retryTimer=null;
@@ -18,14 +18,14 @@
   const normalizePhone=v=>{try{if(typeof normalizeWhatsappPhone==='function')return normalizeWhatsappPhone(v);}catch{}let d=String(v||'').replace(/\D/g,'').replace(/^0+/,'');if(d.length===10||d.length===11)d='55'+d;return d;};
   const validPhone=v=>{const d=normalizePhone(v);return d.length>=12&&d.length<=15;};
 
- function readOutbox(){const rows=readJson(OUTBOX_KEY,[]);return Array.isArray(rows)?rows:[];}
-  function saveOutbox(rows){writeJson(OUTBOX_KEY,(Array.isArray(rows)?rows:[]).slice(-MAX_OUTBOX));}
+  function readOutbox(){const rows=readJson(OUTBOX_KEY,[]);return Array.isArray(rows)?rows:[];}
+  function saveOutbox(rows){return writeJson(OUTBOX_KEY,Array.isArray(rows)?rows:[]);}
   function readSent(){const rows=readJson(SENT_KEY,[]);return Array.isArray(rows)?rows:[];}
   function wasSent(commandId){return readSent().some(x=>String(x?.commandId||'')===String(commandId||''));}
   function markSent(row){
     const sent=readSent().filter(x=>String(x?.commandId||'')!==String(row.commandId||''));
     sent.push({commandId:String(row.commandId||''),eventId:String(row.eventId||''),sentAt:Date.now()});
-    writeJson(SENT_KEY,sent.slice(-MAX_SENT));
+    return writeJson(SENT_KEY,sent.slice(-MAX_SENT));
   }
 
   function waConfig(){
@@ -112,7 +112,7 @@
       attempts:0,
       lastError:''
     });
-    saveOutbox(rows);
+    if(!saveOutbox(rows))return false;
     scheduleFlush(380);
     return true;
   }
@@ -154,49 +154,72 @@
 
   async function flushOutbox(){
     if(flushing||!navigator.onLine)return false;
-    const rows=readOutbox();if(!rows.length)return true;
+    const initial=readOutbox();if(!initial.length)return true;
     flushing=true;
     let nextDelay=null;
     try{
-      const keep=[];
-      for(const row of rows){
-        if(wasSent(row.commandId))continue;
-        if(Number(row.dueAt||0)>Date.now()){keep.push(row);const d=Number(row.dueAt)-Date.now();nextDelay=nextDelay==null?d:Math.min(nextDelay,d);continue;}
+      const batch=initial.slice(0,FLUSH_BATCH),sent=new Set(),updates=new Map();
+      for(const row of batch){
+        const id=String(row?.id||'');
+        if(wasSent(row.commandId)){sent.add(id);continue;}
+        if(Number(row.dueAt||0)>Date.now()){
+          updates.set(id,row);
+          const delay=Number(row.dueAt)-Date.now();nextDelay=nextDelay==null?delay:Math.min(nextDelay,delay);
+          continue;
+        }
         try{
           await sendRow(row);
           markSent(row);
+          sent.add(id);
           try{if(typeof showToast==='function')showToast('Cliente avisado do cancelamento pelo WhatsApp.',false);}catch{}
         }catch(err){
           const attempts=Math.max(0,Number(row.attempts||0))+1;
           const delay=Math.min(120000,15000*Math.pow(2,Math.min(attempts-1,3)));
-          keep.push({...row,attempts,lastError:clean(err?.message||'Falha de conexão',180),dueAt:Date.now()+delay});
+          updates.set(id,{...row,attempts,lastError:clean(err?.message||'Falha de conexão',180),dueAt:Date.now()+delay});
           nextDelay=nextDelay==null?delay:Math.min(nextDelay,delay);
         }
       }
-      saveOutbox(keep);
-      if(keep.length&&navigator.onLine)scheduleFlush(Math.max(500,nextDelay||15000));
-      return keep.length===0;
+
+      const currentRows=readOutbox();
+      const next=currentRows.map(row=>{
+        const id=String(row?.id||'');
+        if(sent.has(id))return null;
+        if(updates.has(id))return updates.get(id);
+        return row;
+      }).filter(Boolean);
+
+      if(!saveOutbox(next)){
+        console.warn('[Rota27 v0.25.195] Não foi possível confirmar a fila de aviso de cancelamento; itens enviados permanecerão para repetição idempotente.');
+        return false;
+      }
+      if(next.length&&navigator.onLine){
+        const ready=next.some(row=>Number(row?.dueAt||0)<=Date.now());
+        scheduleFlush(ready?350:Math.max(500,nextDelay||15000));
+      }
+      return next.length===0;
     }finally{flushing=false;}
   }
 
-  function captureCancellation(e){
-    if(!e.target?.closest?.('#v0151ConfirmCancel'))return;
-    const snapshot=currentCommandSnapshot();
+  function handleDurableCancellation(event){
+    const snapshot=event?.detail?.command;
     if(!snapshot)return;
-    queueCancellation(snapshot);
+    const eligible=isCancellationWhatsappEligible(snapshot);
+    if(!eligible||wasSent(snapshot.id))return;
+    if(queueCancellation(snapshot))return;
+    try{if(typeof showToast==='function')showToast('Comanda cancelada, mas o aviso de WhatsApp não pôde ser enfileirado neste aparelho.',true);}catch{}
   }
 
   function start(){
-    document.addEventListener('click',captureCancellation,true);
     document.addEventListener('click',e=>{
       if(e.target?.closest?.('#v0151CancelCommandBtn'))queueMicrotask(decorateCancelConfirm);
     });
+    window.addEventListener('rota27:command-cancelled-durable',handleDurableCancellation);
     window.addEventListener('online',()=>scheduleFlush(300));
     window.addEventListener('pageshow',()=>scheduleFlush(450));
     document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')scheduleFlush(450);});
     scheduleFlush(800);
     window.Rota27V02573WhatsappCancel={version:VERSION,flush:flushOutbox,pending:()=>readOutbox().length,decorateCancelConfirm};
-    console.info('[Rota27] v0.25.73 — aviso WhatsApp de cancelamento ativo.');
+    console.info('[Rota27] v0.25.195 — aviso WhatsApp de cancelamento ativo após confirmação durável.');
   }
 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
