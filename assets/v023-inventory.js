@@ -44,7 +44,7 @@
   function patchMeta(p){writeJson(META_KEY,{...meta(),...p});}
 
   function inventories(){const x=readJson(INV_KEY,[]);return Array.isArray(x)?x:[];}
-  function saveInventories(rows){writeJson(INV_KEY,(Array.isArray(rows)?rows:[]).slice(-MAX_INV));}
+  function saveInventories(rows){writeJson(INV_KEY,Array.isArray(rows)?rows:[]);}
   function inventoryById(id){return inventories().find(x=>String(x.id)===String(id))||null;}
   function openInventorySession(){return inventories().filter(x=>x.status==='open').sort((a,b)=>Number(b.updatedAt||0)-Number(a.updatedAt||0))[0]||null;}
   function finalizedInventories(){return inventories().filter(x=>x.status==='finalized').sort((a,b)=>Number(b.finalizedAt||b.updatedAt||0)-Number(a.finalizedAt||a.updatedAt||0));}
