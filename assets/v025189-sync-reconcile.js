@@ -1,9 +1,9 @@
-/* Rota 27 v0.25.191 — reconciliação estrutural de dados locais com o sync */
+/* Rota 27 v0.25.192 — reconciliação estrutural de dados locais com o sync */
 (function(){
   'use strict';
   if(window.Rota27V025189SyncReconcile)return;
 
-  const VERSION='0.25.191';
+  const VERSION='0.25.192';
   const SYNC_KEY='rota27_sync_config_v1';
   const MARKER_KEY='rota27_v025189_reconcile_cursor_v1';
   const TOMBSTONE_KEY='rota27_v025189_client_delete_ledger_v1';
@@ -217,7 +217,7 @@
       const current=live.find(c=>String(c?.id||'')===String(t.id)||(t.phone&&normalizePhone(c?.whatsappPhone||'')===normalizePhone(t.phone)));
       if(current&&latestStamp(current)>=num(t.at))return;
       const remote=remoteFor(idx,'client_upsert',t.id,{phone:t.phone});
-      if(remote&&eventType(remote)==='client_delete'&&eventStamp(remote)>=num(t.at))return;
+      if(remote&&eventType(remote)==='client_delete')return;
       if(remote&&eventStamp(remote)>num(t.at))return;
       const id=stableId('reconcile_client_delete',`${t.id}|${num(t.at)}`);
       if(!idx.eventIds.has(id))out.push(makeEvent('client_delete',t.id,{},id,iso(t.at)));
