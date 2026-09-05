@@ -66,7 +66,7 @@
     const x=readJson(SUPPLIERS_KEY,[]);
     return Array.isArray(x)?x:[];
   }
-  function saveSuppliers(rows){writeJson(SUPPLIERS_KEY,(Array.isArray(rows)?rows:[]).slice(-MAX_SUPPLIERS));}
+  function saveSuppliers(rows){writeJson(SUPPLIERS_KEY,Array.isArray(rows)?rows:[]);}
   function supplierById(id){return suppliers().find(s=>String(s.id)===String(id))||null;}
   function activeSuppliers(){return suppliers().filter(s=>s.active!==false).sort((a,b)=>String(a.name||'').localeCompare(String(b.name||''),'pt-BR'));}
   function supplierForProduct(productId){
@@ -110,7 +110,7 @@
     const x=readJson(ORDERS_KEY,[]);
     return Array.isArray(x)?x:[];
   }
-  function saveOrders(rows){writeJson(ORDERS_KEY,(Array.isArray(rows)?rows:[]).slice(-MAX_ORDERS));}
+  function saveOrders(rows){writeJson(ORDERS_KEY,Array.isArray(rows)?rows:[]);}
   function orderById(id){return orders().find(o=>String(o.id)===String(id))||null;}
   function upsertOrder(next,queue=true){
     if(!next?.id)return false;
