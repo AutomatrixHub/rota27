@@ -65,7 +65,7 @@
     {type:'css',id:'v02582TestModeHotfixCss',src:'./assets/v02582-test-mode-hotfix.css?v=02582r1'},
     {type:'js',id:'v02582TestModeHotfixJs',src:'./assets/v02582-test-mode-hotfix.js?v=02582r1'},
     {type:'js',id:'v02595TestRealBoundaryJs',src:'./assets/v02595-test-real-boundary.js?v=02595r1'},
-    {type:'css',id:'v02583HistoryPanelParityCss',src:'./assets/v02583-history-panel-parity.css?v=025124r1'},
+    {type:'css',id:'v02583HistoryPanelParityCss',src:'./assets/v02583-history-panel-parity.css?v=02583r1'},
     {type:'css',id:'v02584ManagerVisualParityCss',src:'./assets/v02584-manager-visual-parity.css?v=025124r1'},
     {type:'css',id:'v02585DeviceManagementCss',src:'./assets/v02585-device-management.css?v=02585r1'},
     {type:'js',id:'v02585DeviceManagementJs',src:'./assets/v02585-device-management.js?v=02585r1'},
