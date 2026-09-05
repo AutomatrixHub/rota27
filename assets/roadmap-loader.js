@@ -1,7 +1,7 @@
 /* Rota 27 — carregador incremental do roadmap pós-v0.25.46 */
 (function(){
   'use strict';
-  const CURRENT='0.25.197';
+  const CURRENT='0.25.198';
   const HELP='11.0';
   const assets=[
     {type:'js',id:'v025197CommandCancelTombstonesJs',src:'./assets/v025197-command-cancel-tombstones.js?v=025197r1'},
