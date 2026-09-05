@@ -6,7 +6,7 @@
   const VERSION='0.25.189';
   const SYNC_KEY='rota27_sync_config_v1';
   const MARKER_KEY='rota27_v025189_reconcile_cursor_v1';
-  const TOMBSTONE_KEY='rota27_v025189_reconcile_outbox_v1';
+  const TOMBSTONE_KEY='rota27_v025189_client_delete_ledger_v1';
   const CORE_KEY='rota27_comandas_v01';
   const STOCK_CFG_KEY='rota27_v021_stock_cfg_v1';
   const STOCK_MOV_KEY='rota27_v021_stock_mov_v1';
@@ -199,13 +199,17 @@
       const nextIds=new Set(newRows.map(c=>String(c?.id||'')).filter(Boolean));
       const removed=oldRows.filter(c=>c?.id&&!nextIds.has(String(c.id)));if(!removed.length)return;
       const rows=tombstones(),map=new Map(rows.filter(x=>x?.id).map(x=>[String(x.id),x]));
-      removed.forEach(c=>map.set(String(c.id),{id:String(c.id),phone:normalizePhone(c.whatsappPhone||''),at:Date.now()}));
-      writeTombstones([...map.values()]);
-    }catch{}
+      const at=Date.now();removed.forEach(c=>map.set(String(c.id),{id:String(c.id),phone:normalizePhone(c.whatsappPhone||''),at}));
+      writeTombstones([...map.values()]);return removed.length;
+    }catch{return 0;}
   }
   function appendTombstoneCandidates(idx,out){
+    const core=readJson(CORE_KEY,{}),live=Array.isArray(window.Rota27V017?.clients?.())?window.Rota27V017.clients():Array.isArray(core?.clients)?core.clients:[];
     tombstones().forEach(t=>{
-      if(!t?.id)return;const remote=remoteFor(idx,'client_upsert',t.id,{phone:t.phone});
+      if(!t?.id)return;
+      const current=live.find(c=>String(c?.id||'')===String(t.id)||(t.phone&&normalizePhone(c?.whatsappPhone||'')===normalizePhone(t.phone)));
+      if(current&&latestStamp(current)>=num(t.at))return;
+      const remote=remoteFor(idx,'client_upsert',t.id,{phone:t.phone});
       if(remote&&eventType(remote)==='client_delete'&&eventStamp(remote)>=num(t.at))return;
       if(remote&&eventStamp(remote)>num(t.at))return;
       const id=stableId('reconcile_client_delete',`${t.id}|${num(t.at)}`);
@@ -242,10 +246,11 @@
   }
 
   Storage.prototype.setItem=function(key,value){
-    const k=String(key),watch=this===localStorage&&WATCHED_KEYS.has(k),before=watch&&k===CORE_KEY&&!syncReady()&&!inTestMode()?localStorage.getItem(CORE_KEY):null;
+    const k=String(key),watch=this===localStorage&&WATCHED_KEYS.has(k),before=watch&&k===CORE_KEY&&!inTestMode()?localStorage.getItem(CORE_KEY):null;
     const result=nativeSetItem.call(this,key,value);
     if(watch&&!inTestMode()){
-      if(k===CORE_KEY&&before!==null&&!syncReady())captureClientDeletes(before,localStorage.getItem(CORE_KEY));
+      const deleted=k===CORE_KEY&&before!==null?captureClientDeletes(before,localStorage.getItem(CORE_KEY)):0;
+      if(deleted>0){clearMarker();if(syncReady())schedule('client-delete',450);}
       if(k===SYNC_KEY){if(syncReady())schedule('sync-config',350);}
       else if(!syncReady())clearMarker();
     }
