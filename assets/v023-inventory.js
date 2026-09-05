@@ -10,7 +10,7 @@
   const SYNC_KEY='rota27_sync_config_v1';
   const STOCK_MOV_KEY='rota27_v021_stock_mov_v1';
   const STOCK_OUTBOX_KEY='rota27_v021_stock_outbox_v1';
-  const MAX_INV=300,MAX_OUTBOX=1200,MAX_STOCK_MOV=6000,MAX_STOCK_OUTBOX=900;
+  const MAX_OUTBOX=1200,MAX_STOCK_MOV=6000,MAX_STOCK_OUTBOX=900;
 
   let activeInventoryId=null;
   let activeProductId=null;
@@ -23,7 +23,7 @@
 
   function byId(id){return document.getElementById(id);}
   function clone(v){return JSON.parse(JSON.stringify(v==null?null:v));}
-  function esc(v){if(typeof escapeHtml==='function')return escapeHtml(String(v??''));return String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));}
+  function esc(v){if(typeof escapeHtml==='function')return escapeHtml(String(v??''));return String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[ch]));}
   function clean(v,max=180){return String(v??'').replace(/[\u0000-\u001f\u007f]/g,' ').trim().replace(/\s+/g,' ').slice(0,max);}
   function readJson(key,fallback){try{const x=JSON.parse(localStorage.getItem(key)||'null');return x==null?fallback:x;}catch{return fallback;}}
   function writeJson(key,v){localStorage.setItem(key,JSON.stringify(v));}
@@ -44,7 +44,7 @@
   function patchMeta(p){writeJson(META_KEY,{...meta(),...p});}
 
   function inventories(){const x=readJson(INV_KEY,[]);return Array.isArray(x)?x:[];}
-  function saveInventories(rows){writeJson(INV_KEY,(Array.isArray(rows)?rows:[]).slice(-MAX_INV));}
+  function saveInventories(rows){writeJson(INV_KEY,Array.isArray(rows)?rows:[]);}
   function inventoryById(id){return inventories().find(x=>String(x.id)===String(id))||null;}
   function openInventorySession(){return inventories().filter(x=>x.status==='open').sort((a,b)=>Number(b.updatedAt||0)-Number(a.updatedAt||0))[0]||null;}
   function finalizedInventories(){return inventories().filter(x=>x.status==='finalized').sort((a,b)=>Number(b.finalizedAt||b.updatedAt||0)-Number(a.finalizedAt||a.updatedAt||0));}
@@ -259,7 +259,7 @@
 
   function injectHelp(){
     const overlay=byId('r27HelpOverlay'),content=overlay?.querySelector('.r27-help-content');if(!content)return false;
-    if(!byId('r27-help-inventario')){const d=document.createElement('details');d.id='r27-help-inventario';d.className='r27-help-section';d.innerHTML=`<summary><span class="r27-help-section-icon">◎</span><span><strong>Inventário & Conferência</strong><small>Compare o estoque do sistema com a contagem física.</small></span></summary><div class="r27-help-section-body"><div class="r27-help-lead">No <b>Estoque Essencial</b>, toque em <b>Inventário</b>. A contagem não altera nenhum saldo até você revisar e confirmar a finalização.</div><ol class="r27-help-steps"><li><span>1</span><div><b>Inicie a conferência</b><br>O app guarda um snapshot do saldo esperado dos produtos controlados.</div></li><li><span>2</span><div><b>Conte o físico</b><br>Digite a quantidade encontrada. Use Igual ao sistema ou Sem unidade para acelerar.</div></li><li><span>3</span><div><b>Revise as diferenças</b><br>Faltas e sobras ficam destacadas antes de qualquer alteração.</div></li><li><span>4</span><div><b>Confirme</b><br>Somente as divergências viram Ajustes de inventário, uma única vez por produto.</div></li></ol><div class="r27-help-tip"><b>Importante:</b> faça a conferência em um período sem vendas, entradas ou outras movimentações. Se o estoque mudar durante a contagem, o Rota 27 bloqueia a finalização para proteger o saldo.</div></div>`;const stock=byId('r27-help-estoque'),purchases=byId('r27-help-compras');if(purchases)purchases.insertAdjacentElement('afterend',d);else if(stock)stock.insertAdjacentElement('afterend',d);else content.appendChild(d);}
+    if(!byId('r27-help-inventario')){const d=document.createElement('details');d.id='r27-help-inventario';d.className='r27-help-section';d.innerHTML=`<summary><span class="r27-help-section-icon">◎</span><span><strong>Inventário & Conferência</strong><small>Compare o estoque do sistema com a contagem física.</small></span></summary><div class="r27-help-section-body"><div class="r27-help-lead">No <b>Estoque Essencial</b>, toque em <b>Inventário</b>. A contagem não altera nenhum saldo até você revisar e confirmar a finalização.</div><ol class="r27-help-steps"><li><span>1</span><div><b>Inicie a conferência</b><br>O app guarda um snapshot do saldo esperado dos produtos controlados.</div></li><li><span>2</span><div><b>Conte o físico</b><br>Digite a quantidade encontrada. Use Igual ao sistema ou Sem unidade para acelerar.</div></li><li><span>3</span><div><b>Revise as diferenças</b><br>Faltas e sobras ficam destacadas antes de qualquer alteração.</div></li><li><span>4</span><div><b>Confirme</b><br>Somente as divergências viram Ajustes de inventário, uma única vez por produto.</div></li></ol><div class="v023-help-tip"><b>Importante:</b> faça a conferência em um período sem vendas, entradas ou outras movimentações. Se o estoque mudar durante a contagem, o Rota 27 bloqueia a finalização para proteger o saldo.</div></div>`;const stock=byId('r27-help-estoque'),purchases=byId('r27-help-compras');if(purchases)purchases.insertAdjacentElement('afterend',d);else if(stock)stock.insertAdjacentElement('afterend',d);else content.appendChild(d);}
     return true;
   }
   function ensureHelp(){injectHelp();}
