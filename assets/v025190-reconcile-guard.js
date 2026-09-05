@@ -1,13 +1,11 @@
-/* Rota 27 v0.25.190 — guarda de origem/transição da reconciliação */
+/* Rota 27 v0.25.192 — guarda de transição da reconciliação */
 (function(){
   'use strict';
   if(window.Rota27V025190ReconcileGuard)return;
 
-  const VERSION='0.25.190';
+  const VERSION='0.25.192';
   const SYNC_KEY='rota27_sync_config_v1';
-  const CORE_KEY='rota27_comandas_v01';
   const MARKER_KEY='rota27_v025189_reconcile_cursor_v1';
-  const TOMBSTONE_KEY='rota27_v025189_client_delete_ledger_v1';
   const GUARD_CURSOR_KEY='rota27_v025190_reconcile_guard_cursor_v1';
   const previousSetItem=Storage.prototype.setItem;
 
@@ -19,12 +17,7 @@
     String(c?.deviceId||'')
   ].join('|');
   const raw=k=>{try{return localStorage.getItem(k);}catch{return null;}};
-  function restoreRaw(key,value){
-    try{
-      if(value===null)localStorage.removeItem(key);
-      else previousSetItem.call(localStorage,key,value);
-    }catch{}
-  }
+
   function scheduleOneTimeReconcile(){
     try{
       if(!ready(parse(raw(SYNC_KEY))))return;
@@ -43,19 +36,8 @@
   Storage.prototype.setItem=function(key,value){
     const k=String(key),isLocal=this===localStorage;
     const beforeCfg=isLocal&&k===SYNC_KEY?parse(raw(SYNC_KEY)):null;
-    const beforeReady=isLocal&&k===CORE_KEY?ready(parse(raw(SYNC_KEY))):false;
-    const beforeMarker=beforeReady?raw(MARKER_KEY):null;
-    const beforeTombstone=beforeReady?raw(TOMBSTONE_KEY):null;
-
     const result=previousSetItem.call(this,key,value);
     if(!isLocal)return result;
-
-    if(k===CORE_KEY&&beforeReady){
-      // Com sync pronto, exclusões locais já possuem outbox durável.
-      // Não deixe a reconciliação interpretar um client_delete remoto como nova exclusão local.
-      restoreRaw(TOMBSTONE_KEY,beforeTombstone);
-      restoreRaw(MARKER_KEY,beforeMarker);
-    }
 
     if(k===SYNC_KEY){
       const afterCfg=parse(raw(SYNC_KEY));
