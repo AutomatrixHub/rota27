@@ -9,7 +9,6 @@
   const readJson=(k,f)=>{try{const v=JSON.parse(localStorage.getItem(k)||'null');return v==null?f:v;}catch{return f;}};
   const writeJson=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v));return true;}catch{return false;}};
   const isInternal=c=>c?.internalConsumption===true||c?.nonRevenue===true;
-  const uid=()=>globalThis.crypto?.randomUUID?crypto.randomUUID():`${Date.now().toString(36)}_${Math.random().toString(36).slice(2,10)}`;
 
   function config(){const c=readJson(CONFIG_KEY,{});return c&&typeof c==='object'?c:{};}
   function ready(c=config()){return c.enabled===true&&c.initialized===true&&/^https:\/\/.+\/functions\/v1\/rota27-sync\/?$/i.test(String(c.functionUrl||''))&&String(c.deviceToken||'').length>=16&&!!c.deviceId;}
