@@ -1,4 +1,4 @@
-/* Rota 27 v0.25.208 — funcionário e permissões por aparelho */
+/* Rota 27 v0.25.210 — funcionário e permissões por aparelho */
 #v025208AccessWrap{position:fixed;inset:0;z-index:2147482500;background:rgba(17,17,17,.48);display:none;align-items:flex-end;justify-content:center;padding:14px;box-sizing:border-box}
 #v025208AccessWrap.open{display:flex}
 .v025208-access-sheet{width:min(720px,100%);max-height:min(90vh,900px);overflow:auto;background:#fff9f0;border:1px solid #d9c7a7;border-radius:22px 22px 14px 14px;box-shadow:0 24px 60px rgba(0,0,0,.28);padding:18px;box-sizing:border-box}
@@ -12,7 +12,16 @@
 body.r27-access-staff #v02585DeviceEntry.r27-access-hidden,body.r27-access-staff .r27-access-hidden{display:none!important}
 body.r27-access-staff.r27-no-edit-commands #fabNew{display:none!important;pointer-events:none!important}
 body.r27-access-staff.r27-no-edit-commands #screenCommands #commandList .command-card{pointer-events:none!important}
-body.r27-access-staff.r27-no-edit-menu #screenMenu input,body.r27-access-staff.r27-no-edit-menu #screenMenu select,body.r27-access-staff.r27-no-edit-menu #screenMenu textarea,body.r27-access-staff.r27-no-edit-menu #screenMenu button:not(.navbtn){pointer-events:none!important;opacity:.58!important}
+/* Cardápio em modo Ver: busca, filtros e exportação continuam operacionais; ações que alteram catálogo somem e os cards deixam de abrir o editor. */
+body.r27-access-staff.r27-no-edit-menu #screenMenu .menu-item{pointer-events:none!important;cursor:default!important}
+body.r27-access-staff.r27-no-edit-menu #screenMenu .menu-edit,
+body.r27-access-staff.r27-no-edit-menu #screenMenu .menu-add,
+body.r27-access-staff.r27-no-edit-menu #screenMenu .menu-categories,
+body.r27-access-staff.r27-no-edit-menu #screenMenu #menuEmpty .primary,
+body.r27-access-staff.r27-no-edit-menu #screenMenu #v14CatalogTools button[onclick*="v14OpenImportSheet"]{display:none!important;pointer-events:none!important}
+body.r27-access-staff.r27-no-edit-menu #screenMenu #searchMenu,
+body.r27-access-staff.r27-no-edit-menu #screenMenu #v02569MenuCategoryChips button,
+body.r27-access-staff.r27-no-edit-menu #screenMenu #v14CatalogTools button[onclick*="v14ExportCatalogCsv"]{pointer-events:auto!important;opacity:1!important}
 body.r27-access-staff.r27-no-edit-clients #v017ClientsWrap input,body.r27-access-staff.r27-no-edit-clients #v017ClientsWrap select,body.r27-access-staff.r27-no-edit-clients #v017ClientsWrap textarea{pointer-events:none!important;opacity:.7!important}
 body.r27-access-staff.r27-no-edit-receivables [data-v02512-pay],body.r27-access-staff.r27-no-edit-receivables #v02512PaymentSave{display:none!important}
 body.r27-access-staff.r27-no-edit-stock #v021StockWrap input,body.r27-access-staff.r27-no-edit-stock #v021StockWrap select,body.r27-access-staff.r27-no-edit-stock #v021StockWrap textarea{pointer-events:none!important;opacity:.7!important}
