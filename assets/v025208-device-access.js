@@ -60,7 +60,8 @@
     const role=String(value?.role||'staff')==='owner'?'owner':'staff';
     return {role,employeeName:clean(value?.employeeName||'',120),permissions:role==='owner'?{...FULL}:normalizePermissions(value?.permissions),updatedAt:value?.updatedAt||null};
   }
-  function isOwner(){return !profile||profile.role==='owner';}
+  function restrictedProfile(){return {role:'staff',employeeName:'',permissions:{...NONE},updatedAt:null};}
+  function isOwner(){return profile?profile.role==='owner':!syncReady();}
   function mode(area){return isOwner()?'edit':String(profile?.permissions?.[area]||'none');}
   function canView(area){return mode(area)==='view'||mode(area)==='edit';}
   function canEdit(area){return mode(area)==='edit';}
@@ -111,7 +112,7 @@
     if(!syncReady(cfg)){profile={role:'owner',employeeName:'',permissions:{...FULL},updatedAt:null};applyAccess();return profile;}
     try{
       const data=await api('profile');profile=normalizeProfile(data.access);saveCached();applyAccess();return profile;
-    }catch(err){if(!profile&&!loadCached())profile={role:'owner',employeeName:'',permissions:{...FULL},updatedAt:null};applyAccess();if(!silent)toast(err?.message||'Não foi possível atualizar as permissões.',true);return profile;}
+    }catch(err){if(!profile&&!loadCached())profile=restrictedProfile();applyAccess();if(!silent)toast(err?.message||'Não foi possível atualizar as permissões.',true);return profile;}
   }
 
   function closeControl(target){
@@ -201,7 +202,7 @@
   const baseApply=applyAccess;applyAccess=function(){baseApply();syncLockedGate();};
 
   function start(){
-    ensureEditor();ensureGate();loadCached();if(profile)applyAccess();refreshProfile(true);patchShowScreen();
+    ensureEditor();ensureGate();const cached=loadCached();if(!cached&&syncReady())profile=restrictedProfile();if(profile)applyAccess();refreshProfile(true);patchShowScreen();
     document.addEventListener('click',captureAccess,true);
     document.addEventListener('click',event=>{const btn=event.target.closest?.('[data-v025208-access]');if(btn){event.preventDefault();openEditor(btn.dataset.v025208Access);return;}if(event.target.closest?.('#v02585OpenDevices'))setTimeout(()=>{watchDeviceList();loadAccessDevices();},180);},true);
     window.addEventListener('online',()=>refreshProfile(true));
