@@ -16,13 +16,6 @@
   const STOCK_OUTBOX_KEY='rota27_v021_stock_outbox_v1';
   const SYNC_KEY='rota27_sync_config_v1';
 
-  const MAX_SUPPLIERS=400;
-  const MAX_ORDERS=3000;
-  const MAX_RECEIPTS=6000;
-  const MAX_OUTBOX=1200;
-  const MAX_STOCK_MOV=6000;
-  const MAX_STOCK_OUTBOX=900;
-
   let activeTab='restock';
   let syncing=false;
   let selectedSupplierId=null;
@@ -128,7 +121,7 @@
     const x=readJson(RECEIPTS_KEY,[]);
     return Array.isArray(x)?x:[];
   }
-  function saveReceipts(rows){writeJson(RECEIPTS_KEY,(Array.isArray(rows)?rows:[]).slice(-MAX_RECEIPTS));}
+  function saveReceipts(rows){writeJson(RECEIPTS_KEY,Array.isArray(rows)?rows:[]);}
   function appendReceipt(next,queue=true){
     if(!next?.id||!next?.orderId)return false;
     const rows=receipts();
@@ -191,7 +184,7 @@
     const list=Array.isArray(rows)?rows:[];
     const filtered=list.filter(x=>String(x.eventId)!==String(event.eventId));
     filtered.push(event);
-    writeJson(STOCK_OUTBOX_KEY,filtered.slice(-MAX_STOCK_OUTBOX));
+    writeJson(STOCK_OUTBOX_KEY,filtered);
   }
   function applyReceiptToStock(receipt){
     const d=device();
@@ -235,7 +228,7 @@
       }
     });
     if(changed){
-      writeJson(STOCK_MOV_KEY,rows.slice(-MAX_STOCK_MOV));
+      writeJson(STOCK_MOV_KEY,rows);
       try{window.dispatchEvent(new CustomEvent('rota27:v021-stock-updated'));}catch{}
       if(navigator.onLine&&window.Rota27V021?.syncStock)setTimeout(()=>window.Rota27V021.syncStock(),80);
     }
@@ -243,7 +236,7 @@
   }
 
   function outbox(){const x=readJson(OUTBOX_KEY,[]);return Array.isArray(x)?x:[];}
-  function saveOutbox(rows){writeJson(OUTBOX_KEY,(Array.isArray(rows)?rows:[]).slice(-MAX_OUTBOX));}
+  function saveOutbox(rows){writeJson(OUTBOX_KEY,Array.isArray(rows)?rows:[]);}
   function queueEvent(type,entityId,payload,eventId){
     if(!syncReady())return;
     const d=device();
