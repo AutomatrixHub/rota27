@@ -1,6 +1,6 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 
-const EDGE_VERSION = "rota27-whatsapp-v6-mini2";
+const EDGE_VERSION = "rota27-whatsapp-v0.25.213";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -56,6 +56,90 @@ function safeEqual(a: string, b: string) {
   let diff = 0;
   for (let i = 0; i < ea.length; i++) diff |= ea[i] ^ eb[i];
   return diff === 0;
+}
+
+function base64Url(bytes: Uint8Array) {
+  let binary = "";
+  for (const byte of bytes) binary += String.fromCharCode(byte);
+  return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
+}
+
+async function deriveDeviceToken(masterSecret: string, storeId: string, deviceId: string) {
+  const key = await crypto.subtle.importKey(
+    "raw",
+    new TextEncoder().encode(masterSecret),
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign"],
+  );
+  const signature = new Uint8Array(await crypto.subtle.sign(
+    "HMAC",
+    key,
+    new TextEncoder().encode(`rota27-device-v1|${storeId}|${deviceId}`),
+  ));
+  return `r27d_${base64Url(signature)}`;
+}
+
+async function authorizeDeviceToken(masterSecret: string, suppliedToken: string, storeId: string) {
+  if (masterSecret.length < 16 || suppliedToken.length < 16) {
+    return { ok: false, status: 401, code: "device_unauthorized", error: "Dispositivo não autorizado." };
+  }
+  if (safeEqual(suppliedToken, masterSecret)) return { ok: true, legacy: true, deviceId: "" };
+
+  const supabaseUrl = Deno.env.get("SUPABASE_URL") || "";
+  const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "";
+  if (!supabaseUrl || !serviceRoleKey) {
+    return { ok: false, status: 500, code: "backend_config", error: "Backend de autorização incompleto." };
+  }
+
+  const endpoint = `${supabaseUrl}/rest/v1/rota27_sync_devices` +
+    `?store_id=eq.${encodeURIComponent(storeId)}` +
+    "&select=device_id,status,access_role,permissions&limit=200";
+  const response = await fetch(endpoint, {
+    headers: {
+      apikey: serviceRoleKey,
+      Authorization: `Bearer ${serviceRoleKey}`,
+      Accept: "application/json",
+    },
+  });
+  if (!response.ok) {
+    return { ok: false, status: 500, code: "device_lookup_failed", error: "Não foi possível validar este aparelho." };
+  }
+
+  const rows = await response.json().catch(() => []);
+  for (const row of Array.isArray(rows) ? rows : []) {
+    const deviceId = safeText(row?.device_id, 120);
+    if (!deviceId) continue;
+    const candidate = await deriveDeviceToken(masterSecret, storeId, deviceId);
+    if (!safeEqual(candidate, suppliedToken)) continue;
+
+    const status = safeText(row?.status || "active", 20) || "active";
+    if (status !== "active") {
+      return {
+        ok: false,
+        status: 403,
+        code: "device_inactive",
+        deviceStatus: status,
+        error: status === "removed"
+          ? "Este aparelho foi removido e não pode usar o WhatsApp."
+          : "Este aparelho está desativado e não pode usar o WhatsApp.",
+      };
+    }
+
+    const role = safeText(row?.access_role || "staff", 20) === "owner" ? "owner" : "staff";
+    const permissions = row?.permissions && typeof row.permissions === "object" ? row.permissions : {};
+    if (role !== "owner" && safeText((permissions as Record<string, unknown>).commands, 10) !== "edit") {
+      return {
+        ok: false,
+        status: 403,
+        code: "commands_edit_required",
+        error: "Este aparelho não tem permissão para enviar atualizações de comandas pelo WhatsApp.",
+      };
+    }
+    return { ok: true, legacy: false, deviceId };
+  }
+
+  return { ok: false, status: 401, code: "device_unauthorized", error: "Dispositivo não autorizado." };
 }
 
 function templateForItemCount(count: number) {
@@ -125,14 +209,22 @@ Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
   if (req.method !== "POST") return json(405, { ok: false, error: "Método não permitido." });
 
-  const configuredDeviceToken = Deno.env.get("ROTA27_DEVICE_TOKEN") || "";
-  const receivedDeviceToken = req.headers.get("x-rota27-device-token") || "";
-  if (configuredDeviceToken.length < 16 || !safeEqual(receivedDeviceToken, configuredDeviceToken)) {
-    return json(401, { ok: false, error: "Dispositivo não autorizado." });
-  }
-
   const contentLength = Number(req.headers.get("content-length") || 0);
   if (contentLength > 64_000) return json(413, { ok: false, error: "Payload muito grande." });
+
+  const configuredDeviceToken = Deno.env.get("ROTA27_DEVICE_TOKEN") || "";
+  const receivedDeviceToken = req.headers.get("x-rota27-device-token") || "";
+  const storeId = safeText(Deno.env.get("ROTA27_SYNC_STORE_ID") || "rota27-bodega", 80) || "rota27-bodega";
+  const auth: any = await authorizeDeviceToken(configuredDeviceToken, receivedDeviceToken, storeId);
+  if (!auth.ok) {
+    return json(Number(auth.status || 401), {
+      ok: false,
+      code: auth.code || "device_unauthorized",
+      deviceStatus: auth.deviceStatus || undefined,
+      error: auth.error || "Dispositivo não autorizado.",
+      edgeVersion: EDGE_VERSION,
+    });
+  }
 
   let body: any;
   try {
@@ -247,6 +339,7 @@ Deno.serve(async (req: Request) => {
       chunkCount: itemChunks.length,
       template: templateName,
       edgeVersion: EDGE_VERSION,
+      authDeviceId: auth.deviceId || null,
       clientTimestamp: safeText(body?.clientTimestamp, 80),
     };
 

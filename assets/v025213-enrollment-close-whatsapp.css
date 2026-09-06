@@ -1,0 +1,5 @@
+/* Rota 27 v0.25.213 — acabamento do vínculo */
+.v025211-join-card{position:relative}
+.v025211-join-card>.v025211-join-brand,.v025211-join-card>h2{padding-right:76px}
+.v025213-join-close{position:absolute;top:14px;right:14px;min-width:64px;height:38px;padding:0 12px;border:1px solid #cfbea3;border-radius:12px;background:#fffaf2;color:#3b3027;font:800 12px/1 system-ui,-apple-system,"Segoe UI",sans-serif;cursor:pointer}
+.v025213-join-close:active{transform:translateY(1px)}
