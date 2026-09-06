@@ -1,7 +1,7 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
 
-const EDGE_VERSION = "rota27-sync-v0.25.182";
+const EDGE_VERSION = "rota27-sync-v0.25.211";
 const ALLOWED_TYPES = new Set([
   "state_snapshot",
   "command_opened",
@@ -54,6 +54,34 @@ function safeEqual(a: string, b: string) {
   return diff === 0;
 }
 
+function base64Url(bytes: Uint8Array) {
+  let binary = "";
+  for (const byte of bytes) binary += String.fromCharCode(byte);
+  return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
+}
+
+async function deriveDeviceToken(masterSecret: string, storeId: string, deviceId: string) {
+  const key = await crypto.subtle.importKey(
+    "raw",
+    new TextEncoder().encode(masterSecret),
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign"],
+  );
+  const signature = new Uint8Array(await crypto.subtle.sign(
+    "HMAC",
+    key,
+    new TextEncoder().encode(`rota27-device-v1|${storeId}|${deviceId}`),
+  ));
+  return `r27d_${base64Url(signature)}`;
+}
+
+async function tokenMatches(masterSecret: string, storeId: string, deviceId: string, supplied: string) {
+  if (safeEqual(masterSecret, supplied)) return true;
+  if (!deviceId || !masterSecret || !supplied) return false;
+  return safeEqual(await deriveDeviceToken(masterSecret, storeId, deviceId), supplied);
+}
+
 function cleanText(value: unknown, max = 160) {
   return String(value ?? "").trim().replace(/\s+/g, " ").slice(0, max);
 }
@@ -99,14 +127,11 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
   if (req.method !== "POST") return json(405, { ok: false, error: "Método não permitido." });
 
-  const expectedToken = Deno.env.get("ROTA27_DEVICE_TOKEN") || "";
-  const suppliedToken = req.headers.get("x-rota27-device-token") || "";
-  if (!safeEqual(expectedToken, suppliedToken)) return json(401, { ok: false, error: "Dispositivo não autorizado." });
-
+  const masterSecret = Deno.env.get("ROTA27_DEVICE_TOKEN") || "";
   const supabaseUrl = Deno.env.get("SUPABASE_URL") || "";
   const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "";
   const storeId = cleanText(Deno.env.get("ROTA27_SYNC_STORE_ID") || "rota27-bodega", 80);
-  if (!supabaseUrl || !serviceRoleKey) return json(500, { ok: false, error: "Supabase não configurado na Edge Function." });
+  if (!masterSecret || !supabaseUrl || !serviceRoleKey) return json(500, { ok: false, error: "Supabase não configurado na Edge Function." });
 
   let body: Record<string, unknown>;
   try { body = await req.json(); }
@@ -121,6 +146,11 @@ Deno.serve(async (req) => {
   const action = cleanText(body.action, 32);
   if (!deviceId) return json(400, { ok: false, error: "deviceId obrigatório." });
 
+  const suppliedToken = req.headers.get("x-rota27-device-token") || "";
+  if (!(await tokenMatches(masterSecret, storeId, deviceId, suppliedToken))) {
+    return json(401, { ok: false, code: "device_unauthorized", error: "Dispositivo não autorizado.", edgeVersion: EDGE_VERSION });
+  }
+
   const db = createClient(supabaseUrl, serviceRoleKey, {
     auth: { persistSession: false, autoRefreshToken: false },
   });
@@ -128,7 +158,7 @@ Deno.serve(async (req) => {
   async function getDevice(id = deviceId) {
     const { data, error } = await db
       .from("rota27_sync_devices")
-      .select("store_id,device_id,device_name,app_version,first_seen_at,last_seen_at,last_cursor,status,retired_at,retired_reason")
+      .select("store_id,device_id,device_name,app_version,first_seen_at,last_seen_at,last_cursor,status,retired_at,retired_reason,access_role,permissions")
       .eq("store_id", storeId)
       .eq("device_id", id)
       .maybeSingle();
@@ -224,13 +254,25 @@ Deno.serve(async (req) => {
       });
     }
 
-    if (MANAGEMENT_ACTIONS.has(action) && !existingDevice) {
-      return json(403, {
-        ok: false,
-        code: "device_not_registered",
-        error: "Sincronize este aparelho ao menos uma vez antes de gerenciar outros dispositivos.",
-        edgeVersion: EDGE_VERSION,
-      });
+    if (MANAGEMENT_ACTIONS.has(action)) {
+      if (!existingDevice) {
+        return json(403, {
+          ok: false,
+          code: "device_not_registered",
+          error: "Sincronize este aparelho ao menos uma vez antes de gerenciar outros dispositivos.",
+          edgeVersion: EDGE_VERSION,
+        });
+      }
+      const role = cleanText(existingDevice.access_role || "staff", 20) === "owner" ? "owner" : "staff";
+      const permissions = existingDevice.permissions && typeof existingDevice.permissions === "object" ? existingDevice.permissions : {};
+      if (role !== "owner" && cleanText((permissions as Record<string, unknown>).devices, 10) !== "edit") {
+        return json(403, {
+          ok: false,
+          code: "devices_edit_required",
+          error: "Gerenciamento de aparelhos não liberado para este dispositivo.",
+          edgeVersion: EDGE_VERSION,
+        });
+      }
     }
 
     if (action === "devices_list") {
