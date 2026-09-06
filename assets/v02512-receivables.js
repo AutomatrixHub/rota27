@@ -7,7 +7,6 @@
   const OUTBOX_KEY='rota27_v02512_receivable_outbox_v1';
   const CURSOR_KEY='rota27_v02512_receivable_cursor_v1';
   const SYNC_CONFIG_KEY='rota27_sync_config_v1';
-  const MAX_OUTBOX=500;
   let syncing=false;
   let baseFinalize=null;
   let baseRenderPayment=null;
@@ -58,7 +57,7 @@
     }finally{clearTimeout(timer);}
   }
   function readOutbox(){const v=readJson(OUTBOX_KEY,[]);return Array.isArray(v)?v:[];}
-  function writeOutbox(v){writeJson(OUTBOX_KEY,(Array.isArray(v)?v:[]).slice(-MAX_OUTBOX));}
+  function writeOutbox(v){writeJson(OUTBOX_KEY,Array.isArray(v)?v:[]);}
   function queueEvent(eventType,entityId,payload,eventId){
     const c=syncConfig();const evt={eventId:eventId||uid('recv_evt'),eventType,entityId:String(entityId||''),payload:clone(payload||{}),deviceId:c.deviceId||'local',createdAt:nowIso(),appVersion:VERSION};
     const out=readOutbox();if(!out.some(x=>String(x.eventId)===evt.eventId))out.push(evt);writeOutbox(out);
