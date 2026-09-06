@@ -137,7 +137,7 @@
     const existing=[...list].reverse().find(e=>String(e.eventType)==='purchase_order_upsert'&&String(e.entityId)===String(order.id));
     if(existing){existing.payload={order:clone(order)};existing.appVersion=VERSION;existing.createdAt=new Date(order.updatedAt).toISOString();}
     else list.push({eventId:uid('purchase_order_edit'),eventType:'purchase_order_upsert',entityId:String(order.id),payload:{order:clone(order)},deviceId:String(cfg.deviceId),createdAt:new Date(order.updatedAt).toISOString(),appVersion:VERSION});
-    writeJson(OUTBOX_KEY,list.slice(-1200));
+    writeJson(OUTBOX_KEY,list);
   }
 
   function saveEditor(){
