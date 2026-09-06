@@ -49,9 +49,7 @@
     {type:'css',id:'v02592FabVisibilityCss',src:'./assets/v02592-fab-visibility.css?v=02592r1'},
     {type:'js',id:'v02592FabVisibilityJs',src:'./assets/v02592-fab-visibility.js?v=025101r1'},
     {type:'css',id:'v02593HelpV11Css',src:'./assets/v02593-help-v11.css?v=02593r1'},
-    {type:'js',id:'v02593HelpV11Js',src:'./assets/v02593-help-v11.js?v=025125r1'},
-    {type:'css',id:'v025208DeviceAccessCss',src:'./assets/v025208-device-access.css?v=025208r1'},
-    {type:'js',id:'v025208DeviceAccessJs',src:'./assets/v025208-device-access.js?v=025208r1'}
+    {type:'js',id:'v02593HelpV11Js',src:'./assets/v02593-help-v11.js?v=025125r1'}
   ];
   let identityObserver=null,identityQueued=false;
   function identity(){
