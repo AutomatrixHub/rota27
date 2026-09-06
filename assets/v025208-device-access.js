@@ -1,9 +1,9 @@
-/* Rota 27 v0.25.208 — vínculo de funcionário e permissões por aparelho */
+/* Rota 27 v0.25.209 — vínculo de funcionário e permissões por aparelho */
 (function(){
   'use strict';
   if(window.Rota27V025208Access)return;
 
-  const VERSION='0.25.208';
+  const VERSION='0.25.209';
   const SYNC_KEY='rota27_sync_config_v1';
   const CACHE_KEY='rota27_device_access_profile_v1';
   const KEYS=['commands','menu','panel','history','clients','receivables','stock','purchases','inventory','settings','devices'];
@@ -25,6 +25,9 @@
   let profile=null;
   let accessDevices=new Map();
   let deviceObserver=null;
+  let deviceObserverTarget=null;
+  let deviceDecorateTimer=null;
+  let bodyRefreshTimer=null;
   let originalShowScreen=null;
 
   const byId=id=>document.getElementById(id);
@@ -99,7 +102,6 @@
       const next=firstAllowedScreen();if(next&&originalShowScreen)originalShowScreen(next);
     }
     patchShowScreen();
-    decorateDeviceRows();
   }
 
   function loadCached(){
@@ -176,25 +178,39 @@
     catch(err){toast(err?.message||'Não foi possível salvar o acesso.',true);}finally{if(btn)btn.disabled=false;}
   }
 
+  function scheduleDecorate(){clearTimeout(deviceDecorateTimer);deviceDecorateTimer=setTimeout(decorateDeviceRows,20);}
   function decorateDeviceRows(){
-    const cfg=syncConfig();document.querySelectorAll('#v02585DeviceList [data-device-row]').forEach(row=>{
-      const id=String(row.dataset.deviceRow||''),device=accessDevices.get(id);if(!device)return;
-      let summary=row.querySelector('.v025208-access-summary');if(!summary){summary=document.createElement('div');summary.className='v025208-access-summary';row.querySelector('.v02585-device-main')?.appendChild(summary);}
-      const access=device.access||{},role=access.role==='owner'?'owner':'staff',employee=clean(access.employeeName||'',120);
-      summary.innerHTML=`<span class="v025208-access-badge ${role}">${role==='owner'?'Proprietário':'Funcionário'}</span>${employee?`<span class="v025208-access-badge">${esc(employee)}</span>`:'<span class="v025208-access-badge">Sem funcionário vinculado</span>'}`;
-      row.querySelector('.v025208-access-button')?.remove();
-      if(isOwner()&&id!==String(cfg.deviceId||'')){
-        const btn=document.createElement('button');btn.type='button';btn.className='v025208-access-button';btn.dataset.v025208Access=id;btn.textContent='Funcionário / acesso';row.querySelector('.v02585-device-actions')?.appendChild(btn);
-      }
-    });
+    const list=byId('v02585DeviceList');if(!list)return;
+    const cfg=syncConfig(),observer=deviceObserver;observer?.disconnect();
+    try{
+      list.querySelectorAll('[data-device-row]').forEach(row=>{
+        const id=String(row.dataset.deviceRow||''),device=accessDevices.get(id);if(!device)return;
+        let summary=row.querySelector('.v025208-access-summary');
+        if(!summary){summary=document.createElement('div');summary.className='v025208-access-summary';row.querySelector('.v02585-device-main')?.appendChild(summary);}
+        const access=device.access||{},role=access.role==='owner'?'owner':'staff',employee=clean(access.employeeName||'',120);
+        const summaryHtml=`<span class="v025208-access-badge ${role}">${role==='owner'?'Proprietário':'Funcionário'}</span>${employee?`<span class="v025208-access-badge">${esc(employee)}</span>`:'<span class="v025208-access-badge">Sem funcionário vinculado</span>'}`;
+        if(summary.innerHTML!==summaryHtml)summary.innerHTML=summaryHtml;
+        const actions=row.querySelector('.v02585-device-actions');let btn=row.querySelector('.v025208-access-button');
+        const shouldShow=isOwner()&&id!==String(cfg.deviceId||'');
+        if(shouldShow&&actions){
+          if(!btn){btn=document.createElement('button');btn.type='button';btn.className='v025208-access-button';btn.textContent='Funcionário / acesso';actions.appendChild(btn);}
+          if(btn.dataset.v025208Access!==id)btn.dataset.v025208Access=id;
+        }else btn?.remove();
+      });
+    }finally{
+      if(observer&&deviceObserverTarget===list&&list.isConnected)observer.observe(list,{childList:true,subtree:true});
+    }
   }
   async function loadAccessDevices(){
     if(!isOwner()||!syncReady())return;
-    try{const data=await api('list',{includeRemoved:true});accessDevices=new Map((data.devices||[]).map(d=>[String(d.device_id||''),d]));decorateDeviceRows();}
+    try{const data=await api('list',{includeRemoved:true});accessDevices=new Map((data.devices||[]).map(d=>[String(d.device_id||''),d]));scheduleDecorate();}
     catch(err){console.warn('[Rota27 acesso] lista:',err?.message||err);}
   }
   function watchDeviceList(){
-    const list=byId('v02585DeviceList');if(!list)return;deviceObserver?.disconnect();deviceObserver=new MutationObserver(()=>setTimeout(decorateDeviceRows,0));deviceObserver.observe(list,{childList:true,subtree:true});decorateDeviceRows();
+    const list=byId('v02585DeviceList');if(!list)return;
+    if(deviceObserver&&deviceObserverTarget===list){scheduleDecorate();return;}
+    deviceObserver?.disconnect();deviceObserverTarget=list;
+    deviceObserver=new MutationObserver(scheduleDecorate);deviceObserver.observe(list,{childList:true,subtree:true});scheduleDecorate();
   }
 
   function ensureGate(){if(byId('v025208AccessGate'))return;const gate=document.createElement('div');gate.id='v025208AccessGate';gate.innerHTML='<div class="v025208-gate-card"><strong>Acesso não liberado</strong><span>Este aparelho está vinculado como funcionário, mas nenhuma área foi autorizada. Peça ao responsável para abrir Painel → Aparelhos sincronizados e configurar seu acesso.</span></div>';document.body.appendChild(gate);}
@@ -208,7 +224,11 @@
     window.addEventListener('online',()=>refreshProfile(true));
     window.addEventListener('storage',()=>{loadCached();applyAccess();});
     document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){refreshProfile(true);setTimeout(()=>{applyAccess();watchDeviceList();if(isOwner())loadAccessDevices();},180);}});
-    const observer=new MutationObserver(()=>{applyAccess();if(byId('v02585DeviceList'))watchDeviceList();});observer.observe(document.body,{childList:true,subtree:true});
+    const observer=new MutationObserver(mutations=>{
+      if(!mutations.some(m=>m.addedNodes.length||m.removedNodes.length))return;
+      clearTimeout(bodyRefreshTimer);bodyRefreshTimer=setTimeout(()=>{applyAccess();if(byId('v02585DeviceList'))watchDeviceList();},40);
+    });
+    observer.observe(document.body,{childList:true,subtree:true});
     setTimeout(()=>{applyAccess();watchDeviceList();if(isOwner())loadAccessDevices();},700);
   }
 
