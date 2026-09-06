@@ -1,9 +1,9 @@
-/* Rota 27 v0.25.209 — vínculo de funcionário e permissões por aparelho */
+/* Rota 27 v0.25.210 — vínculo de funcionário e permissões por aparelho */
 (function(){
   'use strict';
   if(window.Rota27V025208Access)return;
 
-  const VERSION='0.25.209';
+  const VERSION='0.25.210';
   const SYNC_KEY='rota27_sync_config_v1';
   const CACHE_KEY='rota27_device_access_profile_v1';
   const KEYS=['commands','menu','panel','history','clients','receivables','stock','purchases','inventory','settings','devices'];
@@ -22,6 +22,7 @@
   };
   const FULL=Object.fromEntries(KEYS.map(k=>[k,'edit']));
   const NONE=Object.fromEntries(KEYS.map(k=>[k,'none']));
+  const MENU_MUTATION_FUNCTIONS=['openMenuItemSheet','saveMenuItem','openCategoryManager','openCategorySheet','saveCategory','v14OpenImportSheet','v14ApplyCatalogImport'];
   let profile=null;
   let accessDevices=new Map();
   let deviceObserver=null;
@@ -68,12 +69,22 @@
   function mode(area){return isOwner()?'edit':String(profile?.permissions?.[area]||'none');}
   function canView(area){return mode(area)==='view'||mode(area)==='edit';}
   function canEdit(area){return mode(area)==='edit';}
+  function denyMenuEdit(){
+    if(canEdit('menu'))return false;
+    toast('Cardápio liberado somente para consulta neste aparelho.',true);
+    return true;
+  }
 
   function setVisible(node,visible){if(!node)return;node.classList.toggle('r27-access-hidden',!visible);node.setAttribute('aria-hidden',visible?'false':'true');}
   function firstAllowedScreen(){for(const area of ['commands','menu','panel','history'])if(canView(area))return area;return '';}
   function activeArea(){if(byId('screenCommands')?.classList.contains('active')||byId('screenSale')?.classList.contains('active'))return 'commands';if(byId('screenMenu')?.classList.contains('active'))return 'menu';if(byId('screenPanel')?.classList.contains('active'))return 'panel';if(byId('screenHistory')?.classList.contains('active'))return 'history';return '';}
   function safeShowScreen(name){
-    const area=String(name||'');if(!['commands','menu','panel','history'].includes(area))return true;
+    const area=String(name||'');
+    if(area==='categories'){
+      if(canEdit('menu'))return true;
+      toast('Gerenciamento de categorias não liberado neste aparelho.',true);return false;
+    }
+    if(!['commands','menu','panel','history'].includes(area))return true;
     if(canView(area))return true;toast('Este aparelho não tem permissão para abrir esta área.',true);return false;
   }
   function patchShowScreen(){
@@ -81,6 +92,26 @@
     originalShowScreen=window.showScreen;
     const wrapped=function(name){if(!safeShowScreen(name))return;return originalShowScreen.apply(this,arguments);};
     try{window.showScreen=wrapped;showScreen=wrapped;}catch{window.showScreen=wrapped;}
+  }
+  function patchMenuMutationFunction(name){
+    const current=window[name];
+    if(typeof current!=='function'||current.__r27AccessMenuGuard===true)return false;
+    const wrapped=function(){if(denyMenuEdit())return false;return current.apply(this,arguments);};
+    wrapped.__r27AccessMenuGuard=true;
+    wrapped.__r27AccessBase=current;
+    try{window[name]=wrapped;}catch{return false;}
+    return true;
+  }
+  function patchMenuMutations(){MENU_MUTATION_FUNCTIONS.forEach(patchMenuMutationFunction);}
+  function closeMenuMutationSurfaces(){
+    if(isOwner()||canEdit('menu'))return;
+    byId('menuItemWrap')?.classList.remove('open');
+    byId('categoryWrap')?.classList.remove('open');
+    byId('v14ImportWrap')?.classList.remove('open');
+    if(byId('screenCategories')?.classList.contains('active')){
+      const next=canView('menu')?'menu':firstAllowedScreen();
+      if(next&&originalShowScreen)originalShowScreen(next);
+    }
   }
 
   function applyAccess(){
@@ -102,6 +133,8 @@
       const next=firstAllowedScreen();if(next&&originalShowScreen)originalShowScreen(next);
     }
     patchShowScreen();
+    patchMenuMutations();
+    closeMenuMutationSurfaces();
   }
 
   function loadCached(){
@@ -129,6 +162,11 @@
     const t=event.target;
     const nav=t.closest?.('#navCommands,#navMenu,#navPanel,#navHistory');if(nav){const map={navCommands:'commands',navMenu:'menu',navPanel:'panel',navHistory:'history'};const area=map[nav.id];if(area&&!canView(area)){event.preventDefault();event.stopImmediatePropagation();toast('Área não liberada para este funcionário.',true);return;}}
     if(!canEdit('commands')&&t.closest?.('#fabNew,#commandList .command-card,#v0252CommandMap [data-command-id]')){event.preventDefault();event.stopImmediatePropagation();toast('Comandas disponíveis somente para consulta neste aparelho.',true);return;}
+    if(!canEdit('menu')&&t.closest?.('#screenMenu .menu-item,#screenMenu .menu-edit,#screenMenu .menu-add,#screenMenu .menu-categories,#screenMenu #menuEmpty .primary,#screenMenu #v14CatalogTools button[onclick*="v14OpenImportSheet"]')){event.preventDefault();event.stopImmediatePropagation();denyMenuEdit();return;}
+    if(!canEdit('menu')&&t.closest?.('#menuItemWrap,#categoryWrap,#v14ImportWrap,#screenCategories')){
+      if(closeControl(t)||t.closest?.('#screenCategories .category-back'))return;
+      event.preventDefault();event.stopImmediatePropagation();denyMenuEdit();return;
+    }
     if(!canView('clients')&&t.closest?.('[data-v0251-action="clients"],#v0252RelationshipSection')){event.preventDefault();event.stopImmediatePropagation();return;}
     if(!canView('receivables')&&t.closest?.('#v02512ReceivablesEntry,#v02512Open')){event.preventDefault();event.stopImmediatePropagation();return;}
     if(!canView('stock')&&t.closest?.('#v021StockEntry')){event.preventDefault();event.stopImmediatePropagation();return;}
@@ -218,7 +256,7 @@
   const baseApply=applyAccess;applyAccess=function(){baseApply();syncLockedGate();};
 
   function start(){
-    ensureEditor();ensureGate();const cached=loadCached();if(!cached&&syncReady())profile=restrictedProfile();if(profile)applyAccess();refreshProfile(true);patchShowScreen();
+    ensureEditor();ensureGate();const cached=loadCached();if(!cached&&syncReady())profile=restrictedProfile();if(profile)applyAccess();refreshProfile(true);patchShowScreen();patchMenuMutations();
     document.addEventListener('click',captureAccess,true);
     document.addEventListener('click',event=>{const btn=event.target.closest?.('[data-v025208-access]');if(btn){event.preventDefault();openEditor(btn.dataset.v025208Access);return;}if(event.target.closest?.('#v02585OpenDevices'))setTimeout(()=>{watchDeviceList();loadAccessDevices();},180);},true);
     window.addEventListener('online',()=>refreshProfile(true));
