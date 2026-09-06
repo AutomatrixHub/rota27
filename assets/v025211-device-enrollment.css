@@ -1,0 +1,33 @@
+/* Rota 27 v0.25.211 — vínculo seguro de novos aparelhos */
+.v025211-enroll-wrap{position:fixed;inset:0;z-index:2147482600;background:rgba(17,17,17,.5);display:none;align-items:flex-end;justify-content:center;padding:14px;box-sizing:border-box}
+.v025211-enroll-wrap.open{display:flex}
+.v025211-enroll-sheet{width:min(720px,100%);max-height:min(92vh,920px);overflow:auto;background:#fff9f0;border:1px solid #d9c7a7;border-radius:22px 22px 14px 14px;box-shadow:0 24px 60px rgba(0,0,0,.28);padding:18px;box-sizing:border-box}
+.v025211-enroll-sheet>header{display:flex;justify-content:space-between;gap:14px;align-items:flex-start;margin-bottom:15px}
+.v025211-enroll-sheet h3{margin:0 0 5px;font-size:21px}.v025211-enroll-sheet header p{margin:0;color:#6e6256;font-size:12.5px;line-height:1.42}
+.v025211-close{border:0;background:#eee2d0;border-radius:999px;width:38px;height:38px;flex:0 0 auto;font-size:22px;cursor:pointer}
+.v025211-field{display:grid;gap:6px;margin:10px 0;font-size:12px;font-weight:850;color:#594d41}
+.v025211-field input,.v025211-field select,.v025211-permissions select{width:100%;box-sizing:border-box;border:1px solid #cfbea3;border-radius:12px;background:#fff;padding:11px 12px;font:inherit;color:#17120e}
+.v025211-hint{border:1px solid #e3d1b4;background:#f5ead9;border-radius:12px;padding:9px 11px;color:#6c5d50;font-size:11.5px;line-height:1.4}
+.v025211-permissions{display:grid;gap:7px;margin:12px 0}.v025211-permissions[hidden]{display:none}
+.v025211-permissions label{display:grid;grid-template-columns:minmax(0,1fr) 150px;gap:12px;align-items:center;border:1px solid #eadcc7;background:#fffdf8;border-radius:12px;padding:8px 9px;font-size:12px;font-weight:800}
+.v025211-wide{width:100%;min-height:44px;margin-top:12px}
+.v025211-status{min-height:18px;margin-top:10px;font-size:11.5px;line-height:1.4;color:#6e6256}.v025211-status.ok{color:#2f6a49}.v025211-status.error{color:#a34332}.v025211-status.wait{color:#8a5a19}
+.v025211-result{text-align:center}.v025211-result[hidden]{display:none}
+.v025211-valid{display:flex;justify-content:space-between;align-items:center;gap:10px;background:#eef5ed;border:1px solid #c9ddc8;border-radius:12px;padding:9px 11px;font-size:11.5px;color:#365942}
+.v025211-qr{width:264px;min-height:264px;margin:15px auto 7px;border:1px solid #dbc9ab;background:#fff;border-radius:16px;display:grid;place-items:center;padding:15px;box-sizing:border-box;overflow:hidden}
+.v025211-qr img,.v025211-qr canvas{max-width:232px!important;max-height:232px!important}.v025211-qr span{font-size:12px;color:#75695f;line-height:1.4}
+.v025211-scan-help{max-width:520px;margin:8px auto 12px;color:#6c5e52;font-size:12px;line-height:1.45}
+.v025211-code{border:1px dashed #c6aa80;background:#f6ead8;border-radius:14px;padding:11px 14px;display:grid;gap:4px}.v025211-code small{color:#77685b}.v025211-code strong{font-size:26px;letter-spacing:3px;color:#2a211a}
+.v025211-result-actions{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin-top:10px}.v025211-result-actions button{min-height:39px;border:1px solid #cfbea3;background:#fffaf2;border-radius:10px;font-weight:800;font-size:11px}.v025211-result-actions .danger{color:#a34332;border-color:#dfaa9e}
+.v025211-authorize{width:100%;display:grid;grid-template-columns:36px 1fr;grid-template-rows:auto auto;text-align:left;column-gap:9px;align-items:center;border:1px solid #a9c7b3;background:#edf6ee;border-radius:14px;padding:10px 12px;margin:10px 0;color:#244d35;cursor:pointer}
+.v025211-authorize>span{grid-row:1/3;width:34px;height:34px;border-radius:11px;background:#2f6a49;color:#fff;display:grid;place-items:center;font-size:21px}.v025211-authorize b{font-size:12.5px}.v025211-authorize small{font-size:10.5px;color:#5d7463}
+#v025211JoinGate{position:fixed;inset:0;z-index:2147483100;background:#f5e9d5;display:none;place-items:center;padding:18px;box-sizing:border-box;overflow:auto}
+#v025211JoinGate.open{display:grid}
+.v025211-join-card{width:min(430px,100%);background:#fff9f0;border:1px solid #d9c7a7;border-radius:22px;padding:22px;box-sizing:border-box;box-shadow:0 18px 46px rgba(30,22,15,.16);text-align:left}
+.v025211-join-brand{font-size:10px;letter-spacing:2.2px;font-weight:950;color:#8f4421;margin-bottom:8px}.v025211-join-card h2{margin:0 0 7px;font-size:25px}.v025211-join-card>p{margin:0 0 14px;color:#6e6256;font-size:13px;line-height:1.48}
+.v025211-join-card #v025211JoinCode{font-size:22px;text-align:center;letter-spacing:3px;font-weight:800}
+.v025211-advanced{display:block;margin:13px auto 0;border:0;background:transparent;color:#76675a;font-size:11px;text-decoration:underline;cursor:pointer}
+@media(max-width:560px){
+  .v025211-enroll-sheet{padding:15px}.v025211-permissions label{grid-template-columns:1fr 125px}
+  .v025211-result-actions{grid-template-columns:1fr}.v025211-qr{width:246px;min-height:246px;padding:10px}
+}
