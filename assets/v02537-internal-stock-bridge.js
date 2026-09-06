@@ -6,7 +6,6 @@
   const MOV_KEY='rota27_v021_stock_mov_v1';
   const OUTBOX_KEY='rota27_v021_stock_outbox_v1';
   const SYNC_KEY='rota27_sync_config_v1';
-  const MAX_MOV=6000,MAX_OUTBOX=900;
 
   const clone=v=>JSON.parse(JSON.stringify(v==null?null:v));
   const readJson=(k,f)=>{try{const v=JSON.parse(localStorage.getItem(k)||'null');return v==null?f:v;}catch{return f;}};
@@ -43,10 +42,10 @@
       commandId:String(record.id),
       appVersion:VERSION
     };
-    rows.push(clone(movement));writeJson(MOV_KEY,rows.slice(-MAX_MOV));
+    rows.push(clone(movement));writeJson(MOV_KEY,rows);
     const queued=outbox().filter(e=>String(e?.eventId||'')!==movementId);
     queued.push({eventId:movementId,eventType:'stock_movement',entityId:String(id),payload:{movement:clone(movement)},deviceId:d.id,createdAt:new Date(at).toISOString(),appVersion:VERSION});
-    writeJson(OUTBOX_KEY,queued.slice(-MAX_OUTBOX));
+    writeJson(OUTBOX_KEY,queued);
     return true;
   }
   function ensureForRecord(record){

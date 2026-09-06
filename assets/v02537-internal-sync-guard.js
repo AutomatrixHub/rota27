@@ -17,7 +17,7 @@
     if(!c?.id||!isInternal(c))return;
     const rows=readJson(OUTBOX_KEY,[]),eventId=`internal_command_opened_${String(c.id)}`;
     const marker={eventId,eventType:'command_opened',entityId:String(c.id),payload:{command:clone(c)},createdAt:new Date().toISOString(),appVersion:VERSION};
-    const next=(Array.isArray(rows)?rows:[]).filter(x=>String(x?.eventId)!==eventId);next.push(marker);writeJson(OUTBOX_KEY,next.slice(-100));
+    const next=(Array.isArray(rows)?rows:[]).filter(x=>String(x?.eventId)!==eventId);next.push(marker);writeJson(OUTBOX_KEY,next);
     setTimeout(pushMarkers,0);
   }
   async function pushMarkers(){
