@@ -1,11 +1,9 @@
-/* Rota 27 v0.25.46 — Hoje precisa de atenção */
+/* Rota 27 v0.25.46 — carregador legado consolidado */
 (function(){
   'use strict';
-  function removeReplayUi(){document.getElementById('v0257ReplayCard')?.remove();document.getElementById('v0257ReplayCss')?.remove();document.getElementById('v0257ReplayJs')?.remove();}
   function loadCss(id,href){if(document.getElementById(id)||document.querySelector(`link[href*="${href.split('?')[0].split('/').pop()}"]`))return;const link=document.createElement('link');link.id=id;link.rel='stylesheet';link.href=href;document.head.appendChild(link);}
   function loadReleaseAssets(){
     loadCss('v0259CategoryReferenceCss','./assets/v0259-category-reference.css?v=0259r1');
-    loadCss('v02512ReceivablesCss','./assets/v02512-receivables.css?v=02512r1');
     loadCss('v02513ClientPickerCss','./assets/v02513-client-picker.css?v=02513r1');
     loadCss('v02519CommandCardsCss','./assets/v02519-command-cards.css?v=02519r1');
     loadCss('v02520BirthdayCampaignCss','./assets/v02520-birthday-campaign.css?v=02520r1');
@@ -26,11 +24,8 @@
     loadCss('v02540EventsCss','./assets/v02540-events.css?v=02540r1');
     loadCss('v02544ClientCardDetailsCss','./assets/v02544-client-card-details.css?v=02544r1');
     loadCss('v02545CommandListCompactCss','./assets/v02545-command-list-compact.css?v=02545r1');
-    loadCss('v02546AttentionPanelCss','./assets/v02546-attention-panel.css?v=02546r1');
-    loadCss('v02569MenuCategoryOrderCss','./assets/v02569-menu-category-order.css?v=02569r1');
     const scripts=[
       ['v0259CategoryReferenceJs','./assets/v0259-category-reference.js?v=0259r1'],
-      ['v02512ReceivablesJs','./assets/v02512-receivables.js?v=02512r1'],
       ['v02512OverdueTurnJs','./assets/v02512-overdue-turn.js?v=025194r1'],
       ['v02512ReceivablesSafetyJs','./assets/v02512-receivables-safety.js?v=02512r1'],
       ['v02516RepairJs','./assets/v02516-repair.js?v=02516r1'],
@@ -52,17 +47,14 @@
       ['v02540EventsJs','./assets/v02540-events.js?v=02540r1'],
       ['v02543WhatsAppDeliveryStatusJs','./assets/v02543-whatsapp-delivery-status.js?v=02543r1'],
       ['v02544ClientCardDetailsJs','./assets/v02544-client-card-details.js?v=02544r1'],
-      ['v02545CommandListCompactJs','./assets/v02545-command-list-compact.js?v=02545r1'],
-      ['v02569MenuCategoryOrderJs','./assets/v02569-menu-category-order.js?v=02569r1']
+      ['v02545CommandListCompactJs','./assets/v02545-command-list-compact.js?v=02545r1']
     ];
     scripts.forEach(([id,src])=>{if(document.getElementById(id))return;const script=document.createElement('script');script.id=id;script.src=src;script.async=false;document.body.appendChild(script);});
   }
   function start(){
-    removeReplayUi();loadReleaseAssets();
-    document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){removeReplayUi();loadReleaseAssets();}});
-    const releaseApi={version:'0.25.46',removeReplayUi,loadReleaseAssets,replayHibernated:true};
-    window.Rota27V02546Release=releaseApi;
-    console.info('[Rota27] v0.25.46 — Hoje precisa de atenção.');
+    loadReleaseAssets();
+    document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')loadReleaseAssets();});
+    console.info('[Rota27] carregador legado consolidado ativo.');
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
 })();
