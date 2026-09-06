@@ -10,7 +10,6 @@
   const OUTBOX_KEY='rota27_v0255_fixed_copy_outbox_v1';
   const BATCH_DELAY_MS=4500;
   const RETRY_BASE_MS=12000;
-  const MAX_OUTBOX=300;
   const timers=new Map();
   let baseQueueWhatsappDelta=null;
   let flushing=false;
@@ -39,7 +38,7 @@
   }
   function uid(){return globalThis.crypto?.randomUUID?`fixed_${crypto.randomUUID()}`:`fixed_${Date.now().toString(36)}_${Math.random().toString(36).slice(2,10)}`;}
   function read(){try{const v=JSON.parse(localStorage.getItem(OUTBOX_KEY)||'[]');return Array.isArray(v)?v:[];}catch{return [];}}
-  function write(rows){localStorage.setItem(OUTBOX_KEY,JSON.stringify((Array.isArray(rows)?rows:[]).slice(-MAX_OUTBOX)));renderStatusNote();}
+  function write(rows){localStorage.setItem(OUTBOX_KEY,JSON.stringify(Array.isArray(rows)?rows:[]));renderStatusNote();}
   function commandExists(id){return (state?.commands||[]).find(c=>String(c.id)===String(id))||(state?.history||[]).find(c=>String(c.id)===String(id));}
   function commandTotalValue(c){try{return typeof commandTotal==='function'?Number(commandTotal(c)||0):Number(c?.total||0)||0;}catch{return Number(c?.total||0)||0;}}
   function commandLabelValue(c){try{return typeof commandLabel==='function'?commandLabel(c):[c?.table,c?.customer].filter(Boolean).join(' • ');}catch{return 'Comanda';}}

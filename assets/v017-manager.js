@@ -6,7 +6,6 @@
   const OUTBOX_KEY='rota27_v017_manager_outbox_v1';
   const BATCH_DELAY_MS=4500;
   const RETRY_BASE_MS=12000;
-  const MAX_OUTBOX=300;
   const timers=new Map();
   let baseQueueWhatsappDelta=null;
   let flushing=false;
@@ -17,7 +16,7 @@
   function now(){return Date.now();}
   function uid(){return globalThis.crypto?.randomUUID?`mgr_${crypto.randomUUID()}`:`mgr_${Date.now().toString(36)}_${Math.random().toString(36).slice(2,10)}`;}
   function read(){try{const v=JSON.parse(localStorage.getItem(OUTBOX_KEY)||'[]');return Array.isArray(v)?v:[];}catch{return [];}}
-  function write(rows){localStorage.setItem(OUTBOX_KEY,JSON.stringify((Array.isArray(rows)?rows:[]).slice(-MAX_OUTBOX)));renderManagerState();}
+  function write(rows){localStorage.setItem(OUTBOX_KEY,JSON.stringify(Array.isArray(rows)?rows:[]));renderManagerState();}
   function manager(){return api()?.sanitizeManager?.(state?.managerWhatsapp)||{name:'Gerente',phone:'',enabled:false,updatedAt:0};}
   function configured(){try{return typeof isWhatsappConfigured==='function'&&isWhatsappConfigured();}catch{return false;}}
   function normalize(v){return api()?.normalizePhone?.(v)||String(v||'').replace(/\D/g,'');}
@@ -31,8 +30,6 @@
   function commandExists(id){return (state?.commands||[]).find(c=>String(c.id)===String(id))||(state?.history||[]).find(c=>String(c.id)===String(id));}
   function commandTotalValue(c){try{return typeof commandTotal==='function'?Number(commandTotal(c)||0):0;}catch{return 0;}}
   function commandLabelValue(c){try{return typeof commandLabel==='function'?commandLabel(c):[c?.table,c?.customer].filter(Boolean).join(' • ');}catch{return 'Comanda';}}
-
-  function findOpenBatch(commandId){return read().find(b=>String(b.commandId)===String(commandId)&&(b.status==='pending'||b.status==='failed'));}
 
   function queueManagerDelta(c,p,delta){
     const m=manager();
