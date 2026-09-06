@@ -1,7 +1,7 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
 
-const EDGE_VERSION = "rota27-access-control-v0.25.208";
+const EDGE_VERSION = "rota27-access-control-v0.25.211";
 const PERMISSION_KEYS = ["commands","menu","panel","history","clients","receivables","stock","purchases","inventory","settings","devices"] as const;
 type PermissionKey = typeof PERMISSION_KEYS[number];
 type PermissionMode = "none" | "view" | "edit";
@@ -28,6 +28,34 @@ function safeEqual(a: string, b: string) {
 
 function cleanText(value: unknown, max = 160) {
   return String(value ?? "").trim().replace(/\s+/g, " ").slice(0, max);
+}
+
+function base64Url(bytes: Uint8Array) {
+  let binary = "";
+  for (const byte of bytes) binary += String.fromCharCode(byte);
+  return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
+}
+
+async function deriveDeviceToken(masterSecret: string, storeId: string, deviceId: string) {
+  const key = await crypto.subtle.importKey(
+    "raw",
+    new TextEncoder().encode(masterSecret),
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign"],
+  );
+  const signature = new Uint8Array(await crypto.subtle.sign(
+    "HMAC",
+    key,
+    new TextEncoder().encode(`rota27-device-v1|${storeId}|${deviceId}`),
+  ));
+  return `r27d_${base64Url(signature)}`;
+}
+
+async function tokenMatches(masterSecret: string, storeId: string, deviceId: string, supplied: string) {
+  if (safeEqual(masterSecret, supplied)) return true;
+  if (!deviceId || !masterSecret || !supplied) return false;
+  return safeEqual(await deriveDeviceToken(masterSecret, storeId, deviceId), supplied);
 }
 
 function fullPermissions() {
@@ -62,14 +90,11 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
   if (req.method !== "POST") return json(405, { ok: false, error: "Método não permitido." });
 
-  const expectedToken = Deno.env.get("ROTA27_DEVICE_TOKEN") || "";
-  const suppliedToken = req.headers.get("x-rota27-device-token") || "";
-  if (!safeEqual(expectedToken, suppliedToken)) return json(401, { ok: false, error: "Dispositivo não autorizado." });
-
   const supabaseUrl = Deno.env.get("SUPABASE_URL") || "";
   const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "";
+  const masterSecret = Deno.env.get("ROTA27_DEVICE_TOKEN") || "";
   const storeId = cleanText(Deno.env.get("ROTA27_SYNC_STORE_ID") || "rota27-bodega", 80);
-  if (!supabaseUrl || !serviceRoleKey) return json(500, { ok: false, error: "Supabase não configurado." });
+  if (!supabaseUrl || !serviceRoleKey || !masterSecret) return json(500, { ok: false, error: "Supabase não configurado." });
 
   let body: Record<string, unknown>;
   try { body = await req.json(); }
@@ -81,6 +106,11 @@ Deno.serve(async (req) => {
   const action = cleanText(body.action, 40);
   const deviceId = cleanText(body.deviceId, 120);
   if (!deviceId) return json(400, { ok: false, error: "deviceId obrigatório." });
+
+  const suppliedToken = req.headers.get("x-rota27-device-token") || "";
+  if (!(await tokenMatches(masterSecret, storeId, deviceId, suppliedToken))) {
+    return json(401, { ok: false, code: "device_unauthorized", error: "Dispositivo não autorizado.", edgeVersion: EDGE_VERSION });
+  }
 
   const db = createClient(supabaseUrl, serviceRoleKey, { auth: { persistSession: false, autoRefreshToken: false } });
   const fields = "device_id,device_name,status,employee_name,access_role,permissions,permissions_updated_at,last_seen_at,app_version,release_version";
@@ -96,15 +126,18 @@ Deno.serve(async (req) => {
     if (!caller) return json(403, { ok: false, code: "device_not_registered", error: "Aparelho ainda não registrado na sincronização.", edgeVersion: EDGE_VERSION });
     if (cleanText(caller.status || "active", 20) !== "active") return json(403, { ok: false, code: "device_inactive", error: "Este aparelho está bloqueado para acesso.", edgeVersion: EDGE_VERSION });
 
+    const callerRole = cleanText(caller.access_role || "staff", 20) === "owner" ? "owner" : "staff";
+    const callerPermissions = normalizePermissions(caller.permissions);
+    const canManageDevices = callerRole === "owner" || callerPermissions.devices === "edit";
+
     if (action === "profile") {
       return json(200, { ok: true, edgeVersion: EDGE_VERSION, deviceId, access: accessPayload(caller) });
     }
 
-    if (cleanText(caller.access_role || "staff", 20) !== "owner") {
-      return json(403, { ok: false, code: "owner_required", error: "Somente um aparelho proprietário pode gerenciar funcionários e permissões.", edgeVersion: EDGE_VERSION });
-    }
-
     if (action === "list") {
+      if (!canManageDevices) {
+        return json(403, { ok: false, code: "devices_edit_required", error: "Gerenciamento de aparelhos não liberado.", edgeVersion: EDGE_VERSION });
+      }
       const includeRemoved = body.includeRemoved === true;
       let query = db.from("rota27_sync_devices").select(fields).eq("store_id", storeId).order("last_seen_at", { ascending: false }).limit(100);
       if (!includeRemoved) query = query.neq("status", "removed");
@@ -119,6 +152,9 @@ Deno.serve(async (req) => {
     }
 
     if (action === "update") {
+      if (callerRole !== "owner") {
+        return json(403, { ok: false, code: "owner_required", error: "Somente um aparelho proprietário pode alterar níveis e permissões de outros aparelhos.", edgeVersion: EDGE_VERSION });
+      }
       const targetDeviceId = cleanText(body.targetDeviceId, 120);
       if (!targetDeviceId) return json(400, { ok: false, error: "Aparelho alvo obrigatório.", edgeVersion: EDGE_VERSION });
       if (targetDeviceId === deviceId) return json(400, { ok: false, error: "O aparelho proprietário atual não pode alterar o próprio nível de acesso.", edgeVersion: EDGE_VERSION });
