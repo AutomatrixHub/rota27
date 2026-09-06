@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#F5E9D5" />
   <!-- rota27-version permanece 0.22.0 como gate de compatibilidade das camadas v0.21/v0.22. -->
   <meta name="rota27-version" content="0.22.0" />
-  <meta name="rota27-release-version" content="0.25.208" />
+  <meta name="rota27-release-version" content="0.25.209" />
   <meta name="rota27-fixed-copy-whatsapp" content="5527997769279" />
   <title>Rota 27 Bodega • Comandas</title>
   <style>
@@ -25,11 +25,11 @@
         const res=await fetch('./base-v013.html',{cache:'no-store'});
         if(!res.ok)throw new Error('Não foi possível carregar a base do aplicativo');
         let html=await res.text();
-        html=html.replace(/(<span id="v14VersionBadge"[^>]*>)[^<]*(<\/span>)/, '$1v0.25.208$2');
+        html=html.replace(/(<span id="v14VersionBadge"[^>]*>)[^<]*(<\/span>)/, '$1v0.25.209$2');
         html=html.replace(/<title>[\s\S]*?<\/title>/i,'<title>Rota 27 Bodega • Comandas</title>');
         html=html.replace('</head>',
           '<meta name="rota27-version" content="0.22.0" />'+
-          '<meta name="rota27-release-version" content="0.25.208" />'+
+          '<meta name="rota27-release-version" content="0.25.209" />'+
           '<style id="rota27BootstrapGate">body{opacity:0!important}body.r27-bootstrap-ready{opacity:1!important;transition:opacity .12s ease}</style>'+
           '<meta name="rota27-fixed-copy-whatsapp" content="5527997769279" />'+
           '<link rel="stylesheet" href="./assets/v014.css" />'+
@@ -81,7 +81,7 @@
           '<link id="v02574WhatsappConsentCss" rel="stylesheet" href="./assets/v02574-whatsapp-consent.css?v=02574r1" />'+
           '<link id="v02575CardapioCompactEditCss" rel="stylesheet" href="./assets/v02575-cardapio-compact-edit.css?v=02576r1" />'+
           '<link id="v02579RoundedBorderCss" rel="stylesheet" href="./assets/v02577-menu-option-b.css?v=02579r1" />'+
-          '<link id="v025208DeviceAccessCss" rel="stylesheet" href="./assets/v025208-device-access.css?v=025208r1" />'+
+          '<link id="v025208DeviceAccessCss" rel="stylesheet" href="./assets/v025208-device-access.css?v=025209r1" />'+
           '</head>');
         html=html.replace('</body>',
           '<script src="./assets/v014.js"><\/script>'+
@@ -89,7 +89,7 @@
           '<script src="./assets/v014-rc2-category-fix.js"><\/script>'+
           '<script src="./assets/v014-final.js"><\/script>'+
           '<script src="./assets/v015-sync.js?v=025183r1"><\/script>'+
-          '<script id="v025208DeviceAccessJs" src="./assets/v025208-device-access.js?v=025208r1"><\/script>'+
+          '<script id="v025208DeviceAccessJs" src="./assets/v025208-device-access.js?v=025209r1"><\/script>'+
           '<script src="./assets/v015-dev2.js?v=025169r1"><\/script>'+
           '<script src="./assets/v015-dev3.js"><\/script>'+
           '<script src="./assets/v015-dev4.js?v=025103r1"><\/script>'+
@@ -149,7 +149,7 @@
           '<script id="v02573WhatsappCancelJs" src="./assets/v02573-whatsapp-cancel.js?v=025195r1"><\/script>'+
           '<script id="v02574WhatsappConsentJs" src="./assets/v02574-whatsapp-consent.js?v=02574r1"><\/script>'+
           '<script id="v02598CommandEmptyStateJs" src="./assets/v02598-command-empty-state.js?v=02598r1"><\/script>'+
-          '<script src="./assets/roadmap-loader.js?v=025208r1"><\/script>'+
+          '<script src="./assets/roadmap-loader.js?v=025209r1"><\/script>'+
           '<script>setTimeout(function(){document.body&&document.body.classList.add("r27-bootstrap-ready");},4000);<\/script>'+
           '</body>');
         document.open();document.write(html);document.close();
