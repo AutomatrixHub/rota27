@@ -1,12 +1,12 @@
 /* Rota 27 v0.25.5 — cópia fixa dos lançamentos de comanda
- * Destino fixo definido pela release: +55 27 99776-9279.
+ * Destino fixo definido pela release: +55 27 98813-3915.
  * Reaproveita o mesmo backend/template do WhatsApp já configurado no aparelho.
  */
 (function(){
   'use strict';
 
   const VERSION='0.25.5';
-  const FALLBACK_PHONE='5527997769279';
+  const FALLBACK_PHONE='5527988133915';
   const OUTBOX_KEY='rota27_v0255_fixed_copy_outbox_v1';
   const BATCH_DELAY_MS=4500;
   const RETRY_BASE_MS=12000;
@@ -157,7 +157,7 @@
     const note=document.createElement('div');
     note.id='v0255FixedCopyNote';
     note.className='v017-manager-note';
-    note.innerHTML='<strong>Cópia fixa adicional</strong><span>Além do gerente, os lançamentos também são enviados para <b>+55 27 99776-9279</b>. Este número é fixo nesta versão e não precisa ser configurado. Se o gerente usar o mesmo número, o Rota 27 envia apenas uma cópia.</span>';
+    note.innerHTML='<strong>Cópia fixa adicional</strong><span>Além do gerente, os lançamentos também são enviados para <b>+55 27 98813-3915</b>. Este número é fixo nesta versão e não precisa ser configurado. Se o gerente usar o mesmo número, o Rota 27 envia apenas uma cópia.</span>';
     if(reference)reference.insertAdjacentElement('afterend',note);else sheet.prepend(note);
     return true;
   }
@@ -167,7 +167,7 @@
     const note=byId('v0255FixedCopyNote');if(!note)return;
     const span=note.querySelector('span');if(!span)return;
     const pending=read().length;
-    span.innerHTML=`Além do gerente, os lançamentos também são enviados para <b>+55 27 99776-9279</b>. Este número é fixo nesta versão e não precisa ser configurado.${pending?` <b>${pending} envio${pending===1?'':'s'} pendente${pending===1?'':'s'}.</b>`:''}`;
+    span.innerHTML=`Além do gerente, os lançamentos também são enviados para <b>+55 27 98813-3915</b>. Este número é fixo nesta versão e não precisa ser configurado.${pending?` <b>${pending} envio${pending===1?'':'s'} pendente${pending===1?'':'s'}.</b>`:''}`;
   }
 
   function cleanupMissingCommands(){
@@ -188,7 +188,7 @@
       }
     });
     window.Rota27V0255FixedCopy={version:VERSION,phone:fixedPhone(),flushAll,queueFixedDelta};
-    console.info('[Rota27] v0.25.5 cópia fixa de WhatsApp ativa para +55 27 99776-9279.');
+    console.info('[Rota27] v0.25.5 cópia fixa de WhatsApp ativa para +55 27 98813-3915.');
   }
 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
