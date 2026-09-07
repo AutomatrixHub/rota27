@@ -1,6 +1,6 @@
 /* Rota 27 v0.25.216 — consistência ao vivo de itens de comanda
- * Canonicaliza add/editar/remover para que persistência, item_delta, WhatsApp e UI
- * aconteçam na mesma mutação e reduz a latência de pull enquanto o app está visível.
+ * Canonicaliza add/editar/remover/desfazer para que persistência, item_delta,
+ * WhatsApp e UI aconteçam na mesma mutação e reduz a latência de pull visível.
  */
 (function(){
   'use strict';
@@ -14,15 +14,15 @@
   let fastSyncTimer=null;
   let lastDomainPull=0;
 
-  const clean=(v,max=180)=>String(v??'').trim().replace(/\s+/g,' ').slice(0,max);
   const byId=id=>document.getElementById(id);
 
   function command(){try{return typeof currentCommand==='function'?currentCommand():null;}catch{return null;}}
-  function product(id){
-    try{if(typeof lineProduct==='function'){const c=command(),p=c?lineProduct(c,id):null;if(p)return p;}}catch{}
+  function productFor(c,id){
+    try{if(c&&typeof lineProduct==='function'){const p=lineProduct(c,id);if(p)return p;}}catch{}
     try{if(typeof productById==='function')return productById(id)||null;}catch{}
     return null;
   }
+  function product(id){return productFor(command(),id);}
   function testMode(){
     try{return window.Rota27V02581TestMode?.isActive?.()===true||document.body?.classList.contains('v02581-test-mode');}catch{return false;}
   }
@@ -97,13 +97,32 @@
     try{if(typeof showToast==='function')showToast(`${p.name||'Produto'} removido da comanda.`,false);}catch{}
   }
 
+  function canonicalUndoLast(){
+    let ref=null;try{ref=lastUndo;}catch{}
+    if(!ref)return;
+    let c=null;try{c=(state?.commands||[]).find(x=>String(x.id)===String(ref.commandId));}catch{}
+    if(c&&Number(c.items?.[ref.productId]||0)>0){
+      const id=String(ref.productId),p=productFor(c,id);
+      if(p){
+        const next=Number(c.items[id]||0)-1;
+        if(next>0)c.items[id]=next;else{delete c.items[id];if(c.itemMeta)delete c.itemMeta[id];}
+        c.updatedAt=Date.now();
+        afterMutation(c,id,p,-1,'command-item-undo');
+        try{if(typeof showToast==='function')showToast('Último lançamento desfeito',false);}catch{}
+      }
+    }
+    try{lastUndo=null;}catch{}
+  }
+
   function installCanonicalMutations(){
     canonicalAddProduct.__r27v025216=true;
     canonicalChangeQty.__r27v025216=true;
     canonicalRemoveItem.__r27v025216=true;
+    canonicalUndoLast.__r27v025216=true;
     try{window.addProduct=canonicalAddProduct;addProduct=canonicalAddProduct;}catch{try{window.addProduct=canonicalAddProduct;}catch{}}
     try{window.changeQty=canonicalChangeQty;changeQty=canonicalChangeQty;}catch{try{window.changeQty=canonicalChangeQty;}catch{}}
     try{window.removeItem=canonicalRemoveItem;removeItem=canonicalRemoveItem;}catch{try{window.removeItem=canonicalRemoveItem;}catch{}}
+    try{window.undoLast=canonicalUndoLast;undoLast=canonicalUndoLast;}catch{try{window.undoLast=canonicalUndoLast;}catch{}}
   }
 
   function repairDomainReplayOnce(){
