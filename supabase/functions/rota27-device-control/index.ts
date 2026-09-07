@@ -1,7 +1,7 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
 
-const EDGE_VERSION = "rota27-device-control-v0.25.89";
+const EDGE_VERSION = "rota27-device-control-v0.25.215";
 const corsHeaders = {
   "access-control-allow-origin": "*",
   "access-control-allow-headers": "content-type, x-rota27-device-token",
@@ -115,7 +115,7 @@ Deno.serve(async (req) => {
 
     if (action === "list") {
       const includeRemoved = body.includeRemoved === true;
-      let query = db.from("rota27_sync_devices").select(deviceFields).eq("store_id", storeId).order("last_seen_at", { ascending: false }).limit(100);
+      let query = db.from("rota27_sync_devices").select(deviceFields).eq("store_id", storeId).neq("access_role", "developer").order("last_seen_at", { ascending: false }).limit(100);
       if (!includeRemoved) query = query.neq("status", "removed");
       const { data, error } = await query;
       if (error) throw new Error(error.message);

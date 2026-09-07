@@ -1,10 +1,11 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
 
-const EDGE_VERSION = "rota27-access-control-v0.25.211";
+const EDGE_VERSION = "rota27-access-control-v0.25.215";
 const PERMISSION_KEYS = ["commands","menu","panel","history","clients","receivables","stock","purchases","inventory","settings","devices"] as const;
 type PermissionKey = typeof PERMISSION_KEYS[number];
 type PermissionMode = "none" | "view" | "edit";
+type AccessRole = "owner" | "staff" | "developer";
 
 const corsHeaders = {
   "access-control-allow-origin": "*",
@@ -28,6 +29,15 @@ function safeEqual(a: string, b: string) {
 
 function cleanText(value: unknown, max = 160) {
   return String(value ?? "").trim().replace(/\s+/g, " ").slice(0, max);
+}
+
+function roleOf(value: unknown): AccessRole {
+  const role = cleanText(value || "staff", 20);
+  return role === "developer" ? "developer" : role === "owner" ? "owner" : "staff";
+}
+
+function privileged(role: AccessRole) {
+  return role === "owner" || role === "developer";
 }
 
 function base64Url(bytes: Uint8Array) {
@@ -77,11 +87,13 @@ function normalizePermissions(value: unknown) {
 }
 
 function accessPayload(device: any) {
-  const role = cleanText(device?.access_role || "staff", 20) === "owner" ? "owner" : "staff";
+  const technicalRole = roleOf(device?.access_role);
+  const role = technicalRole === "developer" ? "owner" : technicalRole;
   return {
     role,
+    technicalRole,
     employeeName: cleanText(device?.employee_name || "", 120),
-    permissions: role === "owner" ? fullPermissions() : normalizePermissions(device?.permissions),
+    permissions: privileged(technicalRole) ? fullPermissions() : normalizePermissions(device?.permissions),
     updatedAt: device?.permissions_updated_at || null,
   };
 }
@@ -126,9 +138,9 @@ Deno.serve(async (req) => {
     if (!caller) return json(403, { ok: false, code: "device_not_registered", error: "Aparelho ainda não registrado na sincronização.", edgeVersion: EDGE_VERSION });
     if (cleanText(caller.status || "active", 20) !== "active") return json(403, { ok: false, code: "device_inactive", error: "Este aparelho está bloqueado para acesso.", edgeVersion: EDGE_VERSION });
 
-    const callerRole = cleanText(caller.access_role || "staff", 20) === "owner" ? "owner" : "staff";
+    const callerRole = roleOf(caller.access_role);
     const callerPermissions = normalizePermissions(caller.permissions);
-    const canManageDevices = callerRole === "owner" || callerPermissions.devices === "edit";
+    const canManageDevices = privileged(callerRole) || callerPermissions.devices === "edit";
 
     if (action === "profile") {
       return json(200, { ok: true, edgeVersion: EDGE_VERSION, deviceId, access: accessPayload(caller) });
@@ -139,7 +151,13 @@ Deno.serve(async (req) => {
         return json(403, { ok: false, code: "devices_edit_required", error: "Gerenciamento de aparelhos não liberado.", edgeVersion: EDGE_VERSION });
       }
       const includeRemoved = body.includeRemoved === true;
-      let query = db.from("rota27_sync_devices").select(fields).eq("store_id", storeId).order("last_seen_at", { ascending: false }).limit(100);
+      let query = db
+        .from("rota27_sync_devices")
+        .select(fields)
+        .eq("store_id", storeId)
+        .neq("access_role", "developer")
+        .order("last_seen_at", { ascending: false })
+        .limit(100);
       if (!includeRemoved) query = query.neq("status", "removed");
       const { data, error } = await query;
       if (error) throw new Error(error.message);
@@ -152,7 +170,7 @@ Deno.serve(async (req) => {
     }
 
     if (action === "update") {
-      if (callerRole !== "owner") {
+      if (!privileged(callerRole)) {
         return json(403, { ok: false, code: "owner_required", error: "Somente um aparelho proprietário pode alterar níveis e permissões de outros aparelhos.", edgeVersion: EDGE_VERSION });
       }
       const targetDeviceId = cleanText(body.targetDeviceId, 120);
@@ -160,6 +178,9 @@ Deno.serve(async (req) => {
       if (targetDeviceId === deviceId) return json(400, { ok: false, error: "O aparelho proprietário atual não pode alterar o próprio nível de acesso.", edgeVersion: EDGE_VERSION });
       const target = await getDevice(targetDeviceId);
       if (!target) return json(404, { ok: false, error: "Aparelho não encontrado.", edgeVersion: EDGE_VERSION });
+      if (roleOf(target.access_role) === "developer" && callerRole !== "developer") {
+        return json(404, { ok: false, error: "Aparelho não encontrado.", edgeVersion: EDGE_VERSION });
+      }
 
       const role = cleanText(body.role, 20) === "owner" ? "owner" : "staff";
       const employeeName = cleanText(body.employeeName, 120) || null;
