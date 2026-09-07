@@ -242,6 +242,11 @@
       const state=coreCancellationState(commandId);
       if(!state.known){next.push(row);continue;}
       if(!state.committed){
+        if(rowStage(row)===STAGE_COMMITTED){
+          next.push(row);
+          if(emitRecovered&&row?.commandSnapshot)recover.push(row);
+          continue;
+        }
         changed=true;
         continue;
       }
@@ -317,30 +322,30 @@
       return;
     }
 
-    const previousCommands=clone(s.commands),previousWhatsappOutbox=clone(Array.isArray(s.whatsappOutbox)?s.whatsappOutbox:[]);
+    const committed=commitCancelRow(queued.row?.id,originalCommand,cancelledAt);
+    if(!committed){
+      if(rowStage(queued.row)!==STAGE_COMMITTED)removeCancelQueueRow(queued.row?.id);
+      try{showToast('Não foi possível confirmar o registro durável do cancelamento. Tente novamente.',true);}catch{}
+      return;
+    }
+
+    /* A fila committed é o write-ahead log do cancelamento. O tombstone é emitido
+       antes da escrita do core para impedir que um pull concorrente ressuscite a comanda. */
+    emitDurableCancellation(originalCommand,cancelledAt);
     clearWhatsappForCommand(id);
     s.commands=(s.commands||[]).filter(x=>String(x?.id||'')!==id);
 
     let persisted=false;
     try{
       if(typeof save==='function')save();
-      const state=coreCancellationState(id);
-      persisted=state.known&&state.committed;
+      const local=coreCancellationState(id);
+      persisted=local.known&&local.committed;
     }catch{}
-
     if(!persisted){
-      s.commands=previousCommands;
-      s.whatsappOutbox=previousWhatsappOutbox;
-      try{if(typeof save==='function')save();}catch{}
-      if(rowStage(queued.row)!==STAGE_COMMITTED)removeCancelQueueRow(queued.row?.id);
-      try{if(typeof resumeWhatsappOutbox==='function')setTimeout(resumeWhatsappOutbox,100);}catch{}
-      try{showToast('O cancelamento não foi confirmado porque o estado local não pôde ser salvo.',true);}catch{}
-      return;
+      console.warn('[Rota27 v0.25.196] Cancelamento confirmado no write-ahead log; core local será reconciliado pelo tombstone.');
+      try{window.Rota27V025197CommandCancelTombstones?.reconcile?.();}catch{}
     }
 
-    const committed=commitCancelRow(queued.row?.id,originalCommand,cancelledAt);
-    if(!committed)console.warn('[Rota27 v0.25.196] Cancelamento persistido localmente; promoção da fila será retomada na próxima reconciliação.');
-    emitDurableCancellation(originalCommand,cancelledAt);
     setTimeout(()=>{reconcileCancelQueue(false);flushCancelQueue();},0);
     try{activeCommandId=null;}catch{}
     byId('v0151CancelConfirm')?.classList.remove('open');
