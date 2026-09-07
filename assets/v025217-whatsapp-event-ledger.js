@@ -23,6 +23,7 @@
   const write=rows=>localStorage.setItem(OUTBOX_KEY,JSON.stringify(Array.isArray(rows)?rows:[]));
   const fixedPhone=()=>normalize(document.querySelector('meta[name="rota27-fixed-copy-whatsapp"]')?.content||'5527988133915');
   const manager=()=>{try{return window.Rota27V017?.sanitizeManager?.(state?.managerWhatsapp)||state?.managerWhatsapp||{};}catch{return {};}};
+  const testMode=()=>{try{return window.Rota27V02581TestMode?.isActive?.()===true||document.body?.classList.contains('v02581-test-mode');}catch{return false;}};
   const commandTotalValue=c=>{try{return typeof commandTotal==='function'?Number(commandTotal(c)||0):Number(c?.total||0)||0;}catch{return Number(c?.total||0)||0;}};
   const commandLabelValue=c=>{try{return typeof commandLabel==='function'?commandLabel(c):[c?.table,c?.customer].filter(Boolean).join(' • ');}catch{return 'Comanda';}};
   const configured=()=>{try{return typeof isWhatsappConfigured==='function'&&isWhatsappConfigured()&&waConfig?.functionUrl&&waConfig?.deviceToken;}catch{return false;}};
@@ -41,7 +42,7 @@
   }
 
   function queueImmutable(c,p,delta){
-    if(!c||!p||!Number(delta))return;
+    if(testMode()||!c||!p||!Number(delta))return;
     const mutationId=`${String(c.id)}_${uuid()}`;
     const used=new Set();
     const fixed=fixedPhone();
@@ -75,6 +76,7 @@
   async function flushOne(eventId){
     timers.delete(eventId);
     let rows=read(),row=rows.find(x=>x.eventId===eventId);if(!row)return;
+    if(testMode()){row.dueAt=now()+60000;row.status='pending';write(rows);schedule(eventId);return;}
     if(!configured()){
       row.status='failed';row.lastError='WhatsApp não configurado neste aparelho';row.dueAt=now()+60000;write(rows);schedule(eventId);return;
     }
