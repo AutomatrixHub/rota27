@@ -28,6 +28,17 @@
   const commandLabelValue=c=>{try{return typeof commandLabel==='function'?commandLabel(c):[c?.table,c?.customer].filter(Boolean).join(' • ');}catch{return 'Comanda';}};
   const configured=()=>{try{return typeof isWhatsappConfigured==='function'&&isWhatsappConfigured()&&waConfig?.functionUrl&&waConfig?.deviceToken;}catch{return false;}};
 
+  function commandById(id){
+    try{return (state?.commands||[]).find(c=>String(c.id)===String(id))||(state?.history||[]).find(c=>String(c.id)===String(id))||null;}catch{return null;}
+  }
+  function setCustomerStatus(commandId,status,error=''){
+    const c=commandById(commandId);if(!c)return;
+    try{if(typeof setWhatsappStatus==='function'){setWhatsappStatus(c,status,error);return;}}catch{}
+    c.whatsappLastStatus=status||'';c.whatsappLastError=error||'';c.whatsappLastAttemptAt=now();
+    try{if(typeof save==='function')save();}catch{}
+    try{if(typeof renderSaleWhatsappStatus==='function')renderSaleWhatsappStatus();}catch{}
+  }
+
   function enqueue(row){
     const rows=read();rows.push(row);write(rows);schedule(row.eventId);return row;
   }
@@ -54,6 +65,7 @@
     const customerPhone=normalize(c.whatsappPhone||'');
     if(c.whatsappOptIn===true&&validPhone(customerPhone)&&!used.has(customerPhone)){
       enqueue(deliveryRow(mutationId,'customer',c,p,delta,customerPhone,c.customer||'Cliente',commandLabelValue(c)));
+      setCustomerStatus(c.id,'pending');
       used.add(customerPhone);
     }
 
@@ -78,7 +90,7 @@
     let rows=read(),row=rows.find(x=>x.eventId===eventId);if(!row)return;
     if(testMode()){row.dueAt=now()+60000;row.status='pending';write(rows);schedule(eventId);return;}
     if(!configured()){
-      row.status='failed';row.lastError='WhatsApp não configurado neste aparelho';row.dueAt=now()+60000;write(rows);schedule(eventId);return;
+      row.status='failed';row.lastError='WhatsApp não configurado neste aparelho';row.dueAt=now()+60000;write(rows);if(row.audience==='customer')setCustomerStatus(row.commandId,'failed',row.lastError);schedule(eventId);return;
     }
     if(!validPhone(row.phone)||!row.item||!Number(row.item.delta)){
       write(rows.filter(x=>x.eventId!==eventId));return;
@@ -94,10 +106,11 @@
       const data=await response.json().catch(()=>({}));
       if(!response.ok||data.ok!==true)throw new Error(data.error||`HTTP ${response.status}`);
       write(read().filter(x=>x.eventId!==eventId));
+      if(row.audience==='customer')setCustomerStatus(row.commandId,'sent');
     }catch(err){
       rows=read();row=rows.find(x=>x.eventId===eventId);if(!row)return;
       row.status='failed';row.attempts=(row.attempts||0)+1;row.lastError=clean(err?.message||'Falha de conexão',180);
-      row.dueAt=now()+Math.min(120000,RETRY_BASE_MS*Math.pow(2,Math.min(row.attempts-1,3)));write(rows);schedule(eventId);
+      row.dueAt=now()+Math.min(120000,RETRY_BASE_MS*Math.pow(2,Math.min(row.attempts-1,3)));write(rows);if(row.audience==='customer')setCustomerStatus(row.commandId,'failed',row.lastError);schedule(eventId);
     }finally{clearTimeout(timeout);}
   }
 
