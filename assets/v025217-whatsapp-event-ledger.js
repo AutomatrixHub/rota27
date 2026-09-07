@@ -89,10 +89,12 @@
   }
 
   function recoverInterruptedSends(){
-    const rows=read();let changed=false;
+    const rows=read(),t=now();let changed=false;
     rows.forEach(row=>{
       if(row?.status!=='sending')return;
-      row.status='pending';row.sendingAt=0;row.dueAt=now();changed=true;
+      const started=Math.max(0,Number(row.sendingAt||0));
+      if(started&&t-started<SENDING_LEASE_MS)return;
+      row.status='pending';row.sendingAt=0;row.dueAt=t;changed=true;
     });
     if(changed)write(rows);
   }
@@ -123,6 +125,7 @@
       items:[row.item],total:Number(row.total||0),currency:'BRL',subjectCustomerName:row.subjectCustomerName||'',sentFrom:'rota27-pwa-event-ledger',clientTimestamp:new Date(Number(row.createdAt||now())).toISOString()
     };
     const ctrl=new AbortController(),timeout=setTimeout(()=>ctrl.abort(),12000);
+    let retry=false;
     try{
       const response=await fetch(String(waConfig.functionUrl||'').replace(/\/+$/,''),{method:'POST',headers:{'Content-Type':'application/json','x-rota27-device-token':waConfig.deviceToken},body:JSON.stringify(payload),signal:ctrl.signal});
       const data=await response.json().catch(()=>({}));
@@ -132,8 +135,10 @@
     }catch(err){
       rows=read();row=rows.find(x=>x.eventId===eventId);if(!row)return;
       row.status='failed';row.sendingAt=0;row.attempts=(row.attempts||0)+1;row.lastError=clean(err?.message||'Falha de conexão',180);
-      row.dueAt=now()+Math.min(120000,RETRY_BASE_MS*Math.pow(2,Math.min(row.attempts-1,3)));write(rows);if(row.audience==='customer')setCustomerStatus(row.commandId,'failed',row.lastError);schedule(eventId);
-    }finally{clearTimeout(timeout);inFlight.delete(eventId);}
+      row.dueAt=now()+Math.min(120000,RETRY_BASE_MS*Math.pow(2,Math.min(row.attempts-1,3)));write(rows);if(row.audience==='customer')setCustomerStatus(row.commandId,'failed',row.lastError);retry=true;
+    }finally{
+      clearTimeout(timeout);inFlight.delete(eventId);if(retry)schedule(eventId);
+    }
   }
 
   async function flushAll(){
