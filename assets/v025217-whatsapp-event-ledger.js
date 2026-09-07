@@ -11,7 +11,9 @@
   const REPLAY_KEY='rota27_v025217_manager_replay_v1';
   const SEND_DELAY_MS=700;
   const RETRY_BASE_MS=12000;
+  const SENDING_LEASE_MS=30000;
   const timers=new Map();
+  const inFlight=new Set();
   let flushing=false;
 
   const now=()=>Date.now();
@@ -48,7 +50,7 @@
     return {
       eventId,mutationId,audience,commandId:String(c.id),commandLabel:clean(label,160),customerName:clean(customerName,120),phone:normalize(phone),
       item:{productId:String(p.id||p.name||''),name:clean(p.name||'Produto',160),delta:Number(delta),quantity:Math.abs(Number(delta)),unitPrice:Number(p.price||0)},
-      total:Number(commandTotalValue(c).toFixed(2)),subjectCustomerName:clean(c.customer||'',120),createdAt:now(),dueAt:now()+SEND_DELAY_MS,attempts:0,status:'pending',lastError:''
+      total:Number(commandTotalValue(c).toFixed(2)),subjectCustomerName:clean(c.customer||'',120),createdAt:now(),dueAt:now()+SEND_DELAY_MS,attempts:0,status:'pending',lastError:'',sendingAt:0
     };
   }
 
@@ -78,24 +80,44 @@
     setTimeout(flushAll,SEND_DELAY_MS+60);
   }
 
-  function schedule(eventId){
+  function schedule(eventId,minimumDelay=0){
+    if(inFlight.has(eventId))return;
     const row=read().find(x=>x.eventId===eventId);if(!row)return;
     const old=timers.get(eventId);if(old)clearTimeout(old);
-    const delay=Math.max(200,Number(row.dueAt||now())-now());
+    const delay=Math.max(200,Number(minimumDelay||0),Number(row.dueAt||now())-now());
     timers.set(eventId,setTimeout(()=>flushOne(eventId),Math.min(delay,2147483000)));
+  }
+
+  function recoverInterruptedSends(){
+    const rows=read();let changed=false;
+    rows.forEach(row=>{
+      if(row?.status!=='sending')return;
+      row.status='pending';row.sendingAt=0;row.dueAt=now();changed=true;
+    });
+    if(changed)write(rows);
   }
 
   async function flushOne(eventId){
     timers.delete(eventId);
+    if(inFlight.has(eventId))return;
+
     let rows=read(),row=rows.find(x=>x.eventId===eventId);if(!row)return;
-    if(testMode()){row.dueAt=now()+60000;row.status='pending';write(rows);schedule(eventId);return;}
+    if(row.status==='sending'){
+      const started=Math.max(0,Number(row.sendingAt||0));
+      const age=started?now()-started:SENDING_LEASE_MS+1;
+      if(age<SENDING_LEASE_MS){schedule(eventId,SENDING_LEASE_MS-age+100);return;}
+      row.status='pending';row.sendingAt=0;row.dueAt=now();write(rows);
+    }
+    if(testMode()){row.dueAt=now()+60000;row.status='pending';row.sendingAt=0;write(rows);schedule(eventId);return;}
     if(!configured()){
-      row.status='failed';row.lastError='WhatsApp não configurado neste aparelho';row.dueAt=now()+60000;write(rows);if(row.audience==='customer')setCustomerStatus(row.commandId,'failed',row.lastError);schedule(eventId);return;
+      row.status='failed';row.sendingAt=0;row.lastError='WhatsApp não configurado neste aparelho';row.dueAt=now()+60000;write(rows);if(row.audience==='customer')setCustomerStatus(row.commandId,'failed',row.lastError);schedule(eventId);return;
     }
     if(!validPhone(row.phone)||!row.item||!Number(row.item.delta)){
       write(rows.filter(x=>x.eventId!==eventId));return;
     }
-    row.status='sending';write(rows);
+
+    inFlight.add(eventId);
+    row.status='sending';row.sendingAt=now();write(rows);
     const payload={
       eventId:row.eventId,mutationId:row.mutationId,audience:row.audience,commandId:row.commandId,commandLabel:row.commandLabel,customerName:row.customerName,phone:row.phone,consent:true,
       items:[row.item],total:Number(row.total||0),currency:'BRL',subjectCustomerName:row.subjectCustomerName||'',sentFrom:'rota27-pwa-event-ledger',clientTimestamp:new Date(Number(row.createdAt||now())).toISOString()
@@ -109,14 +131,14 @@
       if(row.audience==='customer')setCustomerStatus(row.commandId,'sent');
     }catch(err){
       rows=read();row=rows.find(x=>x.eventId===eventId);if(!row)return;
-      row.status='failed';row.attempts=(row.attempts||0)+1;row.lastError=clean(err?.message||'Falha de conexão',180);
+      row.status='failed';row.sendingAt=0;row.attempts=(row.attempts||0)+1;row.lastError=clean(err?.message||'Falha de conexão',180);
       row.dueAt=now()+Math.min(120000,RETRY_BASE_MS*Math.pow(2,Math.min(row.attempts-1,3)));write(rows);if(row.audience==='customer')setCustomerStatus(row.commandId,'failed',row.lastError);schedule(eventId);
-    }finally{clearTimeout(timeout);}
+    }finally{clearTimeout(timeout);inFlight.delete(eventId);}
   }
 
   async function flushAll(){
     if(flushing||!navigator.onLine)return;flushing=true;
-    try{for(const row of read()){if(Number(row.dueAt||0)<=now())await flushOne(row.eventId);else schedule(row.eventId);}}
+    try{for(const row of read()){if(inFlight.has(row.eventId))continue;if(Number(row.dueAt||0)<=now())await flushOne(row.eventId);else schedule(row.eventId);}}
     finally{flushing=false;}
   }
 
@@ -139,12 +161,12 @@
   }
 
   function start(){
-    installDispatcher();replayManagerConfigOnce();read().forEach(x=>schedule(x.eventId));setTimeout(flushAll,900);
+    recoverInterruptedSends();installDispatcher();replayManagerConfigOnce();read().forEach(x=>schedule(x.eventId));setTimeout(flushAll,900);
     setTimeout(installDispatcher,350);
     setInterval(()=>{installDispatcher();if(navigator.onLine)flushAll();},5000);
     window.addEventListener('online',()=>{installDispatcher();setTimeout(flushAll,180);});
     document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){installDispatcher();setTimeout(flushAll,120);}});
-    window.Rota27V025217WhatsappEventLedger={version:VERSION,queue:queueImmutable,flushAll,pending:()=>read().map(x=>({...x}))};
+    window.Rota27V025217WhatsappEventLedger={version:VERSION,queue:queueImmutable,flushAll,pending:()=>read().map(x=>({...x})),inFlight:()=>Array.from(inFlight)};
     console.info('[Rota27] v0.25.217 ledger imutável de WhatsApp ativo.');
   }
 
