@@ -3,8 +3,10 @@
   'use strict';
 
   const SYNC_CONFIG_KEY='rota27_sync_config_v1';
+  const STATE_WATCH_MS=15000;
   let baseShowScreen=null;
-  let refreshTimer=null;
+  let stateWatchTimer=null;
+  let lastPanelKey='';
 
   function byId(id){return document.getElementById(id);}
   function esc(value){
@@ -71,9 +73,7 @@
     return nav;
   }
 
-  function renderPanel(){
-    const screen=ensurePanel();
-    if(!screen)return;
+  function panelData(){
     const commands=Array.isArray(state?.commands)?state.commands:[];
     const openTotal=commands.reduce((sum,c)=>sum+commandTotalValue(c),0);
     const openUnits=commands.reduce((sum,c)=>sum+commandUnits(c),0);
@@ -88,11 +88,41 @@
     const devices=Array.isArray(sync.devices)?sync.devices.length:0;
     const waReady=typeof isWhatsappConfigured==='function'?Boolean(isWhatsappConfigured()):false;
     const online=navigator.onLine;
+    const day=new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'});
+    return {commands,openTotal,openUnits,closed,revenue,soldUnits,avg,sync,syncReady,pending,conflicts,devices,waReady,online,day};
+  }
 
+  function panelKey(data){
+    return JSON.stringify({
+      day:data.day,
+      commandCount:data.commands.length,
+      openTotal:data.openTotal,
+      openUnits:data.openUnits,
+      closedCount:data.closed.length,
+      revenue:data.revenue,
+      soldUnits:data.soldUnits,
+      syncReady:data.syncReady,
+      pending:data.pending,
+      conflicts:data.conflicts,
+      devices:data.devices,
+      waReady:data.waReady,
+      online:data.online
+    });
+  }
+
+  function renderPanel(force=false){
+    const screen=ensurePanel();
+    if(!screen)return false;
+    const data=panelData();
+    const nextKey=panelKey(data);
+    if(!force&&lastPanelKey===nextKey&&screen.childElementCount)return false;
+    lastPanelKey=nextKey;
+
+    const {commands,openTotal,openUnits,closed,revenue,soldUnits,avg,sync,syncReady,pending,conflicts,devices,waReady,online,day}=data;
     screen.innerHTML=`
       <div class="section-head v15d4-head">
         <div><h2>Painel</h2><p>Visão rápida da operação de hoje.</p></div>
-        <span class="badge">${esc(new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'}))}</span>
+        <span class="badge">${esc(day)}</span>
       </div>
 
       <section class="v15d4-section">
@@ -142,6 +172,7 @@
       }
       goBaseScreen(target);
     }));
+    return true;
   }
 
   function hideSaleChrome(){
@@ -156,7 +187,7 @@
     hideSaleChrome();
     const fab=byId('fabNew');
     if(fab)fab.style.display='none';
-    renderPanel();
+    renderPanel(true);
     window.scrollTo({top:0,behavior:'auto'});
   }
   function goBaseScreen(name){
@@ -176,22 +207,29 @@
     try{showScreen=window.showScreen;}catch{}
   }
 
-  function refreshWhenVisible(){
-    clearInterval(refreshTimer);
-    refreshTimer=setInterval(()=>{
-      if(byId('screenPanel')?.classList.contains('active'))renderPanel();
-    },3000);
+  function watchStateChanges(){
+    clearInterval(stateWatchTimer);
+    stateWatchTimer=setInterval(()=>{
+      if(byId('screenPanel')?.classList.contains('active'))renderPanel(false);
+    },STATE_WATCH_MS);
+  }
+
+  function refreshActive(force=false){
+    if(byId('screenPanel')?.classList.contains('active'))renderPanel(force);
   }
 
   function start(){
     ensurePanel();
     configureNav();
     patchShowScreen();
-    refreshWhenVisible();
-    window.addEventListener('online',()=>{if(byId('screenPanel')?.classList.contains('active'))renderPanel();});
-    window.addEventListener('offline',()=>{if(byId('screenPanel')?.classList.contains('active'))renderPanel();});
-    window.addEventListener('focus',()=>{if(byId('screenPanel')?.classList.contains('active'))renderPanel();});
-    console.info('[Rota27] Painel operacional carregado (v0.15 DEV.4).');
+    watchStateChanges();
+    window.addEventListener('online',()=>refreshActive(false));
+    window.addEventListener('offline',()=>refreshActive(false));
+    window.addEventListener('focus',()=>refreshActive(true));
+    window.addEventListener('pageshow',()=>refreshActive(true));
+    document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')refreshActive(true);});
+    ['rota27:v017-domain-updated','rota27:v019-turn-updated','rota27:v021-stock-updated','rota27:v022-purchases-updated','rota27:sync-reconciled','rota27:command-item-mutated'].forEach(name=>window.addEventListener(name,()=>refreshActive(false)));
+    console.info('[Rota27] Painel operacional carregado (v0.15 DEV.4 • estabilidade v0.25.220).');
   }
 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
