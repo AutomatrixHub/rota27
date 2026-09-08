@@ -228,9 +228,8 @@
     window.addEventListener('focus',()=>refreshActive(true));
     window.addEventListener('pageshow',()=>refreshActive(true));
     document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')refreshActive(true);});
-    ['rota27:v017-domain-updated','rota27:v019-turn-updated','rota27:v021-stock-updated','rota27:v022-purchases-updated','rota27:command-item-mutated'].forEach(name=>window.addEventListener(name,()=>refreshActive(true)));
-    window.addEventListener('rota27:sync-reconciled',()=>refreshActive(false));
-    console.info('[Rota27] Painel operacional carregado (v0.15 DEV.4 • estabilidade v0.25.220).');
+    ['rota27:v017-domain-updated','rota27:v019-turn-updated','rota27:v021-stock-updated','rota27:v022-purchases-updated','rota27:command-item-mutated','rota27:sync-reconciled'].forEach(name=>window.addEventListener(name,()=>refreshActive(false)));
+    console.info('[Rota27] Painel operacional carregado (v0.15 DEV.4 • estabilidade v0.25.221).');
   }
 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();

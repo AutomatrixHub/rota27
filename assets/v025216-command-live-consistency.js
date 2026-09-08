@@ -137,7 +137,10 @@
 
   function livePull(){
     if(document.visibilityState!=='visible'||!navigator.onLine)return;
-    const active=byId('screenSale')?.classList.contains('active')||byId('screenCommands')?.classList.contains('active')||byId('screenPanel')?.classList.contains('active');
+    // O pull agressivo existe para manter a edição/lista de comandas responsiva.
+    // No Painel ele gerava tráfego e eventos de domínio a cada 5,6 s sem benefício
+    // operacional, podendo acionar pontes legadas de redraw e causar cintilação.
+    const active=byId('screenSale')?.classList.contains('active')||byId('screenCommands')?.classList.contains('active');
     if(!active)return;
     try{window.v15SyncNow?.({pullOnly:true});}catch{}
     const now=Date.now();
@@ -153,7 +156,7 @@
     window.addEventListener('focus',()=>setTimeout(livePull,80));
     document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){installCanonicalMutations();setTimeout(livePull,80);}});
     window.Rota27V025216CommandLiveConsistency={version:VERSION,refresh:installCanonicalMutations,sync:livePull};
-    console.info('[Rota27] v0.25.216 consistência ao vivo de itens ativa.');
+    console.info('[Rota27] v0.25.216 consistência ao vivo de itens ativa • Painel fora do live pull desde v0.25.221.');
   }
 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
