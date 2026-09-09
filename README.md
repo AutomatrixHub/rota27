@@ -99,7 +99,7 @@ As telas **Novo cliente** e **Editar cliente** deixam de agendar foco automátic
 
 ## v0.25.105 — produto e categoria canônicos
 
-Os editores de produto e categoria deixam de agendar foco/seleção automáticos diretamente no código-base. O campo visual **Ícone**, já removido do produto desde a v0.25.80, passa a nascer como input oculto compatível. Com isso, foi eliminada a camada v0.25.80 que interceptava globalmente `focus()` e `select()` e transformava o formulário depois do carregamento.
+Os editores de produto e categoria deixam de agendar foco/seleção automáticos diretamente no código-base. O campo visual **Ícone**, já removido do produto desde a v0.25.80, passa a nascer como input oculto compatível. Com isso, foi eliminada a camada v0.25.80 que interceptava globalmente `focus()` e `select()` e transformava o formulário depois do carregamento. Promovida pelo PR #156.
 
 ## v0.25.104 — edição sem compensação de foco
 
@@ -152,6 +152,109 @@ O campo visual **Ícone** foi removido do cadastro/edição de produtos. Para pr
 
 A release não altera regras de produto, preços, estoque, backend ou integrações.
 
-## Documentação
+## v0.25.79 — Borda vermelha real com cantos arredondados
 
-O histórico detalhado das releases anteriores permanece em `docs/` e nos PRs correspondentes.
+A faixa vermelha interna da Opção B foi substituída por uma **borda esquerda real do próprio card**:
+- o vermelho agora acompanha o `border-radius` nos cantos superior e inferior;
+- a pseudo-faixa `::before` foi desativada;
+- a espessura permanece em 4px e o tom permanece `#da693d`;
+- o padding esquerdo foi compensado para manter o texto na mesma posição visual;
+- altura, largura, preço, botão Editar, tipografia, categoria e status permanecem inalterados.
+
+A correção é estritamente CSS e resolve a diferença de formato observada entre a proposta aprovada e a tela real.
+
+## v0.25.78 — Bordas vermelhas refinadas no Cardápio
+
+A Opção B do Cardápio permanece integralmente preservada, com um refinamento visual solicitado após comparação entre a proposta aprovada e a tela real em produção:
+- o acento vertical dos cards deixa o gradiente alaranjado da v0.25.77 e passa a usar vermelho-terra sólido `#da693d`;
+- o contorno do botão **Editar** usa o mesmo vermelho-terra, aproximando a produção da proposta visual aprovada;
+- dimensões, altura, tipografia, preço, categoria, status e organização dos cards não mudam.
+
+A alteração é estritamente CSS. Nenhum dado, regra de produto, backend ou integração foi alterado.
+
+## v0.25.77 — Cardápio sem ícones + cards Opção B
+
+### Cardápio
+A lista administrativa de produtos adota a **Opção B** aprovada:
+- ícones removidos de todos os produtos da tela **Cardápio**;
+- cards reorganizados em duas áreas: informações do produto à esquerda e preço/ação à direita;
+- barra vertical de destaque identifica visualmente cada card sem consumir largura útil;
+- preço aparece em pill terracota suave de alto contraste;
+- botão **Editar** fica logo abaixo do preço;
+- categoria e estado do produto permanecem visíveis na segunda linha;
+- altura permanece compacta para reduzir rolagem.
+
+A mudança é somente visual. Cadastro, edição, filtros, categorias, importação/exportação e regras de produto permanecem inalterados.
+
+## v0.25.76 — Editar comanda sem foco automático + preço vermelho
+
+### Editar comanda
+A tela **Editar comanda** passa a abrir sem foco inicial em qualquer campo ou elemento interativo, seguindo o mesmo comportamento já adotado na **Nova comanda**. O teclado virtual não deve abrir sozinho; o usuário escolhe explicitamente qual campo deseja editar.
+
+### Preço dos produtos
+Nos cards da tela de lançamento da comanda, o preço volta para o vermelho/terracota utilizado no design, mantendo todos os refinamentos compactos da v0.25.75.
+
+## v0.25.75 — Cardápio compacto e edição de comanda em destaque
+
+### Lançamento de produtos
+- ícones removidos dos botões de produtos no lançamento da comanda;
+- descrição dos produtos aumentada em 1px;
+- badge da quantidade já lançada movida para o canto inferior direito;
+- cards normais reduzidos para uma altura mais compacta, diminuindo rolagem;
+- `Mais usados recentemente/hoje` mantém Top 3, recebe tipografia maior e destaque discreto de cor;
+- atalhos do Top 3 passam a ter altura equivalente aos cards compactos da grade normal.
+
+### Editar comanda
+O antigo botão de lápis discreto no cabeçalho da comanda passa a ser uma ação laranja com texto **Editar comanda**, mantendo o mesmo fluxo funcional de edição.
+
+## v0.25.74 — Consentimento persistente de WhatsApp
+
+### Regra operacional
+A autorização para **atualizações operacionais da comanda** passa a pertencer ao cadastro do cliente, e não apenas à comanda atual.
+
+- ao selecionar um cliente que já autorizou, o checkbox de WhatsApp é marcado automaticamente;
+- a tela informa que a autorização já estava registrada e mostra a data disponível;
+- desmarcar o checkbox afeta somente a comanda atual e não revoga a autorização global;
+- a revogação global é uma ação separada e explícita;
+- se o cliente autorizar novamente após uma revogação, marcar o checkbox registra uma nova autorização;
+- clientes antigos com alguma comanda histórica `whatsappOptIn=true` são migrados como autorização já existente;
+- o consentimento é sincronizado entre aparelhos usando `client_upsert`, com armazenamento local próprio e cursor independente;
+- autorização de comanda não é reutilizada como autorização para marketing, eventos ou outras campanhas.
+
+### Cadastro de clientes
+O editor de cliente passa a exibir o estado **Autorizado / Revogado / Não registrado** para atualizações da comanda e permite registrar ou revogar a autorização de forma explícita.
+
+## v0.25.73 — Cancelamento + WhatsApp
+- cancelamento captura a comanda antes da limpeza legada da fila;
+- cliente autorizado recebe a comanda como **CANCELADA**;
+- itens aparecem como **REMOVIDO**;
+- total final do cancelamento é **R$ 0,00**;
+- envio possui fila persistente, retry e `eventId` idempotente.
+
+## Aniversários e relacionamento
+- parabéns automático às 09:30 permanece ativo;
+- solicitação de data de nascimento permanece limitada a 3 envios bem-sucedidos com 7 dias entre eles;
+- consentimento de atualização da comanda não altera as regras de aniversário ou eventos.
+
+## Preservação
+- nenhuma migration;
+- nenhuma Edge Function alterada nesta release;
+- nenhum reset ou exclusão de dados;
+- preços, produtos, estoque, comandas, clientes, recebíveis e histórico preservados;
+- sem `MutationObserver` e sem polling contínuo novo.
+
+## Atualização da PWA
+Não limpar `localStorage`, não reinstalar a PWA e não apagar dados de produção. Abra online, aguarde a atualização, feche completamente e abra novamente.
+
+## Documentação
+- `docs/STATUS-PRODUCAO.md`
+- `docs/RELEASE-v0.25.80.md`
+- `docs/RELEASE-v0.25.79.md`
+- `docs/RELEASE-v0.25.78.md`
+- `docs/RELEASE-v0.25.77.md`
+- `docs/RELEASE-v0.25.76.md`
+- `docs/RELEASE-v0.25.75.md`
+- `docs/RELEASE-v0.25.74.md`
+
+## Versão
+Produção: **0.25.80**
