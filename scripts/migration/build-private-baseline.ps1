@@ -2,7 +2,7 @@ param(
   [string]$SourceRepo = "https://github.com/AutomatrixHub/rota27.git",
   [string]$SourceSha = "5d009bc10d6d5c0095cd70d21dfcf5f7d995dc72",
   [string]$SecurityOverlaySha = "82a1f3067ef6660bff834d10dedb7cf4dbfc1979",
-  [string]$DestinationRoot = (Join-Path (Get-Location) "ROTA27-PRE-AZURE-20260909"),
+  [string]$DestinationRoot = (Join-Path (Join-Path ([Environment]::GetFolderPath([Environment+SpecialFolder]::LocalApplicationData)) "Rota27\Migration") ("ROTA27-PRE-AZURE-" + (Get-Date -Format "yyyyMMdd-HHmmss"))),
   [string]$PrivateRepo = "",
   [switch]$CreatePrivateRepo
 )
@@ -26,7 +26,23 @@ function Run-Git([string]$WorkingDir, [string[]]$GitArgs) {
   }
 }
 
+function Assert-OutsideCurrentGitWorktree([string]$Path) {
+  $root = $null
+  try { $root = ((& git rev-parse --show-toplevel 2>$null) | Out-String).Trim() } catch {}
+  if (-not $root) { return }
+  $rootFull = [IO.Path]::GetFullPath($root).TrimEnd('\','/')
+  $outFull = [IO.Path]::GetFullPath($Path).TrimEnd('\','/')
+  $prefix = $rootFull + [IO.Path]::DirectorySeparatorChar
+  if ($outFull.Equals($rootFull,[StringComparison]::OrdinalIgnoreCase) -or $outFull.StartsWith($prefix,[StringComparison]::OrdinalIgnoreCase)) {
+    throw "Por segurança, o baseline/bundle não pode ser criado dentro do repositório Git atual: $rootFull. Use uma pasta local fora do Git."
+  }
+}
+
 Require-Command git
+Assert-OutsideCurrentGitWorktree $DestinationRoot
+if ($DestinationRoot -match '(?i)[\\/]OneDrive[\\/]') {
+  Write-Warning "O destino parece estar dentro do OneDrive. O baseline é sanitizado, mas o bundle contém o histórico público integral; prefira a pasta local padrão para a preparação inicial."
+}
 
 if (Test-Path $DestinationRoot) {
   throw "O diretório de destino já existe: $DestinationRoot. Escolha outro caminho para evitar sobrescrita acidental."
