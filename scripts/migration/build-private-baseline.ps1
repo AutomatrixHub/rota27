@@ -15,11 +15,11 @@ function Require-Command([string]$Name) {
   }
 }
 
-function Run-Git([string]$WorkingDir, [string[]]$Args) {
+function Run-Git([string]$WorkingDir, [string[]]$GitArgs) {
   Push-Location $WorkingDir
   try {
-    & git @Args
-    if ($LASTEXITCODE -ne 0) { throw "git $($Args -join ' ') falhou com código $LASTEXITCODE" }
+    & git @GitArgs
+    if ($LASTEXITCODE -ne 0) { throw "git $($GitArgs -join ' ') falhou com código $LASTEXITCODE" }
   } finally {
     Pop-Location
   }
@@ -61,7 +61,7 @@ Write-Host "[3/8] Descobrindo a superfície operacional do PWA pelo service work
 $swPath = Join-Path $SourceDir "sw.js"
 if (-not (Test-Path $swPath)) { throw "sw.js não encontrado no commit fonte." }
 $sw = Get-Content $swPath -Raw
-$matches = [regex]::Matches($sw, "'\./([^']+)'\")
+$matches = [regex]::Matches($sw, "'\./([^']+)'")
 $frontendFiles = New-Object 'System.Collections.Generic.HashSet[string]' ([System.StringComparer]::OrdinalIgnoreCase)
 foreach ($m in $matches) {
   $raw = $m.Groups[1].Value
@@ -89,6 +89,8 @@ if ($missing.Count -gt 0) {
   $missing | Set-Content -Path (Join-Path $ArtifactDir "missing-app-shell-files.txt") -Encoding UTF8
   throw "Há arquivos referenciados pelo service worker que não existem no commit. Consulte missing-app-shell-files.txt."
 }
+
+$frontendFiles | Sort-Object | Set-Content -Path (Join-Path $ArtifactDir "frontend-operational-files.txt") -Encoding UTF8
 
 Write-Host "[4/8] Copiando somente o backend versionado atual..."
 $functionsSource = Join-Path $SourceDir "supabase\functions"
@@ -164,8 +166,10 @@ $secretPatterns = @(
   '(?i)\bsb_secret_[A-Za-z0-9_-]{20,}\b',
   '\beyJ[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]{20,}\b'
 )
+$textExtensions = @(".js", ".css", ".html", ".ts", ".md", ".txt", ".json", ".webmanifest", ".ps1")
 $hits = New-Object System.Collections.Generic.List[string]
 foreach ($file in Get-ChildItem $BaselineDir -Recurse -File) {
+  if (-not ($textExtensions -contains $file.Extension.ToLowerInvariant())) { continue }
   if ($file.Length -gt 5MB) { continue }
   $text = $null
   try { $text = Get-Content $file.FullName -Raw -ErrorAction Stop } catch { continue }
@@ -182,12 +186,14 @@ if ($hits.Count -gt 0) {
 }
 
 Write-Host "[7/8] Criando novo histórico Git com root commit..."
-Run-Git $BaselineDir @("init", "-b", "main")
+Run-Git $BaselineDir @("init")
 Run-Git $BaselineDir @("add", ".")
 Push-Location $BaselineDir
 try {
   & git -c user.name="Rota 27 Migration" -c user.email="migration@local.invalid" commit -m "Rota 27 private baseline from $SourceSha"
   if ($LASTEXITCODE -ne 0) { throw "Falha ao criar root commit do baseline." }
+  & git branch -M main
+  if ($LASTEXITCODE -ne 0) { throw "Falha ao definir branch main." }
 } finally { Pop-Location }
 $RootSha = (& git -C $BaselineDir rev-parse HEAD).Trim()
 $FileCount = (Get-ChildItem $BaselineDir -Recurse -File | Where-Object { $_.FullName -notmatch '[\\/]\.git[\\/]' }).Count
@@ -224,5 +230,7 @@ Write-Host "Bundle SHA:  $BundleHash"
 Write-Host "Arquivos:    $FileCount"
 Write-Host "Pasta:       $DestinationRoot"
 if (-not $CreatePrivateRepo) {
-  Write-Host "O repositório privado NÃO foi criado. Para fazê-lo em uma segunda execução, informe -PrivateRepo owner/nome -CreatePrivateRepo."
+  Write-Host "O repositório privado NÃO foi criado automaticamente."
+  Write-Host "Para publicar depois, entre em '$BaselineDir' e execute:"
+  Write-Host "  gh repo create OWNER/NOME --private --source . --remote origin --push"
 }
