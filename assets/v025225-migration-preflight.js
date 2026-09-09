@@ -26,7 +26,6 @@
   function readJson(key,fallback){
     try{const value=JSON.parse(localStorage.getItem(key)||'null');return value==null?fallback:value;}catch{return fallback;}
   }
-  function readArray(key){const value=readJson(key,[]);return Array.isArray(value)?value:[];}
   function syncConfig(){const value=readJson(SYNC_KEY,{});return value&&typeof value==='object'&&!Array.isArray(value)?value:{};}
   function currentRelease(){return clean(document.querySelector('meta[name="rota27-release-version"]')?.content||VERSION,40)||VERSION;}
   function validSyncConfig(cfg){
@@ -43,11 +42,19 @@
     }
     return [...keys].sort();
   }
+  function inspectStoredOutbox(key){
+    const raw=localStorage.getItem(key);
+    if(raw==null)return {count:0,valid:true,present:false};
+    try{
+      const value=JSON.parse(raw);
+      if(!Array.isArray(value))return {count:0,valid:false,present:true};
+      return {count:value.length,valid:true,present:true};
+    }catch{return {count:0,valid:false,present:true};}
+  }
   function localOutboxes(){
     return localOutboxKeys().map(key=>{
-      const raw=readJson(key,null);
-      const count=Array.isArray(raw)?raw.length:0;
-      return {key,label:KNOWN_OUTBOXES[key]||key,count,recognized:Array.isArray(raw)||raw==null};
+      const state=inspectStoredOutbox(key);
+      return {key,label:KNOWN_OUTBOXES[key]||key,count:state.count,valid:state.valid,present:state.present};
     });
   }
   function inspect(){
@@ -56,6 +63,7 @@
     const whatsapp=currentWhatsappOutbox().length;
     const domain=localOutboxes();
     const domainPending=domain.reduce((sum,row)=>sum+Math.max(0,Number(row.count||0)),0);
+    const invalidOutboxes=domain.filter(row=>row.present&&!row.valid);
     const cursor=Math.max(0,Number(cfg.cursor||0));
     const latest=Math.max(0,Number(cfg.latestServerSeq||0));
     const conflicts=Array.isArray(cfg.conflicts)?cfg.conflicts.length:0;
@@ -66,6 +74,7 @@
     if(primary)blockers.push(`Fila principal possui ${primary} pendente(s).`);
     if(whatsapp)blockers.push(`Fila WhatsApp do cliente possui ${whatsapp} item(ns).`);
     if(domainPending)blockers.push(`Filas de domínio possuem ${domainPending} pendente(s).`);
+    if(invalidOutboxes.length)blockers.push(`${invalidOutboxes.length} fila(s) local(is) não puderam ser interpretadas com segurança.`);
     if(latest>cursor)blockers.push(`Cursor local ${cursor} ainda está atrás do servidor ${latest}.`);
     if(conflicts)blockers.push(`Existem ${conflicts} aviso(s) de conflito para revisão.`);
     return {
@@ -74,7 +83,7 @@
       release:currentRelease(),
       online:navigator.onLine,
       sync:{enabled:cfg.enabled===true,initialized:cfg.initialized===true,cursor,latestServerSeq:latest,lastSyncAt:Number(cfg.lastSyncAt||0),hasError:!!clean(cfg.lastError||'',300),conflicts},
-      queues:{primary,whatsapp,domain,total:primary+whatsapp+domainPending},
+      queues:{primary,whatsapp,domain,total:primary+whatsapp+domainPending,invalid:invalidOutboxes.length},
       blockers
     };
   }
@@ -84,10 +93,10 @@
   }
   function render(result){
     const host=byId('v025225MigrationPreflightResult');if(!host)return;
-    const rows=result.queues.domain.filter(row=>row.count>0);
+    const rows=result.queues.domain.filter(row=>row.count>0||!row.valid);
     const queueDetails=rows.length
-      ? `<div class="r27-migration-preflight-queues">${rows.map(row=>`<span><b>${esc(row.label)}</b><strong>${row.count}</strong></span>`).join('')}</div>`
-      : '<div class="r27-migration-preflight-zero">Todas as filas de domínio estão zeradas.</div>';
+      ? `<div class="r27-migration-preflight-queues">${rows.map(row=>`<span><b>${esc(row.label)}</b><strong>${row.valid?row.count:'ERRO'}</strong></span>`).join('')}</div>`
+      : '<div class="r27-migration-preflight-zero">Todas as filas de domínio estão zeradas e legíveis.</div>';
     const blockers=result.blockers.length
       ? `<ul>${result.blockers.map(item=>`<li>${esc(item)}</li>`).join('')}</ul>`
       : '<p>Nenhum bloqueio local detectado. Este aparelho pode seguir para o re-enrollment na nova origem.</p>';
