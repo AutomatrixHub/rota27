@@ -116,7 +116,7 @@ $env:SWA_CLI_DEPLOYMENT_TOKEN = $token
 $token = $null
 try {
   Write-Host "Publicando baseline na produção DO RECURSO DE PREVIEW (não é o domínio Rota 27)..."
-  Invoke-Swa @("deploy",$baseline,"--env","production")
+  Invoke-Swa @("deploy",$baseline,"--swa-config-location",$baseline,"--env","production")
 } finally {
   if ($null -eq $previousToken) { Remove-Item Env:SWA_CLI_DEPLOYMENT_TOKEN -ErrorAction SilentlyContinue }
   else { $env:SWA_CLI_DEPLOYMENT_TOKEN = $previousToken }
