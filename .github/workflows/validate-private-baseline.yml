@@ -1,0 +1,75 @@
+name: validate-private-baseline
+
+on:
+  push:
+    branches:
+      - migration/private-baseline-v1
+    paths:
+      - '.github/workflows/validate-private-baseline.yml'
+      - 'scripts/migration/**'
+      - 'docs/PRIVATE-BASELINE-MIGRATION-v1.md'
+      - 'docs/PWA-PILOT-CUTOVER-RUNBOOK-v1.md'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: windows-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout migration branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Execute baseline builder without publishing
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $dest = Join-Path $env:RUNNER_TEMP 'ROTA27-BASELINE-VALIDATION'
+          if (Test-Path $dest) { Remove-Item $dest -Recurse -Force }
+          ./scripts/migration/build-private-baseline.ps1 -DestinationRoot $dest
+
+          $artifacts = Join-Path $dest 'artifacts'
+          $baseline = Join-Path $dest 'baseline'
+          $verify = Join-Path $artifacts 'baseline-verification.txt'
+          $overlayVerify = Join-Path $artifacts 'security-overlay-verification.txt'
+          if (-not (Test-Path $verify)) { throw 'baseline-verification.txt ausente.' }
+          if (-not (Test-Path $overlayVerify)) { throw 'security-overlay-verification.txt ausente.' }
+          if (Test-Path (Join-Path $artifacts 'secret-scan-hits.txt')) { throw 'Secret scan gerou hits.' }
+
+          Write-Host '--- baseline-verification.txt ---'
+          Get-Content $verify
+          Write-Host '--- security-overlay-verification.txt ---'
+          Get-Content $overlayVerify
+
+          $version = (Get-Content (Join-Path $baseline 'VERSION') -Raw).Trim()
+          if ($version -ne '0.25.224') { throw "VERSION inesperada no baseline: $version" }
+
+          $inboundPath = Join-Path $baseline 'supabase/functions/rota27-whatsapp-inbound/index.ts'
+          if (-not (Test-Path $inboundPath)) { throw 'Webhook inbound sanitizado ausente.' }
+          $inbound = Get-Content $inboundPath -Raw
+          $legacyMarker = 'rota27-whatsapp-inbound-' + 'verify-v1-20260823'
+          if ($inbound.Contains($legacyMarker)) { throw 'Verify token legado ainda existe no baseline.' }
+          if ($inbound.Contains('DEFAULT_VERIFY_TOKEN')) { throw 'DEFAULT_VERIFY_TOKEN ainda existe no baseline.' }
+          if (-not $inbound.Contains('META_WEBHOOK_VERIFY_TOKEN')) { throw 'META_WEBHOOK_VERIFY_TOKEN não encontrado.' }
+          if (-not $inbound.Contains('META_APP_SECRET')) { throw 'META_APP_SECRET não encontrado.' }
+
+          Push-Location $baseline
+          try {
+            $commits = [int]((& git rev-list --count HEAD).Trim())
+            if ($LASTEXITCODE -ne 0) { throw 'Falha ao contar commits do baseline.' }
+            if ($commits -ne 1) { throw "Baseline deveria ter exatamente 1 root commit; encontrado: $commits" }
+
+            & git check-ignore -q --no-index 'supabase/migrations/future.sql'
+            if ($LASTEXITCODE -eq 0) { throw 'Novas migrations .sql estão sendo ignoradas indevidamente.' }
+
+            $status = (& git status --porcelain) -join "`n"
+            if ($LASTEXITCODE -ne 0) { throw 'Falha ao verificar git status.' }
+            if ($status) { throw "Baseline ficou com working tree suja:`n$status" }
+          } finally {
+            Pop-Location
+          }
+
+          Write-Host 'VALIDATION_RESULT=PASS'
