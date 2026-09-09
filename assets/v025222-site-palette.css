@@ -1,0 +1,72 @@
+/* Rota 27 v0.25.222 — paleta aprovada do site/preview
+ * Creme #FDF6EB | Terracota #C75A2E | Vinho #7A1F2D | Oliva #6B7F4E | Espresso #2E2219
+ * Camada final: altera apenas apresentação. Estados funcionais mantêm semântica própria.
+ */
+:root{
+  --bg:#FDF6EB;
+  --surface:#FFF9F0;
+  --surface-2:#F4E7D6;
+  --ink:#2E2219;
+  --muted:#796A5D;
+  --brand:#2E2219;
+  --brand-2:#C75A2E;
+  --accent:#C75A2E;
+  --accent-2:#E7A989;
+  --danger:#A43D34;
+  --line:#DEC9AB;
+  --ok:#6B7F4E;
+  --info:#6A7780;
+  --warn:#B9822A;
+  --r27-cream:#FDF6EB;
+  --r27-terracotta:#C75A2E;
+  --r27-wine:#7A1F2D;
+  --r27-olive:#6B7F4E;
+  --r27-espresso:#2E2219;
+  --shadow:0 12px 30px rgba(46,34,25,.12);
+}
+html,body{background:var(--r27-cream)!important;color:var(--r27-espresso)!important}
+body,.screen{background-color:var(--r27-cream)!important}
+.topbar{background:linear-gradient(180deg,var(--r27-cream) 0%,var(--r27-cream) 78%,rgba(253,246,235,0) 100%)!important}
+.brand{background:linear-gradient(135deg,#FFF9F0 0%,#F3E4D0 100%)!important;border-color:rgba(199,90,46,.48)!important;box-shadow:inset 0 3px 0 rgba(199,90,46,.9),0 10px 24px rgba(46,34,25,.08)!important}
+.logo-shell{background:#FFFDF8!important;box-shadow:inset 0 0 0 1px rgba(46,34,25,.10),0 8px 18px rgba(46,34,25,.10)!important}
+.brand h1,.section-head h2,.command-title,.detail-title h2,.v018-turn-head h3{color:var(--r27-espresso)!important}
+.brand small,.muted{color:#765F52!important}
+#v14VersionBadge,.badge{background:#F2D6C7!important;color:#8F3F21!important;border-color:#DEA582!important}
+.primary,.fab,.cartbar .close-btn,.chip.active,.qty-badge{background:var(--r27-terracotta)!important;color:#fff!important;border-color:var(--r27-terracotta)!important}
+.primary,.fab{box-shadow:0 10px 20px rgba(199,90,46,.28)!important}
+.secondary,.command-card,.v018-turn-summary,.v017-admin-tools>button,.v017-client-row,.v017-toggle{background:var(--surface)!important;border-color:var(--line)!important;color:var(--r27-espresso)!important}
+.open-btn{background:#F7E6D9!important;color:#8C3E21!important;box-shadow:inset 0 0 0 1px #E3B395!important}
+.back,.edit-command,.v017-icon-btn,.v0181-audit-x{background:var(--surface-2)!important;color:var(--r27-espresso)!important}
+.v0252-relationship-card .primary,.v0252-relationship-card button,#v0252RelationshipSection .primary,#v0252RelationshipSection button,.v02560-client-intelligence .primary,.v02560-client-intelligence button{background:var(--r27-wine)!important;border-color:var(--r27-wine)!important;color:#fff!important}
+.command-card{box-shadow:0 5px 16px rgba(46,34,25,.06)!important}
+.command-card:before{background:linear-gradient(180deg,var(--r27-terracotta) 0%,var(--r27-terracotta) 68%,var(--r27-espresso) 68%,var(--r27-espresso) 100%)!important}
+.v017-command-location,.v017-sale-location{color:#974522!important}
+.search,.v017-search,.field input,.field select,.field textarea{background:#FFFDFC!important;border-color:var(--line)!important;color:var(--r27-espresso)!important}
+.field input:focus,.field select:focus,.field textarea:focus,.search:focus-within,.v017-search:focus-within{border-color:var(--r27-terracotta)!important;box-shadow:0 0 0 3px rgba(199,90,46,.13)!important}
+.money,.total-pill,.product .price{color:var(--r27-terracotta)!important}
+.cartbar{background:linear-gradient(135deg,var(--r27-espresso) 0%,#3A2B21 100%)!important;box-shadow:0 14px 30px rgba(46,34,25,.25)!important}
+.cartbar small{color:#EADDD1!important}
+.bottomnav{background:rgba(255,249,240,.98)!important;border-top-color:#DCC6A8!important;box-shadow:0 -10px 26px rgba(46,34,25,.08)!important}
+.navbtn{color:#6E6054!important}
+.navbtn .navicon{background:#F2E5D3!important;color:#655445!important;box-shadow:inset 0 0 0 1px #DEC9AD,0 4px 10px rgba(46,34,25,.04)!important}
+.navbtn.active{color:var(--r27-espresso)!important;background:#F6E5D8!important}
+.navbtn.active .navicon{background:linear-gradient(135deg,#D96B3C,var(--r27-terracotta))!important;color:#fff!important;box-shadow:0 8px 18px rgba(199,90,46,.28)!important}
+.v15d4-panel,.v15d4-section,.v15d4-metric,.v15d4-status,.v15d4-actions button,.v018-turn-metric,.v018-turn-panel,.v0181-audit-row{border-color:var(--line)!important}
+.v15d4-section,.v15d4-actions button{background:var(--surface)!important}
+.v15d4-metric,.v018-turn-metric,.v018-turn-panel,.v0181-audit-row{background:#F8EDDC!important}
+.v018-turn-date{background:#F0E1CD!important;color:#67584A!important;border-color:#DCC5A5!important}
+.v0181-audit-open{background:var(--r27-espresso)!important;color:#fff!important;border-color:var(--r27-espresso)!important}
+.v15d4-status.ok,.v017-manager-state.ok,.v0181-audit-status.ok{border-color:rgba(107,127,78,.36)!important;background:#EEF2E7!important;color:#4F6338!important}
+.v15d4-status.ok .v15d4-status-dot{background:var(--r27-olive)!important}
+.v017-toggle input:checked+span{background:var(--r27-olive)!important}
+.v0181-audit-icon.closed{background:#EDF2E8!important;color:var(--r27-olive)!important}
+.r27-help-header{background:linear-gradient(180deg,#FFF9F0,#F1E1CC)!important;border-bottom-color:var(--line)!important}
+.r27-help-header:after{background:linear-gradient(90deg,var(--r27-terracotta) 0 42%,var(--r27-wine) 42% 68%,var(--r27-olive) 68% 100%)!important}
+.r27-help-button{background:rgba(255,249,240,.94)!important;border-color:rgba(199,90,46,.30)!important;color:var(--r27-espresso)!important}
+.r27-help-chip{background:#F6E8D8!important;color:#4E3D30!important;border-color:#DCC6A9!important}
+.r27-help-section-icon{background:#F3DFD1!important;color:#8F3F21!important}
+.r27-help-lead{border-left-color:var(--r27-terracotta)!important;background:#F8EADF!important}
+.r27-help-flow span b,.r27-help-mini-bar strong{background:var(--r27-terracotta)!important}
+.r27-help-steps li>span,.r27-help-example-label{background:var(--r27-espresso)!important;color:#fff!important}
+.sheet,.sheet-card,.modal,.dialog-card,[role="dialog"]{border-color:var(--line)!important}
+@media(max-width:520px){.brand{border-radius:25px!important}}
