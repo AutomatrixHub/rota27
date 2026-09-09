@@ -15,7 +15,8 @@ A sequência correta é:
 3. manter o GitHub Pages antigo funcionando;
 4. instalar/vincular o primeiro PWA real diretamente em `https://rota27.automatrixhub.com.br`;
 5. migrar aparelho por aparelho;
-6. retirar o Pages somente em etapa futura.
+6. decidir explicitamente o plano Azure de produção antes de retirar o fallback;
+7. retirar o Pages somente em etapa futura.
 
 ## Estado verificado antes do piloto
 
@@ -27,9 +28,11 @@ Supabase adicional:
 
 - PostgreSQL 17, projeto `ACTIVE_HEALTHY`;
 - 0 usuários/identidades/sessões no Supabase Auth;
-- 0 buckets e 0 objetos no Supabase Storage.
+- 0 buckets e 0 objetos no Supabase Storage;
+- 0 secrets no Vault;
+- 1 job `pg_cron` ativo para a saudação de aniversário, preservado no inventário de recuperação.
 
-Isso elimina necessidade de migração separada de Auth ou objetos binários de Storage nesta fase.
+Isso elimina necessidade de migração separada de Auth ou objetos binários de Storage nesta fase, mas o cron deve permanecer inventariado para disaster recovery.
 
 ## Gate 0 — backups obrigatórios
 
@@ -39,8 +42,10 @@ Antes de qualquer re-enrollment real:
 - gerar baseline sanitizado com root commit novo;
 - gerar backup lógico Supabase com `roles.sql`, `schema.sql`, `data.sql`, `history_schema.sql` e `history_data.sql`;
 - validar SHA-256 dos cinco arquivos;
+- preservar o inventário de extensões/cron;
 - manter o pacote privado das Edge Functions órfãs;
-- não armazenar senha, connection string, service role ou tokens nesses artefatos.
+- tratar `data.sql` como sensível, pois inclui a tabela de credencial de automação;
+- não armazenar senha, connection string, service role ou tokens em Git.
 
 Sem esse gate aprovado, não prosseguir.
 
@@ -59,6 +64,19 @@ Publicar o baseline no recurso Azure Static Web Apps isolado e validar no hostna
 - nenhuma alteração é feita no GitHub Pages antigo.
 
 Neste gate, usar desktop/Android descartável para testes. Não mover o iPhone operacional para esse hostname.
+
+### Plano Azure durante o piloto
+
+O provisionador usa **Free por padrão** e exige confirmação explícita para Standard.
+
+O plano Free atualmente oferece domínio personalizado e certificado SSL, portanto é suficiente para a homologação técnica e para um piloto operacional controlado com GitHub Pages ainda disponível como fallback. Porém o Free não possui SLA e é posicionado pela Microsoft para projetos pessoais/hobby; Standard é o plano indicado para cargas de produção em geral.
+
+Assim:
+
+- não assumir custo Standard apenas para homologar;
+- não exigir upgrade antes do primeiro piloto controlado;
+- **não retirar o GitHub Pages nem declarar o Azure como único frontend de produção sem uma decisão explícita Free versus Standard**;
+- se o Rota 27 passar a depender exclusivamente do Azure para operação diária, avaliar Standard antes da retirada definitiva do fallback, considerando SLA, tráfego e criticidade operacional.
 
 ## Gate 2 — domínio final
 
@@ -170,7 +188,7 @@ Ordem sugerida no estado atual:
 2. Edge developer;
 3. Windows staff.
 
-## Gate 7 — estabilização e retirada futura do Pages
+## Gate 7 — estabilização, plano de produção e retirada futura do Pages
 
 Durante a estabilização:
 
@@ -180,7 +198,12 @@ Durante a estabilização:
 - devices antigos podem permanecer ACTIVE durante a janela inicial de rollback;
 - depois de cada aparelho consolidado no domínio final, o device antigo correspondente pode ser aposentado de forma controlada.
 
-Somente quando nenhum aparelho operacional depender mais do GitHub Pages, nenhum fallback antigo for necessário e os backups estiverem validados deve ser planejada a retirada definitiva do Pages e o arquivamento do repositório público legado.
+Antes de retirar o Pages, registrar a decisão do plano Azure:
+
+- manter Free somente se os limites, ausência de SLA e criticidade forem aceitáveis; ou
+- promover a Static Web App para Standard antes de torná-la o único frontend operacional.
+
+Somente quando nenhum aparelho operacional depender mais do GitHub Pages, nenhum fallback antigo for necessário, os backups estiverem validados e a decisão de plano Azure estiver fechada deve ser planejada a retirada definitiva do Pages e o arquivamento do repositório público legado.
 
 ## Bloqueios paralelos
 
