@@ -26,13 +26,6 @@ function Run-Git([string]$WorkingDir, [string[]]$GitArgs) {
   }
 }
 
-function Copy-IfExists([string]$Source, [string]$Destination) {
-  if (-not (Test-Path $Source -PathType Leaf)) { return $false }
-  New-Item -ItemType Directory -Path (Split-Path $Destination -Parent) -Force | Out-Null
-  Copy-Item -LiteralPath $Source -Destination $Destination -Force
-  return $true
-}
-
 Require-Command git
 
 if (Test-Path $DestinationRoot) {
@@ -43,6 +36,7 @@ $MirrorDir   = Join-Path $DestinationRoot "mirror\rota27.git"
 $SourceDir   = Join-Path $DestinationRoot "source"
 $BaselineDir = Join-Path $DestinationRoot "baseline"
 $ArtifactDir = Join-Path $DestinationRoot "artifacts"
+$LegacyVerifyMarker = 'rota27-whatsapp-inbound-verify-v1-' + '20260823'
 
 New-Item -ItemType Directory -Path (Split-Path $MirrorDir -Parent) -Force | Out-Null
 New-Item -ItemType Directory -Path $ArtifactDir -Force | Out-Null
@@ -118,7 +112,7 @@ if (-not (Test-Path $overlaySource -PathType Leaf)) { throw "Arquivo de overlay 
 Copy-Item -LiteralPath $overlaySource -Destination $overlayTarget -Force
 
 $overlayText = Get-Content $overlayTarget -Raw
-if ($overlayText -match 'rota27-whatsapp-inbound-verify-v1-20260823' -or $overlayText -match 'DEFAULT_VERIFY_TOKEN') {
+if ($overlayText -match [regex]::Escape($LegacyVerifyMarker) -or $overlayText -match 'DEFAULT_VERIFY_TOKEN') {
   throw "Overlay de segurança inválido: fallback hardcoded do verify token ainda presente."
 }
 if ($overlayText -notmatch 'Deno\.env\.get\("META_WEBHOOK_VERIFY_TOKEN"\)' -or $overlayText -notmatch 'Deno\.env\.get\("META_APP_SECRET"\)') {
@@ -150,9 +144,10 @@ Write-Host "[6/9] Criando documentação, configuração Azure e políticas de s
 *.pfx
 *.p12
 *.dump
-*.sql
 *.sql.gz
 *.backup
+ROTA27-DB-BACKUP-*/
+ROTA27-PRE-AZURE-*/
 node_modules/
 .DS_Store
 Thumbs.db
@@ -172,7 +167,7 @@ Baseline operacional sanitizado para a migração GitHub Pages → Azure.
 
 ## Segurança do webhook Meta
 
-O `main` legado ainda contém o verify token histórico hardcoded porque a produção antiga não pode ser alterada antes da rotação coordenada com a Meta. Este repositório privado NÃO herda esse fallback: o arquivo `supabase/functions/rota27-whatsapp-inbound/index.ts` é sobreposto pela versão sanitizada da PR de segurança antes do primeiro commit.
+O `main` legado ainda contém um verify token histórico hardcoded porque a produção antiga não pode ser alterada antes da rotação coordenada com a Meta. Este repositório privado NÃO herda esse fallback: `supabase/functions/rota27-whatsapp-inbound/index.ts` é sobreposto pela versão sanitizada da PR de segurança antes do primeiro commit.
 
 Essa sobreposição é somente de código no baseline. Ela NÃO significa deploy da Edge Function. O deploy continua bloqueado até `META_APP_SECRET` e `META_WEBHOOK_VERIFY_TOKEN` estarem configurados de forma coordenada.
 
@@ -184,7 +179,7 @@ Secrets não pertencem ao Git. Devem ser configurados no ambiente de hospedagem/
 
 ## Banco de dados
 
-O projeto continua usando o mesmo Supabase durante a migração. O backup lógico oficial deve ser feito separadamente antes do corte definitivo. As migrations históricas não são reaplicadas neste baseline.
+O projeto continua usando o mesmo Supabase durante a migração. O backup lógico oficial deve ser feito separadamente antes do corte definitivo. As migrations históricas não são reaplicadas neste baseline; novas migrations `.sql` continuam permitidas normalmente em `supabase/migrations`.
 
 ## Azure
 
@@ -198,7 +193,6 @@ if (-not (Test-Path $azureConfigSource -PathType Leaf)) {
 }
 Copy-Item -LiteralPath $azureConfigSource -Destination (Join-Path $BaselineDir "staticwebapp.config.json") -Force
 
-# Copia apenas o kit de migração atual para o novo histórico sanitizado.
 $opsDir = Join-Path $BaselineDir "ops\migration"
 New-Item -ItemType Directory -Path $opsDir -Force | Out-Null
 foreach ($name in @(
@@ -240,7 +234,7 @@ $secretPatterns = @(
   '(?i)\bEAA[A-Za-z0-9_-]{30,}\b',
   '(?i)\bsb_secret_[A-Za-z0-9_-]{20,}\b',
   '\beyJ[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]{20,}\b',
-  'rota27-whatsapp-inbound-verify-v1-20260823'
+  [regex]::Escape($LegacyVerifyMarker)
 )
 $textExtensions = @(".js", ".css", ".html", ".ts", ".md", ".txt", ".json", ".webmanifest", ".ps1")
 $hits = New-Object System.Collections.Generic.List[string]
@@ -261,16 +255,13 @@ if ($hits.Count -gt 0) {
   throw "A varredura encontrou padrões com aparência de secret. Nenhum push deve ser feito; revise secret-scan-hits.txt."
 }
 
-# Defesa adicional para os nomes de secrets críticos: permite referências a Deno.env/variáveis,
-# mas bloqueia o literal histórico conhecido e JWT/tokens com aparência de credencial.
-$criticalNames = @(
+@(
   "SUPABASE_SERVICE_ROLE_KEY",
   "WHATSAPP_ACCESS_TOKEN",
   "META_APP_SECRET",
   "ROTA27_DEVICE_TOKEN",
   "META_WEBHOOK_VERIFY_TOKEN"
-)
-$criticalNames | Set-Content -Path (Join-Path $ArtifactDir "critical-secret-names-audited.txt") -Encoding UTF8
+) | Set-Content -Path (Join-Path $ArtifactDir "critical-secret-names-audited.txt") -Encoding UTF8
 
 Write-Host "[8/9] Criando novo histórico Git com root commit..."
 Run-Git $BaselineDir @("init")
