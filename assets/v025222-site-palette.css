@@ -1,4 +1,4 @@
-/* Rota 27 v0.25.223 — paleta aprovada com vinho equilibrado
+/* Rota 27 v0.25.224 — paleta aprovada com vinho equilibrado
  * Creme #FDF6EB | Terracota #C75A2E | Vinho #7A1F2D | Oliva #6B7F4E | Espresso #2E2219
  * Camada final: apresentação apenas. Vinho é acento seletivo; estados funcionais mantêm semântica própria.
  */
@@ -76,4 +76,15 @@ body,.screen{background-color:var(--r27-cream)!important}
 .r27-help-flow span b,.r27-help-mini-bar strong{background:var(--r27-terracotta)!important}
 .r27-help-steps li>span,.r27-help-example-label{background:var(--r27-espresso)!important;color:#fff!important}
 .sheet,.sheet-card,.modal,.dialog-card,[role="dialog"]{border-color:var(--line)!important}
+
+/* Tela de comanda: presença seletiva de vinho sem competir com os CTAs terracota. */
+#screenSale .detail-title h2{color:var(--r27-wine)!important}
+#screenSale .v017-sale-location{color:var(--r27-wine)!important}
+#screenSale .wa-sale-status.show.off{background:rgba(122,31,45,.055)!important;border-color:rgba(122,31,45,.20)!important;color:#6E2A35!important}
+#screenSale #v02551QuickProducts{border-color:rgba(122,31,45,.24)!important;background:linear-gradient(160deg,#F9EEE2 0%,#F4E5D4 100%)!important}
+#screenSale #v02551QuickProducts .v02551-quick-head strong{color:var(--r27-wine)!important}
+#screenSale #v02551QuickProducts .v02551-quick-head small{color:#8A4A52!important}
+#screenSale .chip.active{background:linear-gradient(135deg,var(--r27-terracotta) 0 76%,var(--r27-wine) 100%)!important;border-color:var(--r27-terracotta)!important}
+#screenSale .cartbar{background:linear-gradient(135deg,var(--r27-espresso) 0 72%,#51272D 100%)!important}
+
 @media(max-width:520px){.brand{border-radius:25px!important}}
