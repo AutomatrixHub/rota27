@@ -1,7 +1,8 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
+import { authorizeDevice, permissionAtLeast } from "../_shared/device-auth.ts";
 
-const EDGE_VERSION = "rota27-birthday-campaign-v3-retry-3";
+const EDGE_VERSION = "rota27-birthday-campaign-v0.25.224-auth2";
 const TEMPLATE_NAME = "solicitar_aniversario_rota27_v1";
 const TEMPLATE_LANG = "pt_BR";
 const CAMPAIGN = "birthday_request_v1";
@@ -10,142 +11,45 @@ const ROTA27_WABA_ID = "2184585049047021";
 const MAX_SUCCESSFUL_REQUESTS = 3;
 const COOLDOWN_DAYS = 7;
 const COOLDOWN_MS = COOLDOWN_DAYS * 86400000;
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "content-type, x-rota27-device-token",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
-};
+const corsHeaders = {"Access-Control-Allow-Origin":"*","Access-Control-Allow-Headers":"content-type, x-rota27-device-token","Access-Control-Allow-Methods":"POST, OPTIONS"};
 const jsonHeaders = { ...corsHeaders, "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" };
-function json(status: number, body: unknown) { return new Response(JSON.stringify(body), { status, headers: jsonHeaders }); }
-function clean(value: unknown, max = 500) { return String(value ?? "").replace(/\u0000/g, "").replace(/[\r\n\t]+/g, " ").replace(/\s{2,}/g, " ").trim().slice(0, max); }
-function digits(value: unknown) { return String(value ?? "").replace(/\D/g, ""); }
-function normalizePhone(value: unknown) { let d = digits(value).replace(/^0+/, ""); if (d.length === 10 || d.length === 11) d = `55${d}`; return d; }
-function validPhone(value: string) { return value.length >= 12 && value.length <= 15; }
-function safeEqual(a: string, b: string) { const ea = new TextEncoder().encode(a), eb = new TextEncoder().encode(b); if (ea.length !== eb.length) return false; let diff = 0; for (let i = 0; i < ea.length; i++) diff |= ea[i] ^ eb[i]; return diff === 0; }
-function validBirthDate(value: unknown) {
-  const raw = clean(value, 20); if (!raw) return false;
-  const m = raw.match(/^(\d{4})-(\d{2})-(\d{2})$/); if (!m) return false;
-  const y = Number(m[1]), mo = Number(m[2]), d = Number(m[3]), dt = new Date(Date.UTC(y, mo - 1, d));
-  if (y < 1900 || dt.getUTCFullYear() !== y || dt.getUTCMonth() !== mo - 1 || dt.getUTCDate() !== d) return false;
-  const now = new Date(), today = `${now.getUTCFullYear()}-${String(now.getUTCMonth()+1).padStart(2,"0")}-${String(now.getUTCDate()).padStart(2,"0")}`;
-  return raw <= today;
-}
-function requestEventId(clientId: string, attempt: number) { return attempt <= 1 ? `${CAMPAIGN}::${clientId}` : `${CAMPAIGN}::${clientId}::${attempt}`; }
-async function graphJson(url: string, accessToken: string, init: RequestInit = {}) {
-  const response = await fetch(url, { ...init, headers: { Authorization: `Bearer ${accessToken}`, "Content-Type": "application/json", ...(init.headers || {}) } });
-  const data = await response.json().catch(() => ({}));
-  if (!response.ok) { const message = clean(data?.error?.message || `Meta HTTP ${response.status}`, 600), details = clean(data?.error?.error_data?.details || "", 900); const error: any = new Error(details ? `${message} | ${details}` : message); error.metaCode = data?.error?.code || null; error.metaSubcode = data?.error?.error_subcode || null; error.fbtraceId = clean(data?.error?.fbtrace_id || "", 200); throw error; }
-  return data;
-}
-function wabaId() { return clean(Deno.env.get("WHATSAPP_BUSINESS_ACCOUNT_ID") || Deno.env.get("WHATSAPP_WABA_ID") || Deno.env.get("WABA_ID") || ROTA27_WABA_ID, 120); }
-async function getTemplate(accessToken: string, waba: string, graphVersion: string) {
-  const url = `https://graph.facebook.com/${encodeURIComponent(graphVersion)}/${encodeURIComponent(waba)}/message_templates?name=${encodeURIComponent(TEMPLATE_NAME)}&limit=100`;
-  const data = await graphJson(url, accessToken);
-  const row = Array.isArray(data?.data) ? data.data.find((x: any) => clean(x?.name, 160) === TEMPLATE_NAME) : null;
-  return row ? { found: true, status: clean(row.status || "UNKNOWN", 60), category: clean(row.category || "", 60) || null, id: clean(row.id || "", 120) || null, language: clean(row.language || TEMPLATE_LANG, 30) } : { found: false, status: "NOT_SUBMITTED", category: null, id: null, language: TEMPLATE_LANG };
-}
-async function submitTemplate(accessToken: string, waba: string, graphVersion: string) {
-  const existing = await getTemplate(accessToken, waba, graphVersion); if (existing.found) return { existing: true, ...existing };
-  const text = "Olá, {{1}}! Aqui é da Rota 27 Bodega. Estamos atualizando nosso cadastro de clientes. Se desejar, responda a esta mensagem com sua data de nascimento no formato DD/MM/AAAA. Esse dado é opcional e será usado apenas para manter seu cadastro atualizado.";
-  const payload = { name: TEMPLATE_NAME, language: TEMPLATE_LANG, category: "UTILITY", allow_category_change: true, components: [{ type: "BODY", text, example: { body_text: [["Marcos"]] } }, { type: "FOOTER", text: "Rota 27 Bodega • Jardim Camburi" }] };
-  const url = `https://graph.facebook.com/${encodeURIComponent(graphVersion)}/${encodeURIComponent(waba)}/message_templates`;
-  const data = await graphJson(url, accessToken, { method: "POST", body: JSON.stringify(payload) });
-  return { existing: false, found: true, status: clean(data?.status || "PENDING", 60), category: "UTILITY", id: clean(data?.id || "", 120) || null, language: TEMPLATE_LANG };
-}
+function json(status:number,body:unknown){return new Response(JSON.stringify(body),{status,headers:jsonHeaders});}
+function clean(value:unknown,max=500){return String(value??"").replace(/\u0000/g,"").replace(/[\r\n\t]+/g," ").replace(/\s{2,}/g," ").trim().slice(0,max);}
+function digits(value:unknown){return String(value??"").replace(/\D/g,"");}
+function normalizePhone(value:unknown){let d=digits(value).replace(/^0+/,"");if(d.length===10||d.length===11)d=`55${d}`;return d;}
+function validPhone(value:string){return value.length>=12&&value.length<=15;}
+function validBirthDate(value:unknown){const raw=clean(value,20);if(!raw)return false;const m=raw.match(/^(\d{4})-(\d{2})-(\d{2})$/);if(!m)return false;const y=Number(m[1]),mo=Number(m[2]),d=Number(m[3]),dt=new Date(Date.UTC(y,mo-1,d));if(y<1900||dt.getUTCFullYear()!==y||dt.getUTCMonth()!==mo-1||dt.getUTCDate()!==d)return false;const now=new Date(),today=`${now.getUTCFullYear()}-${String(now.getUTCMonth()+1).padStart(2,"0")}-${String(now.getUTCDate()).padStart(2,"0")}`;return raw<=today;}
+function requestEventId(clientId:string,attempt:number){return attempt<=1?`${CAMPAIGN}::${clientId}`:`${CAMPAIGN}::${clientId}::${attempt}`;}
+async function graphJson(url:string,accessToken:string,init:RequestInit={}){const response=await fetch(url,{...init,headers:{Authorization:`Bearer ${accessToken}`,"Content-Type":"application/json",...(init.headers||{})}});const data=await response.json().catch(()=>({}));if(!response.ok){const message=clean(data?.error?.message||`Meta HTTP ${response.status}`,600),details=clean(data?.error?.error_data?.details||"",900),error:any=new Error(details?`${message} | ${details}`:message);error.metaCode=data?.error?.code||null;error.metaSubcode=data?.error?.error_subcode||null;error.fbtraceId=clean(data?.error?.fbtrace_id||"",200);throw error;}return data;}
+function wabaId(){return clean(Deno.env.get("WHATSAPP_BUSINESS_ACCOUNT_ID")||Deno.env.get("WHATSAPP_WABA_ID")||Deno.env.get("WABA_ID")||ROTA27_WABA_ID,120);}
+async function getTemplate(accessToken:string,waba:string,graphVersion:string){const url=`https://graph.facebook.com/${encodeURIComponent(graphVersion)}/${encodeURIComponent(waba)}/message_templates?name=${encodeURIComponent(TEMPLATE_NAME)}&limit=100`;const data=await graphJson(url,accessToken),row=Array.isArray(data?.data)?data.data.find((x:any)=>clean(x?.name,160)===TEMPLATE_NAME):null;return row?{found:true,status:clean(row.status||"UNKNOWN",60),category:clean(row.category||"",60)||null,id:clean(row.id||"",120)||null,language:clean(row.language||TEMPLATE_LANG,30)}:{found:false,status:"NOT_SUBMITTED",category:null,id:null,language:TEMPLATE_LANG};}
+async function submitTemplate(accessToken:string,waba:string,graphVersion:string){const existing=await getTemplate(accessToken,waba,graphVersion);if(existing.found)return{existing:true,...existing};const text="Olá, {{1}}! Aqui é da Rota 27 Bodega. Estamos atualizando nosso cadastro de clientes. Se desejar, responda a esta mensagem com sua data de nascimento no formato DD/MM/AAAA. Esse dado é opcional e será usado apenas para manter seu cadastro atualizado.";const payload={name:TEMPLATE_NAME,language:TEMPLATE_LANG,category:"UTILITY",allow_category_change:true,components:[{type:"BODY",text,example:{body_text:[["Marcos"]]}},{type:"FOOTER",text:"Rota 27 Bodega • Jardim Camburi"}]};const url=`https://graph.facebook.com/${encodeURIComponent(graphVersion)}/${encodeURIComponent(waba)}/message_templates`;const data=await graphJson(url,accessToken,{method:"POST",body:JSON.stringify(payload)});return{existing:false,found:true,status:clean(data?.status||"PENDING",60),category:"UTILITY",id:clean(data?.id||"",120)||null,language:TEMPLATE_LANG};}
 
-Deno.serve(async (req: Request) => {
-  if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
-  if (req.method !== "POST") return json(405, { ok: false, error: "Método não permitido." });
-  const configuredDeviceToken = Deno.env.get("ROTA27_DEVICE_TOKEN") || "", receivedDeviceToken = req.headers.get("x-rota27-device-token") || "";
-  if (configuredDeviceToken.length < 16 || !safeEqual(receivedDeviceToken, configuredDeviceToken)) return json(401, { ok: false, error: "Dispositivo não autorizado." });
-  let body: any = {}; try { body = await req.json(); } catch { return json(400, { ok: false, error: "JSON inválido." }); }
-  const action = clean(body?.action || "status", 50), storeId = clean(body?.storeId || Deno.env.get("ROTA27_SYNC_STORE_ID") || STORE_ID_DEFAULT, 80) || STORE_ID_DEFAULT;
-  const supabaseUrl = Deno.env.get("SUPABASE_URL") || "", serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "", accessToken = Deno.env.get("WHATSAPP_ACCESS_TOKEN") || "", phoneNumberId = Deno.env.get("WHATSAPP_PHONE_NUMBER_ID") || "", graphVersion = Deno.env.get("META_GRAPH_VERSION") || "", waba = wabaId();
-  if (!supabaseUrl || !serviceRoleKey || !accessToken || !phoneNumberId || !graphVersion || !waba) return json(500, { ok: false, error: "Backend incompleto para a campanha de aniversário.", edgeVersion: EDGE_VERSION });
-  const db = createClient(supabaseUrl, serviceRoleKey, { auth: { persistSession: false, autoRefreshToken: false } });
+Deno.serve(async(req:Request)=>{
+  if(req.method==="OPTIONS")return new Response("ok",{headers:corsHeaders});
+  if(req.method!=="POST")return json(405,{ok:false,error:"Método não permitido."});
+  let body:any={};try{body=await req.json();}catch{return json(400,{ok:false,error:"JSON inválido."});}
+  const configuredStore=clean(Deno.env.get("ROTA27_SYNC_STORE_ID")||STORE_ID_DEFAULT,80)||STORE_ID_DEFAULT,storeId=clean(body?.storeId||configuredStore,80)||configuredStore;
+  if(storeId!==configuredStore)return json(403,{ok:false,error:"Loja não autorizada."});
+  const action=clean(body?.action||"status",50),masterSecret=Deno.env.get("ROTA27_DEVICE_TOKEN")||"",supabaseUrl=Deno.env.get("SUPABASE_URL")||"",serviceRoleKey=Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")||"",accessToken=Deno.env.get("WHATSAPP_ACCESS_TOKEN")||"",phoneNumberId=Deno.env.get("WHATSAPP_PHONE_NUMBER_ID")||"",graphVersion=Deno.env.get("META_GRAPH_VERSION")||"",waba=wabaId();
+  if(!masterSecret||!supabaseUrl||!serviceRoleKey||!accessToken||!phoneNumberId||!graphVersion||!waba)return json(500,{ok:false,error:"Backend incompleto para a campanha de aniversário.",edgeVersion:EDGE_VERSION});
+  const db=createClient(supabaseUrl,serviceRoleKey,{auth:{persistSession:false,autoRefreshToken:false}});
+  const auth=await authorizeDevice(db,{masterSecret,storeId,suppliedToken:req.headers.get("x-rota27-device-token")||"",deviceId:clean(body?.deviceId,120)||undefined});
+  if(!auth.ok)return json(auth.status,{ok:false,code:auth.code,error:auth.error,edgeVersion:EDGE_VERSION});
+  const writeAction=action==="submit_template"||action==="send_campaign";
+  if(!permissionAtLeast(auth,"clients",writeAction?"edit":"view"))return json(403,{ok:false,code:writeAction?"clients_edit_required":"clients_view_required",error:"Campanha de aniversário não liberada para este aparelho.",edgeVersion:EDGE_VERSION});
 
-  async function latestClients() {
-    const { data, error } = await db.from("rota27_sync_events").select("seq,entity_id,payload").eq("store_id", storeId).eq("event_type", "client_upsert").order("seq", { ascending: true }).limit(5000);
-    if (error) throw new Error(`Falha ao ler clientes: ${error.message}`);
-    const map = new Map<string, any>();
-    for (const row of data || []) { const c = row?.payload?.client; if (!c || typeof c !== "object") continue; const id = clean(c.id || row.entity_id, 160); if (!id) continue; const old = map.get(id) || {}; map.set(id, { ...old, ...c, id }); }
-    return [...map.values()];
-  }
-  async function priorSentPhones() {
-    const { data, error } = await db.from("whatsapp_message_log").select("phone,payload,event_id").eq("status", "sent").limit(5000);
-    if (error) throw new Error(`Falha ao ler histórico de WhatsApp: ${error.message}`);
-    return new Set((data || []).filter((r: any) => clean(r?.payload?.campaign || "", 80) !== CAMPAIGN).map((r: any) => normalizePhone(r.phone)).filter(validPhone));
-  }
-  async function campaignHistory() {
-    const { data, error } = await db.from("whatsapp_message_log").select("event_id,status,sent_at,updated_at,payload,phone").like("event_id", `${CAMPAIGN}::%`).order("sent_at", { ascending: true }).limit(5000);
-    if (error) throw new Error(`Falha ao ler campanha: ${error.message}`);
-    const map = new Map<string, any[]>();
-    for (const row of data || []) {
-      const eventId = clean(row?.event_id || "", 260); if (!eventId.startsWith(`${CAMPAIGN}::`)) continue;
-      const clientId = clean(row?.payload?.clientId || eventId.slice(`${CAMPAIGN}::`.length).replace(/::\d+$/, ""), 160); if (!clientId) continue;
-      if (!map.has(clientId)) map.set(clientId, []); map.get(clientId)!.push(row);
-    }
-    return map;
-  }
-  async function audience() {
-    const clients = await latestClients(), prior = await priorSentPhones(), history = await campaignHistory(), now = Date.now();
-    return clients.map((client: any) => {
-      const id = clean(client.id, 160), phone = normalizePhone(client.whatsappPhone || client.phone || ""), logs = history.get(id) || [];
-      const successful = logs.filter((r: any) => r?.status === "sent" && r?.sent_at).sort((a: any, b: any) => Date.parse(a.sent_at) - Date.parse(b.sent_at));
-      const requestCount = successful.length, lastSentAt = requestCount ? successful[requestCount - 1].sent_at : null, lastMs = lastSentAt ? Date.parse(lastSentAt) : 0;
-      const maxedOut = requestCount >= MAX_SUCCESSFUL_REQUESTS, nextEligibleAt = requestCount > 0 && !maxedOut ? new Date(lastMs + COOLDOWN_MS).toISOString() : null;
-      const cooldownReady = requestCount === 0 || (!maxedOut && Number.isFinite(lastMs) && now >= lastMs + COOLDOWN_MS);
-      const priorConsentEvidence = prior.has(phone) || requestCount > 0;
-      const hasPhone = validPhone(phone), hasBirthDate = validBirthDate(client.birthDate);
-      const readyToSend = hasPhone && !hasBirthDate && priorConsentEvidence && !maxedOut && cooldownReady;
-      return { id, name: clean(client.name || "Cliente", 120) || "Cliente", phone, hasPhone, hasBirthDate, priorConsentEvidence, requestCount, lastSentAt, nextEligibleAt, maxedOut, cooldownReady, readyToSend, nextAttempt: Math.min(MAX_SUCCESSFUL_REQUESTS, requestCount + 1) };
-    });
-  }
+  async function latestClients(){const{data,error}=await db.from("rota27_sync_events").select("seq,entity_id,payload").eq("store_id",storeId).eq("event_type","client_upsert").order("seq",{ascending:true}).limit(5000);if(error)throw new Error(`Falha ao ler clientes: ${error.message}`);const map=new Map<string,any>();for(const row of data||[]){const c=row?.payload?.client;if(!c||typeof c!=="object")continue;const id=clean(c.id||row.entity_id,160);if(!id)continue;const old=map.get(id)||{};map.set(id,{...old,...c,id});}return[...map.values()];}
+  async function priorSentPhones(){const{data,error}=await db.from("whatsapp_message_log").select("phone,payload,event_id").eq("status","sent").limit(5000);if(error)throw new Error(`Falha ao ler histórico de WhatsApp: ${error.message}`);return new Set((data||[]).filter((r:any)=>clean(r?.payload?.campaign||"",80)!==CAMPAIGN).map((r:any)=>normalizePhone(r.phone)).filter(validPhone));}
+  async function campaignHistory(){const{data,error}=await db.from("whatsapp_message_log").select("event_id,status,sent_at,updated_at,payload,phone").like("event_id",`${CAMPAIGN}::%`).order("sent_at",{ascending:true}).limit(5000);if(error)throw new Error(`Falha ao ler campanha: ${error.message}`);const map=new Map<string,any[]>();for(const row of data||[]){const eventId=clean(row?.event_id||"",260);if(!eventId.startsWith(`${CAMPAIGN}::`))continue;const clientId=clean(row?.payload?.clientId||eventId.slice(`${CAMPAIGN}::`.length).replace(/::\d+$/,"") ,160);if(!clientId)continue;if(!map.has(clientId))map.set(clientId,[]);map.get(clientId)!.push(row);}return map;}
+  async function audience(){const clients=await latestClients(),prior=await priorSentPhones(),history=await campaignHistory(),now=Date.now();return clients.map((client:any)=>{const id=clean(client.id,160),phone=normalizePhone(client.whatsappPhone||client.phone||""),logs=history.get(id)||[],successful=logs.filter((r:any)=>r?.status==="sent"&&r?.sent_at).sort((a:any,b:any)=>Date.parse(a.sent_at)-Date.parse(b.sent_at)),requestCount=successful.length,lastSentAt=requestCount?successful[requestCount-1].sent_at:null,lastMs=lastSentAt?Date.parse(lastSentAt):0,maxedOut=requestCount>=MAX_SUCCESSFUL_REQUESTS,nextEligibleAt=requestCount>0&&!maxedOut?new Date(lastMs+COOLDOWN_MS).toISOString():null,cooldownReady=requestCount===0||(!maxedOut&&Number.isFinite(lastMs)&&now>=lastMs+COOLDOWN_MS),priorConsentEvidence=prior.has(phone)||requestCount>0,hasPhone=validPhone(phone),hasBirthDate=validBirthDate(client.birthDate),readyToSend=hasPhone&&!hasBirthDate&&priorConsentEvidence&&!maxedOut&&cooldownReady;return{id,name:clean(client.name||"Cliente",120)||"Cliente",phone,hasPhone,hasBirthDate,priorConsentEvidence,requestCount,lastSentAt,nextEligibleAt,maxedOut,cooldownReady,readyToSend,nextAttempt:Math.min(MAX_SUCCESSFUL_REQUESTS,requestCount+1)};});}
 
-  if (action === "status") {
-    let template: any, templateError: string | null = null; try { template = await getTemplate(accessToken, waba, graphVersion); } catch (error) { template = { found: false, status: "ERROR" }; templateError = clean(error instanceof Error ? error.message : "Falha ao consultar template.", 900); }
-    const rows = await audience(), missing = rows.filter(r => r.hasPhone && !r.hasBirthDate), ready = missing.filter(r => r.readyToSend);
-    return json(200, { ok: true, edgeVersion: EDGE_VERSION, campaign: CAMPAIGN, templateName: TEMPLATE_NAME, template, templateError, policy: { maxSuccessfulRequests: MAX_SUCCESSFUL_REQUESTS, cooldownDays: COOLDOWN_DAYS }, counts: {
-      clients: rows.length,
-      withWhatsAppMissingBirthDate: missing.length,
-      withoutWhatsAppMissingBirthDate: rows.filter(r => !r.hasPhone && !r.hasBirthDate).length,
-      withPriorConsentEvidence: missing.filter(r => r.priorConsentEvidence).length,
-      withoutPriorConsentEvidence: missing.filter(r => !r.priorConsentEvidence).length,
-      requestedAtLeastOnce: missing.filter(r => r.requestCount > 0).length,
-      waitingCooldown: missing.filter(r => r.priorConsentEvidence && r.requestCount > 0 && !r.maxedOut && !r.cooldownReady).length,
-      maxAttemptsReached: missing.filter(r => r.maxedOut).length,
-      readyFirstAttempt: ready.filter(r => r.requestCount === 0).length,
-      readyRetry: ready.filter(r => r.requestCount > 0).length,
-      readyToSend: ready.length,
-    }, rows: missing.map(r => ({ clientId: r.id, name: r.name, requestCount: r.requestCount, nextAttempt: r.nextAttempt, readyToSend: r.readyToSend, nextEligibleAt: r.nextEligibleAt, maxedOut: r.maxedOut, priorConsentEvidence: r.priorConsentEvidence })) });
-  }
-  if (action === "submit_template") {
-    try { const template = await submitTemplate(accessToken, waba, graphVersion); return json(200, { ok: true, edgeVersion: EDGE_VERSION, templateName: TEMPLATE_NAME, template }); }
-    catch (error: any) { return json(502, { ok: false, error: clean(error?.message || "Falha ao submeter template.", 900), metaCode: error?.metaCode || null, metaSubcode: error?.metaSubcode || null, fbtraceId: error?.fbtraceId || null, edgeVersion: EDGE_VERSION }); }
-  }
-  if (action !== "send_campaign") return json(400, { ok: false, error: "Ação não suportada." });
-  let template: any; try { template = await getTemplate(accessToken, waba, graphVersion); } catch (error) { return json(502, { ok: false, error: clean(error instanceof Error ? error.message : "Falha ao consultar template.", 900), edgeVersion: EDGE_VERSION }); }
-  if (String(template.status || "").toUpperCase() !== "APPROVED") return json(409, { ok: false, error: `Template ainda não aprovado pela Meta (${template.status || "desconhecido"}).`, template, edgeVersion: EDGE_VERSION });
-  const rows = await audience(), targets = rows.filter(r => r.readyToSend), endpoint = `https://graph.facebook.com/${encodeURIComponent(graphVersion)}/${encodeURIComponent(phoneNumberId)}/messages`, results: any[] = [];
-  for (const target of targets.slice(0, 100)) {
-    const attempt = target.nextAttempt, eventId = requestEventId(target.id, attempt), now = new Date().toISOString();
-    const payloadLog = { campaign: CAMPAIGN, clientId: target.id, template: TEMPLATE_NAME, edgeVersion: EDGE_VERSION, consentBasis: target.requestCount > 0 ? "previously_eligible_birthday_request" : "prior_successful_non_campaign_message", requestAttempt: attempt, maxSuccessfulRequests: MAX_SUCCESSFUL_REQUESTS, cooldownDays: COOLDOWN_DAYS };
-    const { data: existing } = await db.from("whatsapp_message_log").select("status,wa_message_id,attempts,updated_at").eq("event_id", eventId).limit(1).maybeSingle();
-    if (existing?.status === "sent") { results.push({ clientId: target.id, status: "duplicate_skipped", attempt, messageId: existing.wa_message_id || null }); continue; }
-    const processingAge = existing?.status === "processing" && existing?.updated_at ? Date.now() - Date.parse(existing.updated_at) : Infinity;
-    if (processingAge >= 0 && processingAge < 120000) { results.push({ clientId: target.id, status: "processing_skipped", attempt }); continue; }
-    await db.from("whatsapp_message_log").upsert({ event_id: eventId, command_id: `client::${target.id}`, phone: target.phone, customer_name: target.name, command_label: `Atualização cadastral • tentativa ${attempt}/${MAX_SUCCESSFUL_REQUESTS}`, payload: payloadLog, status: "processing", attempts: Number(existing?.attempts || 0) + 1, last_error: null, updated_at: now }, { onConflict: "event_id" });
-    const metaPayload = { messaging_product: "whatsapp", recipient_type: "individual", to: target.phone, type: "template", template: { name: TEMPLATE_NAME, language: { code: TEMPLATE_LANG }, components: [{ type: "body", parameters: [{ type: "text", text: target.name }] }] } };
-    try {
-      const metaData = await graphJson(endpoint, accessToken, { method: "POST", body: JSON.stringify(metaPayload) }), messageId = Array.isArray(metaData?.messages) && metaData.messages.length ? clean(metaData.messages[0]?.id, 300) : "";
-      await db.from("whatsapp_message_log").upsert({ event_id: eventId, command_id: `client::${target.id}`, phone: target.phone, customer_name: target.name, command_label: `Atualização cadastral • tentativa ${attempt}/${MAX_SUCCESSFUL_REQUESTS}`, payload: payloadLog, status: "sent", wa_message_id: messageId || null, last_error: null, sent_at: new Date().toISOString(), updated_at: new Date().toISOString() }, { onConflict: "event_id" });
-      results.push({ clientId: target.id, status: "sent", attempt, messageId: messageId || null });
-    } catch (error: any) {
-      const errorText = clean(error?.message || "Falha ao enviar.", 900);
-      await db.from("whatsapp_message_log").upsert({ event_id: eventId, command_id: `client::${target.id}`, phone: target.phone, customer_name: target.name, command_label: `Atualização cadastral • tentativa ${attempt}/${MAX_SUCCESSFUL_REQUESTS}`, payload: payloadLog, status: "failed", last_error: errorText, updated_at: new Date().toISOString() }, { onConflict: "event_id" });
-      results.push({ clientId: target.id, status: "failed", attempt, error: errorText });
-    }
-  }
-  return json(200, { ok: true, edgeVersion: EDGE_VERSION, campaign: CAMPAIGN, templateName: TEMPLATE_NAME, policy: { maxSuccessfulRequests: MAX_SUCCESSFUL_REQUESTS, cooldownDays: COOLDOWN_DAYS }, sent: results.filter(r => r.status === "sent").length, failed: results.filter(r => r.status === "failed").length, skipped: rows.filter(r => r.hasPhone && !r.hasBirthDate && !r.priorConsentEvidence).length, results });
+  if(action==="status"){let template:any,templateError:string|null=null;try{template=await getTemplate(accessToken,waba,graphVersion);}catch(error){template={found:false,status:"ERROR"};templateError=clean(error instanceof Error?error.message:"Falha ao consultar template.",900);}const rows=await audience(),missing=rows.filter(r=>r.hasPhone&&!r.hasBirthDate),ready=missing.filter(r=>r.readyToSend);return json(200,{ok:true,edgeVersion:EDGE_VERSION,campaign:CAMPAIGN,templateName:TEMPLATE_NAME,template,templateError,policy:{maxSuccessfulRequests:MAX_SUCCESSFUL_REQUESTS,cooldownDays:COOLDOWN_DAYS},counts:{clients:rows.length,withWhatsAppMissingBirthDate:missing.length,withoutWhatsAppMissingBirthDate:rows.filter(r=>!r.hasPhone&&!r.hasBirthDate).length,withPriorConsentEvidence:missing.filter(r=>r.priorConsentEvidence).length,withoutPriorConsentEvidence:missing.filter(r=>!r.priorConsentEvidence).length,requestedAtLeastOnce:missing.filter(r=>r.requestCount>0).length,waitingCooldown:missing.filter(r=>r.priorConsentEvidence&&r.requestCount>0&&!r.maxedOut&&!r.cooldownReady).length,maxAttemptsReached:missing.filter(r=>r.maxedOut).length,readyFirstAttempt:ready.filter(r=>r.requestCount===0).length,readyRetry:ready.filter(r=>r.requestCount>0).length,readyToSend:ready.length},rows:missing.map(r=>({clientId:r.id,name:r.name,requestCount:r.requestCount,nextAttempt:r.nextAttempt,readyToSend:r.readyToSend,nextEligibleAt:r.nextEligibleAt,maxedOut:r.maxedOut,priorConsentEvidence:r.priorConsentEvidence}))});}
+  if(action==="submit_template"){try{const template=await submitTemplate(accessToken,waba,graphVersion);return json(200,{ok:true,edgeVersion:EDGE_VERSION,templateName:TEMPLATE_NAME,template});}catch(error:any){return json(502,{ok:false,error:clean(error?.message||"Falha ao submeter template.",900),metaCode:error?.metaCode||null,metaSubcode:error?.metaSubcode||null,fbtraceId:error?.fbtraceId||null,edgeVersion:EDGE_VERSION});}}
+  if(action!=="send_campaign")return json(400,{ok:false,error:"Ação não suportada."});
+  let template:any;try{template=await getTemplate(accessToken,waba,graphVersion);}catch(error){return json(502,{ok:false,error:clean(error instanceof Error?error.message:"Falha ao consultar template.",900),edgeVersion:EDGE_VERSION});}
+  if(String(template.status||"").toUpperCase()!=="APPROVED")return json(409,{ok:false,error:`Template ainda não aprovado pela Meta (${template.status||"desconhecido"}).`,template,edgeVersion:EDGE_VERSION});
+  const rows=await audience(),targets=rows.filter(r=>r.readyToSend),endpoint=`https://graph.facebook.com/${encodeURIComponent(graphVersion)}/${encodeURIComponent(phoneNumberId)}/messages`,results:any[]=[];
+  for(const target of targets.slice(0,100)){const attempt=target.nextAttempt,eventId=requestEventId(target.id,attempt),now=new Date().toISOString(),payloadLog={campaign:CAMPAIGN,clientId:target.id,template:TEMPLATE_NAME,edgeVersion:EDGE_VERSION,consentBasis:target.requestCount>0?"previously_eligible_birthday_request":"prior_successful_non_campaign_message",requestAttempt:attempt,maxSuccessfulRequests:MAX_SUCCESSFUL_REQUESTS,cooldownDays:COOLDOWN_DAYS,authDeviceId:auth.deviceId||null};const{data:existing}=await db.from("whatsapp_message_log").select("status,wa_message_id,attempts,updated_at").eq("event_id",eventId).limit(1).maybeSingle();if(existing?.status==="sent"){results.push({clientId:target.id,status:"duplicate_skipped",attempt,messageId:existing.wa_message_id||null});continue;}const processingAge=existing?.status==="processing"&&existing?.updated_at?Date.now()-Date.parse(existing.updated_at):Infinity;if(processingAge>=0&&processingAge<120000){results.push({clientId:target.id,status:"processing_skipped",attempt});continue;}await db.from("whatsapp_message_log").upsert({event_id:eventId,command_id:`client::${target.id}`,phone:target.phone,customer_name:target.name,command_label:`Atualização cadastral • tentativa ${attempt}/${MAX_SUCCESSFUL_REQUESTS}`,payload:payloadLog,status:"processing",attempts:Number(existing?.attempts||0)+1,last_error:null,updated_at:now},{onConflict:"event_id"});const metaPayload={messaging_product:"whatsapp",recipient_type:"individual",to:target.phone,type:"template",template:{name:TEMPLATE_NAME,language:{code:TEMPLATE_LANG},components:[{type:"body",parameters:[{type:"text",text:target.name}]}]}};try{const metaData=await graphJson(endpoint,accessToken,{method:"POST",body:JSON.stringify(metaPayload)}),messageId=Array.isArray(metaData?.messages)&&metaData.messages.length?clean(metaData.messages[0]?.id,300):"";await db.from("whatsapp_message_log").upsert({event_id:eventId,command_id:`client::${target.id}`,phone:target.phone,customer_name:target.name,command_label:`Atualização cadastral • tentativa ${attempt}/${MAX_SUCCESSFUL_REQUESTS}`,payload:payloadLog,status:"sent",wa_message_id:messageId||null,last_error:null,sent_at:new Date().toISOString(),updated_at:new Date().toISOString()},{onConflict:"event_id"});results.push({clientId:target.id,status:"sent",attempt,messageId:messageId||null});}catch(error:any){const errorText=clean(error?.message||"Falha ao enviar.",900);await db.from("whatsapp_message_log").upsert({event_id:eventId,command_id:`client::${target.id}`,phone:target.phone,customer_name:target.name,command_label:`Atualização cadastral • tentativa ${attempt}/${MAX_SUCCESSFUL_REQUESTS}`,payload:payloadLog,status:"failed",last_error:errorText,updated_at:new Date().toISOString()},{onConflict:"event_id"});results.push({clientId:target.id,status:"failed",attempt,error:errorText});}}
+  return json(200,{ok:true,edgeVersion:EDGE_VERSION,campaign:CAMPAIGN,templateName:TEMPLATE_NAME,policy:{maxSuccessfulRequests:MAX_SUCCESSFUL_REQUESTS,cooldownDays:COOLDOWN_DAYS},sent:results.filter(r=>r.status==="sent").length,failed:results.filter(r=>r.status==="failed").length,skipped:rows.filter(r=>r.hasPhone&&!r.hasBirthDate&&!r.priorConsentEvidence).length,results});
 });
