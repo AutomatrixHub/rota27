@@ -1,7 +1,7 @@
 /* Rota 27 — carregador incremental do roadmap pós-v0.25.46 */
 (function(){
   'use strict';
-  const CURRENT='0.25.221';
+  const CURRENT='0.25.222';
   const HELP='11.0';
   const assets=[
     {type:'js',id:'v025189SyncReconcileJs',src:'./assets/v025189-sync-reconcile.js?v=025192r1'},
@@ -50,7 +50,8 @@
     {type:'js',id:'v02592FabVisibilityJs',src:'./assets/v02592-fab-visibility.js?v=025101r1'},
     {type:'css',id:'v02593HelpV11Css',src:'./assets/v02593-help-v11.css?v=02593r1'},
     {type:'js',id:'v02593HelpV11Js',src:'./assets/v02593-help-v11.js?v=025125r1'},
-    {type:'js',id:'v025211EnrollmentScannerJs',src:'./assets/v025211-device-enrollment-scanner.js?v=025211r1'}
+    {type:'js',id:'v025211EnrollmentScannerJs',src:'./assets/v025211-device-enrollment-scanner.js?v=025211r1'},
+    {type:'css',id:'v025222SitePaletteCss',src:'./assets/v025222-site-palette.css?v=025222r1'}
   ];
   let identityObserver=null,identityQueued=false;
   function identity(){
