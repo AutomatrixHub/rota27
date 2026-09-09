@@ -46,7 +46,14 @@ O projeto Supabase atual permanece como backend durante a migração. O novo rep
 
 As migrations históricas continuam preservadas no repositório legado e no backup Git. No baseline novo, `supabase/migrations` começa uma nova linha após o corte.
 
-Antes de qualquer migração definitiva de dados ou abandono do backend atual, deve existir um dump oficial do PostgreSQL obtido por backup do Supabase ou `pg_dump` administrativo.
+Antes de qualquer migração definitiva de dados ou abandono do backend atual, deve existir um backup lógico oficial do PostgreSQL. O script `scripts/migration/backup-supabase-postgres.ps1` segue o fluxo recomendado pelo Supabase CLI:
+
+- `roles.sql` com `supabase db dump --role-only`;
+- `schema.sql` com `supabase db dump`;
+- `data.sql` com `supabase db dump --use-copy --data-only` e exclusão das tabelas vetoriais de Storage recomendadas pela documentação;
+- `SHA256SUMS.txt` e `backup-manifest.json` sem connection string/senha.
+
+A conexão deve usar preferencialmente o Session Pooler na porta 5432, copiado do painel `Connect` do projeto. O backup deve ser testado em ambiente isolado antes do corte definitivo.
 
 ## Secrets
 
@@ -63,6 +70,19 @@ O script gera dois artefatos separados:
 
 O SHA-256 do bundle e o SHA do root commit são registrados em `artifacts/baseline-verification.txt`.
 
+## Advisors Supabase — preflight 2026-09-09
+
+Security Advisor: nenhum alerta crítico. Foram reportados 6 itens `INFO` do tipo `rls_enabled_no_policy`, correspondentes às 6 tabelas públicas do Rota 27. Isso é coerente com o desenho atual: RLS está habilitado, não há policies públicas e as Edge Functions acessam o banco pelo backend/service role. Não alterar durante a migração sem uma mudança arquitetural explícita.
+
+Performance Advisor: 4 índices reportados como ainda não utilizados:
+
+- `rota27_sync_devices_store_status_seen_idx`
+- `rota27_device_enrollments_active_code_idx`
+- `rota27_whatsapp_inbound_reply_idx`
+- `rota27_whatsapp_inbound_status_idx`
+
+Nenhum deles será removido durante a migração. O banco ainda é pequeno e alguns índices foram introduzidos recentemente; a ausência de uso até agora não justifica mudança estrutural no momento do cutover.
+
 ## Publicação do repositório privado
 
 A conexão GitHub disponível nesta sessão permite alterar repositórios existentes, mas não oferece criação de repositório. Por isso a criação do novo repositório privado é feita pelo script via GitHub CLI (`gh`) somente quando explicitamente usado com `-CreatePrivateRepo -PrivateRepo owner/nome`.
@@ -72,18 +92,19 @@ O script se recusa a reutilizar um repositório já existente, evitando sobrescr
 ## Azure — ordem de promoção
 
 1. gerar bundle e baseline local;
-2. validar SHA e secret scan;
-3. criar/pushar repositório privado;
-4. subir uma URL Azure de preview sem DNS de produção;
-5. validar PWA, service worker, sync, enroll, WhatsApp, campanhas e permissões;
-6. selecionar aparelhos piloto;
-7. somente depois preparar corte de domínio/DNS;
-8. manter GitHub Pages e restore ref disponíveis durante a janela de rollback.
+2. gerar backup lógico oficial do Supabase;
+3. validar hashes e secret scan;
+4. criar/pushar repositório privado;
+5. subir uma URL Azure de preview sem DNS de produção;
+6. validar PWA, service worker, sync, enroll, WhatsApp, campanhas e permissões;
+7. selecionar aparelhos piloto;
+8. somente depois preparar corte de domínio/DNS;
+9. manter GitHub Pages e restore ref disponíveis durante a janela de rollback.
 
 ## Bloqueios independentes
 
 - PR #279 continua bloqueada até `META_APP_SECRET` ser configurado e o verify token da Meta ser tratado de forma coordenada.
-- dump integral do PostgreSQL ainda precisa ser obtido por mecanismo oficial, pois a conexão Supabase desta sessão não expõe download de backup.
+- o backup lógico real ainda precisa ser executado em máquina com Docker + Supabase CLI e acesso à Session Pooler, pois esta sessão não recebe a senha administrativa do banco e não deve armazená-la.
 
 ## Rollback
 
@@ -94,5 +115,5 @@ Após corte de DNS, preservar por toda a janela de estabilização:
 - o commit `5d009bc10d6d5c0095cd70d21dfcf5f7d995dc72`;
 - a branch `archive/pre-azure-migration-v025224-20260909`;
 - o bundle Git com SHA-256 validado;
-- o dump do banco criado antes do corte;
+- os arquivos `roles.sql`, `schema.sql` e `data.sql` do backup criado antes do corte;
 - os secrets anteriores disponíveis no cofre/ambiente, nunca no Git.
