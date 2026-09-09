@@ -3,17 +3,17 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#F5E9D5" />
+  <meta name="theme-color" content="#FDF6EB" />
   <!-- rota27-version permanece 0.22.0 como gate de compatibilidade das camadas v0.21/v0.22. -->
   <meta name="rota27-version" content="0.22.0" />
-  <meta name="rota27-release-version" content="0.25.221" />
+  <meta name="rota27-release-version" content="0.25.222" />
   <meta name="rota27-fixed-copy-whatsapp" content="5527988133915" />
   <title>Rota 27 Bodega • Comandas</title>
   <style>
-    html,body{margin:0;min-height:100%;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:#F5E9D5;color:#111111}
+    html,body{margin:0;min-height:100%;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:#FDF6EB;color:#2E2219}
     #bootstrapStatus{display:none}
     #bootstrapStatus.error{display:grid;min-height:100vh;place-items:center;padding:24px;text-align:center;box-sizing:border-box}
-    #bootstrapStatus.error>div{max-width:420px;background:#FFF9F0;border:1px solid #D9C7A7;border-radius:20px;padding:24px;box-shadow:0 14px 34px rgba(17,17,17,.12);color:#B5483C;line-height:1.45}
+    #bootstrapStatus.error>div{max-width:420px;background:#FFF9F0;border:1px solid #DEC9AB;border-radius:20px;padding:24px;box-shadow:0 14px 34px rgba(46,34,25,.12);color:#A43D34;line-height:1.45}
   </style>
 </head>
 <body>
@@ -25,11 +25,11 @@
         const res=await fetch('./base-v013.html',{cache:'no-store'});
         if(!res.ok)throw new Error('Não foi possível carregar a base do aplicativo');
         let html=await res.text();
-        html=html.replace(/(<span id="v14VersionBadge"[^>]*>)[^<]*(<\/span>)/, '$1v0.25.221$2');
+        html=html.replace(/(<span id="v14VersionBadge"[^>]*>)[^<]*(<\/span>)/, '$1v0.25.222$2');
         html=html.replace(/<title>[\s\S]*?<\/title>/i,'<title>Rota 27 Bodega • Comandas</title>');
         html=html.replace('</head>',
           '<meta name="rota27-version" content="0.22.0" />'+
-          '<meta name="rota27-release-version" content="0.25.221" />'+
+          '<meta name="rota27-release-version" content="0.25.222" />'+
           '<style id="rota27BootstrapGate">body{opacity:0!important}body.r27-bootstrap-ready{opacity:1!important;transition:opacity .12s ease}</style>'+
           '<meta name="rota27-fixed-copy-whatsapp" content="5527988133915" />'+
           '<link rel="stylesheet" href="./assets/v014.css" />'+
@@ -156,7 +156,7 @@
           '<script id="v02573WhatsappCancelJs" src="./assets/v02573-whatsapp-cancel.js?v=025195r1"><\/script>'+
           '<script id="v02574WhatsappConsentJs" src="./assets/v02574-whatsapp-consent.js?v=02574r1"><\/script>'+
           '<script id="v02598CommandEmptyStateJs" src="./assets/v02598-command-empty-state.js?v=02598r1"><\/script>'+
-          '<script src="./assets/roadmap-loader.js?v=025221r1"><\/script>'+
+          '<script src="./assets/roadmap-loader.js?v=025222r1"><\/script>'+
           '<script>setTimeout(function(){document.body&&document.body.classList.add("r27-bootstrap-ready");},4000);<\/script>'+
           '</body>');
         document.open();document.write(html);document.close();
