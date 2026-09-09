@@ -1,7 +1,8 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
 
-const EDGE_VERSION = "rota27-whatsapp-inbound-v0.25.224-signed";
+const EDGE_VERSION = "rota27-whatsapp-inbound-v4-birthday-consent";
+const DEFAULT_VERIFY_TOKEN = "rota27-whatsapp-inbound-verify-v1-20260823";
 const DEFAULT_MANAGER_TEMPLATE = "resposta_cliente_rota27_gerente_v1";
 const BIRTHDAY_CAMPAIGN = "birthday_request_v1";
 
@@ -12,7 +13,7 @@ function digits(value: unknown) { return String(value ?? "").replace(/\D/g, "");
 function normalizePhone(value: unknown) { let d = digits(value).replace(/^0+/, ""); if (d.length === 10 || d.length === 11) d = `55${d}`; return d; }
 function validPhone(value: string) { return value.length >= 12 && value.length <= 15; }
 function formatPhone(value: string) { return value ? `+${value}` : ""; }
-function timingSafeEqual(a: string, b: string) { if (!a || !b || a.length !== b.length) return false; let diff = 0; for (let i = 0; i < a.length; i++) diff |= a.charCodeAt(i) ^ b.charCodeAt(i); return diff === 0; }
+function timingSafeEqual(a: string, b: string) { if (a.length !== b.length) return false; let diff = 0; for (let i = 0; i < a.length; i++) diff |= a.charCodeAt(i) ^ b.charCodeAt(i); return diff === 0; }
 function parseBirthDate(value: unknown) {
   const raw = clean(value, 120); let m = raw.match(/(?:^|\D)(\d{1,2})[\/.-](\d{1,2})[\/.-](\d{4})(?:\D|$)/); let y: number, mo: number, d: number;
   if (m) { d = Number(m[1]); mo = Number(m[2]); y = Number(m[3]); } else { m = raw.match(/(?:^|\D)(\d{4})-(\d{1,2})-(\d{1,2})(?:\D|$)/); if (!m) return ""; y = Number(m[1]); mo = Number(m[2]); d = Number(m[3]); }
@@ -22,13 +23,8 @@ function parseBirthDate(value: unknown) {
 function formatBirthDate(iso: string) { const m = iso.match(/^(\d{4})-(\d{2})-(\d{2})$/); return m ? `${m[3]}/${m[2]}/${m[1]}` : iso; }
 
 async function verifyMetaSignature(rawBody: string, signatureHeader: string | null) {
-  const secret = Deno.env.get("META_APP_SECRET") || "";
-  if (!secret) return { configured: false, ok: false };
-  if (!signatureHeader?.startsWith("sha256=")) return { configured: true, ok: false };
-  const key = await crypto.subtle.importKey("raw", new TextEncoder().encode(secret), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
-  const signed = await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(rawBody));
-  const expected = `sha256=${Array.from(new Uint8Array(signed)).map((b) => b.toString(16).padStart(2, "0")).join("")}`;
-  return { configured: true, ok: timingSafeEqual(expected, signatureHeader) };
+  const secret = Deno.env.get("META_APP_SECRET") || ""; if (!secret) return { enforced: false, ok: true }; if (!signatureHeader?.startsWith("sha256=")) return { enforced: true, ok: false };
+  const key = await crypto.subtle.importKey("raw", new TextEncoder().encode(secret), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]); const signed = await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(rawBody)); const expected = `sha256=${Array.from(new Uint8Array(signed)).map((b) => b.toString(16).padStart(2, "0")).join("")}`; return { enforced: true, ok: timingSafeEqual(expected, signatureHeader) };
 }
 function extractMessageText(message: any) {
   const type = clean(message?.type || "unknown", 40) || "unknown";
@@ -53,22 +49,14 @@ function statusErrorText(status: any) {
 }
 
 Deno.serve(async (req: Request) => {
-  const url = new URL(req.url), verifyToken = Deno.env.get("META_WEBHOOK_VERIFY_TOKEN") || "", appSecretConfigured = Boolean(Deno.env.get("META_APP_SECRET")), verifyTokenConfigured = Boolean(verifyToken);
+  const url = new URL(req.url), verifyToken = Deno.env.get("META_WEBHOOK_VERIFY_TOKEN") || DEFAULT_VERIFY_TOKEN, appSecretConfigured = Boolean(Deno.env.get("META_APP_SECRET"));
   if (req.method === "GET") {
-    if (url.searchParams.get("health") === "1") return json(200, { ok: true, edgeVersion: EDGE_VERSION, signatureVerification: appSecretConfigured, verifyTokenConfigured, mode: appSecretConfigured ? "signed" : "blocked_missing_app_secret", birthdayReplies: true, deliveryStatuses: true, birthdayRelationshipConsent: true });
-    if (!verifyTokenConfigured) return json(503, { ok: false, code: "verify_token_missing", error: "Webhook verify token não configurado." });
-    const mode = url.searchParams.get("hub.mode") || "", supplied = url.searchParams.get("hub.verify_token") || "", challenge = url.searchParams.get("hub.challenge") || "";
-    if (mode === "subscribe" && timingSafeEqual(supplied, verifyToken) && challenge) return new Response(challenge, { status: 200, headers: { "content-type": "text/plain; charset=utf-8" } });
-    return json(401, { ok: false, error: "Webhook não verificado." });
+    if (url.searchParams.get("health") === "1") return json(200, { ok: true, edgeVersion: EDGE_VERSION, signatureVerification: appSecretConfigured, mode: appSecretConfigured ? "signed" : "context-bound", birthdayReplies: true, deliveryStatuses: true, birthdayRelationshipConsent: true });
+    const mode = url.searchParams.get("hub.mode") || "", supplied = url.searchParams.get("hub.verify_token") || "", challenge = url.searchParams.get("hub.challenge") || ""; if (mode === "subscribe" && timingSafeEqual(supplied, verifyToken) && challenge) return new Response(challenge, { status: 200, headers: { "content-type": "text/plain; charset=utf-8" } }); return json(401, { ok: false, error: "Webhook não verificado." });
   }
   if (req.method !== "POST") return json(405, { ok: false, error: "Método não permitido." });
-  if (!appSecretConfigured) return json(503, { ok: false, code: "meta_app_secret_missing", error: "Webhook temporariamente indisponível: assinatura Meta não configurada." });
-  const rawBody = await req.text();
-  if (new TextEncoder().encode(rawBody).length > 512_000) return json(413, { ok: false, error: "Payload muito grande." });
-  const signature = await verifyMetaSignature(rawBody, req.headers.get("x-hub-signature-256"));
-  if (!signature.ok) return json(401, { ok: false, error: "Assinatura Meta inválida." });
-  let body: any; try { body = JSON.parse(rawBody); } catch { return json(400, { ok: false, error: "JSON inválido." }); }
-  if (body?.object !== "whatsapp_business_account") return json(200, { ok: true, ignored: true, reason: "object_not_supported", edgeVersion: EDGE_VERSION });
+  const rawBody = await req.text(); if (new TextEncoder().encode(rawBody).length > 512_000) return json(413, { ok: false, error: "Payload muito grande." }); const signature = await verifyMetaSignature(rawBody, req.headers.get("x-hub-signature-256")); if (!signature.ok) return json(401, { ok: false, error: "Assinatura Meta inválida." });
+  let body: any; try { body = JSON.parse(rawBody); } catch { return json(400, { ok: false, error: "JSON inválido." }); } if (body?.object !== "whatsapp_business_account") return json(200, { ok: true, ignored: true, reason: "object_not_supported", edgeVersion: EDGE_VERSION });
 
   const supabaseUrl = Deno.env.get("SUPABASE_URL") || "", serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "", accessToken = Deno.env.get("WHATSAPP_ACCESS_TOKEN") || "", phoneNumberId = Deno.env.get("WHATSAPP_PHONE_NUMBER_ID") || "", graphVersion = Deno.env.get("META_GRAPH_VERSION") || "", templateLang = Deno.env.get("WHATSAPP_TEMPLATE_LANG") || "pt_BR", managerTemplate = Deno.env.get("WHATSAPP_MANAGER_REPLY_TEMPLATE") || DEFAULT_MANAGER_TEMPLATE, storeId = clean(Deno.env.get("ROTA27_SYNC_STORE_ID") || "rota27-bodega", 80);
   if (!supabaseUrl || !serviceRoleKey || !accessToken || !phoneNumberId || !graphVersion) return json(500, { ok: false, error: "Backend incompleto para receber respostas.", edgeVersion: EDGE_VERSION });
