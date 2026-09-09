@@ -11,7 +11,7 @@ Criar um novo repositório privado com histórico Git novo e sanitizado para a m
 O novo baseline **não é uma cópia cega de `main`**. Ele tem duas origens explícitas e verificáveis:
 
 - frontend + backend-base: `AutomatrixHub/rota27` no commit de produção `5d009bc10d6d5c0095cd70d21dfcf5f7d995dc72` — v0.25.224;
-- overlay de segurança exclusivamente para `supabase/functions/rota27-whatsapp-inbound/index.ts`: commit `82a1f3067ef6660bff834d10dedb7cf4dbfc1979`, isolado na PR #279;
+- overlay de segurança exclusivamente para `supabase/functions/rota27-whatsapp-inbound/index.ts`: commit `82a1f3067ef6660bff834d10dedb7cf4dbfc1979`, isolado na PR #279 e preservado também em `archive/security-overlay-meta-inbound-v025224-20260909`;
 - tree de produção: `b80b1195ad5c5fb7042914a5d746582f1a020168`;
 - restore ref: `archive/pre-azure-migration-v025224-20260909`;
 - manifesto histórico: `archive/manifest-pre-azure-v025224-20260909`.
@@ -81,7 +81,11 @@ O backup lógico deve ser executado antes do cutover e produzir:
 - `SHA256SUMS.txt`;
 - `backup-manifest.json`.
 
-O script `backup-supabase-postgres.ps1` usa Supabase CLI + Session Pooler e não persiste senha/connection string.
+O script `backup-supabase-postgres.ps1` usa o fluxo `supabase db dump`, valida que a connection string pertence ao projeto esperado, aceita Session Pooler 5432 ou conexão direta 5432 e não persiste senha/connection string.
+
+Por padrão o backup é criado em `%LOCALAPPDATA%\Rota27\Backups\...`, fora do repositório. O script recusa um destino dentro do Git atual e avisa quando um destino customizado parece estar sob OneDrive.
+
+`data.sql` deve ser tratado como **arquivo sensível**: a tabela `public.rota27_automation_credentials` possui uma coluna `token`. O valor dessa coluna não foi lido durante o preflight, mas estará incluído no dump de dados para permitir recuperação completa.
 
 As migrations históricas ficam preservadas no repositório legado, no bundle integral e no backup lógico. O novo repo inicia uma nova linha em `supabase/migrations`; arquivos `.sql` de novas migrations permanecem permitidos normalmente.
 
@@ -89,9 +93,50 @@ Preflight adicional em 09/09/2026:
 
 - PostgreSQL 17, projeto `ACTIVE_HEALTHY`, região `sa-east-1`;
 - Supabase Auth: 0 usuários, 0 identidades, 0 sessões;
-- Supabase Storage: 0 buckets, 0 objetos.
+- Supabase Storage: 0 buckets, 0 objetos;
+- Vault: 0 secrets;
+- nenhuma migration registrada contém referência a `auth.` ou `storage.`;
+- nenhuma policy customizada foi encontrada em `auth`/`storage`;
+- os triggers visíveis em Storage apontam para funções internas do próprio schema `storage`.
 
-Não existe hoje uma camada adicional de usuários Auth ou binários de Storage a transportar.
+Não existe hoje uma camada adicional de usuários Auth ou binários de Storage a transportar, e não foi encontrada customização explícita de Auth/Storage no histórico do projeto. Isso reduz o risco, mas não substitui o teste de restauração em ambiente isolado.
+
+### Assinatura do banco antes do backup
+
+Contagens exatas observadas no preflight de 09/09/2026:
+
+- `public.rota27_automation_credentials`: 1;
+- `public.rota27_device_enrollments`: 5;
+- `public.rota27_sync_devices`: 18;
+- `public.rota27_sync_events`: 2784;
+- `public.rota27_whatsapp_inbound`: 44;
+- `public.whatsapp_message_log`: 1702;
+- `supabase_migrations.schema_migrations`: 28.
+
+Esses números são uma fotografia de referência, não valores que o restore deva forçar. No momento do backup real as contagens podem ter aumentado; a validação deve verificar coerência com o banco daquele instante.
+
+### Inventário de recuperação fora do dump principal
+
+Extensões instaladas no projeto em 09/09/2026:
+
+- `pg_cron` 1.6.4;
+- `pg_net` 0.20.4;
+- `pg_stat_statements` 1.11;
+- `pgcrypto` 1.3;
+- `plpgsql` 1.0;
+- `supabase_vault` 0.3.1;
+- `uuid-ossp` 1.1.
+
+Existe 1 job `pg_cron` ativo:
+
+- job: `rota27-birthday-greeting-0930`;
+- schedule armazenado: `30 12 * * *`;
+- banco/usuário: `postgres` / `postgres`;
+- usa `net.http_post` e referencia `rota27-birthday-greeting`;
+- comprimento do comando: 529 caracteres;
+- SHA-256 do comando, sem expor seu conteúdo: `717166ebc3f9ac51903c81663149faffa59df4ae3b7df2e394c2f5b0a6962c22`.
+
+Não presumir que um dump lógico comum recriará corretamente configuração gerenciada de extensões como `pg_cron`. Em um cenário de disaster recovery, recriar primeiro as extensões compatíveis no ambiente de destino e restaurar/reconfigurar o job de aniversário de forma controlada. O comando do cron deve ser preservado somente em artefato privado/sensível de recuperação, nunca em documentação pública.
 
 ## Secrets
 
@@ -120,7 +165,7 @@ O builder gera:
 5. `git init` novo;
 6. root commit sem ancestrais do repositório público.
 
-O bundle histórico e seus hashes ficam fora do novo Git e devem ser armazenados em local privado seguro.
+O destino padrão fica em `%LOCALAPPDATA%\Rota27\Migration\ROTA27-PRE-AZURE-<timestamp>`. O builder recusa um destino localizado dentro do repositório Git atual. O bundle histórico e seus hashes ficam fora do novo Git e devem ser armazenados em local privado seguro.
 
 ## Kit preservado no novo repo
 
@@ -198,19 +243,20 @@ O QR gerado no PWA antigo usa `location.href` e aponta para a origem antiga. No 
 1. bundle histórico + hashes;
 2. baseline sanitizado + overlay verificado;
 3. backup lógico Supabase + hashes;
-4. criar novo repo privado e push do root novo;
-5. Azure Static Web Apps técnico;
-6. validação TXT do domínio final;
-7. CNAME somente após validação;
-8. validar domínio final/TLS;
-9. manter Pages antigo como fallback;
-10. promover temporariamente a PR #281 para obter preflight local no PWA antigo;
-11. iPhone owner: todas as outboxes = 0 e cursor convergente;
-12. re-enrollment direto no domínio final por código manual;
-13. homologar mantendo PWA antigo instalado;
-14. migrar Edge/developer;
-15. migrar Windows/staff;
-16. retirar Pages somente em fase futura.
+4. preservar inventário de extensões/cron e validar artefatos sensíveis fora do Git;
+5. criar novo repo privado e push do root novo;
+6. Azure Static Web Apps técnico;
+7. validação TXT do domínio final;
+8. CNAME somente após validação;
+9. validar domínio final/TLS;
+10. manter Pages antigo como fallback;
+11. promover temporariamente a PR #281 para obter preflight local no PWA antigo;
+12. iPhone owner: todas as outboxes = 0 e cursor convergente;
+13. re-enrollment direto no domínio final por código manual;
+14. homologar mantendo PWA antigo instalado;
+15. migrar Edge/developer;
+16. migrar Windows/staff;
+17. retirar Pages somente em fase futura.
 
 ## Bloqueios independentes
 
@@ -224,8 +270,10 @@ Durante a janela de estabilização preservar:
 
 - commit de produção `5d009bc10d6d5c0095cd70d21dfcf5f7d995dc72`;
 - branch `archive/pre-azure-migration-v025224-20260909`;
+- branch `archive/security-overlay-meta-inbound-v025224-20260909`;
 - bundle histórico + SHA-256;
 - cinco arquivos do backup lógico + hashes;
+- inventário privado de extensões/cron;
 - pacote privado de Edge Functions órfãs;
 - secrets no cofre/ambiente;
 - PWA antigo instalado nos aparelhos ainda não consolidados.
