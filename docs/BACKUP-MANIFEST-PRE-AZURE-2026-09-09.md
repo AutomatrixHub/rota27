@@ -18,12 +18,17 @@ A branch de restauração exata aponta diretamente para o commit acima e não co
 
 - PR #278 foi mesclada por squash em `main`.
 - PR #279 (`security: exigir assinatura Meta no webhook inbound`) permanece em draft e fora de produção.
-- O frontend/PWA, DNS e GitHub Pages não foram alterados pelo lote de backend.
+- PR #280 (`migration: preparar baseline privado pré-Azure`) permanece em draft e fora de produção.
+- O frontend/PWA, DNS e GitHub Pages não foram alterados pelo lote de backend nem pelas branches de migração.
 - GitHub Pages foi validado HTTP 200 após o merge da PR #278.
 
 ## Supabase
 
 Projeto: `owkvwsiblbzlpxjwybrt`
+
+- região: `sa-east-1`
+- PostgreSQL: 17
+- status no preflight: `ACTIVE_HEALTHY`
 
 ### Tabelas públicas — contagem exata no snapshot
 
@@ -37,6 +42,13 @@ Projeto: `owkvwsiblbzlpxjwybrt`
 | `rota27_automation_credentials` | 1 |
 
 Todas as 6 tabelas públicas estavam com RLS habilitado e sem policies públicas; o acesso operacional é feito pelas Edge Functions/service role.
+
+### Serviços internos relevantes
+
+- Supabase Auth: 0 usuários, 0 identidades e 0 sessões no preflight.
+- Supabase Storage: 0 buckets e 0 objetos no preflight.
+
+Portanto não havia usuários Auth nem objetos binários de Storage para preservar separadamente no estado auditado.
 
 ### Edge Functions ACTIVE
 
@@ -62,6 +74,26 @@ Todas as 6 tabelas públicas estavam com RLS habilitado e sem policies públicas
 
 As funções com `verify_jwt=false` usam autenticação própria ou são webhooks. A migração não deve alterar esse comportamento sem validação individual.
 
+### Edge Functions ACTIVE sem fonte em `main`
+
+Sete funções do control-plane não estavam presentes em `supabase/functions` do commit fonte:
+
+- `rota27-lab` — laboratório legado;
+- `rota27-meta-webhook-bootstrap` — desativada, HTTP 410;
+- `rota27-birthday-bootstrap` — desativada, HTTP 410;
+- `rota27-admin-replay-beto-20260827` — desativada, HTTP 410;
+- `rota27-admin-resend-mamute-20260828` — desativada, HTTP 410;
+- `rota27-admin-retry-mamute-20260828` — desativada, HTTP 410;
+- `rota27-event-delivery-status` — legado funcional, sem referência operacional encontrada no código atual.
+
+Os fontes atuais dessas sete funções foram exportados em pacote privado de recuperação fora do Git público:
+
+- arquivo: `rota27-orphan-edge-functions-20260909.zip`
+- SHA-256: `ca1a26605131c5b5b46e004a3cf3359f25fe05fd6be26103d89adee029539356`
+- secret scan: nenhum padrão de secret detectado.
+
+Esse pacote não deve ser usado para redeploy automático no baseline novo; serve apenas como material de recuperação durante a janela de rollback.
+
 ### Migrações recentes
 
 - `20260909215902 birthday_greeting_automation_auth`
@@ -82,6 +114,11 @@ As funções com `verify_jwt=false` usam autenticação própria ou são webhook
 - schedule: `30 12 * * *` (12:30 UTC / 09:30 America/Sao_Paulo no horário de referência)
 - active: `true`
 - o `run_due` já exige credencial server-to-server armazenada em tabela protegida por RLS.
+
+### Advisors
+
+- Security Advisor: nenhum alerta crítico; 6 itens INFO `rls_enabled_no_policy`, compatíveis com o desenho server-side/service-role atual.
+- Performance Advisor: 4 índices ainda sem uso; nenhum será removido durante a migração.
 
 ## Tags existentes no snapshot
 
@@ -107,9 +144,21 @@ O health de produção de `rota27-whatsapp-inbound` informou `signatureVerificat
 4. a função assinada seja implantada;
 5. um POST real assinado e status de entrega sejam validados.
 
-## Limitação do backup de dados
+## Backup lógico do banco — preparado, ainda não executado
 
-A conexão Supabase disponível neste ambiente não expõe operação nativa de dump/backup binário do PostgreSQL. Por isso este manifesto registra estrutura, migrations, contagens, cron e versões, mas **não substitui um dump lógico/físico do banco**. O dump integral deve ser obtido via mecanismo oficial de backup do Supabase ou `pg_dump` com credenciais administrativas, antes do corte definitivo para Azure.
+A conexão Supabase disponível nesta sessão não expõe download de backup nem recebe a senha administrativa do banco. Por isso o dump real não foi executado nesta sessão.
+
+A PR #280 contém `scripts/migration/backup-supabase-postgres.ps1`, alinhado ao fluxo oficial do Supabase CLI e preparado para gerar fora do Git:
+
+- `roles.sql`;
+- `schema.sql`;
+- `data.sql`;
+- `history_schema.sql`;
+- `history_data.sql`;
+- `backup-manifest.json`;
+- `SHA256SUMS.txt`.
+
+A connection string é solicitada de forma oculta e não é persistida. O backup real deve ser executado e os hashes validados antes de qualquer cutover.
 
 ## Regra de restauração
 
