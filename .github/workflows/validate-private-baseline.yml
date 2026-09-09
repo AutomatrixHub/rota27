@@ -23,6 +23,23 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Parse all migration PowerShell scripts
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $files = Get-ChildItem ./scripts/migration -Recurse -Filter *.ps1 -File
+          if (-not $files) { throw 'Nenhum script PowerShell de migração encontrado.' }
+          foreach ($file in $files) {
+            $tokens = $null
+            $errors = $null
+            [System.Management.Automation.Language.Parser]::ParseFile($file.FullName,[ref]$tokens,[ref]$errors) | Out-Null
+            if ($errors.Count -gt 0) {
+              $details = ($errors | ForEach-Object { "$($file.Name): linha $($_.Extent.StartLineNumber), coluna $($_.Extent.StartColumnNumber): $($_.Message)" }) -join "`n"
+              throw "Erro de sintaxe PowerShell:`n$details"
+            }
+            Write-Host "PARSE_PASS=$($file.FullName)"
+          }
+
       - name: Execute baseline builder without publishing
         shell: pwsh
         run: |
