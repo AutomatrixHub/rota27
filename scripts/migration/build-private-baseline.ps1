@@ -106,7 +106,7 @@ Este baseline parte do banco Supabase já existente. As migrations históricas p
 Não reproduza as migrations antigas automaticamente neste repositório. Novas migrations, posteriores ao corte, devem começar aqui e ser revisadas antes de aplicação.
 '@ | Set-Content -Path (Join-Path $BaselineDir "supabase\migrations\README.md") -Encoding UTF8
 
-Write-Host "[5/8] Criando documentação e políticas de secrets..."
+Write-Host "[5/8] Criando documentação, configuração Azure e políticas de secrets..."
 @'
 .env
 .env.*
@@ -143,9 +143,19 @@ Secrets não pertencem ao Git. Devem ser configurados no ambiente de hospedagem/
 
 ## Banco de dados
 
-O projeto continua usando o mesmo Supabase durante a migração. O dump oficial do banco deve ser feito separadamente antes do corte definitivo. As migrations históricas não são reaplicadas neste baseline.
+O projeto continua usando o mesmo Supabase durante a migração. O backup lógico oficial deve ser feito separadamente antes do corte definitivo. As migrations históricas não são reaplicadas neste baseline.
+
+## Azure preview
+
+`staticwebapp.config.json` é incluído no root do baseline para preservar atualização do Service Worker e evitar cache prolongado dos pontos de entrada. O primeiro deploy deve usar Azure Static Web Apps em URL temporária, sem DNS de produção.
 "@
 Set-Content -Path (Join-Path $BaselineDir "README.md") -Value $readme -Encoding UTF8
+
+$azureConfigSource = Join-Path $PSScriptRoot "azure\staticwebapp.config.json"
+if (-not (Test-Path $azureConfigSource -PathType Leaf)) {
+  throw "Configuração Azure não encontrada: $azureConfigSource"
+}
+Copy-Item -LiteralPath $azureConfigSource -Destination (Join-Path $BaselineDir "staticwebapp.config.json") -Force
 
 $manifest = @()
 $manifest += "source_sha=$SourceSha"
@@ -153,6 +163,7 @@ $manifest += "bundle_sha256=$BundleHash"
 $manifest += "created_at=$([DateTimeOffset]::Now.ToString('o'))"
 $manifest += "frontend_file_count=$($frontendFiles.Count)"
 $manifest += "backend_source=supabase/functions"
+$manifest += "azure_config=staticwebapp.config.json"
 Set-Content -Path (Join-Path $BaselineDir "MIGRATION-BASELINE.txt") -Value $manifest -Encoding UTF8
 
 Write-Host "[6/8] Executando varredura anti-secret..."
