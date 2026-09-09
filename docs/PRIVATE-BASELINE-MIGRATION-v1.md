@@ -4,179 +4,230 @@ Data: 2026-09-09
 
 ## Objetivo
 
-Criar um novo repositório privado para a fase Azure sem carregar o histórico incremental completo do repositório público e sem perder a capacidade de restauração do sistema atual.
+Criar um novo repositório privado com histórico Git novo e sanitizado para a migração GitHub Pages → Azure, mantendo o mesmo Supabase e preservando rollback integral do sistema atual.
 
-## Fonte congelada
+## Proveniência congelada
 
-- repositório legado: `AutomatrixHub/rota27`
-- commit fonte: `5d009bc10d6d5c0095cd70d21dfcf5f7d995dc72`
-- tree SHA: `b80b1195ad5c5fb7042914a5d746582f1a020168`
-- restore ref: `archive/pre-azure-migration-v025224-20260909`
-- manifesto: `archive/manifest-pre-azure-v025224-20260909`
+O novo baseline **não é uma cópia cega de `main`**. Ele tem duas origens explícitas e verificáveis:
+
+- frontend + backend-base: `AutomatrixHub/rota27` no commit de produção `5d009bc10d6d5c0095cd70d21dfcf5f7d995dc72` — v0.25.224;
+- overlay de segurança exclusivamente para `supabase/functions/rota27-whatsapp-inbound/index.ts`: commit `82a1f3067ef6660bff834d10dedb7cf4dbfc1979`, isolado na PR #279;
+- tree de produção: `b80b1195ad5c5fb7042914a5d746582f1a020168`;
+- restore ref: `archive/pre-azure-migration-v025224-20260909`;
+- manifesto histórico: `archive/manifest-pre-azure-v025224-20260909`.
+
+O overlay de segurança **não altera nem deploya a produção Supabase**. Ele existe apenas para impedir que o novo repositório privado nasça contendo o verify token Meta histórico hardcoded.
+
+## Sanitização do webhook Meta
+
+O `main` v0.25.224 ainda possui um fallback literal de `META_WEBHOOK_VERIFY_TOKEN`. Isso permanece somente no legado enquanto a produção atual não pode ser alterada antes da rotação coordenada com a Meta.
+
+Antes do primeiro commit do repositório privado, `build-private-baseline.ps1`:
+
+1. copia o backend-base do SHA de produção;
+2. confirma que o SHA de segurança existe no clone;
+3. substitui somente `rota27-whatsapp-inbound/index.ts` pela versão sanitizada;
+4. confirma que `DEFAULT_VERIFY_TOKEN` e o marcador histórico não existem no arquivo final;
+5. confirma que a função usa `META_WEBHOOK_VERIFY_TOKEN` e `META_APP_SECRET` por ambiente;
+6. grava `security-overlay-verification.txt` fora do Git novo.
+
+O deploy dessa versão continua bloqueado até os secrets da Meta estarem configurados e o verify token ser rotacionado de forma coordenada.
 
 ## Regra do frontend
 
-O baseline não seleciona patches manualmente. O script lê o `APP_SHELL` do `sw.js` do commit congelado, remove query strings e copia exatamente os arquivos referenciados, acrescentando explicitamente `index.html`, `base-v013.html`, `sw.js`, `manifest.webmanifest` e `VERSION`.
+O baseline não escolhe patches manualmente. O builder lê o `APP_SHELL` do `sw.js` do commit congelado, remove query strings e copia os arquivos realmente usados pelo PWA, acrescentando explicitamente:
 
-Isso preserva o PWA operacional, incluindo dependências indiretas carregadas pelo `roadmap-loader.js`.
+- `index.html`;
+- `base-v013.html`;
+- `sw.js`;
+- `manifest.webmanifest`;
+- `VERSION`.
 
-A portabilidade de caminho foi verificada: `manifest.webmanifest` usa `id`, `start_url`, `scope` e ícones relativos (`./`), e `base-v013.html` registra o Service Worker como `./sw.js`. Referências a `/rota27/` encontradas no commit fonte pertencem a documentação/histórico, não à superfície operacional copiada.
+A arquitetura legada é preservada. `base-v013.html` não é reescrito. A meta de compatibilidade `rota27-version=0.22.0` continua intacta enquanto essa arquitetura existir.
+
+A portabilidade de caminho foi verificada: manifest, ícones e Service Worker usam caminhos relativos. Referências ao antigo `/rota27/` encontradas no commit fonte pertencem a documentação/histórico, não à superfície operacional copiada.
 
 ## Regra do backend
 
-Copiar somente `supabase/functions` presente em `main` no commit fonte, incluindo `_shared`.
+O backend-base copia somente `supabase/functions` presente em `main`, incluindo `_shared`, e depois aplica o overlay sanitizado descrito acima.
 
-No estado auditado, o código versionado contém:
+Funções versionadas atuais:
 
-- `_shared`
-- `rota27-access-control`
-- `rota27-audit`
-- `rota27-birthday-campaign`
-- `rota27-birthday-greeting`
-- `rota27-device-control`
-- `rota27-device-enroll`
-- `rota27-event-campaign`
-- `rota27-sync`
-- `rota27-whatsapp-inbound`
-- `rota27-whatsapp`
+- `_shared`;
+- `rota27-access-control`;
+- `rota27-audit`;
+- `rota27-birthday-campaign`;
+- `rota27-birthday-greeting`;
+- `rota27-device-control`;
+- `rota27-device-enroll`;
+- `rota27-event-campaign`;
+- `rota27-sync`;
+- `rota27-whatsapp-inbound`;
+- `rota27-whatsapp`.
 
-Funções ACTIVE no Supabase que não possuem mais fonte em `main` são legado/órfãs e não devem ser recriadas automaticamente no repositório novo. Os fontes atuais desses endpoints foram preservados separadamente para recuperação. A maioria já responde `410/disabled`; `rota27-event-delivery-status` ainda é funcional, mas não foi encontrada chamada operacional no frontend atual. Nenhuma função órfã será removida durante a migração inicial.
+As Edge Functions ACTIVE que não possuem mais fonte em `main` não são recriadas automaticamente no novo repositório. Seus fontes atuais foram preservados separadamente para recuperação. A maioria responde `410/disabled`; `rota27-event-delivery-status` ainda é funcional, mas não foi encontrada chamada operacional no frontend atual. Nenhuma delas será removida do runtime durante a migração inicial.
 
 ## Banco de dados
 
-O projeto Supabase atual permanece como backend durante a migração. O novo repositório não deve reaplicar automaticamente a cadeia histórica de migrations.
+O projeto Supabase atual permanece como backend. Não recriar nem migrar o Supabase nesta fase.
 
-As migrations históricas continuam preservadas no repositório legado e no backup Git. No baseline novo, `supabase/migrations` começa uma nova linha após o corte.
-
-O script `scripts/migration/backup-supabase-postgres.ps1` segue o fluxo lógico do Supabase CLI e deve produzir:
+O backup lógico deve ser executado antes do cutover e produzir:
 
 - `roles.sql`;
 - `schema.sql`;
 - `data.sql`;
-- `history_schema.sql` para a estrutura de `supabase_migrations`;
-- `history_data.sql` para o histórico de migrations;
-- `SHA256SUMS.txt` e `backup-manifest.json` sem connection string/senha.
+- `history_schema.sql`;
+- `history_data.sql`;
+- `SHA256SUMS.txt`;
+- `backup-manifest.json`.
 
-A conexão deve usar preferencialmente o Session Pooler na porta 5432, copiado do painel `Connect` do projeto. O backup deve ser testado em ambiente isolado antes de qualquer retirada do backend atual.
+O script `backup-supabase-postgres.ps1` usa Supabase CLI + Session Pooler e não persiste senha/connection string.
 
-No preflight de 09/09/2026 também foi confirmado:
+As migrations históricas ficam preservadas no repositório legado, no bundle integral e no backup lógico. O novo repo inicia uma nova linha em `supabase/migrations`; arquivos `.sql` de novas migrations permanecem permitidos normalmente.
 
-- 0 usuários, 0 identidades e 0 sessões no Supabase Auth;
-- 0 buckets e 0 objetos no Supabase Storage.
+Preflight adicional em 09/09/2026:
 
-Portanto não existe atualmente uma camada adicional de usuários Auth ou arquivos de Storage a transportar nesta migração.
+- PostgreSQL 17, projeto `ACTIVE_HEALTHY`, região `sa-east-1`;
+- Supabase Auth: 0 usuários, 0 identidades, 0 sessões;
+- Supabase Storage: 0 buckets, 0 objetos.
+
+Não existe hoje uma camada adicional de usuários Auth ou binários de Storage a transportar.
 
 ## Secrets
 
-O baseline não copia `.env`, chaves privadas, dumps ou backups. Antes do primeiro commit, o builder procura padrões típicos de JWT, token Meta, chave Supabase secreta e chave privada. Se encontrar algo, aborta antes do push.
+O baseline não copia `.env`, chaves privadas, dumps ou backups.
 
-Variáveis como `SUPABASE_SERVICE_ROLE_KEY`, `ROTA27_DEVICE_TOKEN`, `WHATSAPP_ACCESS_TOKEN`, `META_APP_SECRET` e similares permanecem apenas como nomes de variáveis no código; seus valores ficam no ambiente protegido.
+A varredura pré-commit bloqueia padrões de:
 
-## Histórico
+- chave privada;
+- token Meta com aparência de access token;
+- `sb_secret_*`;
+- JWT de três partes;
+- marcador do verify token histórico identificado na auditoria.
 
-O builder gera dois artefatos separados:
+A varredura dirigida confirmou que `SUPABASE_SERVICE_ROLE_KEY`, `WHATSAPP_ACCESS_TOKEN`, `META_APP_SECRET` e `ROTA27_DEVICE_TOKEN` aparecem no código operacional como leituras de ambiente. O fallback literal relevante identificado foi o verify token antigo do inbound e é removido pelo overlay.
 
-1. `rota27-history-20260909.bundle`: backup integral de refs/histórico do Git legado;
-2. `baseline/`: árvore operacional sanitizada inicializada com `git init`, gerando novo root commit sem herdar o histórico público.
+Valores de secrets e credenciais Azure/deploy nunca entram no Git.
 
-O SHA-256 do bundle e o SHA do root commit são registrados em `artifacts/baseline-verification.txt`.
+## Histórico Git
 
-## Advisors Supabase — preflight 2026-09-09
+O builder gera:
 
-Security Advisor: nenhum alerta crítico. Foram reportados 6 itens `INFO` do tipo `rls_enabled_no_policy`, correspondentes às 6 tabelas públicas do Rota 27. Isso é coerente com o desenho atual: RLS está habilitado, não há policies públicas e as Edge Functions acessam o banco pelo backend/service role. Não alterar durante a migração sem mudança arquitetural explícita.
+1. `git clone --mirror` do legado;
+2. `rota27-history-20260909.bundle` com `--all`;
+3. SHA-256 do bundle;
+4. árvore sanitizada `baseline/`;
+5. `git init` novo;
+6. root commit sem ancestrais do repositório público.
 
-Performance Advisor: 4 índices reportados como ainda não utilizados:
+O bundle histórico e seus hashes ficam fora do novo Git e devem ser armazenados em local privado seguro.
 
-- `rota27_sync_devices_store_status_seen_idx`
-- `rota27_device_enrollments_active_code_idx`
-- `rota27_whatsapp_inbound_reply_idx`
-- `rota27_whatsapp_inbound_status_idx`
+## Kit preservado no novo repo
 
-Nenhum será removido durante a migração.
+O root commit sanitizado inclui apenas o kit atual necessário para continuidade da migração:
+
+- `ops/migration/build-private-baseline.ps1`;
+- `ops/migration/backup-supabase-postgres.ps1`;
+- `ops/migration/provision-azure-preview.ps1`;
+- `ops/migration/prepare-azure-custom-domain.ps1`;
+- `docs/migration/PRIVATE-BASELINE-MIGRATION-v1.md`;
+- `docs/migration/PWA-PILOT-CUTOVER-RUNBOOK-v1.md`;
+- `staticwebapp.config.json`.
+
+Branches, tags, PRs, releases, handoffs e documentação histórica do repo público não são carregados para o novo histórico.
+
+## Advisors Supabase
+
+Security Advisor: nenhum alerta crítico. Há 6 itens INFO `rls_enabled_no_policy`, coerentes com o desenho atual server-side/service-role. Não mudar durante o cutover.
+
+Performance Advisor: 4 índices ainda sem uso observado:
+
+- `rota27_sync_devices_store_status_seen_idx`;
+- `rota27_device_enrollments_active_code_idx`;
+- `rota27_whatsapp_inbound_reply_idx`;
+- `rota27_whatsapp_inbound_status_idx`.
+
+Nenhum índice será removido durante a migração.
 
 ## Estado dos aparelhos antes do piloto
 
-Em 09/09/2026 o servidor registrava 3 aparelhos ativos. Todos estavam em `release_version=0.25.224`, com `last_cursor=9303`, exatamente igual ao `latest_seq=9303` do backend, e todos reportavam WhatsApp com `pending_count=0` e `failed_count=0`.
+Em 09/09/2026 havia 3 aparelhos ativos. Todos estavam em `release_version=0.25.224`, `last_cursor=9303`, igual ao `latest_seq=9303` do servidor, e com telemetria WhatsApp `pending_count=0` / `failed_count=0`.
 
-O iPhone ativo é o aparelho `owner`, portanto é o primeiro piloto recomendado. Os demais ativos são Edge/developer e Windows/staff.
+Papéis:
 
-Esse estado remoto não substitui o preflight local: antes da troca de origem cada aparelho deve comprovar também fila principal, `state.whatsappOutbox` e todas as outboxes de domínio em zero.
+- iPhone: `owner` — primeiro piloto;
+- Edge: `developer`;
+- Windows: `staff`.
 
-## Publicação do repositório privado
+O estado remoto não substitui o preflight local de outboxes.
 
-A conexão GitHub disponível nesta sessão permite alterar repositórios existentes, mas não oferece criação de repositório. A criação do novo privado é feita pelo builder via GitHub CLI (`gh`) somente quando explicitamente usado com `-CreatePrivateRepo -PrivateRepo owner/nome`.
+## Azure Static Web Apps
 
-O script se recusa a reutilizar um repositório já existente.
+`staticwebapp.config.json` mantém revalidação dos entrypoints e evita cache prolongado do Service Worker.
 
-## Azure Static Web Apps — preview isolado
+O hostname `*.azurestaticapps.net` é **somente para homologação técnica**. Não migrar o iPhone operacional para ele, pois o domínio final será outra origem.
 
-O alvo é Azure Static Web Apps, pois o frontend atual é estático e não requer build. O baseline recebe `staticwebapp.config.json` na raiz. A configuração:
+O primeiro PWA persistente deve ser instalado diretamente em:
 
-- desabilita cache prolongado em `sw.js`;
-- força revalidação de `index.html`, `assets/roadmap-loader.js` e `manifest.webmanifest`;
-- define MIME `application/manifest+json` para `.webmanifest`;
-- adiciona headers básicos de segurança;
-- não adiciona CSP restritiva nesta fase;
-- não usa `navigationFallback`, para não mascarar arquivo ausente.
+`https://rota27.automatrixhub.com.br`
 
-O script `scripts/migration/provision-azure-preview.ps1` trabalha em dry-run por padrão. Somente `-Apply` autoriza criação do resource group e da Static Web App. O SKU padrão é `Free`; `Standard` exige `-ConfirmPaidSku`.
+## Domínio final sem downtime
 
-O hostname `*.azurestaticapps.net` é **somente de homologação técnica**. Nele devem ser testados HTTP, carregamento, service worker, offline, navegação e chamadas ao mesmo Supabase usando dispositivos descartáveis/de teste.
+Depois de validar o hostname Azure padrão:
 
-**Não instalar nem re-enrollar o iPhone operacional nesse hostname.** `*.azurestaticapps.net` e `rota27.automatrixhub.com.br` são origens distintas; fazer o piloto no hostname temporário criaria uma migração intermediária desnecessária.
+1. executar `prepare-azure-custom-domain.ps1` em dry-run;
+2. confirmar se `rota27.automatrixhub.com.br` já possui A/AAAA/CNAME;
+3. preparar no Azure a validação `dns-txt-token`;
+4. publicar primeiro o TXT `_dnsauth.rota27.automatrixhub.com.br` no provedor DNS;
+5. aguardar o domínio ficar validado no Azure;
+6. somente depois alterar o CNAME do subdomínio para o hostname padrão da Static Web App;
+7. validar TLS, `/sw.js` e `/manifest.webmanifest` no domínio final.
 
-## Domínio final antes do PWA piloto
-
-Depois que o hostname Azure padrão estiver aprovado, configurar `rota27.automatrixhub.com.br` na mesma Static Web App e validar o domínio/TLS.
-
-O GitHub Pages antigo continua em `https://automatrixhub.github.io/rota27/` e pode permanecer funcionando normalmente durante toda essa etapa, pois é outro hostname. Não criar redirect obrigatório do Pages durante o piloto.
-
-O primeiro re-enrollment operacional deve ocorrer **diretamente no domínio final**.
-
-## Ordem de promoção corrigida
-
-1. gerar bundle e baseline local;
-2. gerar backup lógico oficial do Supabase;
-3. validar hashes e secret scan;
-4. criar/pushar repositório privado;
-5. executar provisionador Azure em dry-run;
-6. criar Static Web App isolada;
-7. homologar tecnicamente `*.azurestaticapps.net` sem migrar aparelho operacional;
-8. configurar/validar `rota27.automatrixhub.com.br` e TLS;
-9. manter GitHub Pages antigo funcionando em paralelo;
-10. somente após o domínio final estar aprovado, disponibilizar o preflight local de aparelho;
-11. no PWA antigo, garantir todas as outboxes = 0 e cursor convergente;
-12. migrar primeiro o iPhone `owner` diretamente para o domínio final por código manual;
-13. validar o novo PWA mantendo o antigo como fallback;
-14. migrar Edge/developer e Windows/staff um por vez;
-15. retirar o Pages somente em fase futura, após janela de estabilização.
-
-O procedimento detalhado está em `docs/PWA-PILOT-CUTOVER-RUNBOOK-v1.md`.
+O script não altera DNS automaticamente. O GitHub Pages antigo continua funcionando em `automatrixhub.github.io/rota27/` durante todo o piloto.
 
 ## Re-enrollment
 
-O fluxo `rota27-device-enroll` permite `claim` sem master token. O novo aparelho recebe credencial própria e faz bootstrap da base compartilhada. Não copiar manualmente `deviceToken`.
+`rota27-device-enroll` permite `claim` por código sem master token. O novo aparelho recebe sua própria credencial derivada.
 
-O convite por QR gerado na origem antiga incorpora `location.href`; portanto ele aponta de volta para o GitHub Pages. Para o primeiro piloto no domínio novo, usar o **código manual de 8 dígitos** criado pelo aparelho owner.
+Não copiar manualmente `deviceToken`, localStorage, IndexedDB, Cache Storage ou Service Worker.
+
+O QR gerado no PWA antigo usa `location.href` e aponta para a origem antiga. No primeiro piloto usar o **código manual de 8 dígitos** diretamente no domínio final.
+
+## Ordem executiva
+
+1. bundle histórico + hashes;
+2. baseline sanitizado + overlay verificado;
+3. backup lógico Supabase + hashes;
+4. criar novo repo privado e push do root novo;
+5. Azure Static Web Apps técnico;
+6. validação TXT do domínio final;
+7. CNAME somente após validação;
+8. validar domínio final/TLS;
+9. manter Pages antigo como fallback;
+10. promover temporariamente a PR #281 para obter preflight local no PWA antigo;
+11. iPhone owner: todas as outboxes = 0 e cursor convergente;
+12. re-enrollment direto no domínio final por código manual;
+13. homologar mantendo PWA antigo instalado;
+14. migrar Edge/developer;
+15. migrar Windows/staff;
+16. retirar Pages somente em fase futura.
 
 ## Bloqueios independentes
 
-- PR #279 continua bloqueada até `META_APP_SECRET` ser configurado e o verify token da Meta ser tratado de forma coordenada.
-- o backup lógico real ainda precisa ser executado em máquina com Docker + Supabase CLI e acesso à Session Pooler;
-- o Azure real ainda depende de uma sessão autenticada da Azure CLI;
-- a candidata local de preflight v0.25.225 não deve ser promovida ao Pages antes de Azure + domínio final estarem validados.
+- PR #279: sem deploy até `META_APP_SECRET` e `META_WEBHOOK_VERIFY_TOKEN` estarem coordenados;
+- PR #281: não publicar enquanto Azure + domínio final não estiverem homologados;
+- backup real, repo privado real e Azure real exigem credenciais locais/CLI e ainda não foram executados.
 
 ## Rollback
 
-Antes e durante o piloto, manter o PWA antigo instalado e seu device antigo ativo.
+Durante a janela de estabilização preservar:
 
-Se o PWA novo falhar, parar de operar nele e voltar ao PWA antigo. Como ambos usam o mesmo Supabase, eventos já enviados pelo novo domínio permanecem disponíveis para o antigo sincronizar; não é necessário restaurar banco apenas para rollback de frontend.
-
-Preservar durante toda a janela:
-
-- commit `5d009bc10d6d5c0095cd70d21dfcf5f7d995dc72`;
+- commit de produção `5d009bc10d6d5c0095cd70d21dfcf5f7d995dc72`;
 - branch `archive/pre-azure-migration-v025224-20260909`;
-- bundle Git com SHA-256;
-- os cinco arquivos do backup lógico Supabase;
-- pacote privado dos fontes de Edge Functions órfãs;
-- secrets no cofre/ambiente, nunca no Git.
+- bundle histórico + SHA-256;
+- cinco arquivos do backup lógico + hashes;
+- pacote privado de Edge Functions órfãs;
+- secrets no cofre/ambiente;
+- PWA antigo instalado nos aparelhos ainda não consolidados.
+
+Se o novo PWA falhar, parar de operar nele e voltar ao PWA GitHub Pages. Como ambos usam o mesmo Supabase, eventos já enviados pelo domínio novo podem ser sincronizados pelo antigo; rollback de frontend não exige restauração do banco.
