@@ -20,6 +20,8 @@ O baseline não seleciona patches manualmente. O script lê o `APP_SHELL` do `sw
 
 Isso preserva o PWA que está operacional hoje, incluindo dependências indiretas carregadas pelo `roadmap-loader.js`.
 
+A portabilidade de caminho também foi verificada: `manifest.webmanifest` usa `id`, `start_url`, `scope` e ícones relativos (`./`), e `base-v013.html` registra o Service Worker como `./sw.js`. A busca por `/rota27/` no commit fonte encontrou referências de documentação/histórico, não uma dependência operacional do PWA. Assim, o preview pode ser servido na raiz do hostname Azure sem reescrever o escopo do aplicativo.
+
 ## Regra do backend
 
 Copiar somente `supabase/functions` presente em `main` no commit fonte, incluindo `_shared`.
@@ -89,22 +91,44 @@ A conexão GitHub disponível nesta sessão permite alterar repositórios existe
 
 O script se recusa a reutilizar um repositório já existente, evitando sobrescrita acidental.
 
+## Azure Static Web Apps — preview isolado
+
+O alvo de preview é Azure Static Web Apps, porque o frontend atual é estático e não requer etapa de build. O baseline recebe `staticwebapp.config.json` na raiz. A configuração:
+
+- desabilita cache prolongado em `sw.js`;
+- força revalidação de `index.html`, `assets/roadmap-loader.js` e `manifest.webmanifest`;
+- define MIME `application/manifest+json` para `.webmanifest`;
+- adiciona `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin` e `X-Frame-Options: DENY`;
+- não adiciona CSP nesta fase, porque o legado contém scripts inline e integrações externas que precisam ser inventariadas antes de uma política restritiva;
+- não usa `navigationFallback`, de modo que arquivo ausente continue retornando erro real em vez de ser mascarado por `index.html`.
+
+O script `scripts/migration/provision-azure-preview.ps1` trabalha em dry-run por padrão. Somente `-Apply` autoriza criação do resource group e da Static Web App.
+
+Para o piloto, o padrão é SKU `Free`. O SKU `Standard` exige também `-ConfirmPaidSku`. O script cria um recurso Azure isolado sem vincular DNS e publica diretamente com o deployment token obtido pela Azure CLI; o token fica apenas em variável de ambiente temporária e não é gravado em arquivos.
+
+A publicação usa o ambiente `production` somente dentro do recurso chamado de preview. Isso fornece o hostname padrão `azurestaticapps.net` para homologação, sem qualquer relação com o domínio de produção do Rota 27. O script testa `/`, `/index.html`, `/sw.js` e `/manifest.webmanifest` e registra resultado sem token fora do repositório baseline.
+
+A região padrão do script é `eastus2`, mas deve ser alterada se a assinatura tiver Azure Policy ou disponibilidade regional diferente. Azure Static Web Apps distribui os ativos estáticos globalmente; a região selecionada se relaciona à infraestrutura gerenciada/staging do serviço.
+
 ## Azure — ordem de promoção
 
 1. gerar bundle e baseline local;
 2. gerar backup lógico oficial do Supabase;
 3. validar hashes e secret scan;
 4. criar/pushar repositório privado;
-5. subir uma URL Azure de preview sem DNS de produção;
-6. validar PWA, service worker, sync, enroll, WhatsApp, campanhas e permissões;
-7. selecionar aparelhos piloto;
-8. somente depois preparar corte de domínio/DNS;
-9. manter GitHub Pages e restore ref disponíveis durante a janela de rollback.
+5. executar o provisionador Azure primeiro sem `-Apply` e revisar o plano;
+6. criar a Static Web App isolada de preview com `-Apply`;
+7. validar os probes HTTP e abrir a URL `azurestaticapps.net` em desktop e Android;
+8. homologar instalação PWA, atualização do Service Worker, operação offline, sync, enrollment, permissões, WhatsApp e campanhas;
+9. selecionar aparelhos piloto;
+10. somente depois preparar corte de domínio/DNS;
+11. manter GitHub Pages e restore ref disponíveis durante toda a janela de rollback.
 
 ## Bloqueios independentes
 
 - PR #279 continua bloqueada até `META_APP_SECRET` ser configurado e o verify token da Meta ser tratado de forma coordenada.
 - o backup lógico real ainda precisa ser executado em máquina com Docker + Supabase CLI e acesso à Session Pooler, pois esta sessão não recebe a senha administrativa do banco e não deve armazená-la.
+- o Azure preview real ainda depende de uma sessão autenticada da Azure CLI (`az login`); esta sessão do ChatGPT não possui acesso à assinatura Azure do usuário.
 
 ## Rollback
 
