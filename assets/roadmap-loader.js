@@ -52,7 +52,7 @@
     {type:'js',id:'v02593HelpV11Js',src:'./assets/v02593-help-v11.js?v=025125r1'},
     {type:'js',id:'v025211EnrollmentScannerJs',src:'./assets/v025211-device-enrollment-scanner.js?v=025211r1'},
     {type:'css',id:'v025222SitePaletteCss',src:'./assets/v025222-site-palette.css?v=025224r1'},
-    {type:'js',id:'v025225MigrationPreflightJs',src:'./assets/v025225-migration-preflight.js?v=025225r1'}
+    {type:'js',id:'v025225MigrationPreflightJs',src:'./assets/v025225-migration-preflight.js?v=025225r2'}
   ];
   let identityObserver=null,identityQueued=false;
   function identity(){
