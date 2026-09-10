@@ -18,6 +18,9 @@
     rota27_v02537_internal_marker_outbox_v1:'Consumo interno',
     rota27_v02573_cancel_whatsapp_outbox_v1:'Cancelamento WhatsApp'
   };
+  const NON_QUEUE_OUTBOX_KEYS=new Set([
+    'rota27_v025197_command_cancel_scan_outbox_marker_v1'
+  ]);
 
   const byId=id=>document.getElementById(id);
   const esc=v=>String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
@@ -38,7 +41,7 @@
     const keys=new Set(Object.keys(KNOWN_OUTBOXES));
     for(let i=0;i<localStorage.length;i++){
       const key=localStorage.key(i);
-      if(key&&/outbox/i.test(key))keys.add(key);
+      if(key&&/outbox/i.test(key)&&!NON_QUEUE_OUTBOX_KEYS.has(key))keys.add(key);
     }
     return [...keys].sort();
   }
