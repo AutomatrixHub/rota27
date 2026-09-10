@@ -35,23 +35,23 @@ function Parse-And-ValidateDbTarget([string]$Url,[string]$ExpectedProjectRef) {
   if ($uri.Port -ne 5432) { throw "Use porta 5432: Session Pooler ou conexão direta. Porta detectada: $($uri.Port)." }
   if ($uri.AbsolutePath.TrimEnd('/') -ne '/postgres') { throw "O banco de destino deve ser /postgres. Caminho detectado: $($uri.AbsolutePath)" }
 
-  $host = ([string]$uri.Host).ToLowerInvariant()
+  $dbHost = ([string]$uri.Host).ToLowerInvariant()
   $userEncoded = (($uri.UserInfo -split ':',2)[0])
   $user = [Uri]::UnescapeDataString($userEncoded)
   $expectedDirect = "db.$ExpectedProjectRef.supabase.co"
   $expectedPoolerUser = "postgres.$ExpectedProjectRef"
 
-  if ($host -eq $expectedDirect) {
+  if ($dbHost -eq $expectedDirect) {
     if ($user -ne 'postgres') { throw "Usuário inesperado para conexão direta. Esperado: postgres." }
-    return [ordered]@{ mode='direct'; host=$host; port=$uri.Port; database='postgres' }
+    return [ordered]@{ mode='direct'; host=$dbHost; port=$uri.Port; database='postgres' }
   }
-  if ($host -like '*.pooler.supabase.com') {
+  if ($dbHost -like '*.pooler.supabase.com') {
     if ($user -ne $expectedPoolerUser) {
       throw "A connection string do Pooler não pertence ao projeto esperado. Usuário esperado: $expectedPoolerUser."
     }
-    return [ordered]@{ mode='session_pooler'; host=$host; port=$uri.Port; database='postgres' }
+    return [ordered]@{ mode='session_pooler'; host=$dbHost; port=$uri.Port; database='postgres' }
   }
-  throw "Host de banco inesperado: $host. Use a connection string do projeto $ExpectedProjectRef copiada do painel Supabase Connect."
+  throw "Host de banco inesperado: $dbHost. Use a connection string do projeto $ExpectedProjectRef copiada do painel Supabase Connect."
 }
 
 Require-Command git
