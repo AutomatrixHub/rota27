@@ -35,7 +35,7 @@ function Parse-And-ValidateDbTarget([string]$Url,[string]$ExpectedProjectRef) {
   if ($uri.Port -ne 5432) { throw "Use porta 5432: Session Pooler ou conexão direta. Porta detectada: $($uri.Port)." }
   if ($uri.AbsolutePath.TrimEnd('/') -ne '/postgres') { throw "O banco de destino deve ser /postgres. Caminho detectado: $($uri.AbsolutePath)" }
 
-  $host = String($uri.Host).ToLowerInvariant()
+  $host = ([string]$uri.Host).ToLowerInvariant()
   $userEncoded = (($uri.UserInfo -split ':',2)[0])
   $user = [Uri]::UnescapeDataString($userEncoded)
   $expectedDirect = "db.$ExpectedProjectRef.supabase.co"
@@ -90,7 +90,7 @@ try {
 } finally {
   [Runtime.InteropServices.Marshal]::ZeroFreeBSTR($bstr)
 }
-$dbUrl = String($dbUrl).Trim()
+$dbUrl = ([string]$dbUrl).Trim()
 $target = Parse-And-ValidateDbTarget $dbUrl $ProjectRef
 Write-Host "Destino validado: projeto $ProjectRef • $($target.mode) • $($target.host):$($target.port)/$($target.database)" -ForegroundColor Green
 
